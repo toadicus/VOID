@@ -112,6 +112,36 @@ namespace VOID
 			return mapAttribute;
 		}
 
+		public static string GetLongitudeString(Vessel vessel, string format="F4")
+		{
+			string dir_long = "W";
+			double v_long = vessel.longitude;
+
+			v_long = FixDegreeDomain(v_long);
+
+			if (v_long < -180d)
+			{
+				v_long += 360d;
+			}
+			if (v_long >= 180)
+			{
+				v_long -= 360d;
+			}
+
+			if (v_long > 0) dir_long = "E";
+
+			return string.Format("{0}° {1}", Math.Abs(v_long).ToString(format), dir_long);
+		}
+
+		public static string GetLatitudeString(Vessel vessel, string format="F4")
+		{
+			string dir_lat = "S";
+			double v_lat = vessel.latitude;
+			if (v_lat > 0) dir_lat = "N";
+
+			return string.Format("{0}° {1}", Math.Abs(v_lat).ToString(format), dir_lat);
+		}
+
         ///////////////////////////////////////////////////////////////////////////////
 
         //For MuMech_get_heading()
@@ -185,92 +215,91 @@ namespace VOID
         }
 
         //From http://svn.mumech.com/KSP/trunk/MuMechLib/MuUtils.cs
-		public static string MuMech_ToSI(double d, int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
-		{
-			float exponent = (float)Math.Log10(Math.Abs(d));
-			exponent = Mathf.Clamp(exponent, (float)MinMagnitude, (float)MaxMagnitude);
-
-			if (exponent >= 0)
-			{
-				switch ((int)Math.Floor(exponent))
-				{
-					case 0:
-						case 1:
-						case 2:
-						return d.ToString("F" + digits);
-						case 3:
-						case 4:
-						case 5:
-						return (d / 1e3).ToString("F" + digits) + "k";
-						case 6:
-						case 7:
-						case 8:
-						return (d / 1e6).ToString("F" + digits) + "M";
-						case 9:
-						case 10:
-						case 11:
-						return (d / 1e9).ToString("F" + digits) + "G";
-						case 12:
-						case 13:
-						case 14:
-						return (d / 1e12).ToString("F" + digits) + "T";
-						case 15:
-						case 16:
-						case 17:
-						return (d / 1e15).ToString("F" + digits) + "P";
-						case 18:
-						case 19:
-						case 20:
-						return (d / 1e18).ToString("F" + digits) + "E";
-						case 21:
-						case 22:
-						case 23:
-						return (d / 1e21).ToString("F" + digits) + "Z";
-						default:
-						return (d / 1e24).ToString("F" + digits) + "Y";
-				}
-			}
-			else if (exponent < 0)
-			{
-				switch ((int)Math.Floor(exponent))
-				{
-					case -1:
-						case -2:
-						case -3:
-						return (d * 1e3).ToString("F" + digits) + "m";
-						case -4:
-						case -5:
-						case -6:
-						return (d * 1e6).ToString("F" + digits) + "μ";
-						case -7:
-						case -8:
-						case -9:
-						return (d * 1e9).ToString("F" + digits) + "n";
-						case -10:
-						case -11:
-						case -12:
-						return (d * 1e12).ToString("F" + digits) + "p";
-						case -13:
-						case -14:
-						case -15:
-						return (d * 1e15).ToString("F" + digits) + "f";
-						case -16:
-						case -17:
-						case -18:
-						return (d * 1e18).ToString("F" + digits) + "a";
-						case -19:
-						case -20:
-						case -21:
-						return (d * 1e21).ToString("F" + digits) + "z";
-						default:
-						return (d * 1e24).ToString("F" + digits) + "y";
-				}
-			}
-			else
-			{
-				return "0";
-			}
-		}
+        public static string MuMech_ToSI(double d)
+        {
+            int digits = 2;
+            double exponent = Math.Log10(Math.Abs(d));
+            if (Math.Abs(d) >= 1)
+            {
+                switch ((int)Math.Floor(exponent))
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                        return d.ToString("F" + digits);
+                    case 3:
+                    case 4:
+                    case 5:
+                        return (d / 1e3).ToString("F" + digits) + "k";
+                    case 6:
+                    case 7:
+                    case 8:
+                        return (d / 1e6).ToString("F" + digits) + "M";
+                    case 9:
+                    case 10:
+                    case 11:
+                        return (d / 1e9).ToString("F" + digits) + "G";
+                    case 12:
+                    case 13:
+                    case 14:
+                        return (d / 1e12).ToString("F" + digits) + "T";
+                    case 15:
+                    case 16:
+                    case 17:
+                        return (d / 1e15).ToString("F" + digits) + "P";
+                    case 18:
+                    case 19:
+                    case 20:
+                        return (d / 1e18).ToString("F" + digits) + "E";
+                    case 21:
+                    case 22:
+                    case 23:
+                        return (d / 1e21).ToString("F" + digits) + "Z";
+                    default:
+                        return (d / 1e24).ToString("F" + digits) + "Y";
+                }
+            }
+            else if (Math.Abs(d) > 0)
+            {
+                switch ((int)Math.Floor(exponent))
+                {
+                    case -1:
+                    case -2:
+                    case -3:
+                        return (d * 1e3).ToString("F" + digits) + "m";
+                    case -4:
+                    case -5:
+                    case -6:
+                        return (d * 1e6).ToString("F" + digits) + "μ";
+                    case -7:
+                    case -8:
+                    case -9:
+                        return (d * 1e9).ToString("F" + digits) + "n";
+                    case -10:
+                    case -11:
+                    case -12:
+                        return (d * 1e12).ToString("F" + digits) + "p";
+                    case -13:
+                    case -14:
+                    case -15:
+                        return (d * 1e15).ToString("F" + digits) + "f";
+                    case -16:
+                    case -17:
+                    case -18:
+                        return (d * 1e18).ToString("F" + digits) + "a";
+                    case -19:
+                    case -20:
+                    case -21:
+                        return (d * 1e21).ToString("F" + digits) + "z";
+                    default:
+                        return (d * 1e24).ToString("F" + digits) + "y";
+                }
+            }
+            else
+            {
+                return "0";
+            }
+        }
 
         public static string ConvertInterval(double seconds)
         {
@@ -288,6 +317,7 @@ namespace VOID
 			{
 				return "NaN";
 			}
+
             int years = interval.Days / 365;
 
             string output;
@@ -478,36 +508,6 @@ namespace VOID
 			return FixAngleDomain (Angle, true);
 		}
 
-		public static string GetLongitudeString(Vessel vessel, string format="F4")
-		{
-			string dir_long = "W";
-			double v_long = vessel.longitude;
-
-			v_long = FixDegreeDomain(v_long);
-
-			if (v_long < -180d)
-			{
-				v_long += 360d;
-			}
-			if (v_long >= 180)
-			{
-				v_long -= 360d;
-			}
-
-			if (v_long > 0) dir_long = "E";
-
-			return string.Format("{0}° {1}", Math.Abs(v_long).ToString(format), dir_long);
-		}
-
-		public static string GetLatitudeString(Vessel vessel, string format="F4")
-		{
-			string dir_lat = "S";
-			double v_lat = vessel.latitude;
-			if (v_lat > 0) dir_lat = "N";
-
-			return string.Format("{0}° {1}", Math.Abs(v_lat).ToString(format), dir_lat);
-		}
-
         public static double adjustCurrPhaseAngle(double transfer_angle, double curr_phase)
         {
             if (transfer_angle < 0)
@@ -552,6 +552,66 @@ namespace VOID
 
         }
 
-        //
+        public static double TrueAltitude(Vessel vessel)
+		{
+			double trueAltitude = vessel.orbit.altitude - vessel.terrainAltitude;
+
+			// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m, and water covers the whole surface at 0 m.
+			if (vessel.terrainAltitude < 0 && vessel.mainBody.ocean )
+			{
+				trueAltitude = vessel.orbit.altitude;
+			}
+
+			return trueAltitude;
+		}
+
+		public static string get_heading_text(double heading)
+		{
+			if (heading > 348.75 || heading <= 11.25) return "N";
+			else if (heading > 11.25 && heading <= 33.75) return "NNE";
+			else if (heading > 33.75 && heading <= 56.25) return "NE";
+			else if (heading > 56.25 && heading <= 78.75) return "ENE";
+			else if (heading > 78.75 && heading <= 101.25) return "E";
+			else if (heading > 101.25 && heading <= 123.75) return "ESE";
+			else if (heading > 123.75 && heading <= 146.25) return "SE";
+			else if (heading > 146.25 && heading <= 168.75) return "SSE";
+			else if (heading > 168.75 && heading <= 191.25) return "S";
+			else if (heading > 191.25 && heading <= 213.75) return "SSW";
+			else if (heading > 213.75 && heading <= 236.25) return "SW";
+			else if (heading > 236.25 && heading <= 258.75) return "WSW";
+			else if (heading > 258.75 && heading <= 281.25) return "W";
+			else if (heading > 281.25 && heading <= 303.75) return "WNW";
+			else if (heading > 303.75 && heading <= 326.25) return "NW";
+			else if (heading > 326.25 && heading <= 348.75) return "NNW";
+			else return "";
+		}
+
+		public static double[] ParseXYString(string s)
+		{
+			string[] xy = s.Split (',');
+			if (xy.Length != 2)
+			{
+				throw new ArgumentException ("Argument must be of the format 'x,y'.");
+			}
+
+			double x = double.Parse (xy [0].Trim ());
+			double y = double.Parse (xy [1].Trim ());
+
+			return new double[] { x, y };
+		}
+				
+		private static ScreenMessage debugmsg = new ScreenMessage("", 2f, ScreenMessageStyle.UPPER_RIGHT);
+
+		[System.Diagnostics.Conditional("DEBUG")]
+		public static void PostDebugMessage(string Msg)
+		{
+			if (HighLogic.LoadedScene > GameScenes.SPACECENTER)
+			{
+				debugmsg.message = Msg;
+				ScreenMessages.PostScreenMessage(debugmsg, true);
+			}
+
+			KSPLog.print(Msg);
+		}
 	}
 }
