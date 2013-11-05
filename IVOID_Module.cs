@@ -24,7 +24,13 @@ namespace VOID
 {
 	public interface IVOID_Module
 	{
+		bool hasGUIConfig { get; }
+		bool toggleActive { get; }
+		bool guiRunning { get; }
+
 		void DrawGUI();
+		void StartGUI();
+		void StopGUI();
 
 		void LoadConfig();
 

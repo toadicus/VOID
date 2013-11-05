@@ -58,6 +58,13 @@ namespace VOID
 
 		public bool guiRunning = false;
 
+		public bool hasGUIConfig
+		{
+			get
+			{
+				return false;
+			}
+		}
 		/*
 		 * Properties
 		 * */
@@ -84,37 +91,23 @@ namespace VOID
 		 * */
 		private VOID_HUD() : base()
 		{
-			Tools.PostDebugMessage ("Constructing VOID_HUD");
-			try
-			{
-				this.textColors.Add(Color.green);
-				this.textColors.Add(Color.black);
-				this.textColors.Add(Color.white);
-				this.textColors.Add(Color.red);
-				this.textColors.Add(Color.blue);
-				this.textColors.Add(Color.yellow);
-				this.textColors.Add(Color.gray);
-				this.textColors.Add(Color.cyan);
-				this.textColors.Add(Color.magenta);
-			}
-			catch (NullReferenceException)
-			{
-				Tools.PostDebugMessage ("Caught NRE while adding colors.");
-			}
+			this.textColors.Add(Color.green);
+			this.textColors.Add(Color.black);
+			this.textColors.Add(Color.white);
+			this.textColors.Add(Color.red);
+			this.textColors.Add(Color.blue);
+			this.textColors.Add(Color.yellow);
+			this.textColors.Add(Color.gray);
+			this.textColors.Add(Color.cyan);
+			this.textColors.Add(Color.magenta);
 
 			this.labelStyle = new GUIStyle ();
 			this.labelStyle.normal.textColor = this.textColors [this.ColorIndex];
-
-			Tools.PostDebugMessage ("VOID_HUD Constructed.");
 		}
 
 		~VOID_HUD()
 		{
-			Tools.PostDebugMessage ("Destructing VOID_HUD");
 			this.SaveConfig();
-			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace();
-
-			Tools.PostDebugMessage (trace.ToString ());
 		}
 
 		public void DrawGUI()
@@ -122,17 +115,17 @@ namespace VOID
 			Tools.PostDebugMessage ("VOID_HUD: Drawing GUI.");
 			if (vessel == null)
 			{
-				vessel = VOIDFlightMaster.Instance.vessel;
+				vessel = FlightGlobals.ActiveVessel;
 			}
 
 			if (vessel != FlightGlobals.ActiveVessel)
 			{
-				return;
+				vessel = FlightGlobals.ActiveVessel;
 			}
 
-			if (VOIDFlightMaster.Instance.power_toggle)
+			if (true)
 			{
-				if (VOIDFlightMaster.Instance.power_available || VOIDFlightMaster.Instance.disable_power_usage)
+				if (true)
 				{
 					labelStyle.normal.textColor = textColors [ColorIndex];
 
