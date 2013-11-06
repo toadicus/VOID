@@ -25,11 +25,12 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_ConfigValue<T>
+	public struct VOID_ConfigValue<T> : IVOID_ConfigValue
 	{
-		protected T _value;
+		private T _value;
+		private Type _type;
 
-		public T this
+		public T value
 		{
 			get
 			{
@@ -37,8 +38,58 @@ namespace VOID
 			}
 			set
 			{
-				return this._value;
+				this._value = value;
 			}
+		}
+
+		public Type type
+		{
+			get
+			{
+				return this._type;
+			}
+			set
+			{
+				this._type = value;
+			}
+		}
+
+		public static implicit operator T(VOID_ConfigValue<T> v)
+		{
+			return v.value;
+		}
+
+		public static implicit operator VOID_ConfigValue<T>(T v)
+		{
+			VOID_ConfigValue<T> r = new VOID_ConfigValue<T>();
+			r.value = v;
+			r.type = v.GetType();
+			VOID_Core.Instance.configDirty = true;
+			return r;
+		}
+	}
+
+	public interface IVOID_ConfigValue
+	{
+		Type type { get; }
+	}
+
+	[AttributeUsage(AttributeTargets.Field)]
+	public class AVOID_ConfigValue : Attribute
+	{
+		protected string _name;
+
+		public string Name
+		{
+			get
+			{
+				return this._name;
+			}
+		}
+
+		public AVOID_ConfigValue(string fieldName)
+		{
+			this._name = fieldName;
 		}
 	}
 }

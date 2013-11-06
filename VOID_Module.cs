@@ -30,7 +30,6 @@ namespace VOID
 		protected bool _Active = true;
 		protected bool _Running = false;
 		protected bool _hasGUICfg = false;
-		protected bool configDirty = false;
 
 		protected string _Name;
 

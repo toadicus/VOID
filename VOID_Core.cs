@@ -49,17 +49,26 @@ namespace VOID
 		 * */
 		protected string VoidName = "VOID";
 		protected string VoidVersion = "0.9.9";
-		protected int configVersion = 1;
+
+		[AVOID_ConfigValue("configValue")]
+		protected VOID_ConfigValue<int> configVersion = 1;
 
 		protected List<VOID_Module> _modules = new List<VOID_Module>();
 
-		protected Rect _mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
-		protected bool mainGuiMinimized = false;
+		[AVOID_ConfigValue("mainWindowPos")]
+		protected VOID_ConfigValue<Rect> mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
 
-		protected Rect _configWindowPos = new Rect(Screen.width / 2, Screen.height  /2, 10f, 10f);
-		protected bool configWindowMinimized = true;
+		[AVOID_ConfigValue("mainGuiMinimized")]
+		protected VOID_ConfigValue<bool> mainGuiMinimized = false;
 
-		protected Rect VOIDIconPos = new Rect(Screen.width / 2 - 200, Screen.height - 30, 30f, 30f);
+		[AVOID_ConfigValue("configWindowPos")]
+		protected VOID_ConfigValue<Rect> configWindowPos = new Rect(Screen.width / 2, Screen.height  /2, 10f, 10f);
+
+		[AVOID_ConfigValue("configWindowMinimized")]
+		protected VOID_ConfigValue<bool> configWindowMinimized = true;
+
+		[AVOID_ConfigValue("VOIDIconPos")]
+		protected VOID_ConfigValue<Rect> VOIDIconPos = new Rect(Screen.width / 2 - 200, Screen.height - 30, 30f, 30f);
 		protected Texture2D VOIDIconOff = new Texture2D(30, 30, TextureFormat.ARGB32, false);
 		protected Texture2D VOIDIconOn = new Texture2D(30, 30, TextureFormat.ARGB32, false);
 		protected Texture2D VOIDIconTexture;
@@ -68,16 +77,18 @@ namespace VOID
 
 		protected int windowBaseID = -96518722;
 
-		public bool togglePower = true;
+		public VOID_ConfigValue<bool> togglePower = true;
 		public bool powerAvailable = true;
-		protected bool consumeResource = false;
-		protected string resourceName = "ElectricCharge";
-		protected float resourceRate = 0.2f;
+		protected VOID_ConfigValue<bool> consumeResource = false;
+		protected VOID_ConfigValue<string> resourceName = "ElectricCharge";
+		protected VOID_ConfigValue<float> resourceRate = 0.2f;
 
 		public float saveTimer = 0;
 
 		protected string defaultSkin = "KSP window 2";
-		protected string _skin;
+		protected VOID_ConfigValue<string> _skin;
+
+		public bool configDirty;
 
 		/*
 		 * Properties
@@ -110,31 +121,6 @@ namespace VOID
 			}
 		}
 
-		protected Rect mainWindowPos
-		{
-			get
-			{
-				return this._mainWindowPos;
-			}
-			set
-			{
-				this._mainWindowPos = value;
-				this.configDirty = true;
-			}
-		}
-
-		protected Rect configWindowPos
-		{
-			get
-			{
-				return this._configWindowPos;
-			}
-			set
-			{
-				this._configWindowPos = value;
-				this.configDirty = true;
-			}
-		}
 		/*
 		 * Methods
 		 * */
@@ -316,11 +302,18 @@ namespace VOID
 				// TODO: Config update stuff.
 			}
 
-			this.mainWindowPos = config.GetValue("main_window_pos", this.mainWindowPos);
-			this.VOIDIconPos = config.GetValue("VOIDIconPos", this.VOIDIconPos);
-			this._skin = config.GetValue ("void_skin", this.defaultSkin);
-			this.togglePower = config.GetValue ("togglePower", this.togglePower);
-			this.consumeResource = config.GetValue ("consumePower", this.consumeResource);
+			foreach (var field in this.GetType().GetFields().Where(f => f.IsDefined(typeof(AVOID_ConfigValue), false)))
+			{
+				var attr = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false)[0];
+				string fieldName = (attr as AVOID_ConfigValue).Name;
+
+				var fieldValue = field.GetValue(this);
+
+				field.SetValue(
+					this,
+					config.GetValue(fieldName, fieldValue)
+				);
+			}
 
 			foreach (VOID_Module module in this.Modules)
 			{
@@ -333,12 +326,16 @@ namespace VOID
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
 			config.load ();
 
-			config.SetValue ("main_window_pos", this.mainWindowPos);
-			config.SetValue ("VOIDIconPos", this.VOIDIconPos);
-			config.SetValue ("void_skin", this.Skin.name);
-			config.SetValue ("togglePower", this.togglePower);
-			config.SetValue ("configVersion", this.configVersion);
-			config.SetValue ("consumePower", this.consumeResource);
+			foreach (var field in this.GetType().GetFields().Where(f => f.IsDefined(typeof(AVOID_ConfigValue), false)))
+			{
+				var attr = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false)[0];
+				string fieldName = (attr as AVOID_ConfigValue).Name;
+
+				object fieldValue = field.GetValue(this);
+				Type T = (fieldValue as IVOID_ConfigValue).type;
+
+				config.SetValue(fieldName, fieldValue);
+			}
 
 			config.save ();
 
