@@ -19,6 +19,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace VOID
 {
@@ -27,7 +30,8 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		protected bool _Active = true;
+		[AVOID_ConfigValue("Active")]
+		protected VOID_ConfigValue<bool> _Active = true;
 		protected bool _Running = false;
 		protected bool _hasGUICfg = false;
 
@@ -77,6 +81,11 @@ namespace VOID
 		 * */
 		public void StartGUI()
 		{
+			if (!this.toggleActive)
+			{
+				return;
+			}
+
 			Tools.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
 			RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
 			this._Running = true;
@@ -91,13 +100,91 @@ namespace VOID
 
 		public abstract void DrawGUI();
 
-		public abstract void LoadConfig();
-
-		public abstract void SaveConfig();
-
-		~VOID_Module()
+		public virtual void LoadConfig()
 		{
-			this.SaveConfig ();
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
+			config.load ();
+
+			foreach (var field in this.GetType().GetFields(
+				BindingFlags.NonPublic |
+				BindingFlags.Public |
+				BindingFlags.Instance
+				))
+			{
+				object[] attrs = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false);
+
+				if (attrs.Length == 0) {
+					return;
+				}
+
+				AVOID_ConfigValue attr = attrs.FirstOrDefault () as AVOID_ConfigValue;
+
+				string fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
+
+				object fieldValue = field.GetValue(this);
+
+				bool convertBack = false;
+				if (fieldValue is IVOID_ConfigValue)
+				{
+					fieldValue = (fieldValue as IVOID_ConfigValue).AsType;
+					convertBack = true;
+				}
+
+				fieldValue = config.GetValue(fieldName, fieldValue);
+
+				if (convertBack)
+				{
+					Type type = typeof(VOID_ConfigValue<>).MakeGenericType (fieldValue.GetType ());
+					IVOID_ConfigValue convertValue = Activator.CreateInstance (type) as IVOID_ConfigValue;
+					convertValue.SetValue (fieldValue);
+					fieldValue = convertValue;
+				}
+
+				field.SetValue (this, fieldValue);
+
+				Tools.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
+			}
+		}
+
+		public virtual void SaveConfig()
+		{
+			if (!VOID_Core.Instance.configDirty)
+			{
+				return;
+			}
+
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
+			config.load ();
+
+			foreach (var field in this.GetType().GetFields(
+				BindingFlags.NonPublic |
+				BindingFlags.Public |
+				BindingFlags.Instance
+				))
+			{
+				object[] attrs = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false);
+
+				if (attrs.Length == 0) {
+					return;
+				}
+
+				AVOID_ConfigValue attr = attrs.FirstOrDefault () as AVOID_ConfigValue;
+
+				string fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
+
+				object fieldValue = field.GetValue(this);
+
+				if (fieldValue is IVOID_ConfigValue)
+				{
+					fieldValue = (fieldValue as IVOID_ConfigValue).AsType;
+				}
+
+				config.SetValue(fieldName, fieldValue);
+
+				Tools.PostDebugMessage(string.Format("{0}: Saved field {1}.", this.GetType().Name, fieldName));
+			}
+
+			config.save ();
 		}
 	}
 }

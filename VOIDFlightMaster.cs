@@ -48,22 +48,7 @@ namespace VOID
 		{
 			Tools.PostDebugMessage ("VOIDLightMaster: Waking up.");
 			this.Core = (VOID_Core)VOID_Core.Instance;
-			foreach (Type T in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
-			{
-				Tools.PostDebugMessage (string.Format ("VOIDFlightMaster: Testing type {0}", T.Name));
-				if (typeof(IVOID_Module).IsAssignableFrom(T) &&
-				    !T.IsAbstract  &&
-				    !typeof(VOID_Core).IsAssignableFrom(T))
-				{
-					this.Core.LoadModule (T);
-					Tools.PostDebugMessage(string.Format("VOIDFlightMaster: Found module {0}.", T.Name));
-				}
-			}
-
-			Tools.PostDebugMessage (string.Format ("VOIDFlightMaster: Loaded {0} modules.", this.Core.Modules.Count));
-
-			this.Core.LoadConfig ();
-
+			this.Core.StartGUI ();
 			Tools.PostDebugMessage ("VOIDFlightMaster: Awake.");
 		}
 

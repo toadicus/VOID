@@ -54,6 +54,19 @@ namespace VOID
 			}
 		}
 
+		public object AsType
+		{
+			get
+			{
+				return (T)this._value;
+			}
+		}
+
+		public void SetValue(object v)
+		{
+			this._value = (T)v;
+		}
+
 		public static implicit operator T(VOID_ConfigValue<T> v)
 		{
 			return v.value;
@@ -64,7 +77,10 @@ namespace VOID
 			VOID_ConfigValue<T> r = new VOID_ConfigValue<T>();
 			r.value = v;
 			r.type = v.GetType();
-			VOID_Core.Instance.configDirty = true;
+			if (VOID_Core.Initialized)
+			{
+				VOID_Core.Instance.configDirty = true;
+			}
 			return r;
 		}
 	}
@@ -72,6 +88,8 @@ namespace VOID
 	public interface IVOID_ConfigValue
 	{
 		Type type { get; }
+		object AsType { get; }
+		void SetValue(object v);
 	}
 
 	[AttributeUsage(AttributeTargets.Field)]

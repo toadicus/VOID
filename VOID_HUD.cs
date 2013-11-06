@@ -36,7 +36,8 @@ namespace VOID
 
 		protected GUIStyle labelStyle;
 
-		protected int _counterTextColor = 0;
+		[AVOID_ConfigValue("colorIndex")]
+		protected VOID_ConfigValue<int> _colorIndex = 0;
 
 		protected Vessel vessel = null;
 
@@ -47,17 +48,17 @@ namespace VOID
 		{
 			get
 			{
-				return this._counterTextColor;
+				return this._colorIndex;
 			}
 			set
 			{
-				if (this._counterTextColor >= this.textColors.Count - 1)
+				if (this._colorIndex >= this.textColors.Count - 1)
 				{
-					this._counterTextColor = 0;
+					this._colorIndex = 0;
 					return;
 				}
 
-				this._counterTextColor = value;
+				this._colorIndex = value;
 			}
 		}
 
@@ -133,23 +134,6 @@ namespace VOID
 				GUI.Label (new Rect ((Screen.width * .2083f), 0, 300f, 70f), "-- POWER LOST --", labelStyle);
 				GUI.Label (new Rect ((Screen.width * .625f), 0, 300f, 70f), "-- POWER LOST --", labelStyle);
 			}
-		}
-
-		public override void SaveConfig()
-		{
-			Tools.PostDebugMessage ("VOID_HUD: Saving Config.");
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_HUD> ();
-			config.load ();
-			config.SetValue ("ColorIndex", this.ColorIndex);
-			config.save ();
-		}
-
-		public override void LoadConfig()
-		{
-			Tools.PostDebugMessage ("VOID_HUD: Loading Config.");
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_HUD> ();
-			config.load ();
-			this.ColorIndex = config.GetValue ("ColorIndex", 0);
 		}
 	}
 }

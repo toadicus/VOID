@@ -31,6 +31,15 @@ namespace VOID
 		/*
 		 * Static Members
 		 * */
+		protected static bool _initialized = false;
+		public static bool Initialized
+		{
+			get 
+			{
+			return _initialized;
+			}
+		}
+
 		protected static VOID_Core _instance;
 		public static VOID_Core Instance
 		{
@@ -39,6 +48,7 @@ namespace VOID
 				if (_instance == null)
 				{
 					_instance = new VOID_Core();
+					_initialized = true;
 				}
 				return _instance;
 			}
@@ -77,10 +87,18 @@ namespace VOID
 
 		protected int windowBaseID = -96518722;
 
+		[AVOID_ConfigValue("togglePower")]
 		public VOID_ConfigValue<bool> togglePower = true;
+
 		public bool powerAvailable = true;
+
+		[AVOID_ConfigValue("consumeResource")]
 		protected VOID_ConfigValue<bool> consumeResource = false;
+
+		[AVOID_ConfigValue("resourceName")]
 		protected VOID_ConfigValue<string> resourceName = "ElectricCharge";
+
+		[AVOID_ConfigValue("resourceRate")]
 		protected VOID_ConfigValue<float> resourceRate = 0.2f;
 
 		public float saveTimer = 0;
@@ -130,6 +148,23 @@ namespace VOID
 
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
+
+			// HACK: This is modular but not extensible.  We need to look outside our assembly or move this to modules.
+			foreach (Type T in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
+			{
+				Tools.PostDebugMessage (string.Format ("VOID_Core: Testing type {0}", T.Name));
+				if (typeof(IVOID_Module).IsAssignableFrom(T) &&
+				    !T.IsAbstract  &&
+				    !typeof(VOID_Core).IsAssignableFrom(T))
+				{
+					this.LoadModule (T);
+					Tools.PostDebugMessage(string.Format("VOID_Core: Found module {0}.", T.Name));
+				}
+			}
+
+			Tools.PostDebugMessage (string.Format ("VOID_Core: Loaded {0} modules.", this.Modules.Count));
+
+			this.LoadConfig ();
 		}
 
 		public void LoadModule(Type T)
@@ -146,13 +181,18 @@ namespace VOID
 				this.StartGUI ();
 			}
 
+			if (!HighLogic.LoadedSceneIsFlight && this.guiRunning)
+			{
+				this.StopGUI ();
+			}
+
 			foreach (VOID_Module module in this.Modules)
 			{
 				if (!module.guiRunning && module.toggleActive)
 				{
 					module.StartGUI ();
 				}
-				if (module.guiRunning && !module.toggleActive || !this.togglePower)
+				if (module.guiRunning && !module.toggleActive || !this.togglePower || !HighLogic.LoadedSceneIsFlight)
 				{
 					module.StopGUI();
 				}
@@ -241,79 +281,46 @@ namespace VOID
 
 			if (!this.mainGuiMinimized)
 			{
-				this.mainWindowPos = GUILayout.Window (
+				Rect _mainWindowPos = this.mainWindowPos;
+
+				_mainWindowPos = GUILayout.Window (
 					++windowID,
-					this.mainWindowPos,
+					_mainWindowPos,
 					this.VOIDMainWindow,
 					string.Join (" ", this.VoidName, this.VoidVersion),
 					GUILayout.Width (250),
 					GUILayout.Height (50)
 				);
+
+				if (_mainWindowPos != this.mainWindowPos.value)
+				{
+					this.mainWindowPos = _mainWindowPos;
+				}
 			}
 
 			if (!this.configWindowMinimized)
 			{
+				Rect _configWindowPos = this.configWindowPos;
+
 				this.configWindowPos = GUILayout.Window (
 					++windowID,
-					this.configWindowPos,
+					_configWindowPos,
 					this.VOIDConfigWindow,
 					string.Join (" ", this.VoidName, "Configuration"),
 					GUILayout.Width (250),
 					GUILayout.Height (50)
 				);
-			}
-		}
 
-		public new void StartGUI()
-		{
-			base.StartGUI ();
-			foreach (var module in this._modules)
-			{
-				if (module.toggleActive)
+				if (_configWindowPos != this.configWindowPos.value)
 				{
-					module.StartGUI ();
+					this.mainWindowPos = _configWindowPos;
 				}
 			}
-
-			this._Running = true;
-		}
-
-		public new void StopGUI()
-		{
-			base.StopGUI ();
-			foreach (var module in this._modules)
-			{
-				if (module.guiRunning)
-				{
-					module.StopGUI ();
-				}
-			}
-
-			this._Running = false;
 		}
 
 		public override void LoadConfig()
 		{
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core>();
-			config.load();
-
-			if (this.configVersion > config.GetValue("configVersion", 0))
-			{
-				// TODO: Config update stuff.
-			}
-
-			foreach (var field in this.GetType().GetFields().Where(f => f.IsDefined(typeof(AVOID_ConfigValue), false)))
-			{
-				var attr = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false)[0];
-				string fieldName = (attr as AVOID_ConfigValue).Name;
-
-				var fieldValue = field.GetValue(this);
-
-				field.SetValue(
-					this,
-					config.GetValue(fieldName, fieldValue)
-				);
-			}
+			base.LoadConfig ();
 
 			foreach (VOID_Module module in this.Modules)
 			{
@@ -323,21 +330,12 @@ namespace VOID
 
 		public override void SaveConfig()
 		{
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
-			config.load ();
-
-			foreach (var field in this.GetType().GetFields().Where(f => f.IsDefined(typeof(AVOID_ConfigValue), false)))
+			if (!this.configDirty)
 			{
-				var attr = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false)[0];
-				string fieldName = (attr as AVOID_ConfigValue).Name;
-
-				object fieldValue = field.GetValue(this);
-				Type T = (fieldValue as IVOID_ConfigValue).type;
-
-				config.SetValue(fieldName, fieldValue);
+				return;
 			}
 
-			config.save ();
+			base.SaveConfig ();
 
 			foreach (VOID_Module module in this.Modules)
 			{
