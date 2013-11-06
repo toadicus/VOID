@@ -42,28 +42,51 @@ namespace VOID
 	[KSPAddon(KSPAddon.Startup.Flight, false)]
 	public class VOIDFlightMaster : MonoBehaviour
 	{
-		protected List<IVOID_Module> Modules;
+		protected VOID_Core Core;
 
-		public void OnAwake()
+		public void Awake()
 		{
-			this.Modules = new List<IVOID_Module>();
-		}
-
-		public void OnUpdate()
-		{
-			foreach (IVOID_Module module in this.Modules)
+			Tools.PostDebugMessage ("VOIDLightMaster: Waking up.");
+			this.Core = (VOID_Core)VOID_Core.Instance;
+			foreach (Type T in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
 			{
-				if (!module.guiRunning && module.toggleActive)
+				Tools.PostDebugMessage (string.Format ("VOIDFlightMaster: Testing type {0}", T.Name));
+				if (typeof(IVOID_Module).IsAssignableFrom(T) &&
+				    !T.IsAbstract  &&
+				    !typeof(VOID_Core).IsAssignableFrom(T))
 				{
-					module.StartGUI();
-				}
-
-				if (module.guiRunning && !module.toggleActive)
-				{
-					module.StopGUI();
+					this.Core.LoadModule (T);
+					Tools.PostDebugMessage(string.Format("VOIDFlightMaster: Found module {0}.", T.Name));
 				}
 			}
+
+			Tools.PostDebugMessage (string.Format ("VOIDFlightMaster: Loaded {0} modules.", this.Core.Modules.Count));
+
+			this.Core.LoadConfig ();
+
+			Tools.PostDebugMessage ("VOIDFlightMaster: Awake.");
 		}
+
+		public void Update()
+		{
+			if (this.Core == null)
+			{
+				return;
+			}
+
+			this.Core.Update ();
+		}
+
+		public void FixedUpdate()
+		{
+			if (this.Core == null)
+			{
+				return;
+			}
+
+			this.Core.FixedUpdate ();
+		}
+
 //        private bool debugging = false;
 //
 //        private int window_base_id = -96518722;

@@ -1,5 +1,5 @@
 //
-//  IVOID_Module.cs
+//  VOID_Config.cs
 //
 //  Author:
 //       toadicus <>
@@ -19,21 +19,27 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
+using KSP;
+using UnityEngine;
 
 namespace VOID
 {
-	public interface IVOID_Module
+	public class VOID_ConfigValue<T>
 	{
-		bool hasGUIConfig { get; }
-		bool toggleActive { get; }
-		bool guiRunning { get; }
+		protected T _value;
 
-		void DrawGUI();
-		void StartGUI();
-		void StopGUI();
-
-		void LoadConfig();
-
-		void SaveConfig();
+		public T this
+		{
+			get
+			{
+				return this._value;
+			}
+			set
+			{
+				return this._value;
+			}
+		}
 	}
 }
+
