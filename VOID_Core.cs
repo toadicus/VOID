@@ -64,6 +64,7 @@ namespace VOID
 		protected VOID_ConfigValue<int> configVersion = 1;
 
 		protected List<VOID_Module> _modules = new List<VOID_Module>();
+		protected bool _modulesLoaded = false;
 
 		[AVOID_ConfigValue("mainWindowPos")]
 		protected VOID_ConfigValue<Rect> mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
@@ -149,28 +150,44 @@ namespace VOID
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
 
-			// HACK: This is modular but not extensible.  We need to look outside our assembly or move this to modules.
-//			foreach (Type T in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
-//			{
-//				Tools.PostDebugMessage (string.Format ("VOID_Core: Testing type {0}", T.Name));
-//				if (typeof(IVOID_Module).IsAssignableFrom(T) &&
-//				    !T.IsAbstract  &&
-//				    !typeof(VOID_Core).IsAssignableFrom(T))
-//				{
-//					this.LoadModule (T);
-//					Tools.PostDebugMessage(string.Format("VOID_Core: Found module {0}.", T.Name));
-//				}
-//			}
-
 			Tools.PostDebugMessage (string.Format ("VOID_Core: Loaded {0} modules.", this.Modules.Count));
 
 			this.LoadConfig ();
 		}
 
-		public void LoadModule(Type T)
+		protected void LoadModules()
 		{
-			var existingModule = this.Modules.OfType<T.GetType()>();
-			if (existingModule.Any())
+			var types = AssemblyLoader.loadedAssemblies
+				.Select (a => a.assembly.GetExportedTypes ())
+					.SelectMany (t => t)
+					.Where (v => typeof(IVOID_Module).IsAssignableFrom (v)
+					        && !(v.IsInterface || v.IsAbstract) &&
+					        !typeof(VOID_Core).IsAssignableFrom (v)
+					        );
+
+			Tools.PostDebugMessage (string.Format (
+				"{0}: Checking {1} modules to check.",
+				this.GetType ().Name,
+				types.Count ()
+				));
+			foreach (var voidType in types)
+			{
+				Tools.PostDebugMessage (string.Format (
+					"{0}: found Type {1}",
+					this.GetType ().Name,
+					voidType.Name
+					));
+
+				this.LoadModule(voidType);
+			}
+
+			this._modulesLoaded = true;
+		}
+
+		protected void LoadModule(Type T)
+		{
+			var existingModules = this._modules.Where (mod => mod.GetType ().Name == T.Name);
+			if (existingModules.Any())
 			{
 				Tools.PostDebugMessage(string.Format(
 					"{0}: refusing to load {1}: already loaded",
@@ -278,6 +295,11 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
+			if (!this._modulesLoaded)
+			{
+				this.LoadModules ();
+			}
+
 			GUI.skin = this.Skin;
 
 			int windowID = this.windowBaseID;
@@ -297,7 +319,7 @@ namespace VOID
 					++windowID,
 					_mainWindowPos,
 					this.VOIDMainWindow,
-					string.Join (" ", this.VoidName, this.VoidVersion),
+					string.Join (" ", new string[] {this.VoidName, this.VoidVersion}),
 					GUILayout.Width (250),
 					GUILayout.Height (50)
 				);
@@ -316,7 +338,7 @@ namespace VOID
 					++windowID,
 					_configWindowPos,
 					this.VOIDConfigWindow,
-					string.Join (" ", this.VoidName, "Configuration"),
+					string.Join (" ", new string[] {this.VoidName, "Configuration"}),
 					GUILayout.Width (250),
 					GUILayout.Height (50)
 				);
