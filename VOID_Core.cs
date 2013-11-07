@@ -150,17 +150,17 @@ namespace VOID
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
 
 			// HACK: This is modular but not extensible.  We need to look outside our assembly or move this to modules.
-			foreach (Type T in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
-			{
-				Tools.PostDebugMessage (string.Format ("VOID_Core: Testing type {0}", T.Name));
-				if (typeof(IVOID_Module).IsAssignableFrom(T) &&
-				    !T.IsAbstract  &&
-				    !typeof(VOID_Core).IsAssignableFrom(T))
-				{
-					this.LoadModule (T);
-					Tools.PostDebugMessage(string.Format("VOID_Core: Found module {0}.", T.Name));
-				}
-			}
+//			foreach (Type T in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
+//			{
+//				Tools.PostDebugMessage (string.Format ("VOID_Core: Testing type {0}", T.Name));
+//				if (typeof(IVOID_Module).IsAssignableFrom(T) &&
+//				    !T.IsAbstract  &&
+//				    !typeof(VOID_Core).IsAssignableFrom(T))
+//				{
+//					this.LoadModule (T);
+//					Tools.PostDebugMessage(string.Format("VOID_Core: Found module {0}.", T.Name));
+//				}
+//			}
 
 			Tools.PostDebugMessage (string.Format ("VOID_Core: Loaded {0} modules.", this.Modules.Count));
 
@@ -169,6 +169,16 @@ namespace VOID
 
 		public void LoadModule(Type T)
 		{
+			var existingModule = this.Modules.OfType<T.GetType()>();
+			if (existingModule.Any())
+			{
+				Tools.PostDebugMessage(string.Format(
+					"{0}: refusing to load {1}: already loaded",
+					this.GetType().Name,
+					T.Name
+				));
+				return;
+			}
 			this._modules.Add (Activator.CreateInstance (T) as VOID_Module);
 		}
 
