@@ -153,8 +153,6 @@ namespace VOID
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
 
-			Tools.PostDebugMessage (string.Format ("VOID_Core: Loaded {0} modules.", this.Modules.Count));
-
 			this.LoadConfig ();
 		}
 
@@ -169,7 +167,7 @@ namespace VOID
 					        );
 
 			Tools.PostDebugMessage (string.Format (
-				"{0}: Checking {1} modules to check.",
+				"{0}: Found {1} modules to check.",
 				this.GetType ().Name,
 				types.Count ()
 				));
@@ -185,6 +183,8 @@ namespace VOID
 			}
 
 			this._modulesLoaded = true;
+
+			Tools.PostDebugMessage (string.Format ("VOID_Core: Loaded {0} modules.", this.Modules.Count));
 		}
 
 		protected void LoadModule(Type T)
@@ -200,6 +200,7 @@ namespace VOID
 				return;
 			}
 			IVOID_Module module = Activator.CreateInstance (T) as IVOID_Module;
+			module.LoadConfig();
 			this._modules.Add (module);
 
 			Tools.PostDebugMessage(string.Format(
