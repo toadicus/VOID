@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using KSP;
 using UnityEngine;
 
@@ -65,6 +66,8 @@ namespace VOID
 
 		protected List<VOID_Module> _modules = new List<VOID_Module>();
 		protected bool _modulesLoaded = false;
+
+		protected List<Callback> _configurableCallbacks = new List<Callback>();
 
 		[AVOID_ConfigValue("mainWindowPos")]
 		protected VOID_ConfigValue<Rect> mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
@@ -196,7 +199,8 @@ namespace VOID
 				));
 				return;
 			}
-			this._modules.Add (Activator.CreateInstance (T) as VOID_Module);
+			VOID_Module module = Activator.CreateInstance (T) as VOID_Module;
+			this._modules.Add (module);
 		}
 
 		public void Update()
@@ -287,10 +291,20 @@ namespace VOID
 		{
 			GUILayout.BeginVertical ();
 
-			this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
+			this.DrawConfigurables ();
 
 			GUILayout.EndVertical ();
 			GUI.DragWindow ();
+		}
+
+		public override void DrawConfigurables()
+		{
+			this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
+
+			foreach (VOID_Module mod in this.Modules)
+			{
+				mod.DrawConfigurables ();
+			}
 		}
 
 		public override void DrawGUI()
@@ -324,7 +338,7 @@ namespace VOID
 					GUILayout.Height (50)
 				);
 
-				if (_mainWindowPos != this.mainWindowPos.value)
+				if (_mainWindowPos != this.mainWindowPos)
 				{
 					this.mainWindowPos = _mainWindowPos;
 				}
@@ -334,7 +348,7 @@ namespace VOID
 			{
 				Rect _configWindowPos = this.configWindowPos;
 
-				this.configWindowPos = GUILayout.Window (
+				_configWindowPos = GUILayout.Window (
 					++windowID,
 					_configWindowPos,
 					this.VOIDConfigWindow,
@@ -343,9 +357,9 @@ namespace VOID
 					GUILayout.Height (50)
 				);
 
-				if (_configWindowPos != this.configWindowPos.value)
+				if (_configWindowPos != this.configWindowPos)
 				{
-					this.mainWindowPos = _configWindowPos;
+					this.configWindowPos = _configWindowPos;
 				}
 			}
 		}

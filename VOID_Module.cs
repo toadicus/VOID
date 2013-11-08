@@ -25,7 +25,7 @@ using System.Reflection;
 
 namespace VOID
 {
-	public abstract class VOID_Module
+	public abstract class VOID_Module : IVOID_Module
 	{
 		/*
 		 * Fields
@@ -33,18 +33,18 @@ namespace VOID
 		[AVOID_ConfigValue("Active")]
 		protected VOID_ConfigValue<bool> _Active = true;
 		protected bool _Running = false;
-		protected bool _hasGUICfg = false;
+		protected bool _hasConfigurables = false;
 
 		protected string _Name;
 
 		/*
 		 * Properties
 		 * */
-		public virtual bool hasGUIConfig
+		public virtual bool hasConfigurables
 		{
 			get
 			{
-				return this._hasGUICfg;
+				return this._hasConfigurables;
 			}
 		}
 
@@ -99,6 +99,8 @@ namespace VOID
 		}
 
 		public abstract void DrawGUI();
+
+		public virtual void DrawConfigurables() {}
 
 		public virtual void LoadConfig()
 		{

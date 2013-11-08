@@ -32,12 +32,14 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		protected List<Color> textColors = new List<Color>();
-
-		protected GUIStyle labelStyle;
+		protected bool _hasConfigurables = true;
 
 		[AVOID_ConfigValue("colorIndex")]
 		protected VOID_ConfigValue<int> _colorIndex = 0;
+
+		protected List<Color> textColors = new List<Color>();
+
+		protected GUIStyle labelStyle;
 
 		protected Vessel vessel = null;
 
@@ -133,6 +135,14 @@ namespace VOID
 				labelStyle.normal.textColor = Color.red;
 				GUI.Label (new Rect ((Screen.width * .2083f), 0, 300f, 70f), "-- POWER LOST --", labelStyle);
 				GUI.Label (new Rect ((Screen.width * .625f), 0, 300f, 70f), "-- POWER LOST --", labelStyle);
+			}
+		}
+
+		public override void DrawConfigurables()
+		{
+			if (GUILayout.Button ("Change HUD color", GUILayout.ExpandWidth (false)))
+			{
+				++this.ColorIndex;
 			}
 		}
 	}

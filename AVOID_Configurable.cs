@@ -1,5 +1,5 @@
 //
-//  IVOID_Module.cs
+//  AVOID_Configurable.cs
 //
 //  Author:
 //       toadicus <>
@@ -22,20 +22,7 @@ using System;
 
 namespace VOID
 {
-	public interface IVOID_Module
-	{
-		bool hasConfigurables { get; }
-		bool toggleActive { get; }
-		bool guiRunning { get; }
-
-		void DrawGUI();
-		void StartGUI();
-		void StopGUI();
-
-		void DrawConfigurables();
-
-		void LoadConfig();
-
-		void SaveConfig();
-	}
+	[AttributeUsage(AttributeTargets.Method)]
+	public class AVOID_Configurable : Attribute { }
 }
+
