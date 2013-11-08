@@ -25,7 +25,7 @@ using UnityEngine;
 
 namespace VOID
 {
-	public struct VOID_ConfigValue<T> : IVOID_ConfigValue
+	public struct VOID_SaveValue<T> : IVOID_SaveValue
 	{
 		private T _value;
 		private Type _type;
@@ -67,14 +67,14 @@ namespace VOID
 			this._value = (T)v;
 		}
 
-		public static implicit operator T(VOID_ConfigValue<T> v)
+		public static implicit operator T(VOID_SaveValue<T> v)
 		{
 			return v.value;
 		}
 
-		public static implicit operator VOID_ConfigValue<T>(T v)
+		public static implicit operator VOID_SaveValue<T>(T v)
 		{
-			VOID_ConfigValue<T> r = new VOID_ConfigValue<T>();
+			VOID_SaveValue<T> r = new VOID_SaveValue<T>();
 			r.value = v;
 			r.type = v.GetType();
 			if (VOID_Core.Initialized)
@@ -85,7 +85,7 @@ namespace VOID
 		}
 	}
 
-	public interface IVOID_ConfigValue
+	public interface IVOID_SaveValue
 	{
 		Type type { get; }
 		object AsType { get; }
@@ -93,7 +93,7 @@ namespace VOID
 	}
 
 	[AttributeUsage(AttributeTargets.Field)]
-	public class AVOID_ConfigValue : Attribute
+	public class AVOID_SaveValue : Attribute
 	{
 		protected string _name;
 
@@ -105,7 +105,7 @@ namespace VOID
 			}
 		}
 
-		public AVOID_ConfigValue(string fieldName)
+		public AVOID_SaveValue(string fieldName)
 		{
 			this._name = fieldName;
 		}

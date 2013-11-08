@@ -32,10 +32,10 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		protected bool _hasConfigurables = true;
+		protected new bool _hasConfigurables = true;
 
-		[AVOID_ConfigValue("colorIndex")]
-		protected VOID_ConfigValue<int> _colorIndex = 0;
+		[AVOID_SaveValue("colorIndex")]
+		protected VOID_SaveValue<int> _colorIndex = 0;
 
 		protected List<Color> textColors = new List<Color>();
 

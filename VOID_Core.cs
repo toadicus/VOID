@@ -61,28 +61,28 @@ namespace VOID
 		protected string VoidName = "VOID";
 		protected string VoidVersion = "0.9.9";
 
-		[AVOID_ConfigValue("configValue")]
-		protected VOID_ConfigValue<int> configVersion = 1;
+		[AVOID_SaveValue("configValue")]
+		protected VOID_SaveValue<int> configVersion = 1;
 
 		protected List<VOID_Module> _modules = new List<VOID_Module>();
 		protected bool _modulesLoaded = false;
 
 		protected List<Callback> _configurableCallbacks = new List<Callback>();
 
-		[AVOID_ConfigValue("mainWindowPos")]
-		protected VOID_ConfigValue<Rect> mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
+		[AVOID_SaveValue("mainWindowPos")]
+		protected VOID_SaveValue<Rect> mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
 
-		[AVOID_ConfigValue("mainGuiMinimized")]
-		protected VOID_ConfigValue<bool> mainGuiMinimized = false;
+		[AVOID_SaveValue("mainGuiMinimized")]
+		protected VOID_SaveValue<bool> mainGuiMinimized = false;
 
-		[AVOID_ConfigValue("configWindowPos")]
-		protected VOID_ConfigValue<Rect> configWindowPos = new Rect(Screen.width / 2, Screen.height  /2, 10f, 10f);
+		[AVOID_SaveValue("configWindowPos")]
+		protected VOID_SaveValue<Rect> configWindowPos = new Rect(Screen.width / 2, Screen.height  /2, 10f, 10f);
 
-		[AVOID_ConfigValue("configWindowMinimized")]
-		protected VOID_ConfigValue<bool> configWindowMinimized = true;
+		[AVOID_SaveValue("configWindowMinimized")]
+		protected VOID_SaveValue<bool> configWindowMinimized = true;
 
-		[AVOID_ConfigValue("VOIDIconPos")]
-		protected VOID_ConfigValue<Rect> VOIDIconPos = new Rect(Screen.width / 2 - 200, Screen.height - 30, 30f, 30f);
+		[AVOID_SaveValue("VOIDIconPos")]
+		protected VOID_SaveValue<Rect> VOIDIconPos = new Rect(Screen.width / 2 - 200, Screen.height - 30, 30f, 30f);
 		protected Texture2D VOIDIconOff = new Texture2D(30, 30, TextureFormat.ARGB32, false);
 		protected Texture2D VOIDIconOn = new Texture2D(30, 30, TextureFormat.ARGB32, false);
 		protected Texture2D VOIDIconTexture;
@@ -91,24 +91,24 @@ namespace VOID
 
 		protected int windowBaseID = -96518722;
 
-		[AVOID_ConfigValue("togglePower")]
-		public VOID_ConfigValue<bool> togglePower = true;
+		[AVOID_SaveValue("togglePower")]
+		public VOID_SaveValue<bool> togglePower = true;
 
 		public bool powerAvailable = true;
 
-		[AVOID_ConfigValue("consumeResource")]
-		protected VOID_ConfigValue<bool> consumeResource = false;
+		[AVOID_SaveValue("consumeResource")]
+		protected VOID_SaveValue<bool> consumeResource = false;
 
-		[AVOID_ConfigValue("resourceName")]
-		protected VOID_ConfigValue<string> resourceName = "ElectricCharge";
+		[AVOID_SaveValue("resourceName")]
+		protected VOID_SaveValue<string> resourceName = "ElectricCharge";
 
-		[AVOID_ConfigValue("resourceRate")]
-		protected VOID_ConfigValue<float> resourceRate = 0.2f;
+		[AVOID_SaveValue("resourceRate")]
+		protected VOID_SaveValue<float> resourceRate = 0.2f;
 
 		public float saveTimer = 0;
 
 		protected string defaultSkin = "KSP window 2";
-		protected VOID_ConfigValue<string> _skin;
+		protected VOID_SaveValue<string> _skin;
 
 		public bool configDirty;
 
@@ -318,7 +318,7 @@ namespace VOID
 
 			int windowID = this.windowBaseID;
 
-            this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
+			this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
 			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
 			if (GUI.Button(new Rect(VOIDIconPos), VOIDIconTexture, new GUIStyle()))
 			{

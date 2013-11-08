@@ -30,8 +30,8 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		[AVOID_ConfigValue("Active")]
-		protected VOID_ConfigValue<bool> _Active = true;
+		[AVOID_SaveValue("Active")]
+		protected VOID_SaveValue<bool> _Active = true;
 		protected bool _Running = false;
 		protected bool _hasConfigurables = false;
 
@@ -113,22 +113,22 @@ namespace VOID
 				BindingFlags.Instance
 				))
 			{
-				object[] attrs = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false);
+				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
 				if (attrs.Length == 0) {
 					return;
 				}
 
-				AVOID_ConfigValue attr = attrs.FirstOrDefault () as AVOID_ConfigValue;
+				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
 				string fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
 
 				object fieldValue = field.GetValue(this);
 
 				bool convertBack = false;
-				if (fieldValue is IVOID_ConfigValue)
+				if (fieldValue is IVOID_SaveValue)
 				{
-					fieldValue = (fieldValue as IVOID_ConfigValue).AsType;
+					fieldValue = (fieldValue as IVOID_SaveValue).AsType;
 					convertBack = true;
 				}
 
@@ -136,8 +136,8 @@ namespace VOID
 
 				if (convertBack)
 				{
-					Type type = typeof(VOID_ConfigValue<>).MakeGenericType (fieldValue.GetType ());
-					IVOID_ConfigValue convertValue = Activator.CreateInstance (type) as IVOID_ConfigValue;
+					Type type = typeof(VOID_SaveValue<>).MakeGenericType (fieldValue.GetType ());
+					IVOID_SaveValue convertValue = Activator.CreateInstance (type) as IVOID_SaveValue;
 					convertValue.SetValue (fieldValue);
 					fieldValue = convertValue;
 				}
@@ -164,21 +164,21 @@ namespace VOID
 				BindingFlags.Instance
 				))
 			{
-				object[] attrs = field.GetCustomAttributes(typeof(AVOID_ConfigValue), false);
+				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
 				if (attrs.Length == 0) {
 					return;
 				}
 
-				AVOID_ConfigValue attr = attrs.FirstOrDefault () as AVOID_ConfigValue;
+				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
 				string fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
 
 				object fieldValue = field.GetValue(this);
 
-				if (fieldValue is IVOID_ConfigValue)
+				if (fieldValue is IVOID_SaveValue)
 				{
-					fieldValue = (fieldValue as IVOID_ConfigValue).AsType;
+					fieldValue = (fieldValue as IVOID_SaveValue).AsType;
 				}
 
 				config.SetValue(fieldName, fieldValue);
