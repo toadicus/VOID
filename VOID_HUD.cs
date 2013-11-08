@@ -32,8 +32,6 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		protected string _Name = "Heads-Up Display";
-
 		protected new bool _hasConfigurables = true;
 
 		[AVOID_SaveValue("colorIndex")]
@@ -69,6 +67,8 @@ namespace VOID
 		 * */
 		public VOID_HUD() : base()
 		{
+			this._Name = "Heads-Up Display";
+
 			this.textColors.Add(Color.green);
 			this.textColors.Add(Color.black);
 			this.textColors.Add(Color.white);

@@ -55,6 +55,8 @@ namespace VOID
 			}
 		}
 
+		public static double Constant_G = 6.674e-11;
+
 		/*
 		 * Fields
 		 * */
@@ -132,14 +134,6 @@ namespace VOID
 					this._skin = this.defaultSkin;
 				}
 				return AssetBase.GetGUISkin(this._skin);
-			}
-		}
-
-		public Vessel vessel
-		{
-			get
-			{
-				return FlightGlobals.ActiveVessel;
 			}
 		}
 
