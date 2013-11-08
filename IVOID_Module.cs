@@ -24,8 +24,9 @@ namespace VOID
 {
 	public interface IVOID_Module
 	{
+		string Name { get; }
 		bool hasConfigurables { get; }
-		bool toggleActive { get; }
+		bool toggleActive { get; set; }
 		bool guiRunning { get; }
 
 		void DrawGUI();

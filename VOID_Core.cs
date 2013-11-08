@@ -64,7 +64,7 @@ namespace VOID
 		[AVOID_SaveValue("configValue")]
 		protected VOID_SaveValue<int> configVersion = 1;
 
-		protected List<VOID_Module> _modules = new List<VOID_Module>();
+		protected List<IVOID_Module> _modules = new List<IVOID_Module>();
 		protected bool _modulesLoaded = false;
 
 		protected List<Callback> _configurableCallbacks = new List<Callback>();
@@ -115,7 +115,7 @@ namespace VOID
 		/*
 		 * Properties
 		 * */
-		public List<VOID_Module> Modules
+		public List<IVOID_Module> Modules
 		{
 			get
 			{
@@ -199,8 +199,14 @@ namespace VOID
 				));
 				return;
 			}
-			VOID_Module module = Activator.CreateInstance (T) as VOID_Module;
+			IVOID_Module module = Activator.CreateInstance (T) as IVOID_Module;
 			this._modules.Add (module);
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: loaded module {1}.",
+				this.GetType().Name,
+				T.Name
+			));
 		}
 
 		public void Update()
@@ -217,7 +223,7 @@ namespace VOID
 				this.StopGUI ();
 			}
 
-			foreach (VOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.Modules)
 			{
 				if (!module.guiRunning && module.toggleActive)
 				{
@@ -267,7 +273,7 @@ namespace VOID
 				if (GUILayout.Button("Power " + str)) togglePower = !togglePower;
 			    if (togglePower)
 			    {
-					foreach (VOID_Module module in this.Modules)
+					foreach (IVOID_Module module in this.Modules)
 					{
 						module.toggleActive = GUILayout.Toggle (module.toggleActive, module.Name);
 					}
@@ -301,7 +307,7 @@ namespace VOID
 		{
 			this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
 
-			foreach (VOID_Module mod in this.Modules)
+			foreach (IVOID_Module mod in this.Modules)
 			{
 				mod.DrawConfigurables ();
 			}
@@ -368,7 +374,7 @@ namespace VOID
 		{
 			base.LoadConfig ();
 
-			foreach (VOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.Modules)
 			{
 				module.LoadConfig ();
 			}
@@ -383,7 +389,7 @@ namespace VOID
 
 			base.SaveConfig ();
 
-			foreach (VOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.Modules)
 			{
 				module.SaveConfig ();
 			}
