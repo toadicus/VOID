@@ -32,13 +32,13 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOIDLabels
+	public static class VOIDLabels
 	{
-		public string void_primary;
-		public string void_altitude_asl;
-		public string void_velocity;
-		public string void_apoapsis;
-		public string void_periapsis;
+		public static string void_primary = "Primary";
+		public static string void_altitude_asl = "Altitude (ASL)";
+		public static string void_velocity = "Velocity";
+		public static string void_apoapsis = "Apoapsis";
+		public static string void_periapsis = "Periapsis";
 	}
 
 	public static class Tools

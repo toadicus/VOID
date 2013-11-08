@@ -33,21 +33,12 @@ namespace VOID
 		[AVOID_SaveValue("Active")]
 		protected VOID_SaveValue<bool> _Active = true;
 		protected bool _Running = false;
-		protected bool _hasConfigurables = false;
 
 		protected string _Name;
 
 		/*
 		 * Properties
 		 * */
-		public virtual bool hasConfigurables
-		{
-			get
-			{
-				return this._hasConfigurables;
-			}
-		}
-
 		public virtual bool toggleActive
 		{
 			get
@@ -73,6 +64,14 @@ namespace VOID
 			get
 			{
 				return this._Name;
+			}
+		}
+
+		public virtual Vessel vessel
+		{
+			get
+			{
+				return FlightGlobals.ActiveVessel;
 			}
 		}
 
