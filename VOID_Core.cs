@@ -110,6 +110,14 @@ namespace VOID
 		[AVOID_SaveValue("resourceRate")]
 		protected VOID_SaveValue<float> resourceRate = 0.2f;
 
+		// Celestial Body Housekeeping
+		protected List<CelestialBody> _allBodies = new List<CelestialBody>();
+		protected bool bodiesLoaded = false;
+
+		// Vessel Type Housekeeping
+		protected List<VesselType> _allVesselTypes = new List<VesselType>();
+		protected bool vesselTypesLoaded = false;
+
 		public float saveTimer = 0;
 
 		protected string defaultSkin = "KSP window 2";
@@ -157,6 +165,22 @@ namespace VOID
 			get
 			{
 				return this._LabelStyles;
+			}
+		}
+
+		public List<CelestialBody> allBodies
+		{
+			get
+			{
+				return this._allBodies;
+			}
+		}
+
+		public List<VesselType> allVesselTypes
+		{
+			get
+			{
+				return this._allVesselTypes;
 			}
 		}
 
@@ -231,6 +255,16 @@ namespace VOID
 		{
 			this.saveTimer += Time.deltaTime;
 
+			if (!this.bodiesLoaded)
+			{
+				this.LoadAllBodies();
+			}
+
+			if (!this.vesselTypesLoaded)
+			{
+				this.LoadVesselTypes();
+			}
+
 			if (!this.guiRunning)
 			{
 				this.StartGUI ();
@@ -296,6 +330,19 @@ namespace VOID
 			this.LabelStyles["txt_right"].alignment = TextAnchor.UpperRight;
 
 			this.GUIStylesLoaded = true;
+		}
+
+		
+		protected void LoadAllBodies()
+		{
+			this._allBodies = FlightGlobals.Bodies;
+			this.bodiesLoaded = true;
+		}
+
+		protected void LoadVesselTypes()
+		{
+			this._allVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToList();
+			this.vesselTypesLoaded = true;
 		}
 
 		public void VOIDMainWindow(int _)

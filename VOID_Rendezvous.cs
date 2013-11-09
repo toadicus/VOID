@@ -20,6 +20,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using KSP;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace VOID
@@ -32,7 +34,7 @@ namespace VOID
 		[AVOID_SaveValue("toggleExtendedOrbital")]
 		protected VOID_SaveValue<bool> toggleExtendedOrbital = false;
 
-		protected Vessel selectedVessel;
+		protected VOID_VesselRegister RegisterModule;
 
 		public VOID_Rendezvous()
 		{
@@ -43,6 +45,8 @@ namespace VOID
 		{
 			Vessel rendezvessel = new Vessel();
 			CelestialBody rendezbody = new CelestialBody();
+
+			this.RegisterModule = VOID_Core.Instance.Modules.Where(m => typeof(VOID_VesselRegister).IsAssignableFrom(m.GetType())).FirstOrDefault() as VOID_VesselRegister;
 
 			GUILayout.BeginVertical();
 
@@ -79,16 +83,16 @@ namespace VOID
 			}
 
 			//Show Vessel Register vessel info
-			if (untoggleRegisterInfo == false)
+			if (untoggleRegisterInfo == false && this.RegisterModule != default(IVOID_Module))
 			{
 				GUILayout.Label("Vessel Register:", VOID_Core.Instance.LabelStyles["center_bold"]);
-				if (selectedVessel != null)
+				if (this.RegisterModule.selectedVessel != null)
 				{
-					rendezvessel = selectedVessel;
+					rendezvessel = this.RegisterModule.selectedVessel;
 					display_rendezvous_info(rendezvessel, null);
 
 					//show set/unset buttons
-					if (FlightGlobals.fetch.VesselTarget == null || (FlightGlobals.fetch.VesselTarget != null && FlightGlobals.fetch.VesselTarget.GetVessel() != selectedVessel))
+					if (FlightGlobals.fetch.VesselTarget == null || (FlightGlobals.fetch.VesselTarget != null && FlightGlobals.fetch.VesselTarget.GetVessel() != this.RegisterModule.selectedVessel))
 					{
 						//no Tgt set or Tgt is not this vessel
 						//show a Set button

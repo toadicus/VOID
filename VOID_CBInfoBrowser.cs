@@ -27,10 +27,6 @@ namespace VOID
 {
 	public class VOID_CBInfoBrowser : VOID_WindowModule
 	{
-		protected List<CelestialBody> allBodies;
-
-		protected bool bodiesLoaded = false;
-
 		[AVOID_SaveValue("selectedBodyIdx1")]
 		protected VOID_SaveValue<int> selectedBodyIdx1 = 1;
 
@@ -51,19 +47,8 @@ namespace VOID
 			this._Name = "Celestial Body Information Browser";
 		}
 
-		protected void LoadAllBodies()
-		{
-			allBodies = FlightGlobals.Bodies;
-			this.bodiesLoaded = true;
-		}
-
 		public override void ModuleWindow(int _)
 		{
-			if (!this.bodiesLoaded)
-			{
-				this.LoadAllBodies();
-			}
-
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
 			GUILayout.BeginVertical(GUILayout.Width(150));
@@ -75,20 +60,20 @@ namespace VOID
 
 			GUILayout.BeginVertical(GUILayout.Width(150));
 
-			selectedBody1 = allBodies[selectedBodyIdx1];
-			selectedBody2 = allBodies[selectedBodyIdx2];
+			selectedBody1 = VOID_Core.Instance.allBodies[selectedBodyIdx1];
+			selectedBody2 = VOID_Core.Instance.allBodies[selectedBodyIdx2];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx1--;
-				if (selectedBodyIdx1 < 0) selectedBodyIdx1 = allBodies.Count - 1;
+				if (selectedBodyIdx1 < 0) selectedBodyIdx1 = VOID_Core.Instance.allBodies.Count - 1;
 			}
-			GUILayout.Label(allBodies[selectedBodyIdx1].bodyName, VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(VOID_Core.Instance.allBodies[selectedBodyIdx1].bodyName, VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx1++;
-				if (selectedBodyIdx1 > allBodies.Count - 1) selectedBodyIdx1 = 0;
+				if (selectedBodyIdx1 > VOID_Core.Instance.allBodies.Count - 1) selectedBodyIdx1 = 0;
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.EndVertical();
@@ -98,13 +83,13 @@ namespace VOID
 			if (GUILayout.Button("<", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx2--;
-				if (selectedBodyIdx2 < 0) selectedBodyIdx2 = allBodies.Count - 1;
+				if (selectedBodyIdx2 < 0) selectedBodyIdx2 = VOID_Core.Instance.allBodies.Count - 1;
 			}
-			GUILayout.Label(allBodies[selectedBodyIdx2].bodyName, VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(VOID_Core.Instance.allBodies[selectedBodyIdx2].bodyName, VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx2++;
-				if (selectedBodyIdx2 > allBodies.Count - 1) selectedBodyIdx2 = 0;
+				if (selectedBodyIdx2 > VOID_Core.Instance.allBodies.Count - 1) selectedBodyIdx2 = 0;
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.EndVertical();
