@@ -286,9 +286,9 @@ namespace VOID
 					module.StopGUI();
 				}
 
-				if (typeof(VOID_BehaviorModule).IsAssignableFrom(module.GetType()))
+				if (module is IVOID_BehaviorModule)
 				{
-					((VOID_BehaviorModule)module).Update();
+					((IVOID_BehaviorModule)module).Update();
 				}
 			}
 
@@ -318,7 +318,8 @@ namespace VOID
 				}
 			}
 
-			foreach (VOID_BehaviorModule module in this._modules.OfType<VOID_BehaviorModule>().Where(m => !m.GetType().IsAbstract))
+			foreach (IVOID_BehaviorModule module in
+			         this._modules.OfType<IVOID_BehaviorModule>().Where(m => !m.GetType().IsAbstract))
 			{
 				module.FixedUpdate();
 			}
