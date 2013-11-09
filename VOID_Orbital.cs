@@ -26,13 +26,16 @@ namespace VOID
 {
 	public class VOID_Orbital : VOID_Module
 	{
-		protected new string _Name = "Orbital Information";
-
 		[AVOID_SaveValue("OrbitalWindowPos")]
 		protected Rect OrbitalWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
 
 		[AVOID_SaveValue("toggleExtendedOribtal")]
 		protected bool toggleExtendedOribtal = false;
+
+		public VOID_Orbital()
+		{
+			this._Name = "Orbital Information";
+		}
 
 		public void OrbitalWindow(int _)
 		{
@@ -149,7 +152,7 @@ namespace VOID
 		public override void DrawGUI()
 		{
 			OrbitalWindowPos = GUILayout.Window(
-				++VOID_Core.Instance.windowID,
+				VOID_Core.Instance.windowID,
 				OrbitalWindowPos,
 				this.OrbitalWindow,
 				this.Name, GUILayout.Width(250),
