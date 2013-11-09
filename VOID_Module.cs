@@ -207,5 +207,11 @@ namespace VOID
 			}
 		}
 	}
+
+	public abstract class VOID_BehaviorModule : VOID_Module
+	{
+		public virtual void Update() {}
+		public virtual void FixedUpdate() {}
+	}
 }
 
