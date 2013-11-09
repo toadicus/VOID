@@ -92,6 +92,9 @@ namespace VOID
 		protected string VOIDIconOffPath = "VOID/Textures/void_icon_off";
 
 		protected int windowBaseID = -96518722;
+		protected int _windowID = 0;
+
+		protected Dictionary<string, GUIStyle> _LabelStyles = new Dictionary<string, GUIStyle>();
 
 		[AVOID_SaveValue("togglePower")]
 		public VOID_SaveValue<bool> togglePower = true;
@@ -137,6 +140,26 @@ namespace VOID
 			}
 		}
 
+		public int windowID
+		{
+			get
+			{
+				if (this._windowID == 0)
+				{
+				this._windowID = this.windowBaseID;
+				}
+				return this._windowID++;
+			}
+		}
+
+		public Dictionary<string, GUIStyle> LabelStyles
+		{
+			get
+			{
+				return this._LabelStyles;
+			}
+		}
+
 		/*
 		 * Methods
 		 * */
@@ -146,6 +169,19 @@ namespace VOID
 
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
+
+			this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["center"].normal.textColor = Color.white;
+			this.LabelStyles["center"].alignment = TextAnchor.UpperCenter;
+
+			this.LabelStyles["center_bold"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["center_bold"].normal.textColor = Color.white;
+			this.LabelStyles["center_bold"].alignment = TextAnchor.UpperCenter;
+			this.LabelStyles["center_bold"].fontStyle = FontStyle.Bold;
+
+			this.LabelStyles["txt_right"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["txt_right"].normal.textColor = Color.white;
+			this.LabelStyles["txt_right"].alignment = TextAnchor.UpperRight;
 
 			this.LoadConfig ();
 		}
@@ -315,9 +351,9 @@ namespace VOID
 				this.LoadModules ();
 			}
 
-			GUI.skin = this.Skin;
+			this._windowID = this.windowBaseID;
 
-			int windowID = this.windowBaseID;
+			GUI.skin = this.Skin;
 
 			this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
 			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
@@ -331,7 +367,7 @@ namespace VOID
 				Rect _mainWindowPos = this.mainWindowPos;
 
 				_mainWindowPos = GUILayout.Window (
-					++windowID,
+					this.windowID,
 					_mainWindowPos,
 					this.VOIDMainWindow,
 					string.Join (" ", new string[] {this.VoidName, this.VoidVersion}),
@@ -350,7 +386,7 @@ namespace VOID
 				Rect _configWindowPos = this.configWindowPos;
 
 				_configWindowPos = GUILayout.Window (
-					++windowID,
+					this.windowID,
 					_configWindowPos,
 					this.VOIDConfigWindow,
 					string.Join (" ", new string[] {this.VoidName, "Configuration"}),
