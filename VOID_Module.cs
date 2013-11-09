@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace VOID
 {
@@ -109,7 +110,8 @@ namespace VOID
 			foreach (var field in this.GetType().GetFields(
 				BindingFlags.NonPublic |
 				BindingFlags.Public |
-				BindingFlags.Instance
+				BindingFlags.Instance |
+				BindingFlags.FlattenHierarchy
 				))
 			{
 				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
@@ -152,7 +154,8 @@ namespace VOID
 			foreach (var field in this.GetType().GetFields(
 				BindingFlags.Instance |
 				BindingFlags.NonPublic |
-				BindingFlags.Public
+				BindingFlags.Public |
+				BindingFlags.FlattenHierarchy
 				))
 			{
 				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
@@ -175,6 +178,32 @@ namespace VOID
 				config.SetValue(fieldName, fieldValue);
 
 				Tools.PostDebugMessage(string.Format("{0}: Saved field {1}.", this.GetType().Name, fieldName));
+			}
+		}
+	}
+
+	public abstract class VOID_WindowModule : VOID_Module
+	{
+		[AVOID_SaveValue("WindowPos")]
+		protected Rect WindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
+
+		public abstract void ModuleWindow(int _);
+
+		public override void DrawGUI()
+		{
+			Rect _Pos = this.WindowPos;
+
+			_Pos = GUILayout.Window(
+				VOID_Core.Instance.windowID,
+				_Pos,
+				this.ModuleWindow,
+				this.Name, GUILayout.Width(250),
+				GUILayout.Height(50));
+
+			if (_Pos != this.WindowPos)
+			{
+				this.WindowPos = _Pos;
+				VOID_Core.Instance.configDirty = true;
 			}
 		}
 	}

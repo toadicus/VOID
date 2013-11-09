@@ -586,20 +586,6 @@ namespace VOID
 			else if (heading > 326.25 && heading <= 348.75) return "NNW";
 			else return "";
 		}
-
-		public static double[] ParseXYString(string s)
-		{
-			string[] xy = s.Split (',');
-			if (xy.Length != 2)
-			{
-				throw new ArgumentException ("Argument must be of the format 'x,y'.");
-			}
-
-			double x = double.Parse (xy [0].Trim ());
-			double y = double.Parse (xy [1].Trim ());
-
-			return new double[] { x, y };
-		}
 				
 		private static ScreenMessage debugmsg = new ScreenMessage("", 2f, ScreenMessageStyle.UPPER_RIGHT);
 

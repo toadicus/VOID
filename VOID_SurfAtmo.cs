@@ -24,17 +24,14 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_SurfAtmo : VOID_Module
+	public class VOID_SurfAtmo : VOID_WindowModule
 	{
-		[AVOID_SaveValue("WindowPos")]
-		protected Rect WindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
-
 		public VOID_SurfAtmo()
 		{
 			this._Name = "Surface & Atmospheric Information";
 		}
 
-		public void ModuleWindow(int _)
+		public override void ModuleWindow(int _)
 		{
 			GUILayout.BeginVertical();
 
@@ -109,24 +106,6 @@ namespace VOID
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
-		}
-
-		public override void DrawGUI()
-		{
-			Rect _Pos = this.WindowPos;
-
-			_Pos = GUILayout.Window(
-				VOID_Core.Instance.windowID,
-				_Pos,
-				this.ModuleWindow,
-				this.Name, GUILayout.Width(250),
-				GUILayout.Height(50));
-
-			if (_Pos != this.WindowPos)
-			{
-				this.WindowPos = _Pos;
-				VOID_Core.Instance.configDirty = true;
-			}
 		}
 	}
 }
