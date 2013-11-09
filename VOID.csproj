@@ -48,6 +48,7 @@
     <Compile Include="VOID_VesselInfo.cs" />
     <Compile Include="VOID_Transfer.cs" />
     <Compile Include="VOID_CBInfoBrowser.cs" />
+    <Compile Include="VOID_Rendezvous.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
