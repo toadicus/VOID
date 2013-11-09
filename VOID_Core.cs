@@ -69,8 +69,6 @@ namespace VOID
 		protected List<IVOID_Module> _modules = new List<IVOID_Module>();
 		protected bool _modulesLoaded = false;
 
-		protected List<Callback> _configurableCallbacks = new List<Callback>();
-
 		[AVOID_SaveValue("mainWindowPos")]
 		protected VOID_SaveValue<Rect> mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
 
@@ -433,8 +431,7 @@ namespace VOID
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
 			config.load ();
 
-
-			base._SaveToConfig (config);
+			this._SaveToConfig(config);
 
 			foreach (IVOID_Module module in this.Modules)
 			{
