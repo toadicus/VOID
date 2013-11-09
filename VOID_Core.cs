@@ -94,6 +94,8 @@ namespace VOID
 		protected int windowBaseID = -96518722;
 		protected int _windowID = 0;
 
+		protected bool GUIStylesLoaded = false;
+
 		protected Dictionary<string, GUIStyle> _LabelStyles = new Dictionary<string, GUIStyle>();
 
 		[AVOID_SaveValue("togglePower")]
@@ -169,19 +171,6 @@ namespace VOID
 
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
-
-			this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["center"].normal.textColor = Color.white;
-			this.LabelStyles["center"].alignment = TextAnchor.UpperCenter;
-
-			this.LabelStyles["center_bold"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["center_bold"].normal.textColor = Color.white;
-			this.LabelStyles["center_bold"].alignment = TextAnchor.UpperCenter;
-			this.LabelStyles["center_bold"].fontStyle = FontStyle.Bold;
-
-			this.LabelStyles["txt_right"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["txt_right"].normal.textColor = Color.white;
-			this.LabelStyles["txt_right"].alignment = TextAnchor.UpperRight;
 
 			this.LoadConfig ();
 		}
@@ -293,6 +282,24 @@ namespace VOID
 			}
 		}
 
+		protected void LoadGUIStyles()
+		{
+			this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["center"].normal.textColor = Color.white;
+			this.LabelStyles["center"].alignment = TextAnchor.UpperCenter;
+
+			this.LabelStyles["center_bold"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["center_bold"].normal.textColor = Color.white;
+			this.LabelStyles["center_bold"].alignment = TextAnchor.UpperCenter;
+			this.LabelStyles["center_bold"].fontStyle = FontStyle.Bold;
+
+			this.LabelStyles["txt_right"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["txt_right"].normal.textColor = Color.white;
+			this.LabelStyles["txt_right"].alignment = TextAnchor.UpperRight;
+
+			this.GUIStylesLoaded = true;
+		}
+
 		public void VOIDMainWindow(int _)
 		{
 			GUILayout.BeginVertical();
@@ -354,6 +361,11 @@ namespace VOID
 			this._windowID = this.windowBaseID;
 
 			GUI.skin = this.Skin;
+
+			if (!this.GUIStylesLoaded)
+			{
+				this.LoadGUIStyles ();
+			}
 
 			this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
 			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
