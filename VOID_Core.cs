@@ -285,6 +285,11 @@ namespace VOID
 				{
 					module.StopGUI();
 				}
+
+				if (typeof(VOID_BehaviorModule).IsAssignableFrom(module.GetType()))
+				{
+					((VOID_BehaviorModule)module).Update();
+				}
 			}
 
 			if (this.saveTimer > 2f)
@@ -311,6 +316,11 @@ namespace VOID
 				{
 					this.powerAvailable = false;
 				}
+			}
+
+			foreach (VOID_BehaviorModule module in this._modules.OfType<VOID_BehaviorModule>().Where(m => !m.GetType().IsAbstract))
+			{
+				module.FixedUpdate();
 			}
 		}
 
