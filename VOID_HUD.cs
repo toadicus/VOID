@@ -39,8 +39,6 @@ namespace VOID
 
 		protected GUIStyle labelStyle;
 
-		protected Vessel vessel = null;
-
 		/*
 		 * Properties
 		 * */
@@ -87,16 +85,6 @@ namespace VOID
 		public override void DrawGUI()
 		{
 			GUI.skin = VOID_Core.Instance.Skin;
-
-			if (vessel == null)
-			{
-				vessel = FlightGlobals.ActiveVessel;
-			}
-
-			if (vessel != FlightGlobals.ActiveVessel)
-			{
-				vessel = FlightGlobals.ActiveVessel;
-			}
 
 			if (VOID_Core.Instance.powerAvailable)
 			{
