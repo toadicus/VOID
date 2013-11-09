@@ -147,11 +147,8 @@ namespace VOID
 			}
 		}
 
-		public virtual void SaveConfig()
+		public virtual void _SaveToConfig(KSP.IO.PluginConfiguration config)
 		{
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
-			config.load ();
-
 			foreach (var field in this.GetType().GetFields(
 				BindingFlags.NonPublic |
 				BindingFlags.Public |
@@ -179,8 +176,6 @@ namespace VOID
 
 				Tools.PostDebugMessage(string.Format("{0}: Saved field {1}.", this.GetType().Name, fieldName));
 			}
-
-			config.save ();
 		}
 	}
 }

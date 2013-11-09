@@ -32,14 +32,14 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		protected new bool _hasConfigurables = true;
-
 		[AVOID_SaveValue("colorIndex")]
 		protected VOID_SaveValue<int> _colorIndex = 0;
 
 		protected List<Color> textColors = new List<Color>();
 
 		protected GUIStyle labelStyle;
+
+		protected Vessel vessel = null;
 
 		/*
 		 * Properties
@@ -68,7 +68,6 @@ namespace VOID
 		public VOID_HUD() : base()
 		{
 			this._Name = "Heads-Up Display";
-
 			this.textColors.Add(Color.green);
 			this.textColors.Add(Color.black);
 			this.textColors.Add(Color.white);
@@ -89,9 +88,14 @@ namespace VOID
 		{
 			GUI.skin = VOID_Core.Instance.Skin;
 
-			if (this.vessel == null)
+			if (vessel == null)
 			{
-				return;
+				vessel = FlightGlobals.ActiveVessel;
+			}
+
+			if (vessel != FlightGlobals.ActiveVessel)
+			{
+				vessel = FlightGlobals.ActiveVessel;
 			}
 
 			if (VOID_Core.Instance.powerAvailable)
@@ -100,26 +104,26 @@ namespace VOID
 
 				GUI.Label (
 					new Rect ((Screen.width * .2083f), 0, 300f, 70f),
-					"Obt Alt: " + Tools.MuMech_ToSI (this.vessel.orbit.altitude) + "m" +
-					" Obt Vel: " + Tools.MuMech_ToSI (this.vessel.orbit.vel.magnitude) + "m/s" +
-					"\nAp: " + Tools.MuMech_ToSI (this.vessel.orbit.ApA) + "m" +
-					" ETA " + Tools.ConvertInterval (this.vessel.orbit.timeToAp) +
-					"\nPe: " + Tools.MuMech_ToSI (this.vessel.orbit.PeA) + "m" +
-					" ETA " + Tools.ConvertInterval (this.vessel.orbit.timeToPe) +
-					"\nInc: " + this.vessel.orbit.inclination.ToString ("F3") + "°",
+					"Obt Alt: " + Tools.MuMech_ToSI (vessel.orbit.altitude) + "m" +
+					" Obt Vel: " + Tools.MuMech_ToSI (vessel.orbit.vel.magnitude) + "m/s" +
+					"\nAp: " + Tools.MuMech_ToSI (vessel.orbit.ApA) + "m" +
+					" ETA " + Tools.ConvertInterval (vessel.orbit.timeToAp) +
+					"\nPe: " + Tools.MuMech_ToSI (vessel.orbit.PeA) + "m" +
+					" ETA " + Tools.ConvertInterval (vessel.orbit.timeToPe) +
+					"\nInc: " + vessel.orbit.inclination.ToString ("F3") + "°",
 					labelStyle);
 				// Toadicus edit: Added "Biome: " line to surf/atmo HUD
 				GUI.Label (
 					new Rect ((Screen.width * .625f), 0, 300f, 90f),
-					"Srf Alt: " + Tools.MuMech_ToSI (Tools.TrueAltitude (this.vessel)) + "m" +
-					" Srf Vel: " + Tools.MuMech_ToSI (this.vessel.srf_velocity.magnitude) + "m/s" +
-					"\nVer: " + Tools.MuMech_ToSI (this.vessel.verticalSpeed) + "m/s" +
-					" Hor: " + Tools.MuMech_ToSI (this.vessel.horizontalSrfSpeed) + "m/s" +
-					"\nLat: " + Tools.GetLatitudeString (this.vessel, "F3") +
-					" Lon: " + Tools.GetLongitudeString (this.vessel, "F3") +
-					"\nHdg: " + Tools.MuMech_get_heading (this.vessel).ToString ("F2") + "° " +
-					Tools.get_heading_text (Tools.MuMech_get_heading (this.vessel)) +
-					"\nBiome: " + Tools.Toadicus_GetAtt (this.vessel).name,
+					"Srf Alt: " + Tools.MuMech_ToSI (Tools.TrueAltitude (vessel)) + "m" +
+					" Srf Vel: " + Tools.MuMech_ToSI (vessel.srf_velocity.magnitude) + "m/s" +
+					"\nVer: " + Tools.MuMech_ToSI (vessel.verticalSpeed) + "m/s" +
+					" Hor: " + Tools.MuMech_ToSI (vessel.horizontalSrfSpeed) + "m/s" +
+					"\nLat: " + Tools.GetLatitudeString (vessel, "F3") +
+					" Lon: " + Tools.GetLongitudeString (vessel, "F3") +
+					"\nHdg: " + Tools.MuMech_get_heading (vessel).ToString ("F2") + "° " +
+					Tools.get_heading_text (Tools.MuMech_get_heading (vessel)) +
+					"\nBiome: " + Tools.Toadicus_GetAtt (vessel).name,
 					labelStyle);
 			}
 			else

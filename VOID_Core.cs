@@ -423,19 +423,25 @@ namespace VOID
 			}
 		}
 
-		public override void SaveConfig()
+		public void SaveConfig()
 		{
 			if (!this.configDirty)
 			{
 				return;
 			}
 
-			base.SaveConfig ();
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
+			config.load ();
+
+
+			base._SaveToConfig (config);
 
 			foreach (IVOID_Module module in this.Modules)
 			{
-				module.SaveConfig ();
+				module._SaveToConfig (config);
 			}
+
+			config.save();
 
 			this.configDirty = false;
 		}

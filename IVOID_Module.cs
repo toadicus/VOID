@@ -36,6 +36,6 @@ namespace VOID
 
 		void LoadConfig();
 
-		void SaveConfig();
+		void _SaveToConfig(KSP.IO.PluginConfiguration config);
 	}
 }
