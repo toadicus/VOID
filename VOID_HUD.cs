@@ -87,8 +87,6 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
-			Tools.PostDebugMessage ("VOID_HUD: Drawing GUI.");
-
 			GUI.skin = VOID_Core.Instance.Skin;
 
 			if (this.vessel == null)

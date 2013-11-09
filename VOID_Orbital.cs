@@ -26,18 +26,18 @@ namespace VOID
 {
 	public class VOID_Orbital : VOID_Module
 	{
-		[AVOID_SaveValue("OrbitalWindowPos")]
-		protected Rect OrbitalWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
+		[AVOID_SaveValue("WindowPos")]
+		protected Rect WindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
 
-		[AVOID_SaveValue("toggleExtendedOribtal")]
-		protected bool toggleExtendedOribtal = false;
+		[AVOID_SaveValue("toggleExtended")]
+		protected VOID_SaveValue<bool> toggleExtended = false;
 
 		public VOID_Orbital()
 		{
 			this._Name = "Orbital Information";
 		}
 
-		public void OrbitalWindow(int _)
+		public void ModuleWindow(int _)
 		{
 			// Toadicus edit: added local sidereal longitude.
 			double LSL = vessel.longitude + vessel.orbit.referenceBody.rotationAngle;
@@ -92,9 +92,9 @@ namespace VOID
 			GUILayout.Label(Tools.MuMech_ToSI(g_vessel) + "m/s²", GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
 
-            toggleExtendedOribtal = GUILayout.Toggle(toggleExtendedOribtal, "Extended info");
+			this.toggleExtended = GUILayout.Toggle(this.toggleExtended, "Extended info");
 
-            if (toggleExtendedOribtal)
+			if (this.toggleExtended)
             {
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                 GUILayout.Label("Period:");
@@ -151,12 +151,20 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
-			OrbitalWindowPos = GUILayout.Window(
+			Rect _Pos = this.WindowPos;
+
+			_Pos = GUILayout.Window(
 				VOID_Core.Instance.windowID,
-				OrbitalWindowPos,
-				this.OrbitalWindow,
+				_Pos,
+				this.ModuleWindow,
 				this.Name, GUILayout.Width(250),
 				GUILayout.Height(50));
+
+			if (_Pos != this.WindowPos)
+			{
+				this.WindowPos = _Pos;
+				VOID_Core.Instance.configDirty = true;
+			}
 		}
 	}
 }

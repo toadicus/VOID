@@ -149,11 +149,6 @@ namespace VOID
 
 		public virtual void SaveConfig()
 		{
-			if (!VOID_Core.Instance.configDirty)
-			{
-				return;
-			}
-
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
 			config.load ();
 

@@ -255,7 +255,7 @@ namespace VOID
 				}
 			}
 
-			if (this.saveTimer > 15f)
+			if (this.saveTimer > 2f)
 			{
 				this.SaveConfig ();
 				this.saveTimer = 0;
