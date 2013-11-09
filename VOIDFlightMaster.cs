@@ -60,6 +60,12 @@ namespace VOID
 			}
 
 			this.Core.Update ();
+
+			if (this.Core.vessel != null)
+			{
+				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter / Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+				SimManager.Instance.TryStartSimulation();
+			}
 		}
 
 		public void FixedUpdate()
