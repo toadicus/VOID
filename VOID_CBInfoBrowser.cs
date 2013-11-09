@@ -43,6 +43,9 @@ namespace VOID
 		[AVOID_SaveValue("toggleOrbital")]
 		protected VOID_SaveValue<bool> toggleOrbital = false;
 
+		[AVOID_SaveValue("togglePhysical")]
+		protected VOID_SaveValue<bool> togglePhysical = false;
+
 		public VOID_CBInfoBrowser()
 		{
 			this._Name = "Celestial Body Information Browser";
@@ -50,7 +53,7 @@ namespace VOID
 
 		protected void LoadAllBodies()
 		{
-			allBodies.AddRange(FlightGlobals.Bodies);
+			allBodies = FlightGlobals.Bodies;
 			this.bodiesLoaded = true;
 		}
 
@@ -165,9 +168,9 @@ namespace VOID
 			}
 
 			//toggle for physical info chunk
-			if (GUILayout.Button("Physical Characteristics", GUILayout.ExpandWidth(true))) body_op_show_physical = !body_op_show_physical;
+			if (GUILayout.Button("Physical Characteristics", GUILayout.ExpandWidth(true))) togglePhysical = !togglePhysical;
 
-			if (body_op_show_physical)
+			if (togglePhysical)
 			{
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
@@ -329,8 +332,8 @@ namespace VOID
 			//GUILayout.EndHorizontal();
 
 			//GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			if (name == "Sun") GUILayout.Label(body.sphereOfInfluence.ToString(), VOID_Core.Instance.LabelStyles["txt_right"], GUILayout.ExpandWidth(true));
-			else GUILayout.Label((body.sphereOfInfluence / 1000).ToString("##,#") + "km", VOID_Core.Instance.LabelStyles["txt_right"], GUILayout.ExpandWidth(true));
+			if (body.bodyName == "Sun") GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Core.Instance.LabelStyles["txt_right"], GUILayout.ExpandWidth(true));
+			else GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Core.Instance.LabelStyles["txt_right"], GUILayout.ExpandWidth(true));
 			//GUILayout.EndHorizontal();
 
 			//GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));

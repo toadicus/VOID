@@ -117,7 +117,7 @@ namespace VOID
 				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
 				if (attrs.Length == 0) {
-					return;
+					continue;
 				}
 
 				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
