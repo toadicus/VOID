@@ -18,6 +18,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+using Engineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
@@ -56,9 +57,12 @@ namespace VOID
 
 		public new static void Reset()
 		{
-			_instance.StopGUI();
-			_instance = null;
-			_initialized = false;
+			if (_initialized)
+			{
+				_instance.StopGUI();
+				_instance = null;
+				_initialized = false;
+			}
 		}
 
 		public VOID_EditorCore() : base()
@@ -78,14 +82,35 @@ namespace VOID
 		{
 			foreach (IVOID_EditorModule module in this.Modules)
 			{
-				if (HighLogic.LoadedSceneIsEditor && module.toggleActive)
+				if (EditorLogic.startPod == null)
+				{
+					module.StopGUI();
+					continue;
+				}
+				if (HighLogic.LoadedSceneIsEditor && module.toggleActive && EditorLogic.SortedShipList.Any())
 				{
 					module.StartGUI();
 				}
-				if (!HighLogic.LoadedSceneIsEditor || !module.toggleActive)
+				if (!HighLogic.LoadedSceneIsEditor || !module.toggleActive || !EditorLogic.SortedShipList.Any())
 				{
 					module.StopGUI();
 				}
+			}
+
+			if (EditorLogic.startPod == null)
+			{
+				this.StopGUI();
+				return;
+			}
+			else if (!this.guiRunning)
+			{
+				this.StartGUI();
+			}
+
+			if (EditorLogic.SortedShipList.Count > 0)
+			{
+				SimManager.Instance.Gravity = 9.08665;
+				SimManager.Instance.TryStartSimulation();
 			}
 		}
 

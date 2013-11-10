@@ -20,10 +20,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using Engineer.VesselSimulator;
 using KSP;
-using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace VOID
 {
@@ -80,6 +81,7 @@ namespace VOID
 			this.textColors.Add(Color.magenta);
 
 			this.labelStyle = new GUIStyle ();
+			this.labelStyle.alignment = TextAnchor.UpperRight;
 			this.labelStyle.normal.textColor = this.textColors [this.ColorIndex];
 
 			Tools.PostDebugMessage (this.GetType().Name + ": Constructed.");
@@ -87,13 +89,24 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
-			GUI.skin = AssetBase.GetGUISkin("KSP window 2");
+			SimManager.Instance.RequestSimulation();
+
+			if (SimManager.Instance.LastStage == null)
+			{
+				return;
+			}
+
+			// GUI.skin = AssetBase.GetGUISkin("KSP window 2");
 
 			labelStyle.normal.textColor = textColors [ColorIndex];
 
 			GUI.Label (
-				new Rect (Screen.width - 310, 80, 300f, 90f),
-				"Sample HUD Line 1\nSample HUD Line 2\nSample HUD Line 3\nSample HUD Line 4\n",
+				new Rect (Screen.width - 310, 80, 300f, 32f),
+				"Total Mass: " + SimManager.Instance.LastStage.totalMass.ToString("F3") + "t" +
+				" Part Count: " + EditorLogic.SortedShipList.Count +
+				"\nTotal Delta-V: " + Tools.MuMech_ToSI(SimManager.Instance.LastStage.totalDeltaV) + "m/s" +
+				"\nBottom Stage Delta-V: " + Tools.MuMech_ToSI(SimManager.Instance.LastStage.deltaV) + "m/s" +
+				"\nBottom Stage T/W Ratio: " + SimManager.Instance.LastStage.thrustToWeight.ToString("F3"),
 				labelStyle);
 		}
 

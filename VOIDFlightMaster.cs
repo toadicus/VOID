@@ -54,6 +54,13 @@ namespace VOID
 
 		public void Update()
 		{
+			if (!HighLogic.LoadedSceneIsEditor)
+			{
+				this.Core = null;
+				VOID_Core.Reset();
+				return;
+			}
+
 			if (this.Core == null)
 			{
 				this.Awake();
@@ -77,7 +84,7 @@ namespace VOID
 
 		public void FixedUpdate()
 		{
-			if (this.Core == null)
+			if (this.Core == null || !HighLogic.LoadedSceneIsFlight)
 			{
 				return;
 			}
@@ -101,18 +108,19 @@ namespace VOID
 
 		public void Update()
 		{
+			if (!HighLogic.LoadedSceneIsEditor)
+			{
+				this.Core = null;
+				VOID_EditorCore.Reset();
+				return;
+			}
+
 			if (this.Core == null)
 			{
 				this.Awake();
 			}
 
 			this.Core.Update ();
-
-			if (this.Core.vessel != null)
-			{
-				SimManager.Instance.Gravity = this.Core.vessel.mainBody.gravParameter / Math.Pow(this.Core.vessel.mainBody.Radius, 2);
-				SimManager.Instance.TryStartSimulation();
-			}
 
 			if (this.Core.factoryReset)
 			{
@@ -124,7 +132,7 @@ namespace VOID
 
 		public void FixedUpdate()
 		{
-			if (this.Core == null)
+			if (this.Core == null || !HighLogic.LoadedSceneIsEditor)
 			{
 				return;
 			}
