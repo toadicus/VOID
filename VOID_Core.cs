@@ -228,12 +228,12 @@ namespace VOID
 			this.LoadConfig ();
 		}
 
-		protected void LoadModules()
+		protected void LoadModulesOfType<T>()
 		{
 			var types = AssemblyLoader.loadedAssemblies
 				.Select (a => a.assembly.GetExportedTypes ())
 					.SelectMany (t => t)
-					.Where (v => typeof(IVOID_Module).IsAssignableFrom (v)
+					.Where (v => typeof(T).IsAssignableFrom (v)
 					        && !(v.IsInterface || v.IsAbstract) &&
 					        !typeof(VOID_Core).IsAssignableFrom (v)
 					        );
@@ -256,7 +256,11 @@ namespace VOID
 
 			this._modulesLoaded = true;
 
-			Tools.PostDebugMessage (string.Format ("VOID_Core: Loaded {0} modules.", this.Modules.Count));
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Loaded {1} modules.",
+				this.GetType().Name,
+				this.Modules.Count
+			));
 		}
 
 		protected void LoadModule(Type T)
@@ -510,7 +514,7 @@ namespace VOID
 		{
 			if (!this._modulesLoaded)
 			{
-				this.LoadModules ();
+				this.LoadModulesOfType<IVOID_Module> ();
 			}
 
 			this._windowID = this.windowBaseID;
