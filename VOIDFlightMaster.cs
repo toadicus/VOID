@@ -84,5 +84,15 @@ namespace VOID
 
 			this.Core.FixedUpdate ();
 		}
+
+		public void OnGUI()
+		{
+			if (this.Core == null)
+			{
+				return;
+			}
+
+			this.Core.OnGUI();
+		}
     }
 }
