@@ -39,11 +39,11 @@ namespace VOID
 		void _SaveToConfig(KSP.IO.PluginConfiguration config);
 	}
 
-	
-
 	public interface IVOID_BehaviorModule : IVOID_Module
 	{
 		void Update();
 		void FixedUpdate();
 	}
+
+	public interface IVOID_EditorModule : IVOID_Module {}
 }

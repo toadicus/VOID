@@ -51,6 +51,8 @@
     <Compile Include="VOID_Rendezvous.cs" />
     <Compile Include="VOID_VesselRegister.cs" />
     <Compile Include="VOID_DataLogger.cs" />
+    <Compile Include="VOID_EditorCore.cs" />
+    <Compile Include="VOID_EditorHUD.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">

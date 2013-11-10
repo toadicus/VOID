@@ -85,4 +85,51 @@ namespace VOID
 			this.Core.FixedUpdate ();
 		}
     }
+
+	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
+	public class VOIDEditorMaster : MonoBehaviour
+	{
+		protected VOID_EditorCore Core;
+
+		public void Awake()
+		{
+			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
+			this.Core = VOID_EditorCore.Instance;
+			this.Core.StartGUI ();
+			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
+		}
+
+		public void Update()
+		{
+			if (this.Core == null)
+			{
+				this.Awake();
+			}
+
+			this.Core.Update ();
+
+			if (this.Core.vessel != null)
+			{
+				SimManager.Instance.Gravity = this.Core.vessel.mainBody.gravParameter / Math.Pow(this.Core.vessel.mainBody.Radius, 2);
+				SimManager.Instance.TryStartSimulation();
+			}
+
+			if (this.Core.factoryReset)
+			{
+				KSP.IO.File.Delete<VOID_EditorCore>("config.xml");
+				this.Core = null;
+				VOID_EditorCore.Reset();
+			}
+		}
+
+		public void FixedUpdate()
+		{
+			if (this.Core == null)
+			{
+				return;
+			}
+
+			this.Core.FixedUpdate ();
+		}
+	}
 }
