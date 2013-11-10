@@ -83,6 +83,11 @@ namespace VOID
 			}
 			return r;
 		}
+
+		public new string ToString()
+		{
+			return this.value.ToString();
+		}
 	}
 
 	public interface IVOID_SaveValue

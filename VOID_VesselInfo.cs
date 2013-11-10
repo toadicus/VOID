@@ -32,6 +32,9 @@ namespace VOID
 		public VOID_VesselInfo()
 		{
 			this._Name = "Vessel Information";
+
+			this.WindowPos.x = Screen.width - 260;
+			this.WindowPos.y = 450;
 		}
 
 		public override void ModuleWindow(int _)

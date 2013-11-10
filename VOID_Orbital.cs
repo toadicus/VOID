@@ -32,6 +32,9 @@ namespace VOID
 		public VOID_Orbital()
 		{
 			this._Name = "Orbital Information";
+
+			this.WindowPos.x = Screen.width - 520f;
+			this.WindowPos.y = 250f;
 		}
 
 		public override void ModuleWindow(int _)

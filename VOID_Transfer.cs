@@ -35,6 +35,10 @@ namespace VOID
 		public VOID_Transfer()
 		{
 			this._Name = "Transfer Angle Information";
+
+			this.WindowPos.x = 475;
+			this.WindowPos.y = 85;
+			this.defWidth = 315;
 		}
 
 		public override void ModuleWindow(int _)

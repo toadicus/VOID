@@ -29,6 +29,9 @@ namespace VOID
 		public VOID_SurfAtmo()
 		{
 			this._Name = "Surface & Atmospheric Information";
+
+			this.WindowPos.x = Screen.width - 260f;
+			this.WindowPos.y = 85;
 		}
 
 		public override void ModuleWindow(int _)

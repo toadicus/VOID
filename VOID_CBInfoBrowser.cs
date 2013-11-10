@@ -45,6 +45,9 @@ namespace VOID
 		public VOID_CBInfoBrowser()
 		{
 			this._Name = "Celestial Body Information Browser";
+
+			this.WindowPos.x = 10;
+			this.WindowPos.y = 85;
 		}
 
 		public override void ModuleWindow(int _)

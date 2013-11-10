@@ -52,6 +52,10 @@ namespace VOID
 		public VOID_VesselRegister()
 		{
 			this._Name = "Vessel Register";
+
+			this.WindowPos.x = 845;
+			this.WindowPos.y = 275;
+			this.defHeight = 375;
 		}
 
 		public override void ModuleWindow(int _)

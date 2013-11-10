@@ -32,7 +32,7 @@ namespace VOID
 		 * Fields
 		 * */
 		[AVOID_SaveValue("Active")]
-		protected VOID_SaveValue<bool> _Active = true;
+		protected VOID_SaveValue<bool> _Active = false;
 		protected bool _Running = false;
 
 		protected string _Name;
@@ -185,7 +185,9 @@ namespace VOID
 	public abstract class VOID_WindowModule : VOID_Module
 	{
 		[AVOID_SaveValue("WindowPos")]
-		protected Rect WindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
+		protected Rect WindowPos = new Rect(Screen.width / 2, Screen.height / 2, 250f, 50f);
+		protected float defWidth = 250f;
+		protected float defHeight = 50f;
 
 		public abstract void ModuleWindow(int _);
 
@@ -197,8 +199,10 @@ namespace VOID
 				VOID_Core.Instance.windowID,
 				_Pos,
 				this.ModuleWindow,
-				this.Name, GUILayout.Width(250),
-				GUILayout.Height(50));
+				this.Name,
+				GUILayout.Width(this.defWidth),
+				GUILayout.Height(this.defHeight)
+			);
 
 			if (_Pos != this.WindowPos)
 			{

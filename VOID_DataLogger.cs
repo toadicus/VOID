@@ -57,16 +57,22 @@ namespace VOID
 		public VOID_DataLogger()
 		{
 			this._Name = "CSV Data Logger";
+
+			this.WindowPos.x = Screen.width - 520;
+			this.WindowPos.y = 85;
 		}
 
 		public override void ModuleWindow(int _)
 		{
 			GUIStyle txt_white = new GUIStyle(GUI.skin.label);
 			txt_white.normal.textColor = txt_white.focused.textColor = Color.white;
+			txt_white.alignment = TextAnchor.UpperRight;
 			GUIStyle txt_green = new GUIStyle(GUI.skin.label);
 			txt_green.normal.textColor = txt_green.focused.textColor = Color.green;
+			txt_green.alignment = TextAnchor.UpperRight;
 			GUIStyle txt_yellow = new GUIStyle(GUI.skin.label);
 			txt_yellow.normal.textColor = txt_yellow.focused.textColor = Color.yellow;
+			txt_yellow.alignment = TextAnchor.UpperRight;
 
 			GUILayout.BeginVertical();
 
@@ -129,6 +135,24 @@ namespace VOID
 				//increment timers
 				csvWriteTimer += Time.deltaTime;
 				csvCollectTimer += Time.deltaTime;
+
+				if (csvCollectTimer >= csv_log_interval && vessel.situation != Vessel.Situations.PRELAUNCH)
+				{
+					//data logging is on, vessel is not prelaunch, and interval has passed
+					//write a line to the list
+					line_to_csvList();  //write to the csv
+				}
+
+				if (csvList.Count != 0 && csvWriteTimer >= 15f)
+				{
+					// csvList is not empty and interval between writings to file has elapsed
+					//write it
+					string[] csvData;
+					csvData = (string[])csvList.ToArray();
+					Innsewerants_writeData(csvData);
+					csvList.Clear();
+					csvWriteTimer = 0f;
+				}
 			}
 			else
 			{
@@ -139,22 +163,9 @@ namespace VOID
 				if (csvList.Count > 0) csvList.Clear();
 			}
 
-			if (csv_logging && csvCollectTimer >= csv_log_interval && vessel.situation != Vessel.Situations.PRELAUNCH)
+			if (stopwatch1_running)
 			{
-				//data logging is on, vessel is not prelaunch, and interval has passed
-				//write a line to the list
-				line_to_csvList();  //write to the csv
-			}
-
-			if (csvList.Count != 0 && csvWriteTimer >= 15f && csv_logging)
-			{
-				// csvList is not empty and interval between writings to file has elapsed
-				//write it
-				string[] csvData;
-				csvData = (string[])csvList.ToArray();
-				Innsewerants_writeData(csvData);
-				csvList.Clear();
-				csvWriteTimer = 0f;
+				stopwatch1 += Time.deltaTime;
 			}
 		}
 

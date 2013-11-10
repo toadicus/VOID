@@ -55,6 +55,13 @@ namespace VOID
 			}
 		}
 
+		public static void Reset()
+		{
+			_instance.StopGUI();
+			_instance = null;
+			_initialized = false;
+		}
+
 		public static double Constant_G = 6.674e-11;
 
 		/*
@@ -63,6 +70,8 @@ namespace VOID
 		protected string VoidName = "VOID";
 		protected string VoidVersion = "0.9.9";
 
+		protected bool _factoryReset = false;
+
 		[AVOID_SaveValue("configValue")]
 		protected VOID_SaveValue<int> configVersion = 1;
 
@@ -70,13 +79,13 @@ namespace VOID
 		protected bool _modulesLoaded = false;
 
 		[AVOID_SaveValue("mainWindowPos")]
-		protected VOID_SaveValue<Rect> mainWindowPos = new Rect(Screen.width / 2, Screen.height / 2, 10f, 10f);
+		protected VOID_SaveValue<Rect> mainWindowPos = new Rect(475, 575, 10f, 10f);
 
 		[AVOID_SaveValue("mainGuiMinimized")]
 		protected VOID_SaveValue<bool> mainGuiMinimized = false;
 
 		[AVOID_SaveValue("configWindowPos")]
-		protected VOID_SaveValue<Rect> configWindowPos = new Rect(Screen.width / 2, Screen.height  /2, 10f, 10f);
+		protected VOID_SaveValue<Rect> configWindowPos = new Rect(825, 625, 10f, 10f);
 
 		[AVOID_SaveValue("configWindowMinimized")]
 		protected VOID_SaveValue<bool> configWindowMinimized = true;
@@ -121,13 +130,33 @@ namespace VOID
 		public float saveTimer = 0;
 
 		protected string defaultSkin = "KSP window 2";
-		protected VOID_SaveValue<string> _skin;
+		protected VOID_SaveValue<int> _skinIdx = int.MinValue;
+		protected List<GUISkin> skin_list;
+		protected string[] forbiddenSkins =
+		{
+			"PlaqueDialogSkin",
+			"FlagBrowserSkin",
+			"SSUITextAreaDefault",
+			"ExperimentsDialogSkin",
+			"ExpRecoveryDialogSkin",
+			"KSP window 5",
+			"KSP window 6"
+		};
+		protected bool skinsLoaded = false;
 
 		public bool configDirty;
 
 		/*
 		 * Properties
 		 * */
+		public bool factoryReset
+		{
+			get
+			{
+				return this._factoryReset;
+			}
+		}
+
 		public List<IVOID_Module> Modules
 		{
 			get
@@ -140,11 +169,11 @@ namespace VOID
 		{
 			get
 			{
-				if (this._skin == null)
+				if (this.skin_list == null || this._skinIdx < 0 || this._skinIdx > this.skin_list.Count)
 				{
-					this._skin = this.defaultSkin;
+					return AssetBase.GetGUISkin(this.defaultSkin);
 				}
-				return AssetBase.GetGUISkin(this._skin);
+				return this.skin_list[this._skinIdx];
 			}
 		}
 
@@ -190,6 +219,8 @@ namespace VOID
 		protected VOID_Core()
 		{
 			this._Name = "VOID Core";
+
+			this._Active = true;
 
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
@@ -281,7 +312,11 @@ namespace VOID
 				{
 					module.StartGUI ();
 				}
-				if (module.guiRunning && !module.toggleActive || !this.togglePower || !HighLogic.LoadedSceneIsFlight)
+				if (module.guiRunning && !module.toggleActive ||
+				    !this.togglePower ||
+				    !HighLogic.LoadedSceneIsFlight
+				    || this.factoryReset
+				    )
 				{
 					module.StopGUI();
 				}
@@ -323,6 +358,37 @@ namespace VOID
 			{
 				module.FixedUpdate();
 			}
+		}
+
+		protected void LoadSkins()
+		{
+			this.skin_list = AssetBase.FindObjectsOfTypeIncludingAssets(typeof(GUISkin))
+				.Where(s => !this.forbiddenSkins.Contains(s.name))
+					.Select(s => s as GUISkin)
+					.ToList();
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: loaded {1} GUISkins.",
+				this.GetType().Name,
+				this.skin_list.Count
+			));
+
+			if (this._skinIdx == int.MinValue)
+			{
+				this._skinIdx = this.skin_list.IndexOf(this.Skin);
+				Tools.PostDebugMessage(string.Format(
+					"{0}: resetting _skinIdx to default.",
+					this.GetType().Name
+					));
+			}
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: _skinIdx = {1}.",
+				this.GetType().Name,
+				this._skinIdx.ToString()
+				));
+
+			this.skinsLoaded = true;
 		}
 
 		protected void LoadGUIStyles()
@@ -401,10 +467,43 @@ namespace VOID
 		{
 			this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
 
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+			GUILayout.Label("Skin:", GUILayout.ExpandWidth(false));
+
+			GUIContent _content = new GUIContent();
+
+			_content.text = "◄";
+			_content.tooltip = "Select previous skin";
+			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
+			{
+				this._skinIdx--;
+				if (this._skinIdx < 0) this._skinIdx = skin_list.Count - 1;
+				Tools.PostDebugMessage("[VOID] new this._skin = " + this._skinIdx + " :: skin_list.Count = " + skin_list.Count);
+			}
+
+			string skin_name = skin_list[this._skinIdx].name;
+			_content.text = skin_name;
+			_content.tooltip = "Current skin";
+			GUILayout.Label(_content, this.LabelStyles["center"], GUILayout.ExpandWidth(true));
+
+			_content.text = "►";
+			_content.tooltip = "Select next skin";
+			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
+			{
+				this._skinIdx++;
+				if (this._skinIdx >= skin_list.Count) this._skinIdx = 0;
+				Tools.PostDebugMessage("[VOID] new this._skin = " + this._skinIdx + " :: skin_list.Count = " + skin_list.Count);
+			}
+
+			GUILayout.EndHorizontal();
+
 			foreach (IVOID_Module mod in this.Modules)
 			{
 				mod.DrawConfigurables ();
 			}
+
+			this._factoryReset = GUILayout.Toggle (this._factoryReset, "Factory Reset");
 		}
 
 		public override void DrawGUI()
@@ -415,6 +514,11 @@ namespace VOID
 			}
 
 			this._windowID = this.windowBaseID;
+
+			if (!this.skinsLoaded)
+			{
+				this.LoadSkins();
+			}
 
 			GUI.skin = this.Skin;
 

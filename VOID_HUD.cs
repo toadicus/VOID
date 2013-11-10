@@ -66,6 +66,9 @@ namespace VOID
 		public VOID_HUD() : base()
 		{
 			this._Name = "Heads-Up Display";
+
+			this._Active = true;
+
 			this.textColors.Add(Color.green);
 			this.textColors.Add(Color.black);
 			this.textColors.Add(Color.white);
