@@ -97,6 +97,7 @@ namespace VOID
 		protected Texture2D VOIDIconTexture;
 		protected string VOIDIconOnPath = "VOID/Textures/void_icon_on";
 		protected string VOIDIconOffPath = "VOID/Textures/void_icon_off";
+		protected bool VOIDIconLocked = true;
 
 		protected int windowBaseID = -96518722;
 		protected int _windowID = 0;
@@ -471,6 +472,8 @@ namespace VOID
 		{
 			this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
 
+			this.VOIDIconLocked = GUILayout.Toggle (this.VOIDIconLocked, "Lock Icon Position");
+
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
 			GUILayout.Label("Skin:", GUILayout.ExpandWidth(false));
@@ -510,6 +513,40 @@ namespace VOID
 			this._factoryReset = GUILayout.Toggle (this._factoryReset, "Factory Reset");
 		}
 
+		public void OnGUI()
+		{
+			if (!this.VOIDIconLocked &&
+			    VOIDIconPos.value.Contains(Event.current.mousePosition)
+			    && Event.current.type == EventType.mouseDrag
+			    )
+			{
+				Tools.PostDebugMessage(string.Format(
+					"Event.current.type: {0}" +
+					"\ndelta.x: {1}; delta.y: {2}",
+					Event.current.type,
+					Event.current.delta.x,
+					Event.current.delta.y
+				));
+
+				Rect tmp = new Rect(VOIDIconPos);
+
+				tmp.x = Event.current.mousePosition.x - tmp.width / 2;
+				tmp.y = Event.current.mousePosition.y - tmp.height / 2;
+
+				if (tmp.x > Screen.width - tmp.width)
+				{
+					tmp.x = Screen.width - tmp.width;
+				}
+
+				if (tmp.y > Screen.height - tmp.height)
+				{
+					tmp.y = Screen.height - tmp.height;
+				}
+
+				VOIDIconPos = tmp;
+			}
+		}
+
 		public override void DrawGUI()
 		{
 			if (!this._modulesLoaded)
@@ -533,7 +570,7 @@ namespace VOID
 
 			this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
 			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
-			if (GUI.Button(new Rect(VOIDIconPos), VOIDIconTexture, new GUIStyle()))
+			if (GUI.Button(VOIDIconPos, VOIDIconTexture, new GUIStyle()) && this.VOIDIconLocked)
 			{
 				this.mainGuiMinimized = !this.mainGuiMinimized;
 			}
