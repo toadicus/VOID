@@ -431,12 +431,16 @@ namespace VOID
 		{
 			GUILayout.BeginVertical();
 			
-			if (this.powerAvailable)
+			if (this.powerAvailable || HighLogic.LoadedSceneIsEditor)
 			{
-				string str = "ON";
-				if (togglePower) str = "OFF";
-				if (GUILayout.Button("Power " + str)) togglePower = !togglePower;
-			    if (togglePower)
+				if (!HighLogic.LoadedSceneIsEditor)
+				{
+					string str = "ON";
+					if (togglePower) str = "OFF";
+					if (GUILayout.Button("Power " + str)) togglePower = !togglePower;
+				}
+
+				if (togglePower || HighLogic.LoadedSceneIsEditor)
 			    {
 					foreach (IVOID_Module module in this.Modules)
 					{
@@ -470,9 +474,12 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
-			this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
+			if (HighLogic.LoadedSceneIsFlight)
+			{
+				this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
 
-			this.VOIDIconLocked = GUILayout.Toggle (this.VOIDIconLocked, "Lock Icon Position");
+				this.VOIDIconLocked = GUILayout.Toggle (this.VOIDIconLocked, "Lock Icon Position");
+			}
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
@@ -515,18 +522,23 @@ namespace VOID
 
 		public void OnGUI()
 		{
-			if (Event.current.type == EventType.Layout || Event.current.type == EventType.Repaint)
+			if (Event.current.type == EventType.Repaint)
 			{
 				return;
 			}
 
 			Tools.PostDebugMessage(string.Format(
 				"Event.current.type: {0}" +
-				"this.VOIDIconLocked: {1}" +
-				"Event.current.mousePosition: {2}",
+				"\nthis.VOIDIconLocked: {1}" +
+				"\nEvent.current.mousePosition: {2}" +
+				"\nVOIDIconPos: ({3}, {4}),({5}, {6})",
 				Event.current.type,
 				this.VOIDIconLocked,
-				Event.current.mousePosition
+				Event.current.mousePosition,
+				this.VOIDIconPos.value.xMin,
+				this.VOIDIconPos.value.yMin,
+				this.VOIDIconPos.value.xMax,
+				this.VOIDIconPos.value.yMax
 				));
 
 			if (!this.VOIDIconLocked &&

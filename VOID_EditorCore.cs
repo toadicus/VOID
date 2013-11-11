@@ -68,15 +68,35 @@ namespace VOID
 		public VOID_EditorCore() : base()
 		{
 			this._Name = "VOID Editor Core";
-
-			this.VOIDIconPos = new Rect(Screen.width - 60, Screen.height - 30, 30, 30);
 		}
+
+		public new void OnGUI() {}
 
 		public override void DrawGUI()
 		{
 			if (!this._modulesLoaded)
 			{
 				this.LoadModulesOfType<IVOID_EditorModule>();
+			}
+
+			Rect _iconPos = new Rect(this.VOIDIconPos);
+			Vector2 _iconCtr = new Vector2 ();
+			_iconCtr.x = ((Rect)this.mainWindowPos).center.x;
+
+			if (this.mainWindowPos.value.center.y < Screen.height / 2)
+			{
+				_iconCtr.y = ((Rect)this.mainWindowPos).yMin - 15;
+			}
+			else
+			{
+				_iconCtr.y = ((Rect)this.mainWindowPos).yMax + 15;
+			}
+
+			_iconPos.center = _iconCtr;
+
+			if (this.VOIDIconPos != _iconPos)
+			{
+				this.VOIDIconPos = _iconPos;
 			}
 
 			base.DrawGUI();
