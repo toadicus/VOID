@@ -515,6 +515,20 @@ namespace VOID
 
 		public void OnGUI()
 		{
+			if (Event.current.type == EventType.Layout || Event.current.type == EventType.Repaint)
+			{
+				return;
+			}
+
+			Tools.PostDebugMessage(string.Format(
+				"Event.current.type: {0}" +
+				"this.VOIDIconLocked: {1}" +
+				"Event.current.mousePosition: {2}",
+				Event.current.type,
+				this.VOIDIconLocked,
+				Event.current.mousePosition
+				));
+
 			if (!this.VOIDIconLocked &&
 			    VOIDIconPos.value.Contains(Event.current.mousePosition)
 			    && Event.current.type == EventType.mouseDrag

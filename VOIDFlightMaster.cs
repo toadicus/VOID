@@ -54,6 +54,13 @@ namespace VOID
 
 		public void Update()
 		{
+			if (!HighLogic.LoadedSceneIsEditor)
+			{
+				this.Core = null;
+				VOID_Core.Reset();
+				return;
+			}
+
 			if (this.Core == null)
 			{
 				this.Awake();
@@ -77,7 +84,7 @@ namespace VOID
 
 		public void FixedUpdate()
 		{
-			if (this.Core == null)
+			if (this.Core == null || !HighLogic.LoadedSceneIsFlight)
 			{
 				return;
 			}
@@ -95,4 +102,62 @@ namespace VOID
 			this.Core.OnGUI();
 		}
     }
+
+	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
+	public class VOIDEditorMaster : MonoBehaviour
+	{
+		protected VOID_EditorCore Core;
+
+		public void Awake()
+		{
+			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
+			this.Core = VOID_EditorCore.Instance;
+			this.Core.StartGUI ();
+			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
+		}
+
+		public void Update()
+		{
+			if (!HighLogic.LoadedSceneIsEditor)
+			{
+				this.Core = null;
+				VOID_EditorCore.Reset();
+				return;
+			}
+
+			if (this.Core == null)
+			{
+				this.Awake();
+			}
+
+			this.Core.Update ();
+
+			if (this.Core.factoryReset)
+			{
+				KSP.IO.File.Delete<VOID_EditorCore>("config.xml");
+				this.Core = null;
+				VOID_EditorCore.Reset();
+			}
+		}
+
+		public void FixedUpdate()
+		{
+			if (this.Core == null || !HighLogic.LoadedSceneIsEditor)
+			{
+				return;
+			}
+
+			this.Core.FixedUpdate ();
+		}
+
+		public void OnGUI()
+		{
+			if (this.Core == null)
+			{
+				return;
+			}
+
+			this.Core.OnGUI();
+		}
+	}
 }

@@ -81,7 +81,7 @@ namespace VOID
 		 * */
 		public void StartGUI()
 		{
-			if (!this.toggleActive)
+			if (!this.toggleActive || this.guiRunning)
 			{
 				return;
 			}
@@ -93,6 +93,10 @@ namespace VOID
 
 		public void StopGUI()
 		{
+			if (!this.guiRunning)
+			{
+				return;
+			}
 			Tools.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
 			RenderingManager.RemoveFromPostDrawQueue (3, this.DrawGUI);
 			this._Running = false;
