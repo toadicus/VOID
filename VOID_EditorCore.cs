@@ -68,6 +68,8 @@ namespace VOID
 		public VOID_EditorCore() : base()
 		{
 			this._Name = "VOID Editor Core";
+
+			this.VOIDIconPos = new Rect(Screen.width - 60, Screen.height - 30, 30, 30);
 		}
 
 		public override void DrawGUI()
@@ -76,6 +78,8 @@ namespace VOID
 			{
 				this.LoadModulesOfType<IVOID_EditorModule>();
 			}
+
+			base.DrawGUI();
 		}
 
 		public new void Update()
