@@ -46,8 +46,9 @@ namespace VOID
 
 		public void Awake()
 		{
-			Tools.PostDebugMessage ("VOIDLightMaster: Waking up.");
+			Tools.PostDebugMessage ("VOIDFlightMaster: Waking up.");
 			this.Core = (VOID_Core)VOID_Core.Instance;
+			this.Core.StopGUI ();
 			this.Core.StartGUI ();
 			Tools.PostDebugMessage ("VOIDFlightMaster: Awake.");
 		}
@@ -112,6 +113,7 @@ namespace VOID
 		{
 			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
 			this.Core = VOID_EditorCore.Instance;
+			this.Core.StopGUI ();
 			this.Core.StartGUI ();
 			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
 		}

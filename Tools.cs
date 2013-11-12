@@ -686,6 +686,43 @@ namespace VOID
 			GUILayout.Label((dv2 * 1000).ToString("F2") + "m/s", GUILayout.ExpandWidth(false));
 			GUILayout.EndHorizontal();
 		}
+
+		// This implementation is adapted from FARGUIUtils.ClampToScreen
+		public static Rect ClampRectToScreen(Rect window, int xMargin, int yMargin)
+		{
+			window.x = Mathf.Clamp (window.x, xMargin - window.width, Screen.width - xMargin);
+			window.y = Mathf.Clamp (window.y, yMargin - window.height, Screen.height - yMargin);
+
+			return window;
+		}
+
+		public static Rect ClampRectToScreen(Rect window, int Margin)
+		{
+			return ClampRectToScreen(window, Margin, Margin);
+		}
+
+		public static Rect ClampRectToScreen(Rect window)
+		{
+			return ClampRectToScreen (window, 30);
+		}
+
+		public static Vector2 ClampV2ToScreen(Vector2 vec, uint xMargin, uint yMargin)
+		{
+			vec.x = Mathf.Clamp (vec.x, xMargin, Screen.width - xMargin);
+			vec.y = Mathf.Clamp (vec.y, yMargin, Screen.height - yMargin);
+
+			return vec;
+		}
+
+		public static Vector2 ClampV2ToScreen(Vector2 vec, uint Margin)
+		{
+			return ClampV2ToScreen(vec, Margin, Margin);
+		}
+
+		public static Vector2 ClampV2ToScreen(Vector2 vec)
+		{
+			return ClampV2ToScreen (vec, 15);
+		}
 				
 		private static ScreenMessage debugmsg = new ScreenMessage("", 2f, ScreenMessageStyle.UPPER_RIGHT);
 

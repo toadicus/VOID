@@ -208,6 +208,8 @@ namespace VOID
 				GUILayout.Height(this.defHeight)
 			);
 
+			_Pos = Tools.ClampRectToScreen (_Pos);
+
 			if (_Pos != this.WindowPos)
 			{
 				this.WindowPos = _Pos;

@@ -287,10 +287,8 @@ namespace VOID
 			));
 		}
 
-		public void Update()
+		protected void Preload_BeforeUpdate()
 		{
-			this.saveTimer += Time.deltaTime;
-
 			if (!this.bodiesLoaded)
 			{
 				this.LoadAllBodies();
@@ -300,6 +298,11 @@ namespace VOID
 			{
 				this.LoadVesselTypes();
 			}
+		}
+
+		public void Update()
+		{
+			this.Preload_BeforeUpdate ();
 
 			if (!this.guiRunning)
 			{
@@ -332,11 +335,7 @@ namespace VOID
 				}
 			}
 
-			if (this.saveTimer > 2f)
-			{
-				this.SaveConfig ();
-				this.saveTimer = 0;
-			}
+			this.CheckAndSave ();
 		}
 
 		public void FixedUpdate()
@@ -425,6 +424,17 @@ namespace VOID
 		{
 			this._allVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToList();
 			this.vesselTypesLoaded = true;
+		}
+
+		protected void CheckAndSave()
+		{
+			this.saveTimer += Time.deltaTime;
+
+			if (this.saveTimer > 2f)
+			{
+				this.SaveConfig ();
+				this.saveTimer = 0;
+			}
 		}
 
 		public void VOIDMainWindow(int _)
@@ -614,6 +624,8 @@ namespace VOID
 					GUILayout.Height (50)
 				);
 
+				_mainWindowPos = Tools.ClampRectToScreen (_mainWindowPos);
+
 				if (_mainWindowPos != this.mainWindowPos)
 				{
 					this.mainWindowPos = _mainWindowPos;
@@ -632,6 +644,8 @@ namespace VOID
 					GUILayout.Width (250),
 					GUILayout.Height (50)
 				);
+
+				_configWindowPos = Tools.ClampRectToScreen (_configWindowPos);
 
 				if (_configWindowPos != this.configWindowPos)
 				{

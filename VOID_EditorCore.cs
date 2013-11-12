@@ -79,22 +79,73 @@ namespace VOID
 				this.LoadModulesOfType<IVOID_EditorModule>();
 			}
 
+			Rect _mainPos = new Rect (this.mainWindowPos);
+
 			Rect _iconPos = new Rect(this.VOIDIconPos);
 			Vector2 _iconCtr = new Vector2 ();
-			_iconCtr.x = ((Rect)this.mainWindowPos).center.x;
 
-			if (this.mainWindowPos.value.center.y < Screen.height / 2)
+			// HACK: This is really messy.  Clean it up.
+			if (_mainPos.yMax > Screen.height - 30 ||
+			    _mainPos.yMin < 30
+			    )
 			{
-				_iconCtr.y = ((Rect)this.mainWindowPos).yMin - 15;
+				if (_mainPos.xMax > Screen.width - 30 ||
+				    _mainPos.xMin < 30
+				    )
+				{
+					if (_mainPos.yMax < Screen.height / 2)
+					{
+						_iconCtr.y = _mainPos.yMax + 15;
+					}
+					else
+					{
+						_iconCtr.y = _mainPos.yMin - 15;
+					}
+				}
+				else
+				{
+					if (_mainPos.yMax > Screen.height / 2)
+					{
+						_iconCtr.y = _mainPos.yMax - 15;
+					}
+					else
+					{
+						_iconCtr.y = _mainPos.yMin + 15;
+					}
+				}
+
+				if (_mainPos.center.x < Screen.width / 2)
+				{
+					_iconCtr.x = _mainPos.xMin - 15;
+				}
+				else
+				{
+					_iconCtr.x = _mainPos.xMax + 15;
+				}
+
 			}
 			else
 			{
-				_iconCtr.y = ((Rect)this.mainWindowPos).yMax + 15;
+				if (_mainPos.xMax > Screen.width - 30)
+				{
+					_iconCtr.x = _mainPos.xMax - 15;
+				}
+				else if (_mainPos.xMin < 30)
+				{
+					_iconCtr.x = _mainPos.xMin + 15;
+				}
+				else
+				{
+					_iconCtr.x = _mainPos.center.x;
+				}
+
+				_iconCtr.y = _mainPos.yMin - 15;
 			}
 
+			_iconCtr = Tools.ClampV2ToScreen (_iconCtr, 15);
 			_iconPos.center = _iconCtr;
 
-			if (this.VOIDIconPos != _iconPos)
+			if (_iconPos != this.VOIDIconPos)
 			{
 				this.VOIDIconPos = _iconPos;
 			}
@@ -119,14 +170,16 @@ namespace VOID
 				{
 					module.StopGUI();
 				}
+
+				this.CheckAndSave ();
 			}
 
-			if (EditorLogic.startPod == null)
+			if (EditorLogic.startPod == null || !HighLogic.LoadedSceneIsEditor)
 			{
 				this.StopGUI();
 				return;
 			}
-			else if (!this.guiRunning)
+			else if (!this.guiRunning && HighLogic.LoadedSceneIsEditor)
 			{
 				this.StartGUI();
 			}
