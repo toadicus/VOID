@@ -246,6 +246,13 @@ namespace VOID
 				));
 			foreach (var voidType in types)
 			{
+				if (!HighLogic.LoadedSceneIsEditor &&
+				    typeof(IVOID_EditorModule).IsAssignableFrom(voidType)
+				    )
+				{
+					continue;
+				}
+
 				Tools.PostDebugMessage (string.Format (
 					"{0}: found Type {1}",
 					this.GetType ().Name,
