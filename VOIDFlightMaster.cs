@@ -57,6 +57,7 @@ namespace VOID
 		{
 			if (!HighLogic.LoadedSceneIsFlight && this.Core != null)
 			{
+				this.Core.SaveConfig ();
 				this.Core = null;
 				VOID_Core.Reset();
 				return;
@@ -122,6 +123,7 @@ namespace VOID
 		{
 			if (!HighLogic.LoadedSceneIsEditor && this.Core != null)
 			{
+				this.Core.SaveConfig ();
 				this.Core = null;
 				VOID_EditorCore.Reset();
 				return;
