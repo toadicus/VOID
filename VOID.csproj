@@ -22,7 +22,7 @@
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xcopy /Y ${ProjectDir}\bin\Debug\*.dll ..\..\..\Games\KSP_win\GameData\VOID\Plugins\" workingdir="${ProjectDir}" externalConsole="True" />
+        <Command type="AfterBuild" command="/usr/bin/cp -fv ${ProjectDir}/bin/Debug/VOID.dll /mnt/games/ssd/KSP_linux/GameData/VOID/Plugins/" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -35,7 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xcopy /Y ${ProjectDir}\bin\Release\*.dll ..\..\..\Games\KSP_win\GameData\VOID\Plugins\" workingdir="${ProjectDir}" externalConsole="True" />
+        <Command type="AfterBuild" command="/usr/bin/cp -fv ${ProjectDir}/bin/Release/VOID.dll /mnt/games/ssd/KSP_linux/GameData/VOID/Plugins/" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -61,13 +61,16 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\Games\KSP_win\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\mnt\games-ssd\KSP_linux\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Games\KSP_win\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\mnt\games-ssd\KSP_linux\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System">
-      <HintPath>..\..\..\Games\KSP_win\KSP_Data\Managed\System.dll</HintPath>
+      <HintPath>..\..\..\..\..\mnt\games-ssd\KSP_linux\KSP_Data\Managed\System.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
