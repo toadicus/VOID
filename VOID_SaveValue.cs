@@ -85,7 +85,7 @@ namespace VOID
 
 			if (VOID_EditorCore.Initialized)
 			{
-				VOID_Core.Instance.configDirty = true;
+				VOID_EditorCore.Instance.configDirty = true;
 			}
 
 			return r;
