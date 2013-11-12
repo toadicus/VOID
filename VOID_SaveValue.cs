@@ -77,10 +77,17 @@ namespace VOID
 			VOID_SaveValue<T> r = new VOID_SaveValue<T>();
 			r.value = v;
 			r.type = v.GetType();
+
 			if (VOID_Core.Initialized)
 			{
 				VOID_Core.Instance.configDirty = true;
 			}
+
+			if (VOID_EditorCore.Initialized)
+			{
+				VOID_Core.Instance.configDirty = true;
+			}
+
 			return r;
 		}
 
