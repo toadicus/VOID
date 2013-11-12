@@ -723,6 +723,99 @@ namespace VOID
 		{
 			return ClampV2ToScreen (vec, 15);
 		}
+
+		// UNDONE: This seems messy.  Can we clean it up?
+		public static Rect DockToWindow(Rect icon, Rect window)
+		{
+			// We can't set the x and y of the center point directly, so build a new vector.
+			Vector2 center = new Vector2 ();
+
+			// If we are near the top or bottom of the screen...
+			if (window.yMax > Screen.height - icon.height ||
+			    window.yMin < icon.height
+			    )
+			{
+				// If we are in a corner...
+				if (window.xMax > Screen.width - icon.width ||
+				    window.xMin < icon.width
+				    )
+				{
+					// If it is a top corner, put the icon below the window.
+					if (window.yMax < Screen.height / 2)
+					{
+						center.y = window.yMax + icon.height / 2;
+					}
+					// If it is a bottom corner, put the icon above the window.
+					else
+					{
+						center.y = window.yMin - icon.height / 2;
+					}
+				}
+				// If we are not in a corner...
+				else
+				{
+					// If we are along the top edge, align the icon's top edge with the top edge of the window
+					if (window.yMax > Screen.height / 2)
+					{
+						center.y = window.yMax - icon.height / 2;
+					}
+					// If we are along the bottom edge, align the icon's bottom edge with the bottom edge of the window
+					else
+					{
+						center.y = window.yMin + icon.height / 2;
+					}
+				}
+
+				// At the top or bottom, if we are towards the right, put the icon to the right of the window
+				if (window.center.x < Screen.width / 2)
+				{
+					center.x = window.xMin - icon.width / 2;
+				}
+				// At the top or bottom, if we are towards the left, put the icon to the left of the window
+				else
+				{
+					center.x = window.xMax + icon.width / 2;
+				}
+
+			}
+			// If we are not along the top or bottom of the screen...
+			else
+			{
+				// By default, center the icon above the window
+				center.y = window.yMin - icon.height / 2;
+				center.x = window.center.x;
+
+				// If we are along a side...
+				if (window.xMax > Screen.width - icon.width ||
+				    window.xMin < icon.width
+				    )
+				{
+					// UNDONE: I'm not sure I like the feel of this part.
+					// If we are along a side towards the bottom, put the icon below the window
+					if (window.center.y > Screen.height / 2)
+					{
+						center.y = window.yMax + icon.height / 2;
+					}
+
+					// Along the left side, align the left edge of the icon with the left edge of the window.
+					if (window.xMax > Screen.width - icon.width)
+					{
+						center.x = window.xMax - icon.width / 2;
+					}
+					// Along the right side, align the right edge of the icon with the right edge of the window.
+					else if (window.xMin < icon.width)
+					{
+						center.x = window.xMin + icon.width / 2;
+					}
+				}
+			}
+
+			// Assign the vector to the center of the rect.
+			icon.center = center;
+
+			// Return the icon's position.
+			return icon;
+		}
 				
 		private static ScreenMessage debugmsg = new ScreenMessage("", 2f, ScreenMessageStyle.UPPER_RIGHT);
 

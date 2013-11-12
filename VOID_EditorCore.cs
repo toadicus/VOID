@@ -79,71 +79,9 @@ namespace VOID
 				this.LoadModulesOfType<IVOID_EditorModule>();
 			}
 
-			Rect _mainPos = new Rect (this.mainWindowPos);
+			Rect _iconPos = Tools.DockToWindow (this.VOIDIconPos, this.mainWindowPos);
 
-			Rect _iconPos = new Rect(this.VOIDIconPos);
-			Vector2 _iconCtr = new Vector2 ();
-
-			// HACK: This is really messy.  Clean it up.
-			if (_mainPos.yMax > Screen.height - 30 ||
-			    _mainPos.yMin < 30
-			    )
-			{
-				if (_mainPos.xMax > Screen.width - 30 ||
-				    _mainPos.xMin < 30
-				    )
-				{
-					if (_mainPos.yMax < Screen.height / 2)
-					{
-						_iconCtr.y = _mainPos.yMax + 15;
-					}
-					else
-					{
-						_iconCtr.y = _mainPos.yMin - 15;
-					}
-				}
-				else
-				{
-					if (_mainPos.yMax > Screen.height / 2)
-					{
-						_iconCtr.y = _mainPos.yMax - 15;
-					}
-					else
-					{
-						_iconCtr.y = _mainPos.yMin + 15;
-					}
-				}
-
-				if (_mainPos.center.x < Screen.width / 2)
-				{
-					_iconCtr.x = _mainPos.xMin - 15;
-				}
-				else
-				{
-					_iconCtr.x = _mainPos.xMax + 15;
-				}
-
-			}
-			else
-			{
-				if (_mainPos.xMax > Screen.width - 30)
-				{
-					_iconCtr.x = _mainPos.xMax - 15;
-				}
-				else if (_mainPos.xMin < 30)
-				{
-					_iconCtr.x = _mainPos.xMin + 15;
-				}
-				else
-				{
-					_iconCtr.x = _mainPos.center.x;
-				}
-
-				_iconCtr.y = _mainPos.yMin - 15;
-			}
-
-			_iconCtr = Tools.ClampV2ToScreen (_iconCtr, 15);
-			_iconPos.center = _iconCtr;
+			_iconPos = Tools.ClampRectToScreen (_iconPos, (int)_iconPos.width, (int)_iconPos.height);
 
 			if (_iconPos != this.VOIDIconPos)
 			{
@@ -170,8 +108,6 @@ namespace VOID
 				{
 					module.StopGUI();
 				}
-
-				this.CheckAndSave ();
 			}
 
 			if (EditorLogic.startPod == null || !HighLogic.LoadedSceneIsEditor)
@@ -189,6 +125,8 @@ namespace VOID
 				SimManager.Instance.Gravity = 9.08665;
 				SimManager.Instance.TryStartSimulation();
 			}
+
+			this.CheckAndSave ();
 		}
 
 		public new void FixedUpdate() {}

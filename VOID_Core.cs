@@ -130,8 +130,9 @@ namespace VOID
 
 		public float saveTimer = 0;
 
-		protected string defaultSkin = "KSP window 2";
-		protected VOID_SaveValue<int> _skinIdx = int.MinValue;
+		[AVOID_SaveValue("defaultSkin")]
+		protected VOID_SaveValue<string> defaultSkin = "KSP window 2";
+		protected int _skinIdx = int.MinValue;
 		protected List<GUISkin> skin_list;
 		protected string[] forbiddenSkins =
 		{
@@ -246,6 +247,13 @@ namespace VOID
 				));
 			foreach (var voidType in types)
 			{
+				if (!HighLogic.LoadedSceneIsEditor &&
+				    typeof(IVOID_EditorModule).IsAssignableFrom(voidType)
+				    )
+				{
+					continue;
+				}
+
 				Tools.PostDebugMessage (string.Format (
 					"{0}: found Type {1}",
 					this.GetType ().Name,
@@ -430,8 +438,25 @@ namespace VOID
 		{
 			this.saveTimer += Time.deltaTime;
 
+			Tools.PostDebugMessage (string.Format (
+				"{0}: Checking if time to save; saveTimer: {1}",
+				this.GetType ().Name,
+				this.saveTimer
+			));
+
 			if (this.saveTimer > 2f)
 			{
+				Tools.PostDebugMessage (string.Format (
+					"{0}: Time to save, checking if configDirty: {1}",
+					this.GetType ().Name,
+					this.configDirty
+					));
+
+				if (!this.configDirty)
+				{
+					return;
+				}
+
 				this.SaveConfig ();
 				this.saveTimer = 0;
 			}
@@ -503,7 +528,12 @@ namespace VOID
 			{
 				this._skinIdx--;
 				if (this._skinIdx < 0) this._skinIdx = skin_list.Count - 1;
-				Tools.PostDebugMessage("[VOID] new this._skin = " + this._skinIdx + " :: skin_list.Count = " + skin_list.Count);
+				Tools.PostDebugMessage (string.Format (
+					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					this.GetType().Name,
+					this._skinIdx,
+					this.skin_list.Count
+				));
 			}
 
 			string skin_name = skin_list[this._skinIdx].name;
@@ -517,7 +547,17 @@ namespace VOID
 			{
 				this._skinIdx++;
 				if (this._skinIdx >= skin_list.Count) this._skinIdx = 0;
-				Tools.PostDebugMessage("[VOID] new this._skin = " + this._skinIdx + " :: skin_list.Count = " + skin_list.Count);
+				Tools.PostDebugMessage (string.Format (
+					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					this.GetType().Name,
+					this._skinIdx,
+					this.skin_list.Count
+					));
+			}
+
+			if (this.Skin.name != this.defaultSkin)
+			{
+				this.defaultSkin = this.Skin.name;
 			}
 
 			GUILayout.EndHorizontal();
@@ -666,11 +706,6 @@ namespace VOID
 
 		public void SaveConfig()
 		{
-			if (!this.configDirty)
-			{
-				return;
-			}
-
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
 			config.load ();
 
