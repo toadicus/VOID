@@ -132,7 +132,7 @@ namespace VOID
 
 		[AVOID_SaveValue("defaultSkin")]
 		protected VOID_SaveValue<string> defaultSkin = "KSP window 2";
-		protected VOID_SaveValue<int> _skinIdx = int.MinValue;
+		protected int _skinIdx = int.MinValue;
 		protected List<GUISkin> skin_list;
 		protected string[] forbiddenSkins =
 		{
@@ -528,7 +528,12 @@ namespace VOID
 			{
 				this._skinIdx--;
 				if (this._skinIdx < 0) this._skinIdx = skin_list.Count - 1;
-				Tools.PostDebugMessage("[VOID] new this._skin = " + this._skinIdx + " :: skin_list.Count = " + skin_list.Count);
+				Tools.PostDebugMessage (string.Format (
+					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					this.GetType().Name,
+					this._skinIdx,
+					this.skin_list.Count
+				));
 			}
 
 			string skin_name = skin_list[this._skinIdx].name;
@@ -542,7 +547,17 @@ namespace VOID
 			{
 				this._skinIdx++;
 				if (this._skinIdx >= skin_list.Count) this._skinIdx = 0;
-				Tools.PostDebugMessage("[VOID] new this._skin = " + this._skinIdx + " :: skin_list.Count = " + skin_list.Count);
+				Tools.PostDebugMessage (string.Format (
+					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					this.GetType().Name,
+					this._skinIdx,
+					this.skin_list.Count
+					));
+			}
+
+			if (this.Skin.name != this.defaultSkin)
+			{
+				this.defaultSkin = this.Skin.name;
 			}
 
 			GUILayout.EndHorizontal();
