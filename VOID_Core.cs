@@ -130,7 +130,8 @@ namespace VOID
 
 		public float saveTimer = 0;
 
-		protected string defaultSkin = "KSP window 2";
+		[AVOID_SaveValue("defaultSkin")]
+		protected VOID_SaveValue<string> defaultSkin = "KSP window 2";
 		protected VOID_SaveValue<int> _skinIdx = int.MinValue;
 		protected List<GUISkin> skin_list;
 		protected string[] forbiddenSkins =
