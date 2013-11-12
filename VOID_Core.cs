@@ -430,8 +430,25 @@ namespace VOID
 		{
 			this.saveTimer += Time.deltaTime;
 
+			Tools.PostDebugMessage (string.Format (
+				"{0}: Checking if time to save; saveTimer: {1}",
+				this.GetType ().Name,
+				this.saveTimer
+			));
+
 			if (this.saveTimer > 2f)
 			{
+				Tools.PostDebugMessage (string.Format (
+					"{0}: Time to save, checking if configDirty: {1}",
+					this.GetType ().Name,
+					this.configDirty
+					));
+
+				if (!this.configDirty)
+				{
+					return;
+				}
+
 				this.SaveConfig ();
 				this.saveTimer = 0;
 			}
@@ -666,11 +683,6 @@ namespace VOID
 
 		public void SaveConfig()
 		{
-			if (!this.configDirty)
-			{
-				return;
-			}
-
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
 			config.load ();
 
