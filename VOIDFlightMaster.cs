@@ -55,7 +55,7 @@ namespace VOID
 
 		public void Update()
 		{
-			if (!HighLogic.LoadedSceneIsEditor)
+			if (!HighLogic.LoadedSceneIsFlight)
 			{
 				this.Core = null;
 				VOID_Core.Reset();
