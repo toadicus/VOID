@@ -55,7 +55,7 @@ namespace VOID
 
 		public void Update()
 		{
-			if (!HighLogic.LoadedSceneIsFlight)
+			if (!HighLogic.LoadedSceneIsFlight && this.Core != null)
 			{
 				this.Core = null;
 				VOID_Core.Reset();
@@ -120,7 +120,7 @@ namespace VOID
 
 		public void Update()
 		{
-			if (!HighLogic.LoadedSceneIsEditor)
+			if (!HighLogic.LoadedSceneIsEditor && this.Core != null)
 			{
 				this.Core = null;
 				VOID_EditorCore.Reset();
