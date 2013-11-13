@@ -48,8 +48,7 @@ namespace VOID
 		{
 			Tools.PostDebugMessage ("VOIDFlightMaster: Waking up.");
 			this.Core = (VOID_Core)VOID_Core.Instance;
-			this.Core.StopGUI ();
-			this.Core.StartGUI ();
+			this.Core.ResetGUI ();
 			Tools.PostDebugMessage ("VOIDFlightMaster: Awake.");
 		}
 
@@ -72,7 +71,8 @@ namespace VOID
 
 			if (this.Core.vessel != null)
 			{
-				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter / Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
+					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
 				SimManager.Instance.TryStartSimulation();
 			}
 
@@ -114,8 +114,7 @@ namespace VOID
 		{
 			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
 			this.Core = VOID_EditorCore.Instance;
-			this.Core.StopGUI ();
-			this.Core.StartGUI ();
+			this.Core.ResetGUI ();
 			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
 		}
 
