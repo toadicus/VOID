@@ -694,6 +694,19 @@ namespace VOID
 			}
 		}
 
+		public void ResetGUI()
+		{
+			this.StopGUI ();
+
+			foreach (IVOID_Module module in this.Modules)
+			{
+				module.StopGUI ();
+				module.StartGUI ();
+			}
+
+			this.StartGUI ();
+		}
+
 		public override void LoadConfig()
 		{
 			base.LoadConfig ();
