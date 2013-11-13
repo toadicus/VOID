@@ -81,7 +81,7 @@ namespace VOID
 			this.textColors.Add(Color.magenta);
 
 			this.labelStyle = new GUIStyle ();
-			this.labelStyle.alignment = TextAnchor.UpperRight;
+			// this.labelStyle.alignment = TextAnchor.UpperRight;
 			this.labelStyle.normal.textColor = this.textColors [this.ColorIndex];
 
 			Tools.PostDebugMessage (this.GetType().Name + ": Constructed.");
@@ -96,12 +96,29 @@ namespace VOID
 				return;
 			}
 
+			float hudLeft;
+
+			if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
+			{
+				hudLeft = EditorPanels.Instance.partsPanelWidth + 10;
+			}
+			else if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Actions)
+			{
+				hudLeft = EditorPanels.Instance.actionsPanelWidth + 10;
+			}
+			else
+			{
+				return;
+			}
+
+			Rect hudPos = new Rect (hudLeft, 48, 300, 32);
+
 			// GUI.skin = AssetBase.GetGUISkin("KSP window 2");
 
 			labelStyle.normal.textColor = textColors [ColorIndex];
 
 			GUI.Label (
-				new Rect (Screen.width - 310, 80, 300f, 32f),
+				hudPos,
 				"Total Mass: " + SimManager.Instance.LastStage.totalMass.ToString("F3") + "t" +
 				" Part Count: " + EditorLogic.SortedShipList.Count +
 				"\nTotal Delta-V: " + Tools.MuMech_ToSI(SimManager.Instance.LastStage.totalDeltaV) + "m/s" +
