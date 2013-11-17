@@ -37,6 +37,8 @@ namespace VOID
 
 		protected string _Name;
 
+		protected float lastUpdate = 0;
+
 		/*
 		 * Properties
 		 * */

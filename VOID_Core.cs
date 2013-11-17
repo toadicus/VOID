@@ -120,6 +120,11 @@ namespace VOID
 		[AVOID_SaveValue("resourceRate")]
 		protected VOID_SaveValue<float> resourceRate = 0.2f;
 
+		[AVOID_SaveValue("updatePeriod")]
+		protected VOID_SaveValue<double> _updatePeriod = 1001f/15000f;
+		protected float _updateTimer = 0f;
+		protected string stringFrequency;
+
 		// Celestial Body Housekeeping
 		protected List<CelestialBody> _allBodies = new List<CelestialBody>();
 		protected bool bodiesLoaded = false;
@@ -212,6 +217,22 @@ namespace VOID
 			get
 			{
 				return this._allVesselTypes;
+			}
+		}
+
+		public float updateTimer
+		{
+			get
+			{
+				return this._updateTimer;
+			}
+		}
+
+		public double updatePeriod
+		{
+			get
+			{
+				return this._updatePeriod;
 			}
 		}
 
@@ -330,8 +351,8 @@ namespace VOID
 				}
 				if (module.guiRunning && !module.toggleActive ||
 				    !this.togglePower ||
-				    !HighLogic.LoadedSceneIsFlight
-				    || this.factoryReset
+				    !HighLogic.LoadedSceneIsFlight ||
+				    this.factoryReset
 				    )
 				{
 					module.StopGUI();
@@ -344,6 +365,7 @@ namespace VOID
 			}
 
 			this.CheckAndSave ();
+			this._updateTimer += Time.deltaTime;
 		}
 
 		public void FixedUpdate()
@@ -414,9 +436,9 @@ namespace VOID
 			this.LabelStyles["center_bold"].alignment = TextAnchor.UpperCenter;
 			this.LabelStyles["center_bold"].fontStyle = FontStyle.Bold;
 
-			this.LabelStyles["txt_right"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["txt_right"].normal.textColor = Color.white;
-			this.LabelStyles["txt_right"].alignment = TextAnchor.UpperRight;
+			this.LabelStyles["right"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["right"].normal.textColor = Color.white;
+			this.LabelStyles["right"].alignment = TextAnchor.UpperRight;
 
 			this.GUIStylesLoaded = true;
 		}
@@ -437,12 +459,6 @@ namespace VOID
 		protected void CheckAndSave()
 		{
 			this.saveTimer += Time.deltaTime;
-
-			Tools.PostDebugMessage (string.Format (
-				"{0}: Checking if time to save; saveTimer: {1}",
-				this.GetType ().Name,
-				this.saveTimer
-			));
 
 			if (this.saveTimer > 2f)
 			{
@@ -562,6 +578,22 @@ namespace VOID
 
 			GUILayout.EndHorizontal();
 
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("Update Rate (Hz):");
+			if (this.stringFrequency == null)
+			{
+				this.stringFrequency = (1f / this.updatePeriod).ToString();
+			}
+			this.stringFrequency = GUILayout.TextField(this.stringFrequency.ToString(), 5, GUILayout.ExpandWidth(true));
+			// GUILayout.FlexibleSpace();
+			if (GUILayout.Button("Apply"))
+			{
+				double updateFreq = 1f / this.updatePeriod;
+				double.TryParse(stringFrequency, out updateFreq);
+				this._updatePeriod = 1 / updateFreq;
+			}
+			GUILayout.EndHorizontal();
+
 			foreach (IVOID_Module mod in this.Modules)
 			{
 				mod.DrawConfigurables ();
@@ -577,6 +609,7 @@ namespace VOID
 				return;
 			}
 
+			/*
 			Tools.PostDebugMessage(string.Format(
 				"Event.current.type: {0}" +
 				"\nthis.VOIDIconLocked: {1}" +
@@ -590,6 +623,7 @@ namespace VOID
 				this.VOIDIconPos.value.xMax,
 				this.VOIDIconPos.value.yMax
 				));
+				*/
 
 			if (!this.VOIDIconLocked &&
 			    VOIDIconPos.value.Contains(Event.current.mousePosition)
@@ -672,7 +706,7 @@ namespace VOID
 				}
 			}
 
-			if (!this.configWindowMinimized)
+			if (!this.configWindowMinimized && !this.mainGuiMinimized)
 			{
 				Rect _configWindowPos = this.configWindowPos;
 
