@@ -131,15 +131,22 @@ namespace VOID
 				object fieldValue = field.GetValue(this);
 
 				bool convertBack = false;
+				bool isIntCollection = false;
 				if (fieldValue is IVOID_SaveValue)
 				{
+					if (fieldValue is IntCollection) {
+						isIntCollection = true;
+					}
 					fieldValue = (fieldValue as IVOID_SaveValue).AsType;
 					convertBack = true;
 				}
 
 				fieldValue = config.GetValue(fieldName, fieldValue);
 
-				if (convertBack)
+				if (isIntCollection) {
+					fieldValue = new IntCollection (4, (long)fieldValue);
+				}
+				else if (convertBack)
 				{
 					Type type = typeof(VOID_SaveValue<>).MakeGenericType (fieldValue.GetType ());
 					IVOID_SaveValue convertValue = Activator.CreateInstance (type) as IVOID_SaveValue;
