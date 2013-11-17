@@ -230,7 +230,7 @@ namespace VOID
 						// Toadicus edit: added local sidereal longitude.
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						GUILayout.Label("Local Sidereal Longitude:");
-						GUILayout.Label(LSL.ToString("F3") + "°", VOID_Core.Instance.LabelStyles["txt_right"]);
+						GUILayout.Label(LSL.ToString("F3") + "°", VOID_Core.Instance.LabelStyles["right"]);
 						GUILayout.EndHorizontal();
 					}
 				}

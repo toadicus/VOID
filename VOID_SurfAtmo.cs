@@ -104,7 +104,7 @@ namespace VOID
 			// Toadicus edit: added Biome
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Biome:");
-			GUILayout.Label(Tools.Toadicus_GetAtt(vessel).name, VOID_Core.Instance.LabelStyles["txt_right"]);
+			GUILayout.Label(Tools.Toadicus_GetAtt(vessel).name, VOID_Core.Instance.LabelStyles["right"]);
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
