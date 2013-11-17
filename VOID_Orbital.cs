@@ -29,6 +29,9 @@ namespace VOID
 		[AVOID_SaveValue("toggleExtended")]
 		protected VOID_SaveValue<bool> toggleExtended = false;
 
+		[AVOID_SaveValue("precisionValues")]
+		protected IntCollection precisionValues = new IntCollection(4, 230584300921369395);
+
 		public VOID_Orbital()
 		{
 			this._Name = "Orbital Information";
@@ -42,6 +45,7 @@ namespace VOID
 			// Toadicus edit: added local sidereal longitude.
 			double LSL = vessel.longitude + vessel.orbit.referenceBody.rotationAngle;
 			LSL = Tools.FixDegreeDomain (LSL);
+			int idx = 0;
 
             GUILayout.BeginVertical();
 
@@ -52,28 +56,48 @@ namespace VOID
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(VOIDLabels.void_altitude_asl + ":");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.altitude) + "m", GUILayout.ExpandWidth(false));
+			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.altitude, this.precisionValues [idx]) + "m", GUILayout.ExpandWidth(false));
+			GUILayout.FlexibleSpace ();
+			if (GUILayout.Button ("P")) {
+				this.precisionValues [idx] = (ushort)((this.precisionValues[idx] + 3) % 15);
+			}
             GUILayout.EndHorizontal();
+			idx++;
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(VOIDLabels.void_velocity + ":");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.vel.magnitude) + "m/s", GUILayout.ExpandWidth(false));
+			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.vel.magnitude, this.precisionValues [idx]) + "m/s", GUILayout.ExpandWidth(false));
+			GUILayout.FlexibleSpace ();
+			if (GUILayout.Button ("P")) {
+				this.precisionValues [idx] = (ushort)((this.precisionValues[idx] + 3) % 15);
+			}
             GUILayout.EndHorizontal();
+			idx++;
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(VOIDLabels.void_apoapsis + ":");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.ApA) + "m", GUILayout.ExpandWidth(false));
+			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.ApA, this.precisionValues [idx]) + "m", GUILayout.ExpandWidth(false));
+			GUILayout.FlexibleSpace ();
+			if (GUILayout.Button ("P")) {
+				this.precisionValues [idx] = (ushort)((this.precisionValues[idx] + 3) % 15);
+			}
             GUILayout.EndHorizontal();
+			idx++;
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
             GUILayout.Label("Time to Ap:");
-            GUILayout.Label(Tools.ConvertInterval(vessel.orbit.timeToAp), GUILayout.ExpandWidth(false));
+			GUILayout.Label(Tools.ConvertInterval(vessel.orbit.timeToAp), GUILayout.ExpandWidth(false));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(VOIDLabels.void_periapsis + ":");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.PeA) + "m", GUILayout.ExpandWidth(false));
+			GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.PeA, this.precisionValues [idx]) + "m", GUILayout.ExpandWidth(false));
+			GUILayout.FlexibleSpace ();
+			if (GUILayout.Button ("P")) {
+				this.precisionValues [idx] = (ushort)((this.precisionValues[idx] + 3) % 15);
+			}
             GUILayout.EndHorizontal();
+			idx++;
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
             GUILayout.Label("Time to Pe:");
@@ -89,8 +113,13 @@ namespace VOID
             double g_vessel = (VOID_Core.Constant_G * vessel.mainBody.Mass) / Math.Pow(r_vessel, 2);
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
             GUILayout.Label("Gravity:");
-			GUILayout.Label(Tools.MuMech_ToSI(g_vessel) + "m/s²", GUILayout.ExpandWidth(false));
+			GUILayout.Label(Tools.MuMech_ToSI(g_vessel, this.precisionValues[idx]) + "m/s²", GUILayout.ExpandWidth(false));
+			GUILayout.FlexibleSpace ();
+			if (GUILayout.Button ("P")) {
+				this.precisionValues [idx] = (ushort)((this.precisionValues[idx] + 3) % 15);
+			}
             GUILayout.EndHorizontal();
+			idx++;
 
 			this.toggleExtended = GUILayout.Toggle(this.toggleExtended, "Extended info");
 
@@ -103,8 +132,13 @@ namespace VOID
 
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                 GUILayout.Label("Semi-major axis:");
-                GUILayout.Label((vessel.orbit.semiMajorAxis / 1000).ToString("##,#") + "km", GUILayout.ExpandWidth(false));
+				GUILayout.Label(Tools.MuMech_ToSI(vessel.orbit.semiMajorAxis, this.precisionValues [idx]) + "m", GUILayout.ExpandWidth(false));
+				GUILayout.FlexibleSpace ();
+				if (GUILayout.Button ("P")) {
+					this.precisionValues [idx] = (ushort)((this.precisionValues[idx] + 3) % 15);
+				}
                 GUILayout.EndHorizontal();
+				idx++;
 
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                 GUILayout.Label("Eccentricity:");
@@ -119,7 +153,7 @@ namespace VOID
 
                 GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                 GUILayout.Label("True anomaly:");
-                GUILayout.Label(vessel.orbit.trueAnomaly.ToString("F3") + "°", GUILayout.ExpandWidth(false));
+				GUILayout.Label(vessel.orbit.trueAnomaly.ToString("F3") + "°", GUILayout.ExpandWidth(false));
                 GUILayout.EndHorizontal();
 
 				// Toadicus edit: convert eccentric anomaly into degrees.
