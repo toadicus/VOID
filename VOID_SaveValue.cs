@@ -69,7 +69,7 @@ namespace VOID
 
 		public static implicit operator T(VOID_SaveValue<T> v)
 		{
-			return v.value;
+			return (T)v.value;
 		}
 
 		public static implicit operator VOID_SaveValue<T>(T v)
@@ -91,7 +91,7 @@ namespace VOID
 			return r;
 		}
 
-		public new string ToString()
+		public override string ToString()
 		{
 			return this.value.ToString();
 		}

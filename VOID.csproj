@@ -58,6 +58,7 @@
     <Compile Include="VOID_DataLogger.cs" />
     <Compile Include="VOID_EditorCore.cs" />
     <Compile Include="VOID_EditorHUD.cs" />
+    <Compile Include="IntCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
