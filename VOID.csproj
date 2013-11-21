@@ -23,6 +23,7 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="AfterBuild" command="/usr/bin/cp -fv ${ProjectDir}/bin/Debug/VOID.dll /mnt/games/ssd/KSP_linux/GameData/VOID/Plugins/" />
+        <Command type="AfterBuild" command="/usr/bin/cp -fv ${ProjectDir}/bin/Debug/VOID.dll /mnt/zeetha/srv/default/htdocs/KSP/VOID/" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
