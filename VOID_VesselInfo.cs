@@ -48,7 +48,10 @@ namespace VOID
 
 			GUILayout.BeginVertical();
 
-			GUILayout.Label(vessel.vesselName, VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(
+				vessel.vesselName,
+				VOID_Core.Instance.LabelStyles["center_bold"],
+				GUILayout.ExpandWidth(true));
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("G-force:");
@@ -68,7 +71,10 @@ namespace VOID
 
 			    foreach (PartModule pm in p.Modules)
 			    {
-			        if ((pm.moduleName == "ModuleEngines") && ((p.State == PartStates.ACTIVE) || ((Staging.CurrentStage > Staging.lastStage) && (p.inverseStage == Staging.lastStage))))
+			        if ((pm.moduleName == "ModuleEngines") &&
+						((p.State == PartStates.ACTIVE) ||
+							((Staging.CurrentStage > Staging.lastStage) && (p.inverseStage == Staging.lastStage)))
+					)
 			        {
 			            max_thrust += ((ModuleEngines)pm).maxThrust;
 			            final_thrust += ((ModuleEngines)pm).finalThrust;
@@ -95,7 +101,9 @@ namespace VOID
 			{
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 				GUILayout.Label("DeltaV (Current Stage):");
-				GUILayout.Label(Tools.MuMech_ToSI(stages[Staging.lastStage].deltaV).ToString() + "m/s", GUILayout.ExpandWidth(false));
+				GUILayout.Label(
+					Tools.MuMech_ToSI(stages[Staging.lastStage].deltaV).ToString() + "m/s",
+					GUILayout.ExpandWidth(false));
 				GUILayout.EndHorizontal();
 			}
 
@@ -121,13 +129,19 @@ namespace VOID
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Thrust (curr/max):");
-			GUILayout.Label(final_thrust.ToString("F1") + " / " + max_thrust.ToString("F1") + " kN", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				final_thrust.ToString("F1") +
+				" / " + max_thrust.ToString("F1") + " kN",
+				GUILayout.ExpandWidth(false));
 			GUILayout.EndHorizontal();
 
 			double gravity = vessel.mainBody.gravParameter / Math.Pow(vessel.mainBody.Radius + vessel.altitude, 2);
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("T:W (curr/max):");
-			GUILayout.Label((final_thrust / (total_mass * gravity)).ToString("F2") + " / " + (max_thrust / (total_mass * gravity)).ToString("F2"), GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				(final_thrust / (total_mass * gravity)).ToString("F2") +
+				" / " + (max_thrust / (total_mass * gravity)).ToString("F2"),
+				GUILayout.ExpandWidth(false));
 			GUILayout.EndHorizontal();
 
 			double g_ASL = (VOID_Core.Constant_G * vessel.mainBody.Mass) / Math.Pow(vessel.mainBody.Radius, 2);

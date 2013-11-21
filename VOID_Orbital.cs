@@ -30,10 +30,24 @@ namespace VOID
 		protected VOID_SaveValue<bool> toggleExtended = false;
 
 		[AVOID_SaveValue("precisionValues")]
-		protected IntCollection precisionValues = new IntCollection(4, 230584300921369395);
+		protected long _precisionValues = 230584300921369395;
+		protected IntCollection precisionValues;
 
-		protected double orbitAltitude;
-		protected double orbitVelocity;
+		protected VOID_StrValue primaryName = new VOID_StrValue (
+			                                    VOIDLabels.void_primary,
+												new Func<string> (() => VOID_Core.Instance.vessel.mainBody.name)
+		                                    );
+		protected VOID_DoubleValue orbitAltitude = new VOID_DoubleValue (
+			                                         "Altitude (ASL)",
+			                                         new Func<double> (() => VOID_Core.Instance.vessel.orbit.altitude),
+			                                         "m"
+		                                         );
+		protected VOID_DoubleValue orbitVelocity = new VOID_DoubleValue (
+			                                         VOIDLabels.void_velocity,
+			                                         new Func<double> 
+														(() => VOID_Core.Instance.vessel.orbit.vel.magnitude),
+			                                         "m/s"
+		                                         );
 		protected double orbitApoAlt;
 		protected double oribtPeriAlt;
 		protected string timeToApo;
@@ -60,12 +74,12 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
+			base.ModuleWindow (_);
+
 			if (VOID_Core.Instance.updateTimer >= this.lastUpdate + VOID_Core.Instance.updatePeriod)
 			{
 				this.lastUpdate = VOID_Core.Instance.updateTimer;
 
-				this.orbitAltitude = vessel.orbit.altitude;
-				this.orbitVelocity = vessel.orbit.vel.magnitude;
 				this.orbitApoAlt = vessel.orbit.ApA;
 				this.oribtPeriAlt = vessel.orbit.PeA;
 				this.timeToApo = Tools.ConvertInterval(vessel.orbit.timeToAp);
@@ -91,23 +105,9 @@ namespace VOID
 
             GUILayout.BeginVertical();
 
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-            GUILayout.Label(VOIDLabels.void_primary + ":");
-			GUILayout.FlexibleSpace();
-            GUILayout.Label(vessel.mainBody.bodyName, GUILayout.ExpandWidth(false));
-            GUILayout.EndHorizontal();
+			this.primaryName.DoGUIHorizontal ();
 
-            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label(VOIDLabels.void_altitude_asl + ":", GUILayout.ExpandWidth(true));
-			GUILayout.FlexibleSpace();
-			GUILayout.Label(
-				Tools.MuMech_ToSI(this.orbitAltitude, this.precisionValues[idx]) + "m",
-				GUILayout.ExpandWidth(false)
-				);
-			if (GUILayout.Button ("P")) {
-				this.precisionValues [idx] = (ushort)((this.precisionValues[idx] + 3) % 15);
-			}
-            GUILayout.EndHorizontal();
+			this.precisionValues [idx] = this.orbitAltitude.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
             GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -250,6 +250,20 @@ namespace VOID
 
             GUILayout.EndVertical();
             GUI.DragWindow();
+		}
+
+		public override void LoadConfig ()
+		{
+			base.LoadConfig ();
+
+			this.precisionValues = new IntCollection (4, this._precisionValues);
+		}
+
+		public override void _SaveToConfig (KSP.IO.PluginConfiguration config)
+		{
+			this._precisionValues = this.precisionValues.collection;
+
+			base._SaveToConfig (config);
 		}
 	}
 }

@@ -133,22 +133,15 @@ namespace VOID
 				object fieldValue = field.GetValue(this);
 
 				bool convertBack = false;
-				bool isIntCollection = false;
 				if (fieldValue is IVOID_SaveValue)
 				{
-					if (fieldValue is IntCollection) {
-						isIntCollection = true;
-					}
 					fieldValue = (fieldValue as IVOID_SaveValue).AsType;
 					convertBack = true;
 				}
 
 				fieldValue = config.GetValue(fieldName, fieldValue);
 
-				if (isIntCollection) {
-					fieldValue = new IntCollection (4, (long)fieldValue);
-				}
-				else if (convertBack)
+				if (convertBack)
 				{
 					Type type = typeof(VOID_SaveValue<>).MakeGenericType (fieldValue.GetType ());
 					IVOID_SaveValue convertValue = Activator.CreateInstance (type) as IVOID_SaveValue;
@@ -202,7 +195,64 @@ namespace VOID
 		protected float defWidth = 250f;
 		protected float defHeight = 50f;
 
-		public abstract void ModuleWindow(int _);
+		public virtual void ModuleWindow(int _)
+		{
+			if (VOID_Core.Instance.updateTimer - this.lastUpdate > VOID_Core.Instance.updatePeriod) {
+				Tools.PostDebugMessage(string.Format(
+					"{0}: refreshing VOID_DataValues.",
+					this.GetType().Name
+				));
+
+				foreach (var fieldinfo in this.GetType().GetFields(
+					BindingFlags.Instance |
+					BindingFlags.NonPublic |
+					BindingFlags.Public |
+					BindingFlags.FlattenHierarchy
+				)) {
+					Tools.PostDebugMessage(string.Format(
+						"{0}: checking field {1}.",
+						this.GetType().Name,
+						fieldinfo.Name
+					));
+
+					object field = null;
+
+					try
+					{
+						field = fieldinfo.GetValue (this);
+					}
+					catch (NullReferenceException) {
+						Tools.PostDebugMessage(string.Format(
+							"{0}: caught NullReferenceException, could not get value for field {1}.",
+							this.GetType().Name,
+							fieldinfo.Name
+						));
+					}
+
+					if (field == null) {
+						continue;
+					}
+
+					if (typeof(IVOID_DataValue).IsAssignableFrom (field.GetType ())) {
+						Tools.PostDebugMessage(string.Format(
+							"{0}: found field {1}.",
+							this.GetType().Name,
+							fieldinfo.Name
+						));
+
+						(field as IVOID_DataValue).Refresh ();
+
+						Tools.PostDebugMessage(string.Format(
+							"{0}: refreshed field {1}.",
+							this.GetType().Name,
+							fieldinfo.Name
+						));
+					}
+				}
+
+				this.lastUpdate = VOID_Core.Instance.updateTimer;
+			}
+		}
 
 		public override void DrawGUI()
 		{

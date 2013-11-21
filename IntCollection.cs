@@ -22,7 +22,7 @@ using System;
 
 namespace VOID
 {
-	public class IntCollection : IVOID_SaveValue
+	public class IntCollection
 	{
 		public static implicit operator long(IntCollection c)
 		{
@@ -34,14 +34,6 @@ namespace VOID
 		public long collection { get; protected set; }
 		public ushort maxCount { get; protected set; }
 		public ushort wordLength { get; protected set; }
-
-		public Type type { get { return typeof(long); } }
-		public object AsType { get { return this.collection; } }
-
-		public void SetValue(object v)
-		{
-			this.collection = (long)v;
-		}
 
 		public IntCollection (ushort wordLength = 4, long initialCollection = 0)
 		{
