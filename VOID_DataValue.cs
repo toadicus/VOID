@@ -26,6 +26,8 @@ namespace VOID
 	public interface IVOID_DataValue
 	{
 		void Refresh();
+		string ValueUnitString();
+		void DoGUIHorizontal();
 	}
 
 	public class VOID_DataValue<T> : IVOID_DataValue
