@@ -37,27 +37,32 @@ namespace VOID
 			                                    VOIDLabels.void_primary,
 												new Func<string> (() => VOID_Core.Instance.vessel.mainBody.name)
 		                                    );
+
 		protected VOID_DoubleValue orbitAltitude = new VOID_DoubleValue (
 			                                         "Altitude (ASL)",
 			                                         new Func<double> (() => VOID_Core.Instance.vessel.orbit.altitude),
 			                                         "m"
 		                                         );
+
 		protected VOID_DoubleValue orbitVelocity = new VOID_DoubleValue (
 			                                         VOIDLabels.void_velocity,
 			                                         new Func<double> 
 														(() => VOID_Core.Instance.vessel.orbit.vel.magnitude),
 			                                         "m/s"
 		                                         );
+
 		protected VOID_DoubleValue orbitApoAlt = new VOID_DoubleValue(
 		                                        VOIDLabels.void_apoapsis,
 		                                        new Func<double>(() => VOID_Core.Instance.vessel.orbit.ApA),
 		                                        "m"
 	                                        );
+
 		protected VOID_DoubleValue oribtPeriAlt = new VOID_DoubleValue(
 		                                         VOIDLabels.void_periapsis,
 		                                         new Func<double>(() => VOID_Core.Instance.vessel.orbit.PeA),
 		                                         "m"
 	                                         );
+
 		protected VOID_StrValue timeToApo = new VOID_StrValue(
 		                                   "Time to Apoapsis",
 		                                   new Func<string>(
@@ -72,18 +77,18 @@ namespace VOID
 			                                  )
 		                                  );
 
-
 		protected VOID_DoubleValue orbitInclination = new VOID_DoubleValue(
 			                                        "Inclination",
 			                                        new Func<double>(() => VOID_Core.Instance.vessel.orbit.inclination),
 			                                        "°"
 		                                        );
+
 		protected VOID_DoubleValue gravityAccel = new VOID_DoubleValue(
 			                                        "Gravity",
 			                                        delegate()
 													{
-			double orbitRadius = VOID_Core.Instance.vessel.mainBody.Radius +
-				VOID_Core.Instance.vessel.mainBody.GetAltitude(VOID_Core.Instance.vessel.findWorldCenterOfMass());
+														double orbitRadius = VOID_Core.Instance.vessel.mainBody.Radius +
+															VOID_Core.Instance.vessel.mainBody.GetAltitude(VOID_Core.Instance.vessel.findWorldCenterOfMass());
 														return (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
 														Math.Pow(orbitRadius, 2);
 													},
@@ -99,6 +104,7 @@ namespace VOID
 			                                         new Func<double>(() => VOID_Core.Instance.vessel.orbit.semiMajorAxis),
 			                                         "m"
 		                                         );
+
 		protected VOID_DoubleValue eccentricity = new VOID_DoubleValue(
 			                                        "Eccentricity",
 			                                        new Func<double>(() => VOID_Core.Instance.vessel.orbit.eccentricity),
