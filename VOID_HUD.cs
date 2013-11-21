@@ -101,7 +101,8 @@ namespace VOID
 					" ETA " + Tools.ConvertInterval (vessel.orbit.timeToAp) +
 					"\nPe: " + Tools.MuMech_ToSI (vessel.orbit.PeA) + "m" +
 					" ETA " + Tools.ConvertInterval (vessel.orbit.timeToPe) +
-					"\nInc: " + vessel.orbit.inclination.ToString ("F3") + "°",
+					"\nInc: " + vessel.orbit.inclination.ToString ("F3") + "°" +
+					"\nPrimary: " + vessel.mainBody.bodyName,
 					labelStyle);
 				// Toadicus edit: Added "Biome: " line to surf/atmo HUD
 				GUI.Label (
