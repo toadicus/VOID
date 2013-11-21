@@ -59,13 +59,6 @@ namespace VOID
 			}
 		}
 
-		public string ValueUnitString {
-			get {
-				return this.Value.ToString() + this.Units;
-			}
-		}
-
-
 		/*
 		 * Methods
 		 * */
@@ -88,12 +81,16 @@ namespace VOID
 			return (T)this.cache;
 		}
 
+		public string ValueUnitString() {
+			return this.Value.ToString() + this.Units;
+		}
+
 		public virtual void DoGUIHorizontal()
 		{
 			GUILayout.BeginHorizontal (GUILayout.ExpandWidth (true));
 			GUILayout.Label (this.Label + ":");
 			GUILayout.FlexibleSpace ();
-			GUILayout.Label (this.ValueUnitString, GUILayout.ExpandWidth (false));
+			GUILayout.Label (this.ValueUnitString(), GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
 		}
 
@@ -121,25 +118,30 @@ namespace VOID
 		public abstract string ToString(string Format);
 		public abstract string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue);
 
-		public ushort DoGUIHorizontal(ushort digits)
+		public abstract string ValueUnitString(string format);
+		public abstract string ValueUnitString(ushort digits);
+
+		public virtual void DoGUIHorizontal(string format)
+		{
+			GUILayout.BeginHorizontal (GUILayout.ExpandWidth (true));
+			GUILayout.Label (this.Label + ":");
+			GUILayout.FlexibleSpace ();
+			GUILayout.Label (this.ValueUnitString(format), GUILayout.ExpandWidth (false));
+			GUILayout.EndHorizontal ();
+		}
+
+		public virtual ushort DoGUIHorizontal(ushort digits)
 		{
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(this.Label + ":", GUILayout.ExpandWidth(true));
 			GUILayout.FlexibleSpace();
-			GUILayout.Label(
-				this.ToSIString(digits),
-				GUILayout.ExpandWidth(false)
-			);
+			GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
 			if (GUILayout.Button ("P")) {
 				digits = (ushort)((digits + 3) % 15);
 			}
 			GUILayout.EndHorizontal();
 
 			return digits;
-		}
-		public override void DoGUIHorizontal ()
-		{
-			this.DoGUIHorizontal (3);
 		}
 	}
 
@@ -157,6 +159,14 @@ namespace VOID
 			);
 		}
 
+		public override string ValueUnitString(string format) {
+			return this.Value.ToString(format) + this.Units;
+		}
+
+		public override string ValueUnitString(ushort digits) {
+			return Tools.MuMech_ToSI(this.Value, digits) + this.Units;
+		}
+
 		public override string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
 		{
 			return string.Format (
@@ -169,6 +179,14 @@ namespace VOID
 	public class VOID_FloatValue : VOID_NumValue<float>, IVOID_NumericValue
 	{
 		public VOID_FloatValue(string Label, Func<float> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
+		
+		public override string ValueUnitString(string format) {
+			return this.Value.ToString(format) + this.Units;
+		}
+
+		public override string ValueUnitString(ushort digits) {
+			return Tools.MuMech_ToSI((double)this.Value, digits) + this.Units;
+		}
 
 		public override string ToString(string format)
 		{
@@ -192,6 +210,14 @@ namespace VOID
 	public class VOID_IntValue : VOID_NumValue<int>, IVOID_NumericValue
 	{
 		public VOID_IntValue(string Label, Func<int> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
+		
+		public override string ValueUnitString(string format) {
+			return this.Value.ToString(format) + this.Units;
+		}
+
+		public override string ValueUnitString(ushort digits) {
+			return Tools.MuMech_ToSI((double)this.Value, digits) + this.Units;
+		}
 
 		public override string ToString(string format)
 		{
@@ -216,7 +242,7 @@ namespace VOID
 
 	public class VOID_StrValue : VOID_DataValue<string>
 	{
-		public VOID_StrValue(string Label, Func<string> ValueFunc, string Units = "") : base(Label, ValueFunc, Units) {}
+		public VOID_StrValue(string Label, Func<string> ValueFunc) : base(Label, ValueFunc, "") {}
 	}
 }
 
