@@ -69,7 +69,6 @@ namespace VOID
 			this.Label = Label;
 			this.Units = Units;
 			this.ValueFunc = ValueFunc;
-			this.cache = this.ValueFunc.Invoke ();
 		}
 
 		public void Refresh()
@@ -132,14 +131,18 @@ namespace VOID
 			GUILayout.EndHorizontal ();
 		}
 
-		public virtual ushort DoGUIHorizontal(ushort digits)
+		public virtual ushort DoGUIHorizontal(ushort digits, bool precisionButton = true)
 		{
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(this.Label + ":", GUILayout.ExpandWidth(true));
 			GUILayout.FlexibleSpace();
 			GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
-			if (GUILayout.Button ("P")) {
-				digits = (ushort)((digits + 3) % 15);
+			if (precisionButton)
+			{
+				if (GUILayout.Button ("P"))
+				{
+					digits = (ushort)((digits + 3) % 15);
+				}
 			}
 			GUILayout.EndHorizontal();
 
