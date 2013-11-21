@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using KSP;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VOID
@@ -29,7 +30,128 @@ namespace VOID
 		[AVOID_SaveValue("toggleExtended")]
 		protected VOID_SaveValue<bool> toggleExtended = false;
 
-		public VOID_VesselInfo()
+		protected VOID_DoubleValue geeForce = new VOID_DoubleValue(
+			"G-force",
+			new Func<double>(() => VOID_Core.Instance.vessel.geeForce),
+			"gees"
+		);
+
+		protected VOID_IntValue partCount = new VOID_IntValue(
+			"Parts",
+			new Func<int>(() => VOID_Core.Instance.vessel.Parts.Count),
+			""
+		);
+
+		protected VOID_DoubleValue totalMass = new VOID_DoubleValue(
+			"Total Mass",
+			new Func<double>(() => VOID_Core.Instance.vessel.GetTotalMass()),
+			"tons"
+		);
+
+		protected VOID_DoubleValue resourceMass = new VOID_DoubleValue(
+			"Resource Mass",
+			delegate()
+			{
+				double rscMass = 0;
+				foreach (Part part in VOID_Core.Instance.vessel.Parts)
+				{
+					rscMass += part.GetResourceMass();
+				}
+				return rscMass;
+			},
+			"tons"
+		);
+
+		protected VOID_DoubleValue stageDeltaV = new VOID_DoubleValue(
+			"DeltaV (Current Stage)",
+			delegate()
+			{
+				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+					return double.NaN;
+				return Engineer.VesselSimulator.SimManager.Instance.Stages[Staging.lastStage].deltaV;
+			},
+			"m/s"
+		);
+
+		protected VOID_DoubleValue totalDeltaV = new VOID_DoubleValue(
+			"DeltaV (Total)",
+			delegate()
+			{
+				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+					return double.NaN;
+				return Engineer.VesselSimulator.SimManager.Instance.LastStage.totalDeltaV;
+			},
+			"m/s"
+		);
+
+		protected VOID_FloatValue mainThrottle = new VOID_FloatValue(
+			"Throttle",
+			new Func<float>(() => VOID_Core.Instance.vessel.ctrlState.mainThrottle * 100f),
+			"%"
+		);
+
+		protected VOID_StrValue currmaxThrust = new VOID_StrValue(
+			"Thrust (curr/max)",
+			delegate()
+			{
+				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+					return "N/A";
+
+				double currThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.actualThrust;
+				double maxThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.thrust;
+
+				return string.Format(
+					"{0} / {1}",
+					currThrust.ToString("F1"),
+					maxThrust.ToString("F1")
+				);
+			}
+		);
+
+		protected VOID_StrValue currmaxThrustWeight = new VOID_StrValue(
+			"T:W (curr/max)",
+			delegate()
+			{
+				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+					return "N/A";
+
+				double currThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.actualThrust;
+				double maxThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.thrust;
+				double mass = VOID_Core.Instance.vessel.GetTotalMass();
+				double gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
+				                 Math.Pow(
+					                 VOID_Core.Instance.vessel.mainBody.Radius + VOID_Core.Instance.vessel.altitude,
+					                 2
+					                );
+				double weight = mass * gravity;
+
+				return string.Format(
+					"{0} / {1}",
+					(currThrust / weight).ToString("F2"),
+					(maxThrust / weight).ToString("F2")
+				);
+			}
+		);
+
+		protected VOID_DoubleValue surfaceThrustWeight = new VOID_DoubleValue(
+			"Max T:W @ surface",
+			delegate()
+			{
+				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+					return double.NaN;
+
+				double maxThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.thrust;
+				double mass = VOID_Core.Instance.vessel.GetTotalMass();
+				double gravity = (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
+				                 Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+				double weight = mass * gravity;
+
+				return maxThrust / weight;
+			},
+			""
+		);
+
+		public VOID_VesselInfo() : base()
 		{
 			this._Name = "Vessel Information";
 
@@ -39,6 +161,8 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
+			base.ModuleWindow (_);
+
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
 				Engineer.VesselSimulator.SimManager.Instance.RequestSimulation();
@@ -53,102 +177,31 @@ namespace VOID
 				VOID_Core.Instance.LabelStyles["center_bold"],
 				GUILayout.ExpandWidth(true));
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("G-force:");
-			GUILayout.Label(vessel.geeForce.ToString("F2") + " gees", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.geeForce.DoGUIHorizontal ("F2");
 
-			int num_parts = 0;
-			double total_mass = vessel.GetTotalMass();
-			double resource_mass = 0;
-			double max_thrust = 0;
-			double final_thrust = 0;
+			this.partCount.DoGUIHorizontal ();
 
-			foreach (Part p in vessel.parts)
-			{
-			    num_parts++;
-			    resource_mass += p.GetResourceMass();
+			this.totalMass.DoGUIHorizontal ("F1");
 
-			    foreach (PartModule pm in p.Modules)
-			    {
-			        if ((pm.moduleName == "ModuleEngines") &&
-						((p.State == PartStates.ACTIVE) ||
-							((Staging.CurrentStage > Staging.lastStage) && (p.inverseStage == Staging.lastStage)))
-					)
-			        {
-			            max_thrust += ((ModuleEngines)pm).maxThrust;
-			            final_thrust += ((ModuleEngines)pm).finalThrust;
-			        }
-			    }
-			}
+			this.resourceMass.DoGUIHorizontal ("F1");
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Parts:");
-			GUILayout.Label(num_parts.ToString("F0"), GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Total mass:");
-			GUILayout.Label(total_mass.ToString("F1") + " tons", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Resource mass:");
-			GUILayout.Label(resource_mass.ToString("F1") + " tons", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
-
-			if (stages.Length > Staging.lastStage)
-			{
-				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-				GUILayout.Label("DeltaV (Current Stage):");
-				GUILayout.Label(
-					Tools.MuMech_ToSI(stages[Staging.lastStage].deltaV).ToString() + "m/s",
-					GUILayout.ExpandWidth(false));
-				GUILayout.EndHorizontal();
-			}
-
-			if (stages.Length > 0)
-			{
-				double totalDeltaV = 0d;
-
-				for (int i = 0; i < stages.Length; ++i)
-				{
-					totalDeltaV += stages [i].deltaV;
+			if (stages != null) {
+				if (stages.Length > Staging.lastStage) {
+					this.stageDeltaV.DoGUIHorizontal (3, false);
 				}
 
-				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-				GUILayout.Label("DeltaV (Total):");
-				GUILayout.Label(Tools.MuMech_ToSI(totalDeltaV).ToString() + "m/s", GUILayout.ExpandWidth(false));
-				GUILayout.EndHorizontal();
+				if (stages.Length > 0) {
+					this.totalDeltaV.DoGUIHorizontal (3, false);
+				}
 			}
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Throttle:");
-			GUILayout.Label((vessel.ctrlState.mainThrottle * 100f).ToString("F0") + "%", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.mainThrottle.DoGUIHorizontal ("F0");
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Thrust (curr/max):");
-			GUILayout.Label(
-				final_thrust.ToString("F1") +
-				" / " + max_thrust.ToString("F1") + " kN",
-				GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.currmaxThrust.DoGUIHorizontal ();
 
-			double gravity = vessel.mainBody.gravParameter / Math.Pow(vessel.mainBody.Radius + vessel.altitude, 2);
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("T:W (curr/max):");
-			GUILayout.Label(
-				(final_thrust / (total_mass * gravity)).ToString("F2") +
-				" / " + (max_thrust / (total_mass * gravity)).ToString("F2"),
-				GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.currmaxThrustWeight.DoGUIHorizontal ();
 
-			double g_ASL = (VOID_Core.Constant_G * vessel.mainBody.Mass) / Math.Pow(vessel.mainBody.Radius, 2);
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Max T:W @ surface:");
-			GUILayout.Label((max_thrust / (total_mass * g_ASL)).ToString("F2"), GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.surfaceThrustWeight.DoGUIHorizontal ("F2");
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
