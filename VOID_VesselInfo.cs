@@ -185,15 +185,9 @@ namespace VOID
 
 			this.resourceMass.DoGUIHorizontal ("F1");
 
-			if (stages != null) {
-				if (stages.Length > Staging.lastStage) {
-					this.stageDeltaV.DoGUIHorizontal (3, false);
-				}
+			this.stageDeltaV.DoGUIHorizontal (3, false);
 
-				if (stages.Length > 0) {
-					this.totalDeltaV.DoGUIHorizontal (3, false);
-				}
-			}
+			this.totalDeltaV.DoGUIHorizontal (3, false);
 
 			this.mainThrottle.DoGUIHorizontal ("F0");
 
