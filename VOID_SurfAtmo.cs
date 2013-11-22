@@ -26,6 +26,102 @@ namespace VOID
 {
 	public class VOID_SurfAtmo : VOID_WindowModule
 	{
+		[AVOID_SaveValue("precisionValues")]
+		protected long _precisionValues = 230584300921369395;
+		protected IntCollection precisionValues;
+
+		protected VOID_DoubleValue trueAltitude = new VOID_DoubleValue(
+			"Altitude (true)",
+			delegate()
+			{
+				double alt_true = VOID_Core.Instance.vessel.orbit.altitude - VOID_Core.Instance.vessel.terrainAltitude;
+				// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m,
+				// and water covers the whole surface at 0 m.
+				if (VOID_Core.Instance.vessel.terrainAltitude < 0 && VOID_Core.Instance.vessel.mainBody.ocean )
+					alt_true = VOID_Core.Instance.vessel.orbit.altitude;
+				return alt_true;
+			},
+			"m"
+		);
+
+		protected VOID_StrValue surfLatitude = new VOID_StrValue(
+			"Latitude",
+			new Func<string> (() => Tools.GetLatitudeString(VOID_Core.Instance.vessel))
+		);
+
+		protected VOID_StrValue surfLongitude = new VOID_StrValue(
+			"Longitude",
+			new Func<string> (() => Tools.GetLongitudeString(VOID_Core.Instance.vessel))
+		);
+
+		protected VOID_StrValue vesselHeading = new VOID_StrValue(
+			"Heading",
+			delegate()
+			{
+				double heading = Tools.MuMech_get_heading(VOID_Core.Instance.vessel);
+				string cardinal = Tools.get_heading_text(heading);
+
+				return string.Format(
+					"{0}° {1}",
+					heading.ToString("F2"),
+					cardinal
+				);
+			}
+		);
+
+		protected VOID_DoubleValue terrainElevation = new VOID_DoubleValue(
+			"Terrain elevation",
+			new Func<double> (() => VOID_Core.Instance.vessel.terrainAltitude),
+			"m"
+		);
+
+		protected VOID_DoubleValue surfVelocity = new VOID_DoubleValue(
+			"Surface velocity",
+			new Func<double> (() => VOID_Core.Instance.vessel.srf_velocity.magnitude),
+			"m/s"
+		);
+
+		protected VOID_DoubleValue vertVelocity = new VOID_DoubleValue(
+			"Vertical speed",
+			new Func<double> (() => VOID_Core.Instance.vessel.verticalSpeed),
+			"m/s"
+		);
+
+		protected VOID_DoubleValue horzVelocity = new VOID_DoubleValue(
+			"Horizontal speed",
+			new Func<double> (() => VOID_Core.Instance.vessel.horizontalSrfSpeed),
+			"m/s"
+		);
+
+		protected VOID_FloatValue temperature = new VOID_FloatValue(
+			"Temperature",
+			new Func<float> (() => VOID_Core.Instance.vessel.flightIntegrator.getExternalTemperature()),
+			"°C"
+		);
+
+		protected VOID_DoubleValue atmDensity = new VOID_DoubleValue (
+			"Atmosphere Density",
+			new Func<double> (() => VOID_Core.Instance.vessel.atmDensity * 1000f),
+			"g/m³"
+		);
+
+		protected VOID_DoubleValue atmPressure = new VOID_DoubleValue (
+			"Pressure",
+			new Func<double> (() => VOID_Core.Instance.vessel.staticPressure),
+			"atm"
+		);
+
+		protected VOID_FloatValue atmLimit = new VOID_FloatValue(
+			"Atmosphere Limit",
+			new Func<float> (() => VOID_Core.Instance.vessel.mainBody.maxAtmosphereAltitude),
+			"m"
+		);
+
+		protected VOID_StrValue currBiome = new VOID_StrValue(
+			"Biome",
+			new Func<string> (() => Tools.Toadicus_GetAtt(VOID_Core.Instance.vessel).name)
+		);
+
 		public VOID_SurfAtmo()
 		{
 			this._Name = "Surface & Atmospheric Information";
@@ -36,79 +132,61 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
+			base.ModuleWindow (_);
+
+			int idx = 0;
+
 			GUILayout.BeginVertical();
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Altitude (true):");
-			double alt_true = vessel.orbit.altitude - vessel.terrainAltitude;
-			// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m, and water covers the whole surface at 0 m.
-			if (vessel.terrainAltitude < 0 && vessel.mainBody.ocean ) alt_true = vessel.orbit.altitude;
-			GUILayout.Label(Tools.MuMech_ToSI(alt_true) + "m", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal ();
+			this.precisionValues [idx] = this.trueAltitude.DoGUIHorizontal (this.precisionValues [idx]);
+			idx++;
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Latitude:");
-			GUILayout.Label(Tools.GetLatitudeString(vessel), GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.surfLatitude.DoGUIHorizontal ();
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Longitude:");
-			GUILayout.Label(Tools.GetLongitudeString(vessel), GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.surfLongitude.DoGUIHorizontal ();
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Heading:");
-			GUILayout.Label(Tools.MuMech_get_heading(vessel).ToString("F2") + "° " + Tools.get_heading_text(Tools.MuMech_get_heading(vessel)), GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.vesselHeading.DoGUIHorizontal ();
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Terrain elevation:");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.terrainAltitude) + "m", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.precisionValues [idx] = this.terrainElevation.DoGUIHorizontal (this.precisionValues [idx]);
+			idx++;
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Surface velocity:");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.srf_velocity.magnitude) + "m/s", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.precisionValues [idx] = this.surfVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			idx++;
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Vertical speed:");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.verticalSpeed) + "m/s", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.precisionValues [idx] = this.vertVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			idx++;
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Horizontal speed:");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.horizontalSrfSpeed) + "m/s", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.precisionValues [idx] = this.horzVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			idx++;
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Temperature:");
-			GUILayout.Label(vessel.flightIntegrator.getExternalTemperature().ToString("F2") + "° C", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.temperature.DoGUIHorizontal ("F2");
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Atmosphere density:");
-			GUILayout.Label(Tools.MuMech_ToSI(vessel.atmDensity * 1000) + "g/m³", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.atmDensity.DoGUIHorizontal (3);
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Pressure:");
-			GUILayout.Label(vessel.staticPressure.ToString("F2") + " atms", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.atmPressure.DoGUIHorizontal ("F2");
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Atmosphere limit:");
-			GUILayout.Label("≈ " + Tools.MuMech_ToSI(vessel.mainBody.maxAtmosphereAltitude) + "m", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
+			this.precisionValues [idx] = this.atmLimit.DoGUIHorizontal (this.precisionValues [idx]);
+			idx++;
 
 			// Toadicus edit: added Biome
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Biome:");
-			GUILayout.Label(Tools.Toadicus_GetAtt(vessel).name, VOID_Core.Instance.LabelStyles["right"]);
-			GUILayout.EndHorizontal();
+			this.currBiome.DoGUIHorizontal ();
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
+		}
+
+		public override void LoadConfig ()
+		{
+			base.LoadConfig ();
+
+			this.precisionValues = new IntCollection (4, this._precisionValues);
+		}
+
+		public override void _SaveToConfig (KSP.IO.PluginConfiguration config)
+		{
+			this._precisionValues = this.precisionValues.collection;
+
+			base._SaveToConfig (config);
 		}
 	}
 }
