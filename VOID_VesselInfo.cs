@@ -66,7 +66,9 @@ namespace VOID
 			"DeltaV (Current Stage)",
 			delegate()
 			{
-				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null ||
+			    	Engineer.VesselSimulator.SimManager.Instance.Stages.Length <= Staging.lastStage
+			    )
 					return double.NaN;
 				return Engineer.VesselSimulator.SimManager.Instance.Stages[Staging.lastStage].deltaV;
 			},
