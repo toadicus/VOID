@@ -122,7 +122,15 @@ namespace VOID
 		public abstract string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue);
 
 		public abstract string ValueUnitString(string format);
-		public abstract string ValueUnitString(ushort digits);
+		
+		public virtual string ValueUnitString(ushort digits) {
+			return Tools.MuMech_ToSI(this.ToDouble(), digits) + this.Units;
+		}
+
+		public virtual string ValueUnitString(ushort digits, int MinMagnitude, int MaxMagnitude)
+		{
+			return Tools.MuMech_ToSI(this.ToDouble(), digits, MinMagnitude, MaxMagnitude) + this.Units;
+		}
 
 		public virtual void DoGUIHorizontal(string format)
 		{
@@ -138,20 +146,26 @@ namespace VOID
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(this.Label + ":", GUILayout.ExpandWidth(true));
 			GUILayout.FlexibleSpace();
-			GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
 			if (precisionButton)
 			{
-				if (GUILayout.Button (digits.ToString()))
+				float magnitude = (float)Math.Log10(Math.Abs(this.ToDouble()));
+				GUILayout.Label(this.ValueUnitString(3, int.MinValue, (int)magnitude - digits), GUILayout.ExpandWidth(false));
+				if (GUILayout.Button(digits.ToString()))
 				{
-					float magnitude = Math.Max((float)Math.Log10(Math.Abs(this.ToDouble())), 6f);
-					magnitude = (float)Math.Ceiling (magnitude / 3f) * 3f;
-					digits = (ushort)((digits + 3) % (int)magnitude);
+					float magLimit = Math.Max(magnitude, 6f);
+					magLimit = (float)Math.Ceiling(magLimit / 3f) * 3f;
+					digits = (ushort)((digits + 3) % (int)magLimit);
 				}
+			}
+			else
+			{
+				GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
 			}
 			GUILayout.EndHorizontal();
 
 			return digits;
 		}
+
 	}
 
 	public class VOID_DoubleValue : VOID_NumValue<double>, IVOID_NumericValue
@@ -177,11 +191,6 @@ namespace VOID
 			return this.Value.ToString(format) + this.Units;
 		}
 
-		public override string ValueUnitString(ushort digits) {
-			int magnitude = (int)Math.Log10(Math.Abs(this.Value));
-			return Tools.MuMech_ToSI(this.Value, 2, int.MinValue, magnitude - digits) + this.Units;
-		}
-
 		public override string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
 		{
 			return string.Format (
@@ -202,11 +211,6 @@ namespace VOID
 
 		public override string ValueUnitString(string format) {
 			return this.Value.ToString(format) + this.Units;
-		}
-
-		public override string ValueUnitString(ushort digits) {
-			int magnitude = Math.Max((int)Math.Log10(Math.Abs(this.Value)), 0);
-			return Tools.MuMech_ToSI(this.Value, 2, int.MinValue, magnitude - digits) + this.Units;
 		}
 
 		public override string ToString(string format)
@@ -239,11 +243,6 @@ namespace VOID
 
 		public override string ValueUnitString(string format) {
 			return this.Value.ToString(format) + this.Units;
-		}
-
-		public override string ValueUnitString(ushort digits) {
-			int magnitude = (int)Math.Log10(Math.Abs(this.Value));
-			return Tools.MuMech_ToSI(this.Value, 2, int.MinValue, magnitude - digits) + this.Units;
 		}
 
 		public override string ToString(string format)
