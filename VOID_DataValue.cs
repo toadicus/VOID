@@ -108,6 +108,7 @@ namespace VOID
 
 	internal interface IVOID_NumericValue
 	{
+		double ToDouble();
 		string ToString(string format);
 		string ToSIString(int digits, int MinMagnitude, int MaxMagnitude);
 	}
@@ -116,6 +117,7 @@ namespace VOID
 	{
 		public VOID_NumValue(string Label, Func<T> ValueFunc, string Units = "") : base(Label, ValueFunc, Units) {}
 
+		public abstract double ToDouble();
 		public abstract string ToString(string Format);
 		public abstract string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue);
 
@@ -139,9 +141,11 @@ namespace VOID
 			GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
 			if (precisionButton)
 			{
-				if (GUILayout.Button ("P"))
+				if (GUILayout.Button (digits.ToString()))
 				{
-					digits = (ushort)((digits + 3) % 15);
+					float magnitude = Math.Max((float)Math.Log10(Math.Abs(this.ToDouble())), 6f);
+					magnitude = (float)Math.Ceiling (magnitude / 3f) * 3f;
+					digits = (ushort)((digits + 3) % (int)magnitude);
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -153,6 +157,11 @@ namespace VOID
 	public class VOID_DoubleValue : VOID_NumValue<double>, IVOID_NumericValue
 	{
 		public VOID_DoubleValue(string Label, Func<double> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
+
+		public override double ToDouble ()
+		{
+			return this.Value;
+		}
 
 		public override string ToString(string format)
 		{
@@ -169,7 +178,8 @@ namespace VOID
 		}
 
 		public override string ValueUnitString(ushort digits) {
-			return Tools.MuMech_ToSI(this.Value, digits) + this.Units;
+			int magnitude = (int)Math.Log10(Math.Abs(this.Value));
+			return Tools.MuMech_ToSI(this.Value, 2, int.MinValue, magnitude - digits) + this.Units;
 		}
 
 		public override string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
@@ -184,13 +194,19 @@ namespace VOID
 	public class VOID_FloatValue : VOID_NumValue<float>, IVOID_NumericValue
 	{
 		public VOID_FloatValue(string Label, Func<float> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
-		
+
+		public override double ToDouble ()
+		{
+			return (double)this.Value;
+		}
+
 		public override string ValueUnitString(string format) {
 			return this.Value.ToString(format) + this.Units;
 		}
 
 		public override string ValueUnitString(ushort digits) {
-			return Tools.MuMech_ToSI((double)this.Value, digits) + this.Units;
+			int magnitude = Math.Max((int)Math.Log10(Math.Abs(this.Value)), 0);
+			return Tools.MuMech_ToSI(this.Value, 2, int.MinValue, magnitude - digits) + this.Units;
 		}
 
 		public override string ToString(string format)
@@ -215,13 +231,19 @@ namespace VOID
 	public class VOID_IntValue : VOID_NumValue<int>, IVOID_NumericValue
 	{
 		public VOID_IntValue(string Label, Func<int> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
-		
+
+		public override double ToDouble ()
+		{
+			return (double)this.Value;
+		}
+
 		public override string ValueUnitString(string format) {
 			return this.Value.ToString(format) + this.Units;
 		}
 
 		public override string ValueUnitString(ushort digits) {
-			return Tools.MuMech_ToSI((double)this.Value, digits) + this.Units;
+			int magnitude = (int)Math.Log10(Math.Abs(this.Value));
+			return Tools.MuMech_ToSI(this.Value, 2, int.MinValue, magnitude - digits) + this.Units;
 		}
 
 		public override string ToString(string format)
