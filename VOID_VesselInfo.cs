@@ -22,6 +22,7 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Engineer.VesselSimulator;
 
 namespace VOID
 {
@@ -66,11 +67,11 @@ namespace VOID
 			"DeltaV (Current Stage)",
 			delegate()
 			{
-				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null ||
-			    	Engineer.VesselSimulator.SimManager.Instance.Stages.Length <= Staging.lastStage
+				if (SimManager.Instance.Stages == null ||
+			    	SimManager.Instance.Stages.Length <= Staging.lastStage
 			    )
 					return double.NaN;
-				return Engineer.VesselSimulator.SimManager.Instance.Stages[Staging.lastStage].deltaV;
+				return SimManager.Instance.Stages[Staging.lastStage].deltaV;
 			},
 			"m/s"
 		);
@@ -79,9 +80,9 @@ namespace VOID
 			"DeltaV (Total)",
 			delegate()
 			{
-				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+				if (SimManager.Instance.Stages == null)
 					return double.NaN;
-				return Engineer.VesselSimulator.SimManager.Instance.LastStage.totalDeltaV;
+				return SimManager.Instance.LastStage.totalDeltaV;
 			},
 			"m/s"
 		);
@@ -96,11 +97,11 @@ namespace VOID
 			"Thrust (curr/max)",
 			delegate()
 			{
-				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+				if (SimManager.Instance.Stages == null)
 					return "N/A";
 
-				double currThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.actualThrust;
-				double maxThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.thrust;
+				double currThrust = SimManager.Instance.LastStage.actualThrust;
+				double maxThrust = SimManager.Instance.LastStage.thrust;
 
 				return string.Format(
 					"{0} / {1}",
@@ -114,11 +115,11 @@ namespace VOID
 			"T:W (curr/max)",
 			delegate()
 			{
-				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+				if (SimManager.Instance.Stages == null)
 					return "N/A";
 
-				double currThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.actualThrust;
-				double maxThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.thrust;
+				double currThrust = SimManager.Instance.LastStage.actualThrust;
+				double maxThrust = SimManager.Instance.LastStage.thrust;
 				double mass = VOID_Core.Instance.vessel.GetTotalMass();
 				double gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
 				                 Math.Pow(
@@ -139,10 +140,10 @@ namespace VOID
 			"Max T:W @ surface",
 			delegate()
 			{
-				if (Engineer.VesselSimulator.SimManager.Instance.Stages == null)
+				if (SimManager.Instance.Stages == null)
 					return double.NaN;
 
-				double maxThrust = Engineer.VesselSimulator.SimManager.Instance.LastStage.thrust;
+				double maxThrust = SimManager.Instance.LastStage.thrust;
 				double mass = VOID_Core.Instance.vessel.GetTotalMass();
 				double gravity = (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
 				                 Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
@@ -167,10 +168,10 @@ namespace VOID
 
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
-				Engineer.VesselSimulator.SimManager.Instance.RequestSimulation();
+				SimManager.Instance.RequestSimulation();
 			}
 
-			Engineer.VesselSimulator.Stage[] stages = Engineer.VesselSimulator.SimManager.Instance.Stages;
+			Stage[] stages = SimManager.Instance.Stages;
 
 			GUILayout.BeginVertical();
 
