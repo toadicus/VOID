@@ -70,13 +70,6 @@ namespace VOID
 
 			this.Core.Update ();
 
-			if (this.Core.vessel != null)
-			{
-				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
-					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
-				SimManager.Instance.TryStartSimulation();
-			}
-
 			if (this.Core.factoryReset)
 			{
 				KSP.IO.File.Delete<VOID_Core>("config.xml");

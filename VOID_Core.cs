@@ -21,9 +21,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using KSP;
 using UnityEngine;
+using Engineer.VesselSimulator;
 
 namespace VOID
 {
@@ -332,6 +332,13 @@ namespace VOID
 		public void Update()
 		{
 			this.Preload_BeforeUpdate ();
+
+			if (this.vessel != null)
+			{
+				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
+					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+				SimManager.Instance.TryStartSimulation();
+			}
 
 			if (!this.guiRunning)
 			{
