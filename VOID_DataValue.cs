@@ -154,7 +154,14 @@ namespace VOID
 				{
 					float magLimit = Math.Max(magnitude, 6f);
 					magLimit = (float)Math.Ceiling(magLimit / 3f) * 3f;
-					digits = (ushort)((digits + 3) % (int)magLimit);
+					if (Event.current.button == 0)
+					{
+						digits = (ushort)((digits + 3) % (int)magLimit);
+					}
+					else if (Event.current.button == 1)
+					{
+						digits = (ushort)((digits - 3) % (int)magLimit);
+					}
 				}
 			}
 			else
