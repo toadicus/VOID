@@ -434,6 +434,9 @@ namespace VOID
 
 		protected void LoadGUIStyles()
 		{
+			this.LabelStyles["link"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["link"].fontStyle = FontStyle.Bold;
+
 			this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
 			this.LabelStyles["center"].normal.textColor = Color.white;
 			this.LabelStyles["center"].alignment = TextAnchor.UpperCenter;
@@ -446,6 +449,10 @@ namespace VOID
 			this.LabelStyles["right"] = new GUIStyle(GUI.skin.label);
 			this.LabelStyles["right"].normal.textColor = Color.white;
 			this.LabelStyles["right"].alignment = TextAnchor.UpperRight;
+
+			this.LabelStyles ["red"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles ["red"].normal.textColor = Color.red;
+			this.LabelStyles ["red"].alignment = TextAnchor.MiddleCenter;
 
 			this.GUIStylesLoaded = true;
 		}
@@ -508,10 +515,7 @@ namespace VOID
 			}
 			else
 			{
-			    GUIStyle label_txt_red = new GUIStyle(GUI.skin.label);
-			    label_txt_red.normal.textColor = Color.red;
-			    label_txt_red.alignment = TextAnchor.MiddleCenter;
-			    GUILayout.Label("-- POWER LOST --", label_txt_red);
+			    GUILayout.Label("-- POWER LOST --", this.LabelStyles["red"]);
 			}
 
 			this.configWindowMinimized = !GUILayout.Toggle (!this.configWindowMinimized, "Configuration");
@@ -687,7 +691,7 @@ namespace VOID
 
 			this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
 			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
-			if (GUI.Button(VOIDIconPos, VOIDIconTexture, new GUIStyle()) && this.VOIDIconLocked)
+			if (GUI.Button(VOIDIconPos, VOIDIconTexture) && this.VOIDIconLocked)
 			{
 				this.mainGuiMinimized = !this.mainGuiMinimized;
 			}
