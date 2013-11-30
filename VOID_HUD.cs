@@ -37,8 +37,6 @@ namespace VOID
 
 		protected List<Color> textColors = new List<Color>();
 
-		protected GUIStyle labelStyle;
-
 		/*
 		 * Properties
 		 * */
@@ -79,8 +77,8 @@ namespace VOID
 			this.textColors.Add(Color.cyan);
 			this.textColors.Add(Color.magenta);
 
-			this.labelStyle = new GUIStyle ();
-			this.labelStyle.normal.textColor = this.textColors [this.ColorIndex];
+			VOID_Core.Instance.LabelStyles["hud"] = new GUIStyle();
+			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = this.textColors [this.ColorIndex];
 
 			Tools.PostDebugMessage ("VOID_HUD: Constructed.");
 		}
@@ -91,7 +89,7 @@ namespace VOID
 
 			if (VOID_Core.Instance.powerAvailable)
 			{
-				labelStyle.normal.textColor = textColors [ColorIndex];
+				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
 
 				GUI.Label (
 					new Rect ((Screen.width * .2083f), 0, 300f, 70f),
@@ -103,7 +101,7 @@ namespace VOID
 					" ETA " + Tools.ConvertInterval (vessel.orbit.timeToPe) +
 					"\nInc: " + vessel.orbit.inclination.ToString ("F3") + "°" +
 					"\nPrimary: " + vessel.mainBody.bodyName,
-					labelStyle);
+					VOID_Core.Instance.LabelStyles["hud"]);
 				// Toadicus edit: Added "Biome: " line to surf/atmo HUD
 				GUI.Label (
 					new Rect ((Screen.width * .625f), 0, 300f, 90f),
@@ -116,13 +114,13 @@ namespace VOID
 					"\nHdg: " + Tools.MuMech_get_heading (vessel).ToString ("F2") + "° " +
 					Tools.get_heading_text (Tools.MuMech_get_heading (vessel)) +
 					"\nBiome: " + Tools.Toadicus_GetAtt (vessel).name,
-					labelStyle);
+					VOID_Core.Instance.LabelStyles["hud"]);
 			}
 			else
 			{
-				labelStyle.normal.textColor = Color.red;
-				GUI.Label (new Rect ((Screen.width * .2083f), 0, 300f, 70f), "-- POWER LOST --", labelStyle);
-				GUI.Label (new Rect ((Screen.width * .625f), 0, 300f, 70f), "-- POWER LOST --", labelStyle);
+				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
+				GUI.Label (new Rect ((Screen.width * .2083f), 0, 300f, 70f), "-- POWER LOST --", VOID_Core.Instance.LabelStyles["hud"]);
+				GUI.Label (new Rect ((Screen.width * .625f), 0, 300f, 70f), "-- POWER LOST --", VOID_Core.Instance.LabelStyles["hud"]);
 			}
 		}
 
