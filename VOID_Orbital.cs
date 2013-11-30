@@ -162,25 +162,25 @@ namespace VOID
 
 			this.primaryName.DoGUIHorizontal ();
 
-			this.precisionValues [idx] = this.orbitAltitude.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.orbitAltitude.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx] = this.orbitVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.orbitVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx] = this.orbitApoAlt.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.orbitApoAlt.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			this.timeToApo.DoGUIHorizontal();
 
-			this.precisionValues [idx] = this.oribtPeriAlt.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.oribtPeriAlt.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			this.timeToPeri.DoGUIHorizontal();
 
 			this.orbitInclination.DoGUIHorizontal("F3");
 
-			this.precisionValues [idx] = this.gravityAccel.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.gravityAccel.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			this.toggleExtended = GUILayout.Toggle(this.toggleExtended, "Extended info");
@@ -189,7 +189,7 @@ namespace VOID
             {
 				this.orbitPeriod.DoGUIHorizontal();
 
-				this.precisionValues [idx] = this.semiMajorAxis.DoGUIHorizontal (this.precisionValues [idx]);
+				this.precisionValues [idx]= (ushort)this.semiMajorAxis.DoGUIHorizontal (this.precisionValues [idx]);
 				idx++;
 
 				this.eccentricity.DoGUIHorizontal("F4");

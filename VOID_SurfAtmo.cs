@@ -138,7 +138,7 @@ namespace VOID
 
 			GUILayout.BeginVertical();
 
-			this.precisionValues [idx] = this.trueAltitude.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.trueAltitude.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			this.surfLatitude.DoGUIHorizontal ();
@@ -147,16 +147,16 @@ namespace VOID
 
 			this.vesselHeading.DoGUIHorizontal ();
 
-			this.precisionValues [idx] = this.terrainElevation.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.terrainElevation.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx] = this.surfVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.surfVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx] = this.vertVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.vertVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx] = this.horzVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.horzVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			this.temperature.DoGUIHorizontal ("F2");
@@ -165,7 +165,7 @@ namespace VOID
 
 			this.atmPressure.DoGUIHorizontal ("F2");
 
-			this.precisionValues [idx] = this.atmLimit.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)this.atmLimit.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			// Toadicus edit: added Biome
