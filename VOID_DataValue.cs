@@ -123,11 +123,11 @@ namespace VOID
 
 		public abstract string ValueUnitString(string format);
 		
-		public virtual string ValueUnitString(ushort digits) {
+		public virtual string ValueUnitString(int digits) {
 			return Tools.MuMech_ToSI(this.ToDouble(), digits) + this.Units;
 		}
 
-		public virtual string ValueUnitString(ushort digits, int MinMagnitude, int MaxMagnitude)
+		public virtual string ValueUnitString(int digits, int MinMagnitude, int MaxMagnitude)
 		{
 			return Tools.MuMech_ToSI(this.ToDouble(), digits, MinMagnitude, MaxMagnitude) + this.Units;
 		}
@@ -141,38 +141,61 @@ namespace VOID
 			GUILayout.EndHorizontal ();
 		}
 
-		public virtual ushort DoGUIHorizontal(ushort digits, bool precisionButton = true)
+		public virtual int DoGUIHorizontal(int digits, bool precisionButton = true)
 		{
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label(this.Label + ":", GUILayout.ExpandWidth(true));
-			GUILayout.FlexibleSpace();
 			if (precisionButton)
 			{
-				float magnitude = (float)Math.Log10(Math.Abs(this.ToDouble()));
-				GUILayout.Label(this.ValueUnitString(3, int.MinValue, (int)magnitude - digits), GUILayout.ExpandWidth(false));
-				if (GUILayout.Button(digits.ToString()))
-				{
-					float magLimit = Math.Max(magnitude, 6f);
-					magLimit = (float)Math.Ceiling(magLimit / 3f) * 3f;
-					if (Event.current.button == 0)
-					{
-						digits = (ushort)((digits + 3) % (int)magLimit);
-					}
-					else if (Event.current.button == 1)
-					{
-						digits = (ushort)((digits - 3) % (int)magLimit);
-					}
-				}
+				return this.DoGUIHorizontalPrec(digits);
 			}
-			else
-			{
-				GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
-			}
+
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.Label + " (P" + digits + "):", GUILayout.ExpandWidth(true));
+			GUILayout.FlexibleSpace();
+			GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
 			GUILayout.EndHorizontal();
 
 			return digits;
 		}
 
+		public virtual int DoGUIHorizontalPrec(int digits)
+		{
+			float magnitude;
+			float magLimit;
+
+			magnitude = (float)Math.Log10(Math.Abs(this.ToDouble()));
+
+			magLimit = Mathf.Max(magnitude, 6f);
+			magLimit = Mathf.Round((float)Math.Ceiling(magLimit / 3f) * 3f);
+
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.Label + "ⁱ:", GUILayout.ExpandWidth(true));
+			GUILayout.FlexibleSpace();
+
+			GUILayout.Label(this.ValueUnitString(3, int.MinValue, (int)magnitude - digits), GUILayout.ExpandWidth(false));
+			GUILayout.EndHorizontal();
+
+			if (Event.current.type == EventType.mouseUp)
+			{
+				Rect lastRect = GUILayoutUtility.GetLastRect();
+				if (lastRect.Contains(Event.current.mousePosition))
+				{
+					if (Event.current.button == 0)
+					{
+						digits = (digits + 3) % (int)magLimit;
+					}
+					else if (Event.current.button == 1)
+					{
+						digits = (digits - 3) % (int)magLimit;
+						if (digits < 0)
+						{
+							digits = (int)magLimit - 3;
+						}
+					}
+				}
+			}
+
+			return digits;
+		}
 	}
 
 	public class VOID_DoubleValue : VOID_NumValue<double>, IVOID_NumericValue
