@@ -714,7 +714,7 @@ namespace VOID
 
 			this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
 			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
-			if (GUI.Button(VOIDIconPos, VOIDIconTexture) && this.VOIDIconLocked)
+			if (GUI.Button(VOIDIconPos, VOIDIconTexture, new GUIStyle()) && this.VOIDIconLocked)
 			{
 				this.mainGuiMinimized = !this.mainGuiMinimized;
 			}
