@@ -30,6 +30,28 @@ namespace VOID
 		private T _value;
 		private Type _type;
 
+		private VOID_Core Core
+		{
+			get
+			{
+				if (HighLogic.LoadedSceneIsEditor)
+				{
+					if (VOID_EditorCore.Initialized)
+					{
+						return VOID_EditorCore.Instance;
+					}
+				}
+				else if (HighLogic.LoadedSceneIsFlight)
+				{
+					if (VOID_Core.Initialized)
+					{
+						return VOID_Core.Instance;
+					}
+				}
+				return null;
+			}
+		}
+
 		public T value
 		{
 			get
@@ -38,6 +60,22 @@ namespace VOID
 			}
 			set
 			{
+				if (this.Core != null && !System.Object.Equals(this._value, value))
+				{
+					bool newEqold = ((object)value == (object)this._value);
+					bool newObjEqold = System.Object.Equals(this._value, value);
+					Tools.PostDebugMessage (string.Format (
+						"VOID: Dirtying config for type {0} in method {1}." +
+						"\n\t Old Value: {2}, New Value: {3}" +
+						"\n\t Object.Equals(New, Old): {4}",
+						this._type,
+						new System.Diagnostics.StackTrace().GetFrame(1).GetMethod(),
+						this._value,
+						value,
+						System.Object.Equals(this._value, value)
+					));
+					this.Core.configDirty = true;
+				}
 				this._value = value;
 			}
 		}
@@ -46,6 +84,10 @@ namespace VOID
 		{
 			get
 			{
+				if (this._type == null && this._value != null)
+				{
+					this._type = this._value.GetType ();
+				}
 				return this._type;
 			}
 			set
@@ -64,7 +106,7 @@ namespace VOID
 
 		public void SetValue(object v)
 		{
-			this._value = (T)v;
+			this.value = (T)v;
 		}
 
 		public static implicit operator T(VOID_SaveValue<T> v)
@@ -75,18 +117,8 @@ namespace VOID
 		public static implicit operator VOID_SaveValue<T>(T v)
 		{
 			VOID_SaveValue<T> r = new VOID_SaveValue<T>();
-			r.value = v;
 			r.type = v.GetType();
-
-			if (VOID_Core.Initialized)
-			{
-				VOID_Core.Instance.configDirty = true;
-			}
-
-			if (VOID_EditorCore.Initialized)
-			{
-				VOID_EditorCore.Instance.configDirty = true;
-			}
+			r.value = v;
 
 			return r;
 		}
