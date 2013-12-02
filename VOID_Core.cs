@@ -250,6 +250,8 @@ namespace VOID
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
 
+			this._skinName = this.defaultSkin;
+
 			this.LoadConfig ();
 		}
 
