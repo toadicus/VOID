@@ -62,8 +62,6 @@ namespace VOID
 			{
 				if (this.Core != null && !System.Object.Equals(this._value, value))
 				{
-					bool newEqold = ((object)value == (object)this._value);
-					bool newObjEqold = System.Object.Equals(this._value, value);
 					Tools.PostDebugMessage (string.Format (
 						"VOID: Dirtying config for type {0} in method {1}." +
 						"\n\t Old Value: {2}, New Value: {3}" +
