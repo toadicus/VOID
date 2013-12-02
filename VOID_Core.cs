@@ -135,10 +135,12 @@ namespace VOID
 
 		public float saveTimer = 0;
 
+		protected string defaultSkin = "KSP window 2";
+
 		[AVOID_SaveValue("defaultSkin")]
-		protected VOID_SaveValue<string> defaultSkin = "KSP window 2";
-		protected int _skinIdx = int.MinValue;
-		protected List<GUISkin> skin_list;
+		protected VOID_SaveValue<string> _skinName;
+		protected Dictionary<string, GUISkin> skin_list;
+		protected List<string> skinNames;
 		protected string[] forbiddenSkins =
 		{
 			"PlaqueDialogSkin",
@@ -176,11 +178,11 @@ namespace VOID
 		{
 			get
 			{
-				if (this.skin_list == null || this._skinIdx < 0 || this._skinIdx > this.skin_list.Count)
+				if (!this.skinsLoaded || this._skinName == null)
 				{
 					return AssetBase.GetGUISkin(this.defaultSkin);
 				}
-				return this.skin_list[this._skinIdx];
+				return this.skin_list[this._skinName];
 			}
 		}
 
@@ -406,7 +408,7 @@ namespace VOID
 			this.skin_list = AssetBase.FindObjectsOfTypeIncludingAssets(typeof(GUISkin))
 				.Where(s => !this.forbiddenSkins.Contains(s.name))
 					.Select(s => s as GUISkin)
-					.ToList();
+					.ToDictionary(s => s.name);
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: loaded {1} GUISkins.",
@@ -414,9 +416,12 @@ namespace VOID
 				this.skin_list.Count
 			));
 
-			if (this._skinIdx == int.MinValue)
+			this.skinNames = this.skin_list.Keys.ToList();
+			this.skinNames.Sort();
+
+			if (this._skinName == null || !this.skinNames.Contains(this._skinName))
 			{
-				this._skinIdx = this.skin_list.IndexOf(this.Skin);
+				this._skinName = this.defaultSkin;
 				Tools.PostDebugMessage(string.Format(
 					"{0}: resetting _skinIdx to default.",
 					this.GetType().Name
@@ -426,7 +431,7 @@ namespace VOID
 			Tools.PostDebugMessage(string.Format(
 				"{0}: _skinIdx = {1}.",
 				this.GetType().Name,
-				this._skinIdx.ToString()
+				this._skinName.ToString()
 				));
 
 			this.skinsLoaded = true;
@@ -536,6 +541,10 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
+			int skinIdx;
+
+			GUIContent _content;
+
 			if (HighLogic.LoadedSceneIsFlight)
 			{
 				this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
@@ -547,24 +556,36 @@ namespace VOID
 
 			GUILayout.Label("Skin:", GUILayout.ExpandWidth(false));
 
-			GUIContent _content = new GUIContent();
+			_content = new GUIContent();
+
+			if (skinNames.Contains(this._skinName))
+			{
+				skinIdx = skinNames.IndexOf(this._skinName);
+			}
+			else if (skinNames.Contains(this.defaultSkin))
+			{
+				skinIdx = skinNames.IndexOf(this.defaultSkin);
+			}
+			else
+			{
+				skinIdx = 0;
+			}
 
 			_content.text = "◄";
 			_content.tooltip = "Select previous skin";
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
-				this._skinIdx--;
-				if (this._skinIdx < 0) this._skinIdx = skin_list.Count - 1;
+				skinIdx--;
+				if (skinIdx < 0) skinIdx = skinNames.Count - 1;
 				Tools.PostDebugMessage (string.Format (
 					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
-					this._skinIdx,
+					this._skinName,
 					this.skin_list.Count
 				));
 			}
 
-			string skin_name = skin_list[this._skinIdx].name;
-			_content.text = skin_name;
+			_content.text = this.Skin.name;
 			_content.tooltip = "Current skin";
 			GUILayout.Label(_content, this.LabelStyles["center"], GUILayout.ExpandWidth(true));
 
@@ -572,19 +593,19 @@ namespace VOID
 			_content.tooltip = "Select next skin";
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
-				this._skinIdx++;
-				if (this._skinIdx >= skin_list.Count) this._skinIdx = 0;
+				skinIdx++;
+				if (skinIdx >= skinNames.Count) skinIdx = 0;
 				Tools.PostDebugMessage (string.Format (
 					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
-					this._skinIdx,
+					this._skinName,
 					this.skin_list.Count
 					));
 			}
 
-			if (this.Skin.name != this.defaultSkin)
+			if (this._skinName != skinNames[skinIdx])
 			{
-				this.defaultSkin = this.Skin.name;
+				this._skinName = skinNames[skinIdx];
 			}
 
 			GUILayout.EndHorizontal();
