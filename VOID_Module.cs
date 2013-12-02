@@ -130,6 +130,8 @@ namespace VOID
 
 				string fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
 
+				Tools.PostDebugMessage(string.Format("{0}: Loading field {1}.", this.GetType().Name, fieldName));
+
 				object fieldValue = field.GetValue(this);
 
 				bool convertBack = false;
