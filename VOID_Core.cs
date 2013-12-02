@@ -245,7 +245,7 @@ namespace VOID
 		{
 			this._Name = "VOID Core";
 
-			this._Active = true;
+			this._Active.value = true;
 
 			this.VOIDIconOn = GameDatabase.Instance.GetTexture (this.VOIDIconOnPath, false);
 			this.VOIDIconOff = GameDatabase.Instance.GetTexture (this.VOIDIconOffPath, false);
@@ -509,7 +509,7 @@ namespace VOID
 				{
 					string str = "ON";
 					if (togglePower) str = "OFF";
-					if (GUILayout.Button("Power " + str)) togglePower = !togglePower;
+					if (GUILayout.Button("Power " + str)) togglePower.value = !togglePower;
 				}
 
 				if (togglePower || HighLogic.LoadedSceneIsEditor)
@@ -525,7 +525,7 @@ namespace VOID
 			    GUILayout.Label("-- POWER LOST --", this.LabelStyles["red"]);
 			}
 
-			this.configWindowMinimized = !GUILayout.Toggle (!this.configWindowMinimized, "Configuration");
+			this.configWindowMinimized.value = !GUILayout.Toggle (!this.configWindowMinimized, "Configuration");
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
@@ -549,7 +549,7 @@ namespace VOID
 
 			if (HighLogic.LoadedSceneIsFlight)
 			{
-				this.consumeResource = GUILayout.Toggle (this.consumeResource, "Consume Resources");
+				this.consumeResource.value = GUILayout.Toggle (this.consumeResource, "Consume Resources");
 
 				this.VOIDIconLocked = GUILayout.Toggle (this.VOIDIconLocked, "Lock Icon Position");
 			}
@@ -716,7 +716,7 @@ namespace VOID
 			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
 			if (GUI.Button(VOIDIconPos, VOIDIconTexture, new GUIStyle()) && this.VOIDIconLocked)
 			{
-				this.mainGuiMinimized = !this.mainGuiMinimized;
+				this.mainGuiMinimized.value = !this.mainGuiMinimized;
 			}
 
 			if (!this.mainGuiMinimized)

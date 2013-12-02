@@ -102,7 +102,7 @@ namespace VOID
 			//}
 
 			//toggle for orbital info chunk
-			if (GUILayout.Button("Orbital Characteristics", GUILayout.ExpandWidth(true))) toggleOrbital = !toggleOrbital;
+			if (GUILayout.Button("Orbital Characteristics", GUILayout.ExpandWidth(true))) toggleOrbital.value = !toggleOrbital;
 
 			if (toggleOrbital)
 			{
@@ -156,7 +156,7 @@ namespace VOID
 			}
 
 			//toggle for physical info chunk
-			if (GUILayout.Button("Physical Characteristics", GUILayout.ExpandWidth(true))) togglePhysical = !togglePhysical;
+			if (GUILayout.Button("Physical Characteristics", GUILayout.ExpandWidth(true))) togglePhysical.value = !togglePhysical;
 
 			if (togglePhysical)
 			{

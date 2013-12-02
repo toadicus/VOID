@@ -27,9 +27,6 @@ namespace VOID
 {
 	public class VOID_Transfer : VOID_WindowModule
 	{
-		[AVOID_SaveValue("toggleExtended")]
-		protected VOID_SaveValue<bool> toggleExtended = false;
-
 		protected List<CelestialBody> selectedBodies = new List<CelestialBody>();
 
 		public VOID_Transfer()

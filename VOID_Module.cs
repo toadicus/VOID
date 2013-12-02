@@ -50,7 +50,7 @@ namespace VOID
 			}
 			set
 			{
-				this._Active = value;
+				this._Active.value = value;
 			}
 		}
 

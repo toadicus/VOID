@@ -114,7 +114,7 @@ namespace VOID
 				}
 			}
 
-			untoggleRegisterInfo = GUILayout.Toggle(untoggleRegisterInfo, "Hide Vessel Register Info");
+			untoggleRegisterInfo.value = GUILayout.Toggle(untoggleRegisterInfo, "Hide Vessel Register Info");
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(" ", GUILayout.ExpandWidth(true));

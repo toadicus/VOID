@@ -28,9 +28,6 @@ namespace VOID
 {
 	public class VOID_VesselInfo : VOID_WindowModule
 	{
-		[AVOID_SaveValue("toggleExtended")]
-		protected VOID_SaveValue<bool> toggleExtended = false;
-
 		protected VOID_DoubleValue geeForce = new VOID_DoubleValue(
 			"G-force",
 			new Func<double>(() => VOID_Core.Instance.vessel.geeForce),

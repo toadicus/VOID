@@ -65,7 +65,7 @@ namespace VOID
 		{
 			this._Name = "Heads-Up Display";
 
-			this._Active = true;
+			this._Active.value = true;
 
 			this.textColors.Add(Color.green);
 			this.textColors.Add(Color.black);
