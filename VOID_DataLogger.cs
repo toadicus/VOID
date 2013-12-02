@@ -30,19 +30,19 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		protected bool stopwatch1_running = false;
+		protected bool stopwatch1_running;
 
-		protected bool csv_logging = false;
-		protected bool first_write = true;
+		protected bool csv_logging;
+		protected bool first_write;
 
-		protected double stopwatch1 = 0;
+		protected double stopwatch1;
 
-		protected string csv_log_interval_str = "0.5";
+		protected string csv_log_interval_str;
 
 		protected float csv_log_interval;
 
-		protected double csvWriteTimer = 0;
-		protected double csvCollectTimer = 0;
+		protected double csvWriteTimer;
+		protected double csvCollectTimer;
 
 		protected List<string> csvList = new List<string>();
 
@@ -57,6 +57,17 @@ namespace VOID
 		public VOID_DataLogger()
 		{
 			this._Name = "CSV Data Logger";
+
+			this.stopwatch1_running = false;
+
+			this.csv_logging = false;
+			this.first_write = true;
+
+			this.stopwatch1 = 0;
+			this.csv_log_interval_str = "0.5";
+
+			this.csvWriteTimer = 0;
+			this.csvCollectTimer = 0;
 
 			this.WindowPos.x = Screen.width - 520;
 			this.WindowPos.y = 85;
