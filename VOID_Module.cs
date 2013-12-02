@@ -256,6 +256,8 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
+			GUI.skin = VOID_Core.Instance.Skin;
+
 			Rect _Pos = this.WindowPos;
 
 			_Pos = GUILayout.Window(
