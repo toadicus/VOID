@@ -407,9 +407,19 @@ namespace VOID
 
 		protected void LoadSkins()
 		{
+			Tools.PostDebugMessage ("AssetBase has skins: \n" +
+				string.Join("\n\t", AssetBase.FindObjectsOfTypeIncludingAssets (
+					typeof(GUISkin))
+					.Select(s => s.ToString())
+					.ToArray()
+				)
+			);
+
 			this.skin_list = AssetBase.FindObjectsOfTypeIncludingAssets(typeof(GUISkin))
 				.Where(s => !this.forbiddenSkins.Contains(s.name))
 					.Select(s => s as GUISkin)
+					.GroupBy(s => s.name)
+					.Select(g => g.First())
 					.ToDictionary(s => s.name);
 
 			Tools.PostDebugMessage(string.Format(
