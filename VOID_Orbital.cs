@@ -68,7 +68,7 @@ namespace VOID
 		);
 
 		protected VOID_StrValue timeToPeri = new VOID_StrValue(
-			"Time to Apoapsis",
+			"Time to Periapsis",
 			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToPe))
 		);
 
