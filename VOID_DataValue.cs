@@ -149,7 +149,7 @@ namespace VOID
 			}
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label(this.Label + " (P" + digits + "):", GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.Label + ":", GUILayout.ExpandWidth(true));
 			GUILayout.FlexibleSpace();
 			GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
 			GUILayout.EndHorizontal();
