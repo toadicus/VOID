@@ -181,9 +181,10 @@ namespace VOID
 			addHandler.Invoke(this.Button, new object[] { d });
 		}
 
-		public void DestroyButton()
+		public void Destroy()
 		{
 			this.ButtonDestroy.Invoke(this.Button, null);
 		}
 	}
 }
+
