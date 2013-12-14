@@ -37,9 +37,14 @@ namespace VOID
 		protected PropertyInfo ButtonText;
 		protected PropertyInfo ButtonTextColor;
 		protected PropertyInfo ButtonTexturePath;
+		protected PropertyInfo ButtonToolTip;
+		protected PropertyInfo ButtonVisible;
+		protected PropertyInfo ButtonVisibility;
+		protected PropertyInfo ButtonEnalbed;
 		protected EventInfo ButtonOnClick;
 		protected System.Type ClickHandlerType;
 		protected MethodInfo ButtonDestroy;
+		protected System.Type GameScenesVisibilityType;
 
 		public string Text
 		{
@@ -74,6 +79,42 @@ namespace VOID
 			set
 			{
 				this.ButtonTexturePath.SetValue(this.Button, value, null);
+			}
+		}
+
+		public string ToolTip
+		{
+			get
+			{
+				return this.ButtonToolTip.GetValue(this.Button, null) as string;
+			}
+			set
+			{
+				this.ButtonToolTip.SetValue(this.Button, value, null);
+			}
+		}
+
+		public bool Visible
+		{
+			get
+			{
+				return (bool)this.ButtonVisible.GetValue(this.Button, null);
+			}
+			set
+			{
+				this.ButtonVisible.SetValue(this.Button, value, null);
+			}
+		}
+
+		public bool Enabled
+		{
+			get
+			{
+				return (bool)this.ButtonEnalbed.GetValue(this.Button, null);
+			}
+			set
+			{
+				this.ButtonEnalbed.SetValue(this.Button, value, null);
 			}
 		}
 
@@ -150,7 +191,35 @@ namespace VOID
 			this.ButtonTexturePath = this.IButton.GetProperty("TexturePath");
 			
 			Tools.PostDebugMessage(string.Format(
-				"{0}: Got 'TexturePath' property.  Getting 'OnClick' property.",
+				"{0}: Got 'TexturePath' property.  Getting 'ToolTip' property.",
+				this.GetType().Name
+				));
+
+			this.ButtonToolTip = this.IButton.GetProperty("ToolTip");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'ToolTip' property.  Getting 'Visible' property.",
+				this.GetType().Name
+				));
+
+			this.ButtonVisible = this.IButton.GetProperty("Visible");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'Visible' property.  Getting 'Visibility' property.",
+				this.GetType().Name
+				));
+
+			this.ButtonVisibility = this.IButton.GetProperty("Visibility");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'Visibility' property.  Getting 'Enabled' property.",
+				this.GetType().Name
+				));
+
+			this.ButtonEnalbed = this.IButton.GetProperty("Enabled");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'Enabled' property.  Getting 'OnClick' event.",
 				this.GetType().Name
 				));
 
@@ -158,7 +227,7 @@ namespace VOID
 			this.ClickHandlerType = this.ButtonOnClick.EventHandlerType;
 
 			Tools.PostDebugMessage(string.Format(
-				"{0}: Got 'OnClick' property '{1}'.  Getting 'Destroy' method.",
+				"{0}: Got 'OnClick' event '{1}'.  Getting 'Destroy' method.",
 				this.GetType().Name,
 				this.ButtonOnClick.ToString()
 				));
@@ -166,9 +235,20 @@ namespace VOID
 			this.ButtonDestroy = this.IButton.GetMethod("Destroy");
 
 			Tools.PostDebugMessage(string.Format(
-				"{0}: Got 'Destroy' property '{1}'.",
+				"{0}: Got 'Destroy' property '{1}'.  Loading GameScenesVisibility class.",
 				this.GetType().Name,
 				this.ButtonDestroy.ToString()
+				));
+
+			this.GameScenesVisibilityType = AssemblyLoader.loadedAssemblies
+				.Select(a => a.assembly.GetExportedTypes())
+					.SelectMany(t => t)
+					.FirstOrDefault(t => t.FullName == "Toolbar.GameScenesVisibility");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'GameScenesVisibility' class '{1}'.",
+				this.GetType().Name,
+				this.GameScenesVisibilityType.ToString()
 				));
 
 			Tools.PostDebugMessage("ToolbarButtonWrapper built!");
@@ -181,10 +261,15 @@ namespace VOID
 			addHandler.Invoke(this.Button, new object[] { d });
 		}
 
+		public void SetButtonVisibility(params GameScenes[] gameScenes)
+		{
+			object GameScenesVisibilityObj = Activator.CreateInstance(this.GameScenesVisibilityType, gameScenes);
+			this.ButtonVisibility.SetValue(this.Button, GameScenesVisibilityObj, null);
+		}
+
 		public void Destroy()
 		{
 			this.ButtonDestroy.Invoke(this.Button, null);
 		}
 	}
 }
-
