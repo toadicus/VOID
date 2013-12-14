@@ -155,6 +155,10 @@ namespace VOID
 
 		public bool configDirty;
 
+		protected bool ToolbarManagerLoaded = false;
+		protected bool _UseToolbarManager;
+		internal ToolbarButtonWrapper ToolbarButton;
+
 		/*
 		 * Properties
 		 * */
@@ -238,6 +242,28 @@ namespace VOID
 			}
 		}
 
+		protected bool UseToolbarManager
+		{
+			get
+			{
+				return _UseToolbarManager;
+			}
+			set
+			{
+				if (value == false && this.ToolbarManagerLoaded && this.ToolbarButton != null)
+				{
+					this.ToolbarButton.Destroy();
+					this.ToolbarButton = null;
+				}
+				if (value == true && this.ToolbarManagerLoaded && this.ToolbarButton == null)
+				{
+					this.InitializeToolbarButton();
+				}
+
+				_UseToolbarManager = value;
+			}
+		}
+
 		/*
 		 * Methods
 		 * */
@@ -252,9 +278,11 @@ namespace VOID
 
 			this._skinName = this.defaultSkin;
 
+			this.UseToolbarManager = false;
+
 			this.LoadConfig ();
 		}
-
+		
 		protected void LoadModulesOfType<T>()
 		{
 			var types = AssemblyLoader.loadedAssemblies
@@ -294,7 +322,7 @@ namespace VOID
 				"{0}: Loaded {1} modules.",
 				this.GetType().Name,
 				this.Modules.Count
-			));
+				));
 		}
 
 		protected void LoadModule(Type T)
@@ -306,7 +334,7 @@ namespace VOID
 					"{0}: refusing to load {1}: already loaded",
 					this.GetType().Name,
 					T.Name
-				));
+					));
 				return;
 			}
 			IVOID_Module module = Activator.CreateInstance (T) as IVOID_Module;
@@ -317,103 +345,18 @@ namespace VOID
 				"{0}: loaded module {1}.",
 				this.GetType().Name,
 				T.Name
-			));
-		}
-
-		protected void Preload_BeforeUpdate()
-		{
-			if (!this.bodiesLoaded)
-			{
-				this.LoadAllBodies();
-			}
-
-			if (!this.vesselTypesLoaded)
-			{
-				this.LoadVesselTypes();
-			}
-		}
-
-		public void Update()
-		{
-			this.Preload_BeforeUpdate ();
-
-			if (this.vessel != null)
-			{
-				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
-					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
-				SimManager.Instance.TryStartSimulation();
-			}
-
-			if (!this.guiRunning)
-			{
-				this.StartGUI ();
-			}
-
-			if (!HighLogic.LoadedSceneIsFlight && this.guiRunning)
-			{
-				this.StopGUI ();
-			}
-
-			foreach (IVOID_Module module in this.Modules)
-			{
-				if (!module.guiRunning && module.toggleActive)
-				{
-					module.StartGUI ();
-				}
-				if (module.guiRunning && !module.toggleActive ||
-				    !this.togglePower ||
-				    !HighLogic.LoadedSceneIsFlight ||
-				    this.factoryReset
-				    )
-				{
-					module.StopGUI();
-				}
-
-				if (module is IVOID_BehaviorModule)
-				{
-					((IVOID_BehaviorModule)module).Update();
-				}
-			}
-
-			this.CheckAndSave ();
-			this._updateTimer += Time.deltaTime;
-		}
-
-		public void FixedUpdate()
-		{
-			if (this.consumeResource &&
-			    this.vessel.vesselType != VesselType.EVA &&
-			    TimeWarp.deltaTime != 0
-			    )
-			{
-				float powerReceived = this.vessel.rootPart.RequestResource(this.resourceName,
-				                                                          this.resourceRate * TimeWarp.fixedDeltaTime);
-				if (powerReceived > 0)
-				{
-					this.powerAvailable = true;
-				}
-				else
-				{
-					this.powerAvailable = false;
-				}
-			}
-
-			foreach (IVOID_BehaviorModule module in
-			         this._modules.OfType<IVOID_BehaviorModule>().Where(m => !m.GetType().IsAbstract))
-			{
-				module.FixedUpdate();
-			}
+				));
 		}
 
 		protected void LoadSkins()
 		{
 			Tools.PostDebugMessage ("AssetBase has skins: \n" +
-				string.Join("\n\t", AssetBase.FindObjectsOfTypeIncludingAssets (
-					typeof(GUISkin))
-					.Select(s => s.ToString())
-					.ToArray()
-				)
-			);
+			                        string.Join("\n\t", AssetBase.FindObjectsOfTypeIncludingAssets (
+				typeof(GUISkin))
+			            .Select(s => s.ToString())
+			            .ToArray()
+			            )
+			                        );
 
 			this.skin_list = AssetBase.FindObjectsOfTypeIncludingAssets(typeof(GUISkin))
 				.Where(s => !this.forbiddenSkins.Contains(s.name))
@@ -426,7 +369,7 @@ namespace VOID
 				"{0}: loaded {1} GUISkins.",
 				this.GetType().Name,
 				this.skin_list.Count
-			));
+				));
 
 			this.skinNames = this.skin_list.Keys.ToList();
 			this.skinNames.Sort();
@@ -474,7 +417,6 @@ namespace VOID
 			this.GUIStylesLoaded = true;
 		}
 
-		
 		protected void LoadAllBodies()
 		{
 			this._allBodies = FlightGlobals.Bodies;
@@ -487,26 +429,49 @@ namespace VOID
 			this.vesselTypesLoaded = true;
 		}
 
-		protected void CheckAndSave()
+		protected void LoadBeforeUpdate()
 		{
-			this.saveTimer += Time.deltaTime;
-
-			if (this.saveTimer > 2f)
+			if (!this.bodiesLoaded)
 			{
-				Tools.PostDebugMessage (string.Format (
-					"{0}: Time to save, checking if configDirty: {1}",
-					this.GetType ().Name,
-					this.configDirty
-					));
-
-				if (!this.configDirty)
-				{
-					return;
-				}
-
-				this.SaveConfig ();
-				this.saveTimer = 0;
+				this.LoadAllBodies();
 			}
+
+			if (!this.vesselTypesLoaded)
+			{
+				this.LoadVesselTypes();
+			}
+		}
+
+		protected void LoadToolbarManager()
+		{
+			Type ToolbarManager = AssemblyLoader.loadedAssemblies
+				.Select(a => a.assembly.GetExportedTypes())
+					.SelectMany(t => t)
+					.FirstOrDefault(t => t.FullName == "Toolbar.ToolbarManager");
+
+			if (ToolbarManager == null)
+			{
+				Tools.PostDebugMessage(string.Format(
+					"{0}: Could not load ToolbarManager.",
+					this.GetType().Name
+				));
+
+				return;
+			}
+
+			this.InitializeToolbarButton();
+
+			this.ToolbarManagerLoaded = true;
+		}
+
+		protected void InitializeToolbarButton()
+		{
+			this.ToolbarButton = new ToolbarButtonWrapper(this.GetType().Name, "coreToggle");
+			this.ToolbarButton.Text = this.VoidName;
+			this.ToolbarButton.TexturePath = this.VOIDIconOffPath + "_24x24";
+			this.ToolbarButton.AddButtonClickHandler(
+				(e) => this.mainGuiMinimized = !this.mainGuiMinimized
+			);
 		}
 
 		public void VOIDMainWindow(int _)
@@ -563,6 +528,8 @@ namespace VOID
 
 				this.VOIDIconLocked = GUILayout.Toggle (this.VOIDIconLocked, "Lock Icon Position");
 			}
+
+			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar");
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
@@ -646,6 +613,94 @@ namespace VOID
 			this._factoryReset = GUILayout.Toggle (this._factoryReset, "Factory Reset");
 		}
 
+		public override void DrawGUI()
+		{
+			this._windowID = this.windowBaseID;
+
+			if (!this._modulesLoaded)
+			{
+				this.LoadModulesOfType<IVOID_Module> ();
+			}
+
+			if (this.UseToolbarManager && !this.ToolbarManagerLoaded)
+			{
+				this.LoadToolbarManager();
+			}
+
+			if (!this.skinsLoaded)
+			{
+				this.LoadSkins();
+			}
+
+			GUI.skin = this.Skin;
+
+			if (!this.GUIStylesLoaded)
+			{
+				this.LoadGUIStyles ();
+			}
+
+			if (this.UseToolbarManager && this.ToolbarManagerLoaded)
+			{
+				this.ToolbarButton.TexturePath = VOIDIconOffPath + "_24x24";
+				if (this.togglePower)
+				{
+					this.ToolbarButton.TexturePath = VOIDIconOnPath + "_24x24";
+				}
+			}
+			else
+			{
+				this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
+				if (this.togglePower)
+					this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
+				if (GUI.Button(VOIDIconPos, VOIDIconTexture, new GUIStyle()) && this.VOIDIconLocked)
+				{
+					this.mainGuiMinimized.value = !this.mainGuiMinimized;
+				}
+			}
+
+			if (!this.mainGuiMinimized)
+			{
+				Rect _mainWindowPos = this.mainWindowPos;
+
+				_mainWindowPos = GUILayout.Window (
+					this.windowID,
+					_mainWindowPos,
+					this.VOIDMainWindow,
+					string.Join (" ", new string[] {this.VoidName, this.VoidVersion}),
+					GUILayout.Width (250),
+					GUILayout.Height (50)
+					);
+
+				_mainWindowPos = Tools.ClampRectToScreen (_mainWindowPos);
+
+				if (_mainWindowPos != this.mainWindowPos)
+				{
+					this.mainWindowPos = _mainWindowPos;
+				}
+			}
+
+			if (!this.configWindowMinimized && !this.mainGuiMinimized)
+			{
+				Rect _configWindowPos = this.configWindowPos;
+
+				_configWindowPos = GUILayout.Window (
+					this.windowID,
+					_configWindowPos,
+					this.VOIDConfigWindow,
+					string.Join (" ", new string[] {this.VoidName, "Configuration"}),
+					GUILayout.Width (250),
+					GUILayout.Height (50)
+					);
+
+				_configWindowPos = Tools.ClampRectToScreen (_configWindowPos);
+
+				if (_configWindowPos != this.configWindowPos)
+				{
+					this.configWindowPos = _configWindowPos;
+				}
+			}
+		}
+
 		public void OnGUI()
 		{
 			if (Event.current.type == EventType.Repaint)
@@ -701,74 +756,75 @@ namespace VOID
 			}
 		}
 
-		public override void DrawGUI()
+		public void Update()
 		{
-			if (!this._modulesLoaded)
+			this.LoadBeforeUpdate ();
+
+			if (this.vessel != null)
 			{
-				this.LoadModulesOfType<IVOID_Module> ();
+				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
+					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+				SimManager.Instance.TryStartSimulation();
 			}
 
-			this._windowID = this.windowBaseID;
-
-			if (!this.skinsLoaded)
+			if (!this.guiRunning)
 			{
-				this.LoadSkins();
+				this.StartGUI ();
 			}
 
-			GUI.skin = this.Skin;
-
-			if (!this.GUIStylesLoaded)
+			if (!HighLogic.LoadedSceneIsFlight && this.guiRunning)
 			{
-				this.LoadGUIStyles ();
+				this.StopGUI ();
 			}
 
-			this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
-			if (this.togglePower) this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
-			if (GUI.Button(VOIDIconPos, VOIDIconTexture, new GUIStyle()) && this.VOIDIconLocked)
+			foreach (IVOID_Module module in this.Modules)
 			{
-				this.mainGuiMinimized.value = !this.mainGuiMinimized;
-			}
-
-			if (!this.mainGuiMinimized)
-			{
-				Rect _mainWindowPos = this.mainWindowPos;
-
-				_mainWindowPos = GUILayout.Window (
-					this.windowID,
-					_mainWindowPos,
-					this.VOIDMainWindow,
-					string.Join (" ", new string[] {this.VoidName, this.VoidVersion}),
-					GUILayout.Width (250),
-					GUILayout.Height (50)
-				);
-
-				_mainWindowPos = Tools.ClampRectToScreen (_mainWindowPos);
-
-				if (_mainWindowPos != this.mainWindowPos)
+				if (!module.guiRunning && module.toggleActive)
 				{
-					this.mainWindowPos = _mainWindowPos;
+					module.StartGUI ();
+				}
+				if (module.guiRunning && !module.toggleActive ||
+				    !this.togglePower ||
+				    !HighLogic.LoadedSceneIsFlight ||
+				    this.factoryReset
+				    )
+				{
+					module.StopGUI();
+				}
+
+				if (module is IVOID_BehaviorModule)
+				{
+					((IVOID_BehaviorModule)module).Update();
 				}
 			}
 
-			if (!this.configWindowMinimized && !this.mainGuiMinimized)
+			this.CheckAndSave ();
+			this._updateTimer += Time.deltaTime;
+		}
+
+		public void FixedUpdate()
+		{
+			if (this.consumeResource &&
+			    this.vessel.vesselType != VesselType.EVA &&
+			    TimeWarp.deltaTime != 0
+			    )
 			{
-				Rect _configWindowPos = this.configWindowPos;
-
-				_configWindowPos = GUILayout.Window (
-					this.windowID,
-					_configWindowPos,
-					this.VOIDConfigWindow,
-					string.Join (" ", new string[] {this.VoidName, "Configuration"}),
-					GUILayout.Width (250),
-					GUILayout.Height (50)
-				);
-
-				_configWindowPos = Tools.ClampRectToScreen (_configWindowPos);
-
-				if (_configWindowPos != this.configWindowPos)
+				float powerReceived = this.vessel.rootPart.RequestResource(this.resourceName,
+				                                                           this.resourceRate * TimeWarp.fixedDeltaTime);
+				if (powerReceived > 0)
 				{
-					this.configWindowPos = _configWindowPos;
+					this.powerAvailable = true;
 				}
+				else
+				{
+					this.powerAvailable = false;
+				}
+			}
+
+			foreach (IVOID_BehaviorModule module in
+			         this._modules.OfType<IVOID_BehaviorModule>().Where(m => !m.GetType().IsAbstract))
+			{
+				module.FixedUpdate();
 			}
 		}
 
@@ -783,6 +839,28 @@ namespace VOID
 			}
 
 			this.StartGUI ();
+		}
+
+		protected void CheckAndSave()
+		{
+			this.saveTimer += Time.deltaTime;
+
+			if (this.saveTimer > 2f)
+			{
+				if (!this.configDirty)
+				{
+					return;
+				}
+
+				Tools.PostDebugMessage (string.Format (
+					"{0}: Time to save, checking if configDirty: {1}",
+					this.GetType ().Name,
+					this.configDirty
+					));
+
+				this.SaveConfig ();
+				this.saveTimer = 0;
+			}
 		}
 
 		public override void LoadConfig()
