@@ -59,7 +59,6 @@ namespace VOID
 				return (ushort)((this.collection & (this.mask << idx)) >> idx);
 			}
 			set {
-				Console.WriteLine (value);
 				if (idx < 0) {
 					idx += this.maxCount;
 				}
@@ -71,7 +70,6 @@ namespace VOID
 				idx *= wordLength;
 
 				long packvalue = value & this.mask;
-				Console.WriteLine (packvalue);
 
 				this.collection &= ~(this.mask << idx);
 				this.collection |= packvalue << idx;
