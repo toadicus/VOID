@@ -25,6 +25,9 @@ using UnityEngine;
 
 namespace VOID
 {
+	/// <summary>
+	/// Wraps a Toolbar clickable button, after fetching it from a foreign assembly.
+	/// </summary>
 	internal class ToolbarButtonWrapper
 	{
 		protected System.Type ToolbarManager;
@@ -44,6 +47,14 @@ namespace VOID
 		protected MethodInfo ButtonDestroy;
 		protected System.Type GameScenesVisibilityType;
 
+		/// <summary>
+		/// The text displayed on the button. Set to null to hide text.
+		/// </summary>
+		/// <remarks>
+		/// The text can be changed at any time to modify the button's appearance. Note that since this will also
+		/// modify the button's size, this feature should be used sparingly, if at all.
+		/// </remarks>
+		/// <seealso cref="TexturePath"/>
 		public string Text
 		{
 			get
@@ -56,6 +67,12 @@ namespace VOID
 			}
 		}
 
+		/// <summary>
+		/// The color the button text is displayed with. Defaults to Color.white.
+		/// </summary>
+		/// <remarks>
+		/// The text color can be changed at any time to modify the button's appearance.
+		/// </remarks>
 		public Color TextColor
 		{
 			get
@@ -68,6 +85,26 @@ namespace VOID
 			}
 		}
 
+		/// <summary>
+		/// The path of a texture file to display an icon on the button. Set to null to hide icon.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// A texture path on a button will have precedence over text. That is, if both text and texture path
+		/// have been set on a button, the button will show the texture, not the text.
+		/// </para>
+		/// <para>
+		/// The texture size must not exceed 24x24 pixels.
+		/// </para>
+		/// <para>
+		/// The texture path must be relative to the "GameData" directory, and must not specify a file name suffix.
+		/// Valid example: MyAddon/Textures/icon_mybutton
+		/// </para>
+		/// <para>
+		/// The texture path can be changed at any time to modify the button's appearance.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Text"/>
 		public string TexturePath
 		{
 			get
@@ -80,6 +117,12 @@ namespace VOID
 			}
 		}
 
+		/// <summary>
+		/// The button's tool tip text. Set to null if no tool tip is desired.
+		/// </summary>
+		/// <remarks>
+		/// Tool Tip Text Should Always Use Headline Style Like This.
+		/// </remarks>
 		public string ToolTip
 		{
 			get
@@ -92,6 +135,9 @@ namespace VOID
 			}
 		}
 
+		/// <summary>
+		/// Whether this button is currently visible or not. Can be used in addition to or as a replacement for <see cref="Visibility"/>.
+		/// </summary>
 		public bool Visible
 		{
 			get
@@ -104,6 +150,10 @@ namespace VOID
 			}
 		}
 
+		/// <summary>
+		/// Whether this button is currently enabled (clickable) or not. This will not affect the player's ability to
+		/// position the button on their screen.
+		/// </summary>
 		public bool Enabled
 		{
 			get
@@ -118,6 +168,11 @@ namespace VOID
 
 		private ToolbarButtonWrapper() {}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VOID.ToolbarButtonWrapper"/> class.
+		/// </summary>
+		/// <param name="ns">Namespace, usually the plugin name.</param>
+		/// <param name="id">Identifier, unique per namespace.</param>
 		public ToolbarButtonWrapper(string ns, string id)
 		{
 			Tools.PostDebugMessage(string.Format(
@@ -252,6 +307,21 @@ namespace VOID
 			Tools.PostDebugMessage("ToolbarButtonWrapper built!");
 		}
 
+		/// <summary>
+		/// Adds event handler to receive "on click" events.
+		/// </summary>
+		/// <example>
+		/// <code>
+		/// ToolbarButtonWrapper button = ...
+		/// button.AddButtonClickHandler(
+		/// 	(e) =>
+		/// 	{
+		/// 		Debug.Log("button clicked, mouseButton: " + e.Mousebutton");
+		/// 	}
+		/// );
+		/// </code>
+		/// </example>
+		/// <param name="Handler">Delegate to handle "on click" events</param>
 		public void AddButtonClickHandler(Action<object> Handler)
 		{
 			Delegate d = Delegate.CreateDelegate(this.ClickHandlerType, Handler.Target, Handler.Method);
@@ -259,12 +329,20 @@ namespace VOID
 			addHandler.Invoke(this.Button, new object[] { d });
 		}
 
+		/// <summary>
+		/// Sets this button's visibility. Can be used in addition to or as a replacement for <see cref="Visible"/>.
+		/// </summary>
+		/// <param name="gameScenes">Array of GameScene objects in which the button should be visible.</param>
 		public void SetButtonVisibility(params GameScenes[] gameScenes)
 		{
 			object GameScenesVisibilityObj = Activator.CreateInstance(this.GameScenesVisibilityType, gameScenes);
 			this.ButtonVisibility.SetValue(this.Button, GameScenesVisibilityObj, null);
 		}
 
+		/// <summary>
+		/// Permanently destroys this button so that it is no longer displayed.
+		/// Should be used when a plugin is stopped to remove leftover buttons.
+		/// </summary>
 		public void Destroy()
 		{
 			this.ButtonDestroy.Invoke(this.Button, null);
