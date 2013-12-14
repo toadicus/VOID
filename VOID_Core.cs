@@ -470,6 +470,14 @@ namespace VOID
 			this.ToolbarButton = new ToolbarButtonWrapper(this.GetType().Name, "coreToggle");
 			this.ToolbarButton.Text = this.VoidName;
 			this.ToolbarButton.TexturePath = this.VOIDIconOffPath + "_24x24";
+			if (this is VOID_EditorCore)
+			{
+				this.ToolbarButton.SetButtonVisibility(new GameScenes[] { GameScenes.EDITOR });
+			}
+			else
+			{
+				this.ToolbarButton.SetButtonVisibility(new GameScenes[] { GameScenes.FLIGHT });
+			}
 			this.ToolbarButton.AddButtonClickHandler(
 				(e) => this.mainGuiMinimized = !this.mainGuiMinimized
 			);
