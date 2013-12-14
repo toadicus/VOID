@@ -155,8 +155,9 @@ namespace VOID
 
 		public bool configDirty;
 
+		[AVOID_SaveValue("UseBlizzyToolbar")]
+		protected VOID_SaveValue<bool> _UseToolbarManager;
 		protected bool ToolbarManagerLoaded = false;
-		protected bool _UseToolbarManager;
 		internal ToolbarButtonWrapper ToolbarButton;
 
 		/*
@@ -260,7 +261,7 @@ namespace VOID
 					this.InitializeToolbarButton();
 				}
 
-				_UseToolbarManager = value;
+				_UseToolbarManager.value = value;
 			}
 		}
 
@@ -529,7 +530,7 @@ namespace VOID
 				this.VOIDIconLocked = GUILayout.Toggle (this.VOIDIconLocked, "Lock Icon Position");
 			}
 
-			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar");
+			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
