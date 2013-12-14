@@ -18,10 +18,8 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-using KSP;
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using UnityEngine;
 
