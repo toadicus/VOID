@@ -200,23 +200,13 @@ namespace VOID
 		public virtual void ModuleWindow(int _)
 		{
 			if (VOID_Core.Instance.updateTimer - this.lastUpdate > VOID_Core.Instance.updatePeriod) {
-				Tools.PostDebugMessage(string.Format(
-					"{0}: refreshing VOID_DataValues.",
-					this.GetType().Name
-				));
-
 				foreach (var fieldinfo in this.GetType().GetFields(
 					BindingFlags.Instance |
 					BindingFlags.NonPublic |
 					BindingFlags.Public |
 					BindingFlags.FlattenHierarchy
-				)) {
-					Tools.PostDebugMessage(string.Format(
-						"{0}: checking field {1}.",
-						this.GetType().Name,
-						fieldinfo.Name
-					));
-
+				))
+				{
 					object field = null;
 
 					try
@@ -236,19 +226,7 @@ namespace VOID
 					}
 
 					if (typeof(IVOID_DataValue).IsAssignableFrom (field.GetType ())) {
-						Tools.PostDebugMessage(string.Format(
-							"{0}: found field {1}.",
-							this.GetType().Name,
-							fieldinfo.Name
-						));
-
 						(field as IVOID_DataValue).Refresh ();
-
-						Tools.PostDebugMessage(string.Format(
-							"{0}: refreshed field {1}.",
-							this.GetType().Name,
-							fieldinfo.Name
-						));
 					}
 				}
 
