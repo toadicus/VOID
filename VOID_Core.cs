@@ -157,7 +157,7 @@ namespace VOID
 
 		[AVOID_SaveValue("UseBlizzyToolbar")]
 		protected VOID_SaveValue<bool> _UseToolbarManager;
-		protected bool ToolbarManagerLoaded = false;
+		protected bool ToolbarManagerLoaded;
 		internal ToolbarButtonWrapper ToolbarButton;
 
 		/*
@@ -280,6 +280,7 @@ namespace VOID
 			this._skinName = this.defaultSkin;
 
 			this.UseToolbarManager = false;
+			this.ToolbarManagerLoaded = false;
 
 			this.LoadConfig ();
 		}
@@ -445,29 +446,17 @@ namespace VOID
 
 		protected void LoadToolbarManager()
 		{
-			Type ToolbarManager = AssemblyLoader.loadedAssemblies
-				.Select(a => a.assembly.GetExportedTypes())
-					.SelectMany(t => t)
-					.FirstOrDefault(t => t.FullName == "Toolbar.ToolbarManager");
+			this.ToolbarManagerLoaded = ToolbarButtonWrapper.ToolbarManagerPresent;
 
-			if (ToolbarManager == null)
+			if (this.ToolbarManagerLoaded)
 			{
-				Tools.PostDebugMessage(string.Format(
-					"{0}: Could not load ToolbarManager.",
-					this.GetType().Name
-				));
-
-				return;
+				this.InitializeToolbarButton();
 			}
-
-			this.InitializeToolbarButton();
-
-			this.ToolbarManagerLoaded = true;
 		}
 
 		protected void InitializeToolbarButton()
 		{
-			this.ToolbarButton = new ToolbarButtonWrapper(this.GetType().Name, "coreToggle");
+			this.ToolbarButton = ToolbarButtonWrapper.TryWrapToolbarButton(this.GetType().Name, "coreToggle");
 			this.ToolbarButton.Text = this.VoidName;
 			this.ToolbarButton.TexturePath = this.VOIDIconOffPath + "_24x24";
 			if (this is VOID_EditorCore)
