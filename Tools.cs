@@ -25,7 +25,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,9 +50,13 @@ namespace VOID
 			try
 			{
 				CBAttributeMap BiomeMap = vessel.mainBody.BiomeMap;
+
 				double lat = vessel.latitude * Math.PI / 180d;
 				double lon = vessel.longitude * Math.PI / 180d;
 
+				mapAttribute = BiomeMap.GetAtt(lat, lon);
+
+				/*
 				lon -= Math.PI / 2d;
 
 				if (lon < 0d)
@@ -64,7 +67,7 @@ namespace VOID
 				float v = (float)(lat / Math.PI) + 0.5f;
 				float u = (float)(lon / (2d * Math.PI));
 
-				Color pixelBilinear = BiomeMap.Map.GetPixelBilinear (u, v);
+				Color pixelBilinear = BiomeMap.Map.GetPixelBilinear(u, v);
 				mapAttribute = BiomeMap.defaultAttribute;
 
 				if (BiomeMap.Map != null)
@@ -85,7 +88,7 @@ namespace VOID
 						float num = 1 / zero;
 						for (int j = 0; j < BiomeMap.Attributes.Length; ++j)
 						{
-							Color mapColor = BiomeMap.Attributes [j].mapColor;
+							Color mapColor = BiomeMap.Attributes[j].mapColor;
 							float sqrMagnitude = ((Vector4)(mapColor - pixelBilinear)).sqrMagnitude;
 							if (sqrMagnitude < num)
 							{
@@ -103,6 +106,7 @@ namespace VOID
 						}
 					}
 				}
+				*/
 			}
 			catch (NullReferenceException)
 			{
@@ -113,7 +117,7 @@ namespace VOID
 			return mapAttribute;
 		}
 
-		public static string GetLongitudeString(Vessel vessel, string format="F4")
+		public static string GetLongitudeString(Vessel vessel, string format = "F4")
 		{
 			string dir_long = "W";
 			double v_long = vessel.longitude;
@@ -129,16 +133,18 @@ namespace VOID
 				v_long -= 360d;
 			}
 
-			if (v_long > 0) dir_long = "E";
+			if (v_long > 0)
+				dir_long = "E";
 
 			return string.Format("{0}° {1}", Math.Abs(v_long).ToString(format), dir_long);
 		}
 
-		public static string GetLatitudeString(Vessel vessel, string format="F4")
+		public static string GetLatitudeString(Vessel vessel, string format = "F4")
 		{
 			string dir_lat = "S";
 			double v_lat = vessel.latitude;
-			if (v_lat > 0) dir_lat = "N";
+			if (v_lat > 0)
+				dir_lat = "N";
 
 			return string.Format("{0}° {1}", Math.Abs(v_lat).ToString(format), dir_lat);
 		}
@@ -200,27 +206,25 @@ namespace VOID
 				return value.ToString(format);
 			}
 		}
-
 		//From http://svn.mumech.com/KSP/trunk/MuMechLib/VOID.vesselState.cs
 		public static double MuMech_get_heading(Vessel vessel)
 		{
 			Vector3d CoM = vessel.findWorldCenterOfMass();
 			Vector3d up = (CoM - vessel.mainBody.position).normalized;
 			Vector3d north = Vector3d.Exclude(
-				up,
-				(vessel.mainBody.position +
-					vessel.mainBody.transform.up * (float)vessel.mainBody.Radius
-				) - CoM).normalized;
+				                 up,
+				                 (vessel.mainBody.position +
+				                 vessel.mainBody.transform.up * (float)vessel.mainBody.Radius
+				                 ) - CoM).normalized;
 
 			Quaternion rotationSurface = Quaternion.LookRotation(north, up);
 			Quaternion rotationvesselSurface = Quaternion.Inverse(
-				Quaternion.Euler(90, 0, 0) *
-				Quaternion.Inverse(vessel.transform.rotation) *
-				rotationSurface);
+				                                   Quaternion.Euler(90, 0, 0) *
+				                                   Quaternion.Inverse(vessel.transform.rotation) *
+				                                   rotationSurface);
 
 			return rotationvesselSurface.eulerAngles.y;
 		}
-
 		//From http://svn.mumech.com/KSP/trunk/MuMechLib/MuUtils.cs
 		public static string MuMech_ToSI(
 			double d, int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue
@@ -233,76 +237,76 @@ namespace VOID
 			{
 				switch ((int)Math.Floor(exponent))
 				{
-				case 0:
-				case 1:
-				case 2:
-					return d.ToString("F" + digits);
-				case 3:
-				case 4:
-				case 5:
-					return (d / 1e3).ToString("F" + digits) + "k";
-				case 6:
-				case 7:
-				case 8:
-					return (d / 1e6).ToString("F" + digits) + "M";
-				case 9:
-				case 10:
-				case 11:
-					return (d / 1e9).ToString("F" + digits) + "G";
-				case 12:
-				case 13:
-				case 14:
-					return (d / 1e12).ToString("F" + digits) + "T";
-				case 15:
-				case 16:
-				case 17:
-					return (d / 1e15).ToString("F" + digits) + "P";
-				case 18:
-				case 19:
-				case 20:
-					return (d / 1e18).ToString("F" + digits) + "E";
-				case 21:
-				case 22:
-				case 23:
-					return (d / 1e21).ToString("F" + digits) + "Z";
-				default:
-					return (d / 1e24).ToString("F" + digits) + "Y";
+					case 0:
+					case 1:
+					case 2:
+						return d.ToString("F" + digits);
+					case 3:
+					case 4:
+					case 5:
+						return (d / 1e3).ToString("F" + digits) + "k";
+					case 6:
+					case 7:
+					case 8:
+						return (d / 1e6).ToString("F" + digits) + "M";
+					case 9:
+					case 10:
+					case 11:
+						return (d / 1e9).ToString("F" + digits) + "G";
+					case 12:
+					case 13:
+					case 14:
+						return (d / 1e12).ToString("F" + digits) + "T";
+					case 15:
+					case 16:
+					case 17:
+						return (d / 1e15).ToString("F" + digits) + "P";
+					case 18:
+					case 19:
+					case 20:
+						return (d / 1e18).ToString("F" + digits) + "E";
+					case 21:
+					case 22:
+					case 23:
+						return (d / 1e21).ToString("F" + digits) + "Z";
+					default:
+						return (d / 1e24).ToString("F" + digits) + "Y";
 				}
 			}
 			else if (exponent < 0)
 			{
 				switch ((int)Math.Floor(exponent))
 				{
-				case -1:
-				case -2:
-				case -3:
-					return (d * 1e3).ToString("F" + digits) + "m";
-				case -4:
-				case -5:
-				case -6:
-					return (d * 1e6).ToString("F" + digits) + "μ";
-				case -7:
-				case -8:
-				case -9:
-					return (d * 1e9).ToString("F" + digits) + "n";
-				case -10:
-				case -11:
-				case -12:
-					return (d * 1e12).ToString("F" + digits) + "p";
-				case -13:
-				case -14:
-				case -15:
-					return (d * 1e15).ToString("F" + digits) + "f";
-				case -16:
-				case -17:
-				case -18:
-					return (d * 1e18).ToString("F" + digits) + "a";
-				case -19:
-				case -20:
-				case -21:
-					return (d * 1e21).ToString("F" + digits) + "z";
-				default:
-					return (d * 1e24).ToString("F" + digits) + "y";
+					case -1:
+					case -2:
+					case -3:
+						return (d * 1e3).ToString("F" + digits) + "m";
+					case -4:
+					case -5:
+					case -6:
+						return (d * 1e6).ToString("F" + digits) + "μ";
+					case -7:
+					case -8:
+					case -9:
+						return (d * 1e9).ToString("F" + digits) + "n";
+					case -10:
+					case -11:
+					case -12:
+						return (d * 1e12).ToString("F" + digits) + "p";
+					case -13:
+					case -14:
+					case -15:
+						return (d * 1e15).ToString("F" + digits) + "f";
+					case -16:
+					case -17:
+					case -18:
+						return (d * 1e18).ToString("F" + digits) + "a";
+					case -19:
+					case -20:
+					case -21:
+						return (d * 1e21).ToString("F" + digits) + "z";
+					default:
+						return (d * 1e24).ToString("F" + digits) + "y";
 				}
 			}
 			else
@@ -371,9 +375,7 @@ namespace VOID
 			a[0] = char.ToUpper(a[0]);
 			return new string(a);
 		}
-
 		//transfer angles
-
 		public static double Nivvy_CalcTransferPhaseAngle(double r_current, double r_target, double grav_param)
 		{
 			double T_target = (2 * Math.PI) * Math.Sqrt(Math.Pow((r_target / 1000), 3) / (grav_param / 1000000000));
@@ -447,25 +449,42 @@ namespace VOID
 			// returns the ejection angle
 		}
 
-		public static double Adammada_CurrrentPhaseAngle(double body_LAN, double body_orbitPct, double origin_LAN, double origin_orbitPct)
+		public static double Adammada_CurrrentPhaseAngle(
+			double body_LAN,
+			double body_orbitPct,
+			double origin_LAN,
+			double origin_orbitPct
+		)
 		{
 			double angle = (body_LAN / 360 + body_orbitPct) - (origin_LAN / 360 + origin_orbitPct);
-			if (angle > 1) angle = angle - 1;
-			if (angle < 0) angle = angle + 1;
-			if (angle > 0.5) angle = angle - 1;
+			if (angle > 1)
+				angle = angle - 1;
+			if (angle < 0)
+				angle = angle + 1;
+			if (angle > 0.5)
+				angle = angle - 1;
 			angle = angle * 360;
 			return angle;
 		}
 
-		public static double Adammada_CurrentEjectionAngle(double vessel_long, double origin_rotAngle, double origin_LAN, double origin_orbitPct)
+		public static double Adammada_CurrentEjectionAngle(
+			double vessel_long,
+			double origin_rotAngle,
+			double origin_LAN,
+			double origin_orbitPct
+		)
 		{
 			//double eangle = ((FlightGlobals.ActiveVOID.vessel.longitude + orbiting.rotationAngle) - (orbiting.orbit.LAN / 360 + orbiting.orbit.orbitPercent) * 360);
 			double eangle = ((vessel_long + origin_rotAngle) - (origin_LAN / 360 + origin_orbitPct) * 360);
 
-			while (eangle < 0) eangle = eangle + 360;
-			while (eangle > 360) eangle = eangle - 360;
-			if (eangle < 270) eangle = 90 - eangle;
-			else eangle = 450 - eangle;
+			while (eangle < 0)
+				eangle = eangle + 360;
+			while (eangle > 360)
+				eangle = eangle - 360;
+			if (eangle < 270)
+				eangle = 90 - eangle;
+			else
+				eangle = 450 - eangle;
 			return eangle;
 		}
 
@@ -492,7 +511,8 @@ namespace VOID
 
 			double phase = Vector3d.Angle(vecthis, vectarget);
 
-			if (Vector3d.Angle(prograde, vectarget) > 90) phase = 360 - phase;
+			if (Vector3d.Angle(prograde, vectarget) > 90)
+				phase = 360 - phase;
 
 			return (phase + 360) % 360;
 		}
@@ -500,7 +520,8 @@ namespace VOID
 		public static double FixAngleDomain(double Angle, bool Degrees = false)
 		{
 			double Extent = 2d * Math.PI;
-			if (Degrees) {
+			if (Degrees)
+			{
 				Extent = 360d;
 			}
 
@@ -515,20 +536,24 @@ namespace VOID
 
 		public static double FixDegreeDomain(double Angle)
 		{
-			return FixAngleDomain (Angle, true);
+			return FixAngleDomain(Angle, true);
 		}
 
 		public static double adjustCurrPhaseAngle(double transfer_angle, double curr_phase)
 		{
 			if (transfer_angle < 0)
 			{
-				if (curr_phase > 0) return (-1 * (360 - curr_phase));
-				else if (curr_phase < 0) return curr_phase;
+				if (curr_phase > 0)
+					return (-1 * (360 - curr_phase));
+				else if (curr_phase < 0)
+					return curr_phase;
 			}
 			else if (transfer_angle > 0)
 			{
-				if (curr_phase > 0) return curr_phase;
-				else if (curr_phase < 0) return (360 + curr_phase);
+				if (curr_phase > 0)
+					return curr_phase;
+				else if (curr_phase < 0)
+					return (360 + curr_phase);
 			}
 			return curr_phase;
 		}
@@ -546,8 +571,10 @@ namespace VOID
 			// if < 0, add curr to 360  // 360 + (-17) = 343
 			// else its good as it is
 
-			if (curr_ejection < 0) return 360 + curr_ejection;
-			else return curr_ejection;
+			if (curr_ejection < 0)
+				return 360 + curr_ejection;
+			else
+				return curr_ejection;
 
 		}
 
@@ -557,8 +584,10 @@ namespace VOID
 			//180 + curr_ejection
 			// else if transfer_phase_angle > 0 its good as it is
 
-			if (trans_phase < 0) return 180 + trans_ejection;
-			else return trans_ejection;
+			if (trans_phase < 0)
+				return 180 + trans_ejection;
+			else
+				return trans_ejection;
 
 		}
 
@@ -568,7 +597,7 @@ namespace VOID
 
 			// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m,
 			// and water covers the whole surface at 0 m.
-			if (vessel.terrainAltitude < 0 && vessel.mainBody.ocean )
+			if (vessel.terrainAltitude < 0 && vessel.mainBody.ocean)
 			{
 				trueAltitude = vessel.orbit.altitude;
 			}
@@ -578,50 +607,107 @@ namespace VOID
 
 		public static string get_heading_text(double heading)
 		{
-			if (heading > 348.75 || heading <= 11.25) return "N";
-			else if (heading > 11.25 && heading <= 33.75) return "NNE";
-			else if (heading > 33.75 && heading <= 56.25) return "NE";
-			else if (heading > 56.25 && heading <= 78.75) return "ENE";
-			else if (heading > 78.75 && heading <= 101.25) return "E";
-			else if (heading > 101.25 && heading <= 123.75) return "ESE";
-			else if (heading > 123.75 && heading <= 146.25) return "SE";
-			else if (heading > 146.25 && heading <= 168.75) return "SSE";
-			else if (heading > 168.75 && heading <= 191.25) return "S";
-			else if (heading > 191.25 && heading <= 213.75) return "SSW";
-			else if (heading > 213.75 && heading <= 236.25) return "SW";
-			else if (heading > 236.25 && heading <= 258.75) return "WSW";
-			else if (heading > 258.75 && heading <= 281.25) return "W";
-			else if (heading > 281.25 && heading <= 303.75) return "WNW";
-			else if (heading > 303.75 && heading <= 326.25) return "NW";
-			else if (heading > 326.25 && heading <= 348.75) return "NNW";
-			else return "";
+			if (heading > 348.75 || heading <= 11.25)
+				return "N";
+			else if (heading > 11.25 && heading <= 33.75)
+				return "NNE";
+			else if (heading > 33.75 && heading <= 56.25)
+				return "NE";
+			else if (heading > 56.25 && heading <= 78.75)
+				return "ENE";
+			else if (heading > 78.75 && heading <= 101.25)
+				return "E";
+			else if (heading > 101.25 && heading <= 123.75)
+				return "ESE";
+			else if (heading > 123.75 && heading <= 146.25)
+				return "SE";
+			else if (heading > 146.25 && heading <= 168.75)
+				return "SSE";
+			else if (heading > 168.75 && heading <= 191.25)
+				return "S";
+			else if (heading > 191.25 && heading <= 213.75)
+				return "SSW";
+			else if (heading > 213.75 && heading <= 236.25)
+				return "SW";
+			else if (heading > 236.25 && heading <= 258.75)
+				return "WSW";
+			else if (heading > 258.75 && heading <= 281.25)
+				return "W";
+			else if (heading > 281.25 && heading <= 303.75)
+				return "WNW";
+			else if (heading > 303.75 && heading <= 326.25)
+				return "NW";
+			else if (heading > 326.25 && heading <= 348.75)
+				return "NNW";
+			else
+				return "";
 		}
-
-
 
 		public static void display_transfer_angles_SUN2PLANET(CelestialBody body, Vessel vessel)
 		{
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Phase angle (curr/trans):");
-			GUILayout.Label(Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + Tools.Nivvy_CalcTransferPhaseAngle(vessel.orbit.semiMajorAxis, body.orbit.semiMajorAxis, vessel.mainBody.gravParameter).ToString("F3") + "°", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + Tools.Nivvy_CalcTransferPhaseAngle(
+					vessel.orbit.semiMajorAxis,
+					body.orbit.semiMajorAxis,
+					vessel.mainBody.gravParameter
+				).ToString("F3") + "°",
+				GUILayout.ExpandWidth(false)
+			);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Transfer velocity:");
-			GUILayout.Label((Tools.Younata_DeltaVToGetToOtherBody((vessel.mainBody.gravParameter / 1000000000), (vessel.orbit.semiMajorAxis / 1000), (body.orbit.semiMajorAxis / 1000)) * 1000).ToString("F2") + "m/s", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				(Tools.Younata_DeltaVToGetToOtherBody(
+					(vessel.mainBody.gravParameter / 1000000000),
+					(vessel.orbit.semiMajorAxis / 1000),
+					(body.orbit.semiMajorAxis / 1000)
+				) * 1000).ToString("F2") + "m/s",
+				GUILayout.ExpandWidth(false)
+			);
 			GUILayout.EndHorizontal();
 		}
 
 		public static void display_transfer_angles_PLANET2PLANET(CelestialBody body, Vessel vessel)
 		{
-			double dv1 = Tools.Younata_DeltaVToGetToOtherBody((vessel.mainBody.referenceBody.gravParameter / 1000000000), (vessel.mainBody.orbit.semiMajorAxis / 1000), (body.orbit.semiMajorAxis / 1000));
-			double dv2 = Tools.Younata_DeltaVToExitSOI((vessel.mainBody.gravParameter / 1000000000), (vessel.orbit.semiMajorAxis / 1000), (vessel.mainBody.sphereOfInfluence / 1000), Math.Abs(dv1));
+			double dv1 = Tools.Younata_DeltaVToGetToOtherBody(
+				             (vessel.mainBody.referenceBody.gravParameter / 1000000000),
+				             (vessel.mainBody.orbit.semiMajorAxis / 1000),
+				             (body.orbit.semiMajorAxis / 1000)
+			             );
+			double dv2 = Tools.Younata_DeltaVToExitSOI(
+				             (vessel.mainBody.gravParameter / 1000000000),
+				             (vessel.orbit.semiMajorAxis / 1000),
+				             (vessel.mainBody.sphereOfInfluence / 1000),
+				             Math.Abs(dv1)
+			             );
 
-			double trans_ejection_angle = Tools.Younata_TransferBurnPoint((vessel.orbit.semiMajorAxis / 1000), dv2, (Math.PI / 2.0), (vessel.mainBody.gravParameter / 1000000000));
-			double curr_ejection_angle = Tools.Adammada_CurrentEjectionAngle(FlightGlobals.ActiveVessel.longitude, FlightGlobals.ActiveVessel.orbit.referenceBody.rotationAngle, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent);
+			double trans_ejection_angle = Tools.Younata_TransferBurnPoint(
+				                              (vessel.orbit.semiMajorAxis / 1000),
+				                              dv2,
+				                              (Math.PI / 2.0),
+				                              (vessel.mainBody.gravParameter / 1000000000)
+			                              );
+			double curr_ejection_angle = Tools.Adammada_CurrentEjectionAngle(
+				                             FlightGlobals.ActiveVessel.longitude,
+				                             FlightGlobals.ActiveVessel.orbit.referenceBody.rotationAngle,
+				                             FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
+				                             FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
+			                             );
 
-			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(vessel.mainBody.orbit.semiMajorAxis, body.orbit.semiMajorAxis, vessel.mainBody.referenceBody.gravParameter) % 360;
-			double curr_phase_angle = Tools.Adammada_CurrrentPhaseAngle(body.orbit.LAN, body.orbit.orbitPercent, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent);
+			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(
+				                           vessel.mainBody.orbit.semiMajorAxis,
+				                           body.orbit.semiMajorAxis,
+				                           vessel.mainBody.referenceBody.gravParameter
+			                           ) % 360;
+			double curr_phase_angle = Tools.Adammada_CurrrentPhaseAngle(
+				                          body.orbit.LAN,
+				                          body.orbit.orbitPercent,
+				                          FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
+				                          FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
+			                          );
 
 			double adj_phase_angle = Tools.adjustCurrPhaseAngle(trans_phase_angle, curr_phase_angle);
 			double adj_trans_ejection_angle = Tools.adjust_transfer_ejection_angle(trans_ejection_angle, trans_phase_angle);
@@ -629,12 +715,18 @@ namespace VOID
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Phase angle (curr/trans):");
-			GUILayout.Label(adj_phase_angle.ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				adj_phase_angle.ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°",
+				GUILayout.ExpandWidth(false)
+			);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Ejection angle (curr/trans):");
-			GUILayout.Label(adj_curr_ejection_angle.ToString("F3") + "° / " + adj_trans_ejection_angle.ToString("F3") + "°", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				adj_curr_ejection_angle.ToString("F3") + "° / " + adj_trans_ejection_angle.ToString("F3") + "°",
+				GUILayout.ExpandWidth(false)
+			);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -645,13 +737,24 @@ namespace VOID
 
 		public static void display_transfer_angles_PLANET2MOON(CelestialBody body, Vessel vessel)
 		{
-			double dv1 = Tools.Younata_DeltaVToGetToOtherBody((vessel.mainBody.gravParameter / 1000000000), (vessel.orbit.semiMajorAxis / 1000), (body.orbit.semiMajorAxis / 1000));
+			double dv1 = Tools.Younata_DeltaVToGetToOtherBody(
+				             (vessel.mainBody.gravParameter / 1000000000),
+				             (vessel.orbit.semiMajorAxis / 1000),
+				             (body.orbit.semiMajorAxis / 1000)
+			             );
 
-			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(vessel.orbit.semiMajorAxis, body.orbit.semiMajorAxis, vessel.mainBody.gravParameter);
+			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(
+				                           vessel.orbit.semiMajorAxis,
+				                           body.orbit.semiMajorAxis,
+				                           vessel.mainBody.gravParameter
+			                           );
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Phase angle (curr/trans):");
-			GUILayout.Label(Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°",
+				GUILayout.ExpandWidth(false)
+			);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -662,14 +765,42 @@ namespace VOID
 
 		public static void display_transfer_angles_MOON2MOON(CelestialBody body, Vessel vessel)
 		{
-			double dv1 = Tools.Younata_DeltaVToGetToOtherBody((vessel.mainBody.referenceBody.gravParameter / 1000000000), (vessel.mainBody.orbit.semiMajorAxis / 1000), (body.orbit.semiMajorAxis / 1000));
-			double dv2 = Tools.Younata_DeltaVToExitSOI((vessel.mainBody.gravParameter / 1000000000), (vessel.orbit.semiMajorAxis / 1000), (vessel.mainBody.sphereOfInfluence / 1000), Math.Abs(dv1));
-			double trans_ejection_angle = Tools.Younata_TransferBurnPoint((vessel.orbit.semiMajorAxis / 1000), dv2, (Math.PI / 2.0), (vessel.mainBody.gravParameter / 1000000000));
+			double dv1 = Tools.Younata_DeltaVToGetToOtherBody(
+				             (vessel.mainBody.referenceBody.gravParameter / 1000000000),
+				             (vessel.mainBody.orbit.semiMajorAxis / 1000),
+				             (body.orbit.semiMajorAxis / 1000)
+			             );
+			double dv2 = Tools.Younata_DeltaVToExitSOI(
+				             (vessel.mainBody.gravParameter / 1000000000),
+				             (vessel.orbit.semiMajorAxis / 1000),
+				             (vessel.mainBody.sphereOfInfluence / 1000),
+				             Math.Abs(dv1)
+			             );
+			double trans_ejection_angle = Tools.Younata_TransferBurnPoint(
+				                              (vessel.orbit.semiMajorAxis / 1000),
+				                              dv2,
+				                              (Math.PI / 2.0),
+				                              (vessel.mainBody.gravParameter / 1000000000)
+			                              );
 
-			double curr_phase_angle = Tools.Adammada_CurrrentPhaseAngle(body.orbit.LAN, body.orbit.orbitPercent, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent);
-			double curr_ejection_angle = Tools.Adammada_CurrentEjectionAngle(FlightGlobals.ActiveVessel.longitude, FlightGlobals.ActiveVessel.orbit.referenceBody.rotationAngle, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN, FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent);
+			double curr_phase_angle = Tools.Adammada_CurrrentPhaseAngle(
+				                          body.orbit.LAN,
+				                          body.orbit.orbitPercent,
+				                          FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
+				                          FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
+			                          );
+			double curr_ejection_angle = Tools.Adammada_CurrentEjectionAngle(
+				                             FlightGlobals.ActiveVessel.longitude,
+				                             FlightGlobals.ActiveVessel.orbit.referenceBody.rotationAngle,
+				                             FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
+				                             FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
+			                             );
 
-			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(vessel.mainBody.orbit.semiMajorAxis, body.orbit.semiMajorAxis, vessel.mainBody.referenceBody.gravParameter) % 360;
+			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(
+				                           vessel.mainBody.orbit.semiMajorAxis,
+				                           body.orbit.semiMajorAxis,
+				                           vessel.mainBody.referenceBody.gravParameter
+			                           ) % 360;
 
 			double adj_phase_angle = Tools.adjustCurrPhaseAngle(trans_phase_angle, curr_phase_angle);
 			//double adj_ejection_angle = adjustCurrEjectionAngle(trans_phase_angle, curr_ejection_angle);
@@ -683,12 +814,18 @@ namespace VOID
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Phase angle (curr/trans):");
-			GUILayout.Label(adj_phase_angle.ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				adj_phase_angle.ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°",
+				GUILayout.ExpandWidth(false)
+			);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Ejection angle (curr/trans):");
-			GUILayout.Label(adj_curr_ejection_angle.ToString("F3") + "° / " + adj_trans_ejection_angle.ToString("F3") + "°", GUILayout.ExpandWidth(false));
+			GUILayout.Label(
+				adj_curr_ejection_angle.ToString("F3") + "° / " + adj_trans_ejection_angle.ToString("F3") + "°",
+				GUILayout.ExpandWidth(false)
+			);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -696,12 +833,11 @@ namespace VOID
 			GUILayout.Label((dv2 * 1000).ToString("F2") + "m/s", GUILayout.ExpandWidth(false));
 			GUILayout.EndHorizontal();
 		}
-
 		// This implementation is adapted from FARGUIUtils.ClampToScreen
 		public static Rect ClampRectToScreen(Rect window, int xMargin, int yMargin)
 		{
-			window.x = Mathf.Clamp (window.x, xMargin - window.width, Screen.width - xMargin);
-			window.y = Mathf.Clamp (window.y, yMargin - window.height, Screen.height - yMargin);
+			window.x = Mathf.Clamp(window.x, xMargin - window.width, Screen.width - xMargin);
+			window.y = Mathf.Clamp(window.y, yMargin - window.height, Screen.height - yMargin);
 
 			return window;
 		}
@@ -713,13 +849,13 @@ namespace VOID
 
 		public static Rect ClampRectToScreen(Rect window)
 		{
-			return ClampRectToScreen (window, 30);
+			return ClampRectToScreen(window, 30);
 		}
 
 		public static Vector2 ClampV2ToScreen(Vector2 vec, uint xMargin, uint yMargin)
 		{
-			vec.x = Mathf.Clamp (vec.x, xMargin, Screen.width - xMargin);
-			vec.y = Mathf.Clamp (vec.y, yMargin, Screen.height - yMargin);
+			vec.x = Mathf.Clamp(vec.x, xMargin, Screen.width - xMargin);
+			vec.y = Mathf.Clamp(vec.y, yMargin, Screen.height - yMargin);
 
 			return vec;
 		}
@@ -731,24 +867,21 @@ namespace VOID
 
 		public static Vector2 ClampV2ToScreen(Vector2 vec)
 		{
-			return ClampV2ToScreen (vec, 15);
+			return ClampV2ToScreen(vec, 15);
 		}
-
 		// UNDONE: This seems messy.  Can we clean it up?
 		public static Rect DockToWindow(Rect icon, Rect window)
 		{
 			// We can't set the x and y of the center point directly, so build a new vector.
-			Vector2 center = new Vector2 ();
+			Vector2 center = new Vector2();
 
 			// If we are near the top or bottom of the screen...
 			if (window.yMax > Screen.height - icon.height ||
-				window.yMin < icon.height
-			)
+			    window.yMin < icon.height)
 			{
 				// If we are in a corner...
 				if (window.xMax > Screen.width - icon.width ||
-					window.xMin < icon.width
-				)
+				    window.xMin < icon.width)
 				{
 					// If it is a top corner, put the icon below the window.
 					if (window.yMax < Screen.height / 2)
@@ -797,8 +930,7 @@ namespace VOID
 
 				// If we are along a side...
 				if (window.xMax > Screen.width - icon.width ||
-					window.xMin < icon.width
-				)
+				    window.xMin < icon.width)
 				{
 					// UNDONE: I'm not sure I like the feel of this part.
 					// If we are along a side towards the bottom, put the icon below the window
