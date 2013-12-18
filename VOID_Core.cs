@@ -88,8 +88,8 @@ namespace VOID
 		protected Texture2D VOIDIconOff;
 		protected Texture2D VOIDIconOn;
 		protected Texture2D VOIDIconTexture;
-		protected string VOIDIconOnPath = "VOID/Textures/void_icon_on_24x24";
-		protected string VOIDIconOffPath = "VOID/Textures/void_icon_off_24x24";
+		protected string VOIDIconOnPath = "VOID/Textures/void_icon_on";
+		protected string VOIDIconOffPath = "VOID/Textures/void_icon_off";
 		protected bool VOIDIconLocked = true;
 		protected GUIStyle iconStyle;
 		protected int windowBaseID = -96518722;
