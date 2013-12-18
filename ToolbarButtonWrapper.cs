@@ -42,6 +42,7 @@ namespace VOID
 		protected PropertyInfo ButtonVisible;
 		protected PropertyInfo ButtonVisibility;
 		protected PropertyInfo ButtonEnalbed;
+		protected PropertyInfo ButtonImportant;
 		protected EventInfo ButtonOnClick;
 		protected System.Type ClickHandlerType;
 		protected MethodInfo ButtonDestroy;
@@ -166,7 +167,40 @@ namespace VOID
 			}
 		}
 
-		private ToolbarButtonWrapper() {}
+		/// <summary>
+		/// Whether this button is currently "important."  Set to false to return to normal button behaviour.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This can be used to temporarily force the button to be shown on the screen regardless of the toolbar being
+		/// currently in auto-hidden mode.  For example, a button that signals the arrival of a private message in a
+		/// chat room could mark itself as "important" as long as the message has not been read.
+		/// </para>
+		/// <para>
+		/// Setting this property does not change the appearance of the button.  use <see cref="TexturePath"/>  to
+		/// change the button's icon.
+		/// </para>
+		/// <para>
+		/// This feature should be used only sparingly, if at all, since it forces the button to be displayed on screen
+		/// even when it normally wouldn't.
+		/// </para>
+		/// </remarks>
+		/// <value><c>true</c> if important; otherwise, <c>false</c>.</value>
+		public bool Important
+		{
+			get
+			{
+				return (bool)this.ButtonImportant.GetValue(this.Button, null);
+			}
+			set
+			{
+				this.ButtonImportant.SetValue(this.Button, value, null);
+			}
+		}
+
+		private ToolbarButtonWrapper()
+		{
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VOID.ToolbarButtonWrapper"/> class.
@@ -188,26 +222,26 @@ namespace VOID
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Loaded ToolbarManager.  Getting Instance.",
 				this.GetType().Name
-				));
+			));
 
 			this.TBManagerInstance = this.ToolbarManager.GetProperty(
-					"Instance",
-					System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static
-				)
+				"Instance",
+				System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static
+			)
 				.GetValue(null, null);
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got ToolbarManager Instance '{1}'.  Getting 'add' method.",
 				this.GetType().Name,
 				this.TBManagerInstance
-				));
+			));
 
 			this.TBManagerAdd = this.ToolbarManager.GetMethod("add");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got ToolbarManager Instance 'add' method.  Loading IButton.",
 				this.GetType().Name
-				));
+			));
 
 			this.IButton = AssemblyLoader.loadedAssemblies
 				.Select(a => a.assembly.GetExportedTypes())
@@ -217,64 +251,71 @@ namespace VOID
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Loaded IButton.  Adding Button with ToolbarManager.",
 				this.GetType().Name
-				));
+			));
 
-			this.Button = this.TBManagerAdd.Invoke(this.TBManagerInstance, new object[] {ns, id});
+			this.Button = this.TBManagerAdd.Invoke(this.TBManagerInstance, new object[] { ns, id });
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Added Button '{1}' with ToolbarManager.  Getting 'Text' property",
 				this.GetType().Name,
 				this.Button.ToString()
-				));
+			));
 
 			this.ButtonText = this.IButton.GetProperty("Text");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'Text' property.  Getting 'TextColor' property.",
 				this.GetType().Name
-				));
+			));
 
 			this.ButtonTextColor = this.IButton.GetProperty("TextColor");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'TextColor' property.  Getting 'TexturePath' property.",
 				this.GetType().Name
-				));
+			));
 
 			this.ButtonTexturePath = this.IButton.GetProperty("TexturePath");
 			
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'TexturePath' property.  Getting 'ToolTip' property.",
 				this.GetType().Name
-				));
+			));
 
 			this.ButtonToolTip = this.IButton.GetProperty("ToolTip");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'ToolTip' property.  Getting 'Visible' property.",
 				this.GetType().Name
-				));
+			));
 
 			this.ButtonVisible = this.IButton.GetProperty("Visible");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'Visible' property.  Getting 'Visibility' property.",
 				this.GetType().Name
-				));
+			));
 
 			this.ButtonVisibility = this.IButton.GetProperty("Visibility");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'Visibility' property.  Getting 'Enabled' property.",
 				this.GetType().Name
-				));
+			));
 
 			this.ButtonEnalbed = this.IButton.GetProperty("Enabled");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'Enabled' property.  Getting 'OnClick' event.",
 				this.GetType().Name
-				));
+			));
+
+			this.ButtonImportant = this.IButton.GetProperty("Important");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'Enabled' property.  Getting 'OnClick' event.",
+				this.GetType().Name
+			));
 
 			this.ButtonOnClick = this.IButton.GetEvent("OnClick");
 			this.ClickHandlerType = this.ButtonOnClick.EventHandlerType;
@@ -283,7 +324,7 @@ namespace VOID
 				"{0}: Got 'OnClick' event '{1}'.  Getting 'Destroy' method.",
 				this.GetType().Name,
 				this.ButtonOnClick.ToString()
-				));
+			));
 
 			this.ButtonDestroy = this.IButton.GetMethod("Destroy");
 
@@ -291,7 +332,7 @@ namespace VOID
 				"{0}: Got 'Destroy' property '{1}'.  Loading GameScenesVisibility class.",
 				this.GetType().Name,
 				this.ButtonDestroy.ToString()
-				));
+			));
 
 			this.GameScenesVisibilityType = AssemblyLoader.loadedAssemblies
 				.Select(a => a.assembly.GetExportedTypes())
@@ -302,7 +343,7 @@ namespace VOID
 				"{0}: Got 'GameScenesVisibility' class '{1}'.",
 				this.GetType().Name,
 				this.GameScenesVisibilityType.ToString()
-				));
+			));
 
 			Tools.PostDebugMessage("ToolbarButtonWrapper built!");
 		}
