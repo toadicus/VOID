@@ -30,9 +30,99 @@ namespace VOID
 	/// </summary>
 	internal class ToolbarButtonWrapper
 	{
-		protected System.Type ToolbarManager;
-		protected object TBManagerInstance;
-		protected MethodInfo TBManagerAdd;
+		protected static System.Type ToolbarManager;
+		protected static object TBManagerInstance;
+		protected static MethodInfo TBManagerAdd;
+
+		/// <summary>
+		/// Wraps the ToolbarManager class, if present.
+		/// </summary>
+		/// <returns><c>true</c>, if ToolbarManager is wrapped, <c>false</c> otherwise.</returns>
+		protected static bool TryWrapToolbarManager()
+		{
+			if (ToolbarManager == null)
+			{
+				Tools.PostDebugMessage(string.Format(
+					"{0}: Loading ToolbarManager.",
+					"ToolbarButtonWrapper"
+					));
+
+				ToolbarManager = AssemblyLoader.loadedAssemblies
+					.Select(a => a.assembly.GetExportedTypes())
+						.SelectMany(t => t)
+						.FirstOrDefault(t => t.FullName == "Toolbar.ToolbarManager");
+
+				Tools.PostDebugMessage(string.Format(
+					"{0}: Loaded ToolbarManager.  Getting Instance.",
+					"ToolbarButtonWrapper"
+					));
+
+				if (ToolbarManager == null)
+				{
+					return false;
+				}
+
+				TBManagerInstance = ToolbarManager.GetProperty(
+					"Instance",
+					System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static
+					)
+					.GetValue(null, null);
+
+				Tools.PostDebugMessage(string.Format(
+					"{0}: Got ToolbarManager Instance '{1}'.  Getting 'add' method.",
+					"ToolbarButtonWrapper",
+					TBManagerInstance
+					));
+
+				TBManagerAdd = ToolbarManager.GetMethod("add");
+
+				Tools.PostDebugMessage(string.Format(
+					"{0}: Got ToolbarManager Instance 'add' method.  Loading IButton.",
+					"ToolbarButtonWrapper"
+					));
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether <see cref="Toolbar.ToolbarManager"/> is present.
+		/// </summary>
+		/// <value><c>true</c>, if ToolbarManager is wrapped, <c>false</c> otherwise.</value>
+		public static bool ToolbarManagerPresent
+		{
+			get
+			{
+				return TryWrapToolbarManager();
+			}
+		}
+
+		/// <summary>
+		/// If ToolbarManager is present, initializes a new instance of the <see cref="VOID.ToolbarButtonWrapper"/> class.
+		/// </summary>
+		/// <param name="ns">Namespace, usually the plugin name.</param>
+		/// <param name="id">Identifier, unique per namespace.</param>
+		/// <returns>If ToolbarManager is present, a new <see cref="Toolbar.IButton"/> object, <c>null</c> otherwise.</returns>
+		public static ToolbarButtonWrapper TryWrapToolbarButton(string ns, string id)
+		{
+			if (ToolbarManagerPresent)
+			{
+				object button = TBManagerAdd.Invoke(TBManagerInstance, new object[] { ns, id });
+
+				Tools.PostDebugMessage(string.Format(
+					"{0}: Added Button '{1}' with ToolbarManager.  Getting 'Text' property",
+					"ToolbarButtonWrapper",
+					button.ToString()
+				));
+
+				return new ToolbarButtonWrapper(button);
+			}
+			else
+			{
+				return null;
+			}
+		}
+
 		protected System.Type IButton;
 		protected object Button;
 		protected PropertyInfo ButtonText;
@@ -207,42 +297,8 @@ namespace VOID
 		/// </summary>
 		/// <param name="ns">Namespace, usually the plugin name.</param>
 		/// <param name="id">Identifier, unique per namespace.</param>
-		public ToolbarButtonWrapper(string ns, string id)
+		protected ToolbarButtonWrapper(object button)
 		{
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Loading ToolbarManager.",
-				this.GetType().Name
-			));
-
-			this.ToolbarManager = AssemblyLoader.loadedAssemblies
-				.Select(a => a.assembly.GetExportedTypes())
-				.SelectMany(t => t)
-				.FirstOrDefault(t => t.FullName == "Toolbar.ToolbarManager");
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Loaded ToolbarManager.  Getting Instance.",
-				this.GetType().Name
-			));
-
-			this.TBManagerInstance = this.ToolbarManager.GetProperty(
-				"Instance",
-				System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static
-			)
-				.GetValue(null, null);
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Got ToolbarManager Instance '{1}'.  Getting 'add' method.",
-				this.GetType().Name,
-				this.TBManagerInstance
-			));
-
-			this.TBManagerAdd = this.ToolbarManager.GetMethod("add");
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Got ToolbarManager Instance 'add' method.  Loading IButton.",
-				this.GetType().Name
-			));
-
 			this.IButton = AssemblyLoader.loadedAssemblies
 				.Select(a => a.assembly.GetExportedTypes())
 				.SelectMany(t => t)
@@ -251,14 +307,6 @@ namespace VOID
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Loaded IButton.  Adding Button with ToolbarManager.",
 				this.GetType().Name
-			));
-
-			this.Button = this.TBManagerAdd.Invoke(this.TBManagerInstance, new object[] { ns, id });
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Added Button '{1}' with ToolbarManager.  Getting 'Text' property",
-				this.GetType().Name,
-				this.Button.ToString()
 			));
 
 			this.ButtonText = this.IButton.GetProperty("Text");
