@@ -299,6 +299,8 @@ namespace VOID
 		/// <param name="id">Identifier, unique per namespace.</param>
 		protected ToolbarButtonWrapper(object button)
 		{
+			this.Button = button;
+
 			this.IButton = AssemblyLoader.loadedAssemblies
 				.Select(a => a.assembly.GetExportedTypes())
 				.SelectMany(t => t)
