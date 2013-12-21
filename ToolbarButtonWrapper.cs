@@ -437,21 +437,44 @@ namespace VOID
 			this.AddButtonEventHandler(this.ButtonOnClick, Handler);
 		}
 
+		/// <summary>
+		/// Adds event handler that can be registered with to receive "on mouse enter" events.
+		/// </summary>
+		/// <example>
+		/// <code>
+		/// ToolbarWrapperButton button = ...
+		/// button.AddButtonOnMouseEnterHandler(
+		/// 	(e) =>
+		/// 	{
+		/// 		Debug.Log("mouse entered button");
+		/// 	}
+		/// );
+		/// </code>
+		/// </example>
+		/// <param name="Handler">Delegate to handle "OnMouseEnter" events.</param>
 		public void AddButtonOnMouseEnterHandler(Action<object> Handler)
 		{
 			this.AddButtonEventHandler(this.ButtonOnMouseEnter, Handler);
 		}
 
+		/// <summary>
+		/// Adds event handler that can be registered with to receive "on mouse leave" events.
+		/// </summary>
+		/// <example>
+		/// <code>
+		/// ToolbarWrapperButton button = ...
+		/// button.AddButtonOnMouseLeaveHandler(
+		/// 	(e) =>
+		/// 	{
+		/// 		Debug.Log("mouse left button");
+		/// 	}
+		/// );
+		/// </code>
+		/// </example>
+		/// <param name="Handler">Delegate to handle "OnMouseLeave" events.</param>
 		public void AddButtonOnMouseLeaveHandler(Action<object> Handler)
 		{
 			this.AddButtonEventHandler(this.ButtonOnMouseLeave, Handler);
-		}
-
-		protected void AddButtonEventHandler(EventInfo Event, Action<object> Handler)
-		{
-			Delegate d = Delegate.CreateDelegate(Event.EventHandlerType, Handler.Target, Handler.Method);
-			MethodInfo addHandler = Event.GetAddMethod();
-			addHandler.Invoke(this.Button, new object[] { d });
 		}
 
 		/// <summary>
@@ -471,6 +494,14 @@ namespace VOID
 		public void Destroy()
 		{
 			this.ButtonDestroy.Invoke(this.Button, null);
+		}
+
+		// Utility method for use with the AddButton<event>Handler API methods.
+		protected void AddButtonEventHandler(EventInfo Event, Action<object> Handler)
+		{
+			Delegate d = Delegate.CreateDelegate(Event.EventHandlerType, Handler.Target, Handler.Method);
+			MethodInfo addHandler = Event.GetAddMethod();
+			addHandler.Invoke(this.Button, new object[] { d });
 		}
 	}
 }
