@@ -135,6 +135,10 @@ namespace VOID
 		protected PropertyInfo ButtonImportant;
 		protected EventInfo ButtonOnClick;
 		protected System.Type ClickHandlerType;
+		protected EventInfo ButtonOnMouseEnter;
+		protected System.Type MouseEnterHandlerType;
+		protected EventInfo ButtonOnMouseLeave;
+		protected System.Type MouseLeaveHandlerType;
 		protected MethodInfo ButtonDestroy;
 		protected System.Type GameScenesVisibilityType;
 
@@ -368,13 +372,28 @@ namespace VOID
 			));
 
 			this.ButtonOnClick = this.IButton.GetEvent("OnClick");
-			this.ClickHandlerType = this.ButtonOnClick.EventHandlerType;
 
 			Tools.PostDebugMessage(string.Format(
-				"{0}: Got 'OnClick' event '{1}'.  Getting 'Destroy' method.",
+				"{0}: Got 'OnClick' event '{1}'.  Getting 'OnMouseEnter' event.",
 				this.GetType().Name,
 				this.ButtonOnClick.ToString()
 			));
+
+			this.ButtonOnMouseEnter = this.IButton.GetEvent("OnMouseEnter");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'OnMouseEnter' event '{1}'.  Getting 'OnMouseLeave' event.",
+				this.GetType().Name,
+				this.ButtonOnClick.ToString()
+				));
+
+			this.ButtonOnMouseLeave = this.IButton.GetEvent("OnMouseLeave");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'OnMouseLeave' event '{1}'.  Getting 'Destroy' method.",
+				this.GetType().Name,
+				this.ButtonOnClick.ToString()
+				));
 
 			this.ButtonDestroy = this.IButton.GetMethod("Destroy");
 
@@ -415,8 +434,23 @@ namespace VOID
 		/// <param name="Handler">Delegate to handle "on click" events</param>
 		public void AddButtonClickHandler(Action<object> Handler)
 		{
-			Delegate d = Delegate.CreateDelegate(this.ClickHandlerType, Handler.Target, Handler.Method);
-			MethodInfo addHandler = this.ButtonOnClick.GetAddMethod();
+			this.AddButtonEventHandler(this.ButtonOnClick, Handler);
+		}
+
+		public void AddButtonOnMouseEnterHandler(Action<object> Handler)
+		{
+			this.AddButtonEventHandler(this.ButtonOnMouseEnter, Handler);
+		}
+
+		public void AddButtonOnMouseLeaveHandler(Action<object> Handler)
+		{
+			this.AddButtonEventHandler(this.ButtonOnMouseLeave, Handler);
+		}
+
+		protected void AddButtonEventHandler(EventInfo Event, Action<object> Handler)
+		{
+			Delegate d = Delegate.CreateDelegate(Event.EventHandlerType, Handler.Target, Handler.Method);
+			MethodInfo addHandler = Event.GetAddMethod();
 			addHandler.Invoke(this.Button, new object[] { d });
 		}
 
