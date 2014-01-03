@@ -113,7 +113,8 @@ namespace VOID
 					" Lon: " + Tools.GetLongitudeString (vessel, "F3") +
 					"\nHdg: " + Tools.MuMech_get_heading (vessel).ToString ("F2") + "° " +
 					Tools.get_heading_text (Tools.MuMech_get_heading (vessel)) +
-					"\nBiome: " + Tools.Toadicus_GetAtt (vessel).name,
+					"\nBiome: " + Tools.Toadicus_GetAtt (vessel).name +
+					" Sit: " + vessel.GetExperimentSituation().HumanString(),
 					VOID_Core.Instance.LabelStyles["hud"]);
 			}
 			else
