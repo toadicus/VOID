@@ -959,6 +959,59 @@ namespace VOID
 			return icon;
 		}
 
+		public static ExperimentSituations GetExperimentSituation(this Vessel vessel)
+		{
+			Vessel.Situations situation = vessel.situation;
+
+			switch (situation)
+			{
+				case Vessel.Situations.PRELAUNCH:
+				case Vessel.Situations.LANDED:
+					return ExperimentSituations.SrfLanded;
+				case Vessel.Situations.SPLASHED:
+					return ExperimentSituations.SrfSplashed;
+				case Vessel.Situations.FLYING:
+					if (vessel.altitude < (double)vessel.mainBody.scienceValues.flyingAltitudeThreshold)
+					{
+						return ExperimentSituations.FlyingLow;
+					}
+					else
+					{
+						return ExperimentSituations.FlyingHigh;
+					}
+			}
+
+			if (vessel.altitude < (double)vessel.mainBody.scienceValues.spaceAltitudeThreshold)
+			{
+				return ExperimentSituations.InSpaceLow;
+			}
+			else
+			{
+				return ExperimentSituations.InSpaceHigh;
+			}
+		}
+
+		public static string HumanString(this ExperimentSituations situation)
+		{
+			switch (situation)
+			{
+				case ExperimentSituations.FlyingHigh:
+					return "Upper Atmosphere";
+				case ExperimentSituations.FlyingLow:
+					return "Flying";
+				case ExperimentSituations.SrfLanded:
+					return "Surface";
+				case ExperimentSituations.InSpaceLow:
+					return "Near in Space";
+				case ExperimentSituations.InSpaceHigh:
+					return "High in Space";
+				case ExperimentSituations.SrfSplashed:
+					return "Splashed Down";
+				default:
+					return "Unknown";
+			}
+		}
+
 		private static ScreenMessage debugmsg = new ScreenMessage("", 2f, ScreenMessageStyle.UPPER_RIGHT);
 
 		[System.Diagnostics.Conditional("DEBUG")]
