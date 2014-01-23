@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Engineer.VesselSimulator;
+using Engineer.Extensions;
 
 namespace VOID
 {
@@ -151,6 +152,51 @@ namespace VOID
 			""
 		);
 
+		protected VOID_StrValue intakeAirStatus = new VOID_StrValue(
+			"Intake Air (Curr / Req)",
+			delegate()
+			{
+				double currentAmount;
+				double currentRequirement;
+
+				currentAmount = 0d;
+				currentRequirement = 0d;
+
+				foreach (Part part in VOID_Core.Instance.vessel.Parts)
+				{
+					if (part.HasModule<ModuleEngines>() && part.enabled)
+					{
+						foreach (Propellant propellant in part.GetModule<ModuleEngines>().propellants)
+						{
+							if (propellant.name == "IntakeAir")
+							{
+								// currentAmount += propellant.currentAmount;
+								currentRequirement += propellant.currentRequirement / TimeWarp.fixedDeltaTime;
+								break;
+							}
+						}
+					}
+
+					if (part.HasModule<ModuleResourceIntake>() && part.enabled)
+					{
+						ModuleResourceIntake intakeModule = part.GetModule<ModuleResourceIntake>();
+
+						if (intakeModule.resourceName == "IntakeAir")
+						{
+							currentAmount += intakeModule.airFlow;
+						}
+					}
+				}
+
+				if (currentAmount == 0 && currentRequirement == 0)
+				{
+					return "N/A";
+				}
+
+				return string.Format("{0:F3} / {1:F3}", currentAmount, currentRequirement);
+			}
+		);
+
 		public VOID_VesselInfo() : base()
 		{
 			this._Name = "Vessel Information";
@@ -196,6 +242,8 @@ namespace VOID
 			this.currmaxThrustWeight.DoGUIHorizontal ();
 
 			this.surfaceThrustWeight.DoGUIHorizontal ("F2");
+
+			this.intakeAirStatus.DoGUIHorizontal();
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();

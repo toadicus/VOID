@@ -131,6 +131,7 @@ namespace VOID
 		protected PropertyInfo ButtonToolTip;
 		protected PropertyInfo ButtonVisible;
 		protected PropertyInfo ButtonVisibility;
+		protected PropertyInfo ButtonEffectivelyVisible;
 		protected PropertyInfo ButtonEnalbed;
 		protected PropertyInfo ButtonImportant;
 		protected EventInfo ButtonOnClick;
@@ -243,6 +244,22 @@ namespace VOID
 		}
 
 		/// <summary>
+		/// Whether this button is currently effectively visible or not. This is a combination of
+		/// <see cref="Visible"/> and <see cref="Visibility"/>.
+		/// </summary>
+		/// <remarks>
+		/// Note that the toolbar is not visible in certain game scenes, for example the loading screens. This property
+		/// does not reflect button invisibility in those scenes.
+		/// </remarks>
+		public bool EffectivelyVisible
+		{
+			get
+			{
+				return (bool)this.ButtonEffectivelyVisible.GetValue(this.Button, null);
+			}
+		}
+
+		/// <summary>
 		/// Whether this button is currently enabled (clickable) or not. This will not affect the player's ability to
 		/// position the button on their screen.
 		/// </summary>
@@ -348,6 +365,13 @@ namespace VOID
 			));
 
 			this.ButtonVisibility = this.IButton.GetProperty("Visibility");
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Got 'Visibility' property.  Getting 'EffectivelyVisible' property.",
+				this.GetType().Name
+			));
+
+			this.ButtonEffectivelyVisible = this.IButton.GetProperty("EffectivelyVisible");
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: Got 'Visibility' property.  Getting 'Enabled' property.",
