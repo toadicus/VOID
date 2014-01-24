@@ -209,7 +209,17 @@ namespace VOID
 		//From http://svn.mumech.com/KSP/trunk/MuMechLib/VOID.vesselState.cs
 		public static double MuMech_get_heading(Vessel vessel)
 		{
-			Vector3d CoM = vessel.findWorldCenterOfMass();
+			Vector3d CoM;
+
+			try
+			{
+				CoM = vessel.findWorldCenterOfMass();
+			}
+			catch
+			{
+				return double.NaN;
+			}
+
 			Vector3d up = (CoM - vessel.mainBody.position).normalized;
 			Vector3d north = Vector3d.Exclude(
 				                 up,

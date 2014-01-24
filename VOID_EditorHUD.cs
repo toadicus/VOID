@@ -24,6 +24,8 @@ using Engineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace VOID
@@ -39,6 +41,8 @@ namespace VOID
 		protected List<Color> textColors = new List<Color>();
 
 		protected GUIStyle labelStyle;
+
+		protected EditorVesselOverlays _vesselOverlays;
 
 		/*
 		 * Properties
@@ -58,6 +62,47 @@ namespace VOID
 				}
 
 				this._colorIndex = value;
+			}
+		}
+
+		protected EditorVesselOverlays vesselOverlays
+		{
+			get
+			{
+				if (this._vesselOverlays == null)
+				{
+					this._vesselOverlays = (EditorVesselOverlays)Resources
+						.FindObjectsOfTypeAll(typeof(EditorVesselOverlays))
+						.FirstOrDefault();
+				}
+
+				return this._vesselOverlays;
+			}
+		}
+
+		protected EditorMarker_CoM CoMmarker
+		{
+			get
+			{
+				if (this.vesselOverlays == null)
+				{
+					return null;
+				}
+
+				return this.vesselOverlays.CoMmarker;
+			}
+		}
+
+		protected EditorMarker_CoT CoTmarker
+		{
+			get
+			{
+				if (this.vesselOverlays == null)
+				{
+					return null;
+				}
+
+				return this.vesselOverlays.CoTmarker;
 			}
 		}
 
@@ -97,6 +142,7 @@ namespace VOID
 			}
 
 			float hudLeft;
+			StringBuilder hudString;
 
 			if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
 			{
@@ -113,17 +159,53 @@ namespace VOID
 
 			Rect hudPos = new Rect (hudLeft, 48, 300, 32);
 
+			hudString = new StringBuilder();
+
 			// GUI.skin = AssetBase.GetGUISkin("KSP window 2");
 
 			labelStyle.normal.textColor = textColors [ColorIndex];
 
+			hudString.Append("Total Mass: ");
+			hudString.Append(SimManager.Instance.LastStage.totalMass.ToString("F3"));
+			hudString.Append('t');
+
+			hudString.Append(' ');
+
+			hudString.Append("Part Count: ");
+			hudString.Append(EditorLogic.SortedShipList.Count);
+
+			hudString.Append('\n');
+
+			hudString.Append("Total Delta-V: ");
+			hudString.Append(Tools.MuMech_ToSI(SimManager.Instance.LastStage.totalDeltaV));
+			hudString.Append("m/s");
+
+			hudString.Append('\n');
+
+			hudString.Append("Bottom Stage Delta-V");
+			hudString.Append(Tools.MuMech_ToSI(SimManager.Instance.LastStage.deltaV));
+			hudString.Append("m/s");
+
+			hudString.Append('\n');
+
+			hudString.Append("Bottom Stage T/W Ratio: ");
+			hudString.Append(SimManager.Instance.LastStage.thrustToWeight.ToString("F3"));
+
+			if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
+			{
+				hudString.Append('\n');
+
+				hudString.Append("Thrust Offset: ");
+				hudString.Append(
+					Vector3.Cross(
+						this.CoTmarker.dirMarkerObject.transform.forward,
+						this.CoMmarker.posMarkerObject.transform.position - this.CoTmarker.posMarkerObject.transform.position
+					).ToString("F3"));
+			}
+
 			GUI.Label (
 				hudPos,
-				"Total Mass: " + SimManager.Instance.LastStage.totalMass.ToString("F3") + "t" +
-				" Part Count: " + EditorLogic.SortedShipList.Count +
-				"\nTotal Delta-V: " + Tools.MuMech_ToSI(SimManager.Instance.LastStage.totalDeltaV) + "m/s" +
-				"\nBottom Stage Delta-V: " + Tools.MuMech_ToSI(SimManager.Instance.LastStage.deltaV) + "m/s" +
-				"\nBottom Stage T/W Ratio: " + SimManager.Instance.LastStage.thrustToWeight.ToString("F3"),
+				hudString.ToString(),
 				labelStyle);
 		}
 
