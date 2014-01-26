@@ -138,7 +138,7 @@ namespace VOID
 				{
 					// Toadicus edit: added local sidereal longitude.
 					// Toadicus edit: added local sidereal longitude.
-					double LSL = vessel.longitude + vessel.orbit.referenceBody.rotationAngle;
+					double LSL = v.longitude + v.orbit.referenceBody.rotationAngle;
 					LSL = Tools.FixDegreeDomain (LSL);
 
 					//display orbital info for orbiting/flying/suborbital/escaping vessels only
