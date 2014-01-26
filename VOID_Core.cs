@@ -69,7 +69,7 @@ namespace VOID
 		 * Fields
 		 * */
 		protected string VoidName = "VOID";
-		protected string VoidVersion = "0.9.19";
+		protected string VoidVersion = "0.9.20";
 		protected bool _factoryReset = false;
 		[AVOID_SaveValue("configValue")]
 		protected VOID_SaveValue<int> configVersion = 1;
