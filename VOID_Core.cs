@@ -70,52 +70,71 @@ namespace VOID
 		 * */
 		protected string VoidName = "VOID";
 		protected string VoidVersion = "0.9.20";
+
 		protected bool _factoryReset = false;
+
 		[AVOID_SaveValue("configValue")]
 		protected VOID_SaveValue<int> configVersion = 1;
+
 		protected List<IVOID_Module> _modules = new List<IVOID_Module>();
 		protected bool _modulesLoaded = false;
+
 		[AVOID_SaveValue("mainWindowPos")]
 		protected VOID_SaveValue<Rect> mainWindowPos = new Rect(475, 575, 10f, 10f);
 		[AVOID_SaveValue("mainGuiMinimized")]
 		protected VOID_SaveValue<bool> mainGuiMinimized = false;
+
 		[AVOID_SaveValue("configWindowPos")]
 		protected VOID_SaveValue<Rect> configWindowPos = new Rect(825, 625, 10f, 10f);
 		[AVOID_SaveValue("configWindowMinimized")]
+
 		protected VOID_SaveValue<bool> configWindowMinimized = true;
 		[AVOID_SaveValue("VOIDIconPos")]
 		protected VOID_SaveValue<Rect> VOIDIconPos = new Rect(Screen.width / 2 - 200, Screen.height - 32, 32f, 32f);
-		protected Texture2D VOIDIconOff;
-		protected Texture2D VOIDIconOn;
+
 		protected Texture2D VOIDIconTexture;
-		protected string VOIDIconOnPath = "VOID/Textures/void_icon_on";
-		protected string VOIDIconOffPath = "VOID/Textures/void_icon_off";
+		protected string VOIDIconOnActivePath;
+		protected string VOIDIconOnInactivePath;
+		protected string VOIDIconOffActivePath;
+		protected string VOIDIconOffInactivePath;
+
 		protected bool VOIDIconLocked = true;
+
 		protected GUIStyle iconStyle;
+
 		protected int windowBaseID = -96518722;
 		protected int _windowID = 0;
+
 		protected bool GUIStylesLoaded = false;
 		protected Dictionary<string, GUIStyle> _LabelStyles = new Dictionary<string, GUIStyle>();
+
 		[AVOID_SaveValue("togglePower")]
 		public VOID_SaveValue<bool> togglePower = true;
 		public bool powerAvailable = true;
+
 		[AVOID_SaveValue("consumeResource")]
 		protected VOID_SaveValue<bool> consumeResource = false;
+
 		[AVOID_SaveValue("resourceName")]
 		protected VOID_SaveValue<string> resourceName = "ElectricCharge";
+
 		[AVOID_SaveValue("resourceRate")]
 		protected VOID_SaveValue<float> resourceRate = 0.2f;
+
 		[AVOID_SaveValue("updatePeriod")]
 		protected VOID_SaveValue<double> _updatePeriod = 1001f / 15000f;
 		protected float _updateTimer = 0f;
 		protected string stringFrequency;
+
 		// Celestial Body Housekeeping
 		protected List<CelestialBody> _allBodies = new List<CelestialBody>();
 		protected bool bodiesLoaded = false;
+
 		// Vessel Type Housekeeping
 		protected List<VesselType> _allVesselTypes = new List<VesselType>();
 		protected bool vesselTypesLoaded = false;
 		public float saveTimer = 0;
+
 		protected string defaultSkin = "KSP window 2";
 		[AVOID_SaveValue("defaultSkin")]
 		protected VOID_SaveValue<string> _skinName;
@@ -133,11 +152,14 @@ namespace VOID
 				"PartTooltipSkin"
 			};
 		protected bool skinsLoaded = false;
+
 		public bool configDirty;
+
 		[AVOID_SaveValue("UseBlizzyToolbar")]
 		protected VOID_SaveValue<bool> _UseToolbarManager;
 		protected bool ToolbarManagerLoaded;
 		internal ToolbarButtonWrapper ToolbarButton;
+
 		/*
 		 * Properties
 		 * */
@@ -221,6 +243,38 @@ namespace VOID
 			}
 		}
 
+		protected IconState powerState
+		{
+			get
+			{
+				if (this.togglePower && this.powerAvailable)
+				{
+					return IconState.PowerOn;
+				}
+				else
+				{
+					return IconState.PowerOff;
+				}
+
+			}
+		}
+
+		protected IconState activeState
+		{
+			get
+			{
+				if (this.mainGuiMinimized)
+				{
+					return IconState.Inactive;
+				}
+				else
+				{
+					return IconState.Active;
+				}
+
+			}
+		}
+
 		protected bool UseToolbarManager
 		{
 			get
@@ -229,6 +283,11 @@ namespace VOID
 			}
 			set
 			{
+				if (this._UseToolbarManager == value)
+				{
+					return;
+				}
+
 				if (value == false && this.ToolbarManagerLoaded && this.ToolbarButton != null)
 				{
 					this.ToolbarButton.Destroy();
@@ -239,9 +298,12 @@ namespace VOID
 					this.InitializeToolbarButton();
 				}
 
+				this.SetIconTexture(this.powerState | this.activeState);
+
 				_UseToolbarManager.value = value;
 			}
 		}
+
 		/*
 		 * Methods
 		 * */
@@ -251,15 +313,19 @@ namespace VOID
 
 			this._Active.value = true;
 
-			this.VOIDIconOn = GameDatabase.Instance.GetTexture(this.VOIDIconOnPath, false);
-			this.VOIDIconOff = GameDatabase.Instance.GetTexture(this.VOIDIconOffPath, false);
-
 			this._skinName = this.defaultSkin;
+
+			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_light_glow";
+			this.VOIDIconOnInactivePath = "VOID/Textures/void_icon_dark_glow";
+			this.VOIDIconOffActivePath = "VOID/Textures/void_icon_light";
+			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_dark";
 
 			this.UseToolbarManager = false;
 			this.ToolbarManagerLoaded = false;
 
 			this.LoadConfig();
+
+			this.SetIconTexture(this.powerState | this.activeState);
 		}
 
 		protected void LoadModulesOfType<T>()
@@ -441,7 +507,7 @@ namespace VOID
 		{
 			this.ToolbarButton = ToolbarButtonWrapper.TryWrapToolbarButton(this.GetType().Name, "coreToggle");
 			this.ToolbarButton.Text = this.VoidName;
-			this.ToolbarButton.TexturePath = this.VOIDIconOffPath;
+			this.ToolbarButton.TexturePath = this.VOIDIconOffActivePath;
 			if (this is VOID_EditorCore)
 			{
 				this.ToolbarButton.SetButtonVisibility(new GameScenes[] { GameScenes.EDITOR });
@@ -451,7 +517,11 @@ namespace VOID
 				this.ToolbarButton.SetButtonVisibility(new GameScenes[] { GameScenes.FLIGHT });
 			}
 			this.ToolbarButton.AddButtonClickHandler(
-				(e) => this.mainGuiMinimized = !this.mainGuiMinimized
+				(e) =>
+				{
+					this.mainGuiMinimized = !this.mainGuiMinimized;
+					this.SetIconTexture(this.powerState | this.activeState);
+				}
 			);
 		}
 
@@ -467,7 +537,10 @@ namespace VOID
 					if (togglePower)
 						str = "OFF";
 					if (GUILayout.Button("Power " + str))
+					{
 						togglePower.value = !togglePower;
+						this.SetIconTexture(this.powerState | this.activeState);
+					}
 				}
 
 				if (togglePower || HighLogic.LoadedSceneIsEditor)
@@ -626,28 +699,18 @@ namespace VOID
 				this.LoadGUIStyles();
 			}
 
-			if (this.UseToolbarManager && this.ToolbarManagerLoaded)
+			if (!(this.UseToolbarManager && this.ToolbarManagerLoaded))
 			{
-				this.ToolbarButton.TexturePath = VOIDIconOffPath;
-				if (this.togglePower)
-				{
-					this.ToolbarButton.TexturePath = VOIDIconOnPath;
-				}
-			}
-			else
-			{
-				this.VOIDIconTexture = this.VOIDIconOff;  //icon off default
-				if (this.togglePower)
-					this.VOIDIconTexture = this.VOIDIconOn;     //or on if power_toggle==true
-
 				if (GUI.Button(VOIDIconPos, VOIDIconTexture, this.iconStyle) && this.VOIDIconLocked)
 				{
 					this.mainGuiMinimized.value = !this.mainGuiMinimized;
+					this.SetIconTexture(this.powerState | this.activeState);
 				}
 			}
 
 			if (!this.mainGuiMinimized)
 			{
+
 				Rect _mainWindowPos = this.mainWindowPos;
 
 				_mainWindowPos = GUILayout.Window(
@@ -790,19 +853,28 @@ namespace VOID
 
 		public void FixedUpdate()
 		{
+			bool newPowerState = this.powerAvailable;
+
 			if (this.consumeResource &&
 			    this.vessel.vesselType != VesselType.EVA &&
 			    TimeWarp.deltaTime != 0)
 			{
 				float powerReceived = this.vessel.rootPart.RequestResource(this.resourceName,
 					                      this.resourceRate * TimeWarp.fixedDeltaTime);
+
 				if (powerReceived > 0)
 				{
-					this.powerAvailable = true;
+					newPowerState = true;
 				}
 				else
 				{
-					this.powerAvailable = false;
+					newPowerState = false;
+				}
+
+				if (this.powerAvailable != newPowerState)
+				{
+					this.powerAvailable = newPowerState;
+					this.SetIconTexture(this.powerState | this.activeState);
 				}
 			}
 
@@ -824,6 +896,39 @@ namespace VOID
 			}
 
 			this.StartGUI();
+		}
+
+		protected void SetIconTexture(IconState state)
+		{
+			switch (state)
+			{
+				case (IconState.PowerOff | IconState.Inactive):
+					this.SetIconTexture(this.VOIDIconOffInactivePath);
+					break;
+				case (IconState.PowerOff | IconState.Active):
+					this.SetIconTexture(this.VOIDIconOffActivePath);
+					break;
+				case (IconState.PowerOn | IconState.Inactive):
+					this.SetIconTexture(this.VOIDIconOnInactivePath);
+					break;
+				case (IconState.PowerOn | IconState.Active):
+					this.SetIconTexture(this.VOIDIconOnActivePath);
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		protected void SetIconTexture(string texturePath)
+		{
+			if (this.UseToolbarManager && this.ToolbarButton != null)
+			{
+				this.ToolbarButton.TexturePath = texturePath;
+			}
+			else
+			{
+				this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath, false);
+			}
 		}
 
 		protected void CheckAndSave()
@@ -873,6 +978,14 @@ namespace VOID
 			config.save();
 
 			this.configDirty = false;
+		}
+
+		protected enum IconState
+		{
+			PowerOff = 1,
+			PowerOn = 2,
+			Inactive = 4,
+			Active = 8
 		}
 	}
 }
