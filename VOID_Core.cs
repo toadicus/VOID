@@ -109,9 +109,7 @@ namespace VOID
 		protected VOID_SaveValue<double> _updatePeriod = 1001f / 15000f;
 		protected float _updateTimer = 0f;
 		protected string stringFrequency;
-		// Celestial Body Housekeeping
-		protected List<CelestialBody> _allBodies = new List<CelestialBody>();
-		protected bool bodiesLoaded = false;
+
 		// Vessel Type Housekeeping
 		protected List<VesselType> _allVesselTypes = new List<VesselType>();
 		protected bool vesselTypesLoaded = false;
@@ -193,7 +191,7 @@ namespace VOID
 		{
 			get
 			{
-				return this._allBodies;
+				return FlightGlobals.Bodies;
 			}
 		}
 
@@ -402,12 +400,6 @@ namespace VOID
 			this.GUIStylesLoaded = true;
 		}
 
-		protected void LoadAllBodies()
-		{
-			this._allBodies = FlightGlobals.Bodies;
-			this.bodiesLoaded = true;
-		}
-
 		protected void LoadVesselTypes()
 		{
 			this._allVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToList();
@@ -416,11 +408,6 @@ namespace VOID
 
 		protected void LoadBeforeUpdate()
 		{
-			if (!this.bodiesLoaded)
-			{
-				this.LoadAllBodies();
-			}
-
 			if (!this.vesselTypesLoaded)
 			{
 				this.LoadVesselTypes();
