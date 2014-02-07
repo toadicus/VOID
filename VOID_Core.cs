@@ -840,12 +840,14 @@ namespace VOID
 		{
 			bool newPowerState = this.powerAvailable;
 
-			if (this.consumeResource &&
+			if (this.togglePower && this.consumeResource &&
 			    this.vessel.vesselType != VesselType.EVA &&
 			    TimeWarp.deltaTime != 0)
 			{
-				float powerReceived = this.vessel.rootPart.RequestResource(this.resourceName,
-					                      this.resourceRate * TimeWarp.fixedDeltaTime);
+				float powerReceived = this.vessel.rootPart.RequestResource(
+					this.resourceName,
+					this.resourceRate * TimeWarp.fixedDeltaTime
+				);
 
 				if (powerReceived > 0)
 				{
