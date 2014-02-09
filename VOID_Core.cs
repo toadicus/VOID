@@ -153,8 +153,7 @@ namespace VOID
 
 		[AVOID_SaveValue("UseBlizzyToolbar")]
 		protected VOID_SaveValue<bool> _UseToolbarManager;
-		protected bool ToolbarManagerLoaded;
-		internal ToolbarButtonWrapper ToolbarButton;
+		internal IButton ToolbarButton;
 
 		/*
 		 * Properties
@@ -284,12 +283,12 @@ namespace VOID
 					return;
 				}
 
-				if (value == false && this.ToolbarManagerLoaded && this.ToolbarButton != null)
+				if (value == false && this.ToolbarButton != null)
 				{
 					this.ToolbarButton.Destroy();
 					this.ToolbarButton = null;
 				}
-				if (value == true && this.ToolbarManagerLoaded && this.ToolbarButton == null)
+				if (value == true && this.ToolbarButton == null)
 				{
 					this.InitializeToolbarButton();
 				}
@@ -303,361 +302,6 @@ namespace VOID
 		/*
 		 * Methods
 		 * */
-		protected VOID_Core()
-		{
-			this._Name = "VOID Core";
-
-			this._Active.value = true;
-
-			this._skinName = this.defaultSkin;
-
-			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_light_glow";
-			this.VOIDIconOnInactivePath = "VOID/Textures/void_icon_dark_glow";
-			this.VOIDIconOffActivePath = "VOID/Textures/void_icon_light";
-			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_dark";
-
-			this.UseToolbarManager = false;
-			this.ToolbarManagerLoaded = false;
-
-			this.LoadConfig();
-
-			this.SetIconTexture(this.powerState | this.activeState);
-		}
-
-		protected void LoadModulesOfType<T>()
-		{
-			var types = AssemblyLoader.loadedAssemblies
-				.Select(a => a.assembly.GetExportedTypes())
-					.SelectMany(t => t)
-					.Where(v => typeof(T).IsAssignableFrom(v)
-			            && !(v.IsInterface || v.IsAbstract) &&
-			            !typeof(VOID_Core).IsAssignableFrom(v)
-			            );
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Found {1} modules to check.",
-				this.GetType().Name,
-				types.Count()
-			));
-			foreach (var voidType in types)
-			{
-				if (!HighLogic.LoadedSceneIsEditor &&
-				    typeof(IVOID_EditorModule).IsAssignableFrom(voidType))
-				{
-					continue;
-				}
-
-				Tools.PostDebugMessage(string.Format(
-					"{0}: found Type {1}",
-					this.GetType().Name,
-					voidType.Name
-				));
-
-				this.LoadModule(voidType);
-			}
-
-			this._modulesLoaded = true;
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Loaded {1} modules.",
-				this.GetType().Name,
-				this.Modules.Count
-			));
-		}
-
-		protected void LoadModule(Type T)
-		{
-			var existingModules = this._modules.Where(mod => mod.GetType().Name == T.Name);
-			if (existingModules.Any())
-			{
-				Tools.PostDebugMessage(string.Format(
-					"{0}: refusing to load {1}: already loaded",
-					this.GetType().Name,
-					T.Name
-				));
-				return;
-			}
-			IVOID_Module module = Activator.CreateInstance(T) as IVOID_Module;
-			module.LoadConfig();
-			this._modules.Add(module);
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: loaded module {1}.",
-				this.GetType().Name,
-				T.Name
-			));
-		}
-
-		protected void LoadSkins()
-		{
-			Tools.PostDebugMessage("AssetBase has skins: \n" +
-			string.Join("\n\t",
-				Resources.FindObjectsOfTypeAll(typeof(GUISkin))
-			            .Select(s => s.ToString())
-			            .ToArray()
-			)
-			);
-
-			this.skin_list = Resources.FindObjectsOfTypeAll(typeof(GUISkin))
-				.Where(s => !this.forbiddenSkins.Contains(s.name))
-					.Select(s => s as GUISkin)
-					.GroupBy(s => s.name)
-					.Select(g => g.First())
-					.ToDictionary(s => s.name);
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: loaded {1} GUISkins.",
-				this.GetType().Name,
-				this.skin_list.Count
-			));
-
-			this.skinNames = this.skin_list.Keys.ToList();
-			this.skinNames.Sort();
-
-			if (this._skinName == null || !this.skinNames.Contains(this._skinName))
-			{
-				this._skinName = this.defaultSkin;
-				Tools.PostDebugMessage(string.Format(
-					"{0}: resetting _skinIdx to default.",
-					this.GetType().Name
-				));
-			}
-
-			Tools.PostDebugMessage(string.Format(
-				"{0}: _skinIdx = {1}.",
-				this.GetType().Name,
-				this._skinName.ToString()
-			));
-
-			this.skinsLoaded = true;
-		}
-
-		protected void LoadGUIStyles()
-		{
-			this.LabelStyles["link"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["link"].fontStyle = FontStyle.Bold;
-
-			this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["center"].normal.textColor = Color.white;
-			this.LabelStyles["center"].alignment = TextAnchor.UpperCenter;
-
-			this.LabelStyles["center_bold"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["center_bold"].normal.textColor = Color.white;
-			this.LabelStyles["center_bold"].alignment = TextAnchor.UpperCenter;
-			this.LabelStyles["center_bold"].fontStyle = FontStyle.Bold;
-
-			this.LabelStyles["right"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["right"].normal.textColor = Color.white;
-			this.LabelStyles["right"].alignment = TextAnchor.UpperRight;
-
-			this.LabelStyles["red"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["red"].normal.textColor = Color.red;
-			this.LabelStyles["red"].alignment = TextAnchor.MiddleCenter;
-
-			this.iconStyle = new GUIStyle(GUI.skin.button);
-			this.iconStyle.padding = new RectOffset(0, 0, 0, 0);
-			// this.iconStyle.margin = new RectOffset(0, 0, 0, 0);
-			// this.iconStyle.contentOffset = new Vector2(0, 0);
-			this.iconStyle.overflow = new RectOffset(0, 0, 0, 0);
-			// this.iconStyle.border = new RectOffset(0, 0, 0, 0);
-
-			this.GUIStylesLoaded = true;
-		}
-
-		protected void LoadVesselTypes()
-		{
-			this._allVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToList();
-			this.vesselTypesLoaded = true;
-		}
-
-		protected void LoadBeforeUpdate()
-		{
-			if (!this.vesselTypesLoaded)
-			{
-				this.LoadVesselTypes();
-			}
-		}
-
-		protected void LoadToolbarManager()
-		{
-			this.ToolbarManagerLoaded = ToolbarButtonWrapper.ToolbarManagerPresent;
-
-			if (this.ToolbarManagerLoaded)
-			{
-				this.InitializeToolbarButton();
-			}
-		}
-
-		protected void InitializeToolbarButton()
-		{
-			this.ToolbarButton = ToolbarButtonWrapper.TryWrapToolbarButton(this.GetType().Name, "coreToggle");
-			this.ToolbarButton.Text = this.VoidName;
-			this.ToolbarButton.TexturePath = this.VOIDIconOffActivePath;
-			if (this is VOID_EditorCore)
-			{
-				this.ToolbarButton.SetButtonVisibility(new GameScenes[] { GameScenes.EDITOR });
-			}
-			else
-			{
-				this.ToolbarButton.SetButtonVisibility(new GameScenes[] { GameScenes.FLIGHT });
-			}
-			this.ToolbarButton.AddButtonClickHandler(
-				(e) =>
-				{
-					this.mainGuiMinimized = !this.mainGuiMinimized;
-					this.SetIconTexture(this.powerState | this.activeState);
-				}
-			);
-		}
-
-		public void VOIDMainWindow(int _)
-		{
-			GUILayout.BeginVertical();
-			
-			if (this.powerAvailable || HighLogic.LoadedSceneIsEditor)
-			{
-				if (!HighLogic.LoadedSceneIsEditor)
-				{
-					string str = "ON";
-					if (togglePower)
-						str = "OFF";
-					if (GUILayout.Button("Power " + str))
-					{
-						togglePower.value = !togglePower;
-						this.SetIconTexture(this.powerState | this.activeState);
-					}
-				}
-
-				if (togglePower || HighLogic.LoadedSceneIsEditor)
-				{
-					foreach (IVOID_Module module in this.Modules)
-					{
-						module.toggleActive = GUILayout.Toggle(module.toggleActive, module.Name);
-					}
-				}
-			}
-			else
-			{
-				GUILayout.Label("-- POWER LOST --", this.LabelStyles["red"]);
-			}
-
-			this.configWindowMinimized.value = !GUILayout.Toggle(!this.configWindowMinimized, "Configuration");
-
-			GUILayout.EndVertical();
-			GUI.DragWindow();
-		}
-
-		public void VOIDConfigWindow(int _)
-		{
-			GUILayout.BeginVertical();
-
-			this.DrawConfigurables();
-
-			GUILayout.EndVertical();
-			GUI.DragWindow();
-		}
-
-		public override void DrawConfigurables()
-		{
-			int skinIdx;
-
-			GUIContent _content;
-
-			if (HighLogic.LoadedSceneIsFlight)
-			{
-				this.consumeResource.value = GUILayout.Toggle(this.consumeResource, "Consume Resources");
-
-				this.VOIDIconLocked = GUILayout.Toggle(this.VOIDIconLocked, "Lock Icon Position");
-			}
-
-			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
-
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-
-			GUILayout.Label("Skin:", GUILayout.ExpandWidth(false));
-
-			_content = new GUIContent();
-
-			if (skinNames.Contains(this._skinName))
-			{
-				skinIdx = skinNames.IndexOf(this._skinName);
-			}
-			else if (skinNames.Contains(this.defaultSkin))
-			{
-				skinIdx = skinNames.IndexOf(this.defaultSkin);
-			}
-			else
-			{
-				skinIdx = 0;
-			}
-
-			_content.text = "◄";
-			_content.tooltip = "Select previous skin";
-			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
-			{
-				this.GUIStylesLoaded = false;
-				skinIdx--;
-				if (skinIdx < 0)
-					skinIdx = skinNames.Count - 1;
-				Tools.PostDebugMessage(string.Format(
-					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
-					this.GetType().Name,
-					this._skinName,
-					this.skin_list.Count
-				));
-			}
-
-			_content.text = this.Skin.name;
-			_content.tooltip = "Current skin";
-			GUILayout.Label(_content, this.LabelStyles["center"], GUILayout.ExpandWidth(true));
-
-			_content.text = "►";
-			_content.tooltip = "Select next skin";
-			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
-			{
-				this.GUIStylesLoaded = false;
-				skinIdx++;
-				if (skinIdx >= skinNames.Count)
-					skinIdx = 0;
-				Tools.PostDebugMessage(string.Format(
-					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
-					this.GetType().Name,
-					this._skinName,
-					this.skin_list.Count
-				));
-			}
-
-			if (this._skinName != skinNames[skinIdx])
-			{
-				this._skinName = skinNames[skinIdx];
-			}
-
-			GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal();
-			GUILayout.Label("Update Rate (Hz):");
-			if (this.stringFrequency == null)
-			{
-				this.stringFrequency = (1f / this.updatePeriod).ToString();
-			}
-			this.stringFrequency = GUILayout.TextField(this.stringFrequency.ToString(), 5, GUILayout.ExpandWidth(true));
-			// GUILayout.FlexibleSpace();
-			if (GUILayout.Button("Apply"))
-			{
-				double updateFreq = 1f / this.updatePeriod;
-				double.TryParse(stringFrequency, out updateFreq);
-				this._updatePeriod = 1 / updateFreq;
-			}
-			GUILayout.EndHorizontal();
-
-			foreach (IVOID_Module mod in this.Modules)
-			{
-				mod.DrawConfigurables();
-			}
-
-			this._factoryReset = GUILayout.Toggle(this._factoryReset, "Factory Reset");
-		}
-
 		public override void DrawGUI()
 		{
 			this._windowID = this.windowBaseID;
@@ -665,11 +309,6 @@ namespace VOID
 			if (!this._modulesLoaded)
 			{
 				this.LoadModulesOfType<IVOID_Module>();
-			}
-
-			if (this.UseToolbarManager && !this.ToolbarManagerLoaded)
-			{
-				this.LoadToolbarManager();
 			}
 
 			if (!this.skinsLoaded)
@@ -684,13 +323,16 @@ namespace VOID
 				this.LoadGUIStyles();
 			}
 
-			if (!(this.UseToolbarManager && this.ToolbarManagerLoaded))
+			if (!this.UseToolbarManager)
 			{
 				if (GUI.Button(VOIDIconPos, VOIDIconTexture, this.iconStyle) && this.VOIDIconLocked)
 				{
-					this.mainGuiMinimized.value = !this.mainGuiMinimized;
-					this.SetIconTexture(this.powerState | this.activeState);
+					this.ToggleMainWindow();
 				}
+			}
+			else if (this.ToolbarButton == null)
+			{
+				this.InitializeToolbarButton();
 			}
 
 			if (!this.mainGuiMinimized)
@@ -885,6 +527,336 @@ namespace VOID
 			this.StartGUI();
 		}
 
+		public void VOIDMainWindow(int _)
+		{
+			GUILayout.BeginVertical();
+
+			if (this.powerAvailable || HighLogic.LoadedSceneIsEditor)
+			{
+				if (!HighLogic.LoadedSceneIsEditor)
+				{
+					string str = string.Intern("ON");
+					if (togglePower)
+						str = string.Intern("OFF");
+					if (GUILayout.Button("Power " + str))
+					{
+						togglePower.value = !togglePower;
+						this.SetIconTexture(this.powerState | this.activeState);
+					}
+				}
+
+				if (togglePower || HighLogic.LoadedSceneIsEditor)
+				{
+					foreach (IVOID_Module module in this.Modules)
+					{
+						module.toggleActive = GUILayout.Toggle(module.toggleActive, module.Name);
+					}
+				}
+			}
+			else
+			{
+				GUILayout.Label("-- POWER LOST --", this.LabelStyles["red"]);
+			}
+
+			this.configWindowMinimized.value = !GUILayout.Toggle(!this.configWindowMinimized, "Configuration");
+
+			GUILayout.EndVertical();
+			GUI.DragWindow();
+		}
+
+		public void VOIDConfigWindow(int _)
+		{
+			GUILayout.BeginVertical();
+
+			this.DrawConfigurables();
+
+			GUILayout.EndVertical();
+			GUI.DragWindow();
+		}
+
+		public override void DrawConfigurables()
+		{
+			int skinIdx;
+
+			GUIContent _content;
+
+			if (HighLogic.LoadedSceneIsFlight)
+			{
+				this.consumeResource.value = GUILayout.Toggle(this.consumeResource, "Consume Resources");
+
+				this.VOIDIconLocked = GUILayout.Toggle(this.VOIDIconLocked, "Lock Icon Position");
+			}
+
+			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
+
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+			GUILayout.Label("Skin:", GUILayout.ExpandWidth(false));
+
+			_content = new GUIContent();
+
+			if (skinNames.Contains(this._skinName))
+			{
+				skinIdx = skinNames.IndexOf(this._skinName);
+			}
+			else if (skinNames.Contains(this.defaultSkin))
+			{
+				skinIdx = skinNames.IndexOf(this.defaultSkin);
+			}
+			else
+			{
+				skinIdx = 0;
+			}
+
+			_content.text = "◄";
+			_content.tooltip = "Select previous skin";
+			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
+			{
+				this.GUIStylesLoaded = false;
+				skinIdx--;
+				if (skinIdx < 0)
+					skinIdx = skinNames.Count - 1;
+				Tools.PostDebugMessage(string.Format(
+					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					this.GetType().Name,
+					this._skinName,
+					this.skin_list.Count
+				));
+			}
+
+			_content.text = this.Skin.name;
+			_content.tooltip = "Current skin";
+			GUILayout.Label(_content, this.LabelStyles["center"], GUILayout.ExpandWidth(true));
+
+			_content.text = "►";
+			_content.tooltip = "Select next skin";
+			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
+			{
+				this.GUIStylesLoaded = false;
+				skinIdx++;
+				if (skinIdx >= skinNames.Count)
+					skinIdx = 0;
+				Tools.PostDebugMessage(string.Format(
+					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					this.GetType().Name,
+					this._skinName,
+					this.skin_list.Count
+				));
+			}
+
+			if (this._skinName != skinNames[skinIdx])
+			{
+				this._skinName = skinNames[skinIdx];
+			}
+
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("Update Rate (Hz):");
+			if (this.stringFrequency == null)
+			{
+				this.stringFrequency = (1f / this.updatePeriod).ToString();
+			}
+			this.stringFrequency = GUILayout.TextField(this.stringFrequency.ToString(), 5, GUILayout.ExpandWidth(true));
+			// GUILayout.FlexibleSpace();
+			if (GUILayout.Button("Apply"))
+			{
+				double updateFreq = 1f / this.updatePeriod;
+				double.TryParse(stringFrequency, out updateFreq);
+				this._updatePeriod = 1 / updateFreq;
+			}
+			GUILayout.EndHorizontal();
+
+			foreach (IVOID_Module mod in this.Modules)
+			{
+				mod.DrawConfigurables();
+			}
+
+			this._factoryReset = GUILayout.Toggle(this._factoryReset, "Factory Reset");
+		}
+
+		protected void LoadModulesOfType<T>()
+		{
+			var types = AssemblyLoader.loadedAssemblies
+				.Select(a => a.assembly.GetExportedTypes())
+				.SelectMany(t => t)
+				.Where(v => typeof(T).IsAssignableFrom(v)
+					&& !(v.IsInterface || v.IsAbstract) &&
+					!typeof(VOID_Core).IsAssignableFrom(v)
+				);
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Found {1} modules to check.",
+				this.GetType().Name,
+				types.Count()
+			));
+			foreach (var voidType in types)
+			{
+				if (!HighLogic.LoadedSceneIsEditor &&
+					typeof(IVOID_EditorModule).IsAssignableFrom(voidType))
+				{
+					continue;
+				}
+
+				Tools.PostDebugMessage(string.Format(
+					"{0}: found Type {1}",
+					this.GetType().Name,
+					voidType.Name
+				));
+
+				this.LoadModule(voidType);
+			}
+
+			this._modulesLoaded = true;
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: Loaded {1} modules.",
+				this.GetType().Name,
+				this.Modules.Count
+			));
+		}
+
+		protected void LoadModule(Type T)
+		{
+			var existingModules = this._modules.Where(mod => mod.GetType().Name == T.Name);
+			if (existingModules.Any())
+			{
+				Tools.PostDebugMessage(string.Format(
+					"{0}: refusing to load {1}: already loaded",
+					this.GetType().Name,
+					T.Name
+				));
+				return;
+			}
+			IVOID_Module module = Activator.CreateInstance(T) as IVOID_Module;
+			module.LoadConfig();
+			this._modules.Add(module);
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: loaded module {1}.",
+				this.GetType().Name,
+				T.Name
+			));
+		}
+
+		protected void LoadSkins()
+		{
+			Tools.PostDebugMessage("AssetBase has skins: \n" +
+				string.Join("\n\t",
+					Resources.FindObjectsOfTypeAll(typeof(GUISkin))
+					.Select(s => s.ToString())
+					.ToArray()
+				)
+			);
+
+			this.skin_list = Resources.FindObjectsOfTypeAll(typeof(GUISkin))
+				.Where(s => !this.forbiddenSkins.Contains(s.name))
+				.Select(s => s as GUISkin)
+				.GroupBy(s => s.name)
+				.Select(g => g.First())
+				.ToDictionary(s => s.name);
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: loaded {1} GUISkins.",
+				this.GetType().Name,
+				this.skin_list.Count
+			));
+
+			this.skinNames = this.skin_list.Keys.ToList();
+			this.skinNames.Sort();
+
+			if (this._skinName == null || !this.skinNames.Contains(this._skinName))
+			{
+				this._skinName = this.defaultSkin;
+				Tools.PostDebugMessage(string.Format(
+					"{0}: resetting _skinIdx to default.",
+					this.GetType().Name
+				));
+			}
+
+			Tools.PostDebugMessage(string.Format(
+				"{0}: _skinIdx = {1}.",
+				this.GetType().Name,
+				this._skinName.ToString()
+			));
+
+			this.skinsLoaded = true;
+		}
+
+		protected void LoadGUIStyles()
+		{
+			this.LabelStyles["link"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["link"].fontStyle = FontStyle.Bold;
+
+			this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["center"].normal.textColor = Color.white;
+			this.LabelStyles["center"].alignment = TextAnchor.UpperCenter;
+
+			this.LabelStyles["center_bold"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["center_bold"].normal.textColor = Color.white;
+			this.LabelStyles["center_bold"].alignment = TextAnchor.UpperCenter;
+			this.LabelStyles["center_bold"].fontStyle = FontStyle.Bold;
+
+			this.LabelStyles["right"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["right"].normal.textColor = Color.white;
+			this.LabelStyles["right"].alignment = TextAnchor.UpperRight;
+
+			this.LabelStyles["red"] = new GUIStyle(GUI.skin.label);
+			this.LabelStyles["red"].normal.textColor = Color.red;
+			this.LabelStyles["red"].alignment = TextAnchor.MiddleCenter;
+
+			this.iconStyle = new GUIStyle(GUI.skin.button);
+			this.iconStyle.padding = new RectOffset(0, 0, 0, 0);
+			// this.iconStyle.margin = new RectOffset(0, 0, 0, 0);
+			// this.iconStyle.contentOffset = new Vector2(0, 0);
+			this.iconStyle.overflow = new RectOffset(0, 0, 0, 0);
+			// this.iconStyle.border = new RectOffset(0, 0, 0, 0);
+
+			this.GUIStylesLoaded = true;
+		}
+
+		protected void LoadVesselTypes()
+		{
+			this._allVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToList();
+			this.vesselTypesLoaded = true;
+		}
+
+		protected void LoadBeforeUpdate()
+		{
+			if (!this.vesselTypesLoaded)
+			{
+				this.LoadVesselTypes();
+			}
+		}
+
+		protected void InitializeToolbarButton()
+		{
+			this.ToolbarButton = ToolbarManager.Instance.add(this.GetType().Name, "coreToggle");
+			this.ToolbarButton.Text = this.VoidName;
+			this.SetIconTexture(this.powerState | this.activeState);
+
+			if (this is VOID_EditorCore)
+			{
+				this.ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.EDITOR);
+			}
+			else
+			{
+				this.ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
+			}
+
+			this.ToolbarButton.OnClick += 
+				(e) =>
+			{
+				this.ToggleMainWindow();
+			};
+		}
+
+		protected void ToggleMainWindow()
+		{
+			this.mainGuiMinimized = !this.mainGuiMinimized;
+			this.SetIconTexture(this.powerState | this.activeState);
+		}
+
 		protected void SetIconTexture(IconState state)
 		{
 			switch (state)
@@ -965,6 +937,26 @@ namespace VOID
 			config.save();
 
 			this.configDirty = false;
+		}
+
+		protected VOID_Core()
+		{
+			this._Name = "VOID Core";
+
+			this._Active.value = true;
+
+			this._skinName = this.defaultSkin;
+
+			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_light_glow";
+			this.VOIDIconOnInactivePath = "VOID/Textures/void_icon_dark_glow";
+			this.VOIDIconOffActivePath = "VOID/Textures/void_icon_light";
+			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_dark";
+
+			this.UseToolbarManager = false;
+
+			this.LoadConfig();
+
+			this.SetIconTexture(this.powerState | this.activeState);
 		}
 
 		protected enum IconState
