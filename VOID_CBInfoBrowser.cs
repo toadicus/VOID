@@ -287,7 +287,7 @@ namespace VOID
 			{
 				if (v.mainBody == body && v.situation.ToString() == "ORBITING") num_art_sats++;
 			}
-				
+
 			GUILayout.Label(num_art_sats.ToString(), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 			double g_ASL = (VOID_Core.Constant_G * body.Mass) / Math.Pow(body.Radius, 2);
@@ -303,17 +303,16 @@ namespace VOID
 				string O2 = "No";
 				if (body.atmosphereContainsOxygen == true) O2 = "Yes";
 				GUILayout.Label(O2, VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
-
-				string ocean = "No";
-				if (body.ocean == true) ocean = "Yes";
-				GUILayout.Label(ocean, VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 			}
 			else
 			{
 				GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 				GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
-				GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 			}
+
+			string ocean = "No";
+			if (body.ocean == true) ocean = "Yes";
+			GUILayout.Label(ocean, VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 		}
 	}
 }
