@@ -122,7 +122,8 @@ namespace VOID
 
 			if (EditorLogic.SortedShipList.Count > 0)
 			{
-				SimManager.Instance.Gravity = 9.08665;
+				SimManager.Instance.Gravity = this.Kerbin.gravParameter /
+					Math.Pow(this.Kerbin.Radius, 2);
 				SimManager.Instance.TryStartSimulation();
 			}
 
