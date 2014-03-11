@@ -108,6 +108,8 @@ namespace VOID
 		protected bool GUIStylesLoaded = false;
 		protected Dictionary<string, GUIStyle> _LabelStyles = new Dictionary<string, GUIStyle>();
 
+		protected CelestialBody _Kerbin;
+
 		[AVOID_SaveValue("togglePower")]
 		public VOID_SaveValue<bool> togglePower = true;
 		public bool powerAvailable = true;
@@ -211,6 +213,22 @@ namespace VOID
 			get
 			{
 				return FlightGlobals.Bodies;
+			}
+		}
+
+		public CelestialBody Kerbin
+		{
+			get
+			{
+				if (this._Kerbin == null)
+				{
+					if (FlightGlobals.Bodies != null)
+					{
+						this._Kerbin = FlightGlobals.Bodies.First(b => b.name == "Kerbin");
+					}
+				}
+
+				return this._Kerbin;
 			}
 		}
 
@@ -440,7 +458,7 @@ namespace VOID
 			if (this.vessel != null)
 			{
 				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
-				Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+					Math.Pow(VOID_Core.Instance.vessel.Radius(), 2);
 				SimManager.Instance.TryStartSimulation();
 			}
 
