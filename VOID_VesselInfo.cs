@@ -43,7 +43,7 @@ namespace VOID
 
 		protected VOID_DoubleValue totalMass = new VOID_DoubleValue(
 			"Total Mass",
-			new Func<double>(() => VOID_Core.Instance.vessel.GetTotalMass()),
+			new Func<double> (() => SimManager.Instance.TryGetLastMass()),
 			"tons"
 		);
 
@@ -118,7 +118,7 @@ namespace VOID
 
 				double currThrust = SimManager.Instance.LastStage.actualThrust;
 				double maxThrust = SimManager.Instance.LastStage.thrust;
-				double mass = VOID_Core.Instance.vessel.GetTotalMass();
+				double mass = SimManager.Instance.TryGetLastMass();
 				double gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
 				                 Math.Pow(
 					                 VOID_Core.Instance.vessel.mainBody.Radius + VOID_Core.Instance.vessel.altitude,
@@ -142,7 +142,7 @@ namespace VOID
 					return double.NaN;
 
 				double maxThrust = SimManager.Instance.LastStage.thrust;
-				double mass = VOID_Core.Instance.vessel.GetTotalMass();
+				double mass = SimManager.Instance.TryGetLastMass();
 				double gravity = (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
 				                 Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
 				double weight = mass * gravity;
@@ -213,8 +213,6 @@ namespace VOID
 			{
 				SimManager.Instance.RequestSimulation();
 			}
-
-			Stage[] stages = SimManager.Instance.Stages;
 
 			GUILayout.BeginVertical();
 
