@@ -1001,6 +1001,30 @@ namespace VOID
 			}
 		}
 
+		public static double Radius(this Vessel vessel)
+		{
+			double radius;
+
+			radius = vessel.altitude;
+
+			if (vessel.mainBody != null)
+			{
+				radius += vessel.mainBody.Radius;
+			}
+
+			return radius;
+		}
+
+		public static double TryGetLastMass(this Engineer.VesselSimulator.SimManager simManager)
+		{
+			if (simManager.Stages == null || simManager.Stages.Length <= Staging.lastStage)
+			{
+				return double.NaN;
+			}
+
+			return simManager.Stages[Staging.lastStage].totalMass;
+		}
+
 		public static string HumanString(this ExperimentSituations situation)
 		{
 			switch (situation)
