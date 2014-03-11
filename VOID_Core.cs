@@ -849,18 +849,11 @@ namespace VOID
 
 		protected void InitializeToolbarButton()
 		{
-			this.ToolbarButton = ToolbarManager.Instance.add(this.GetType().Name, "coreToggle");
+			this.ToolbarButton = ToolbarManager.Instance.add(this.VoidName, "coreToggle");
 			this.ToolbarButton.Text = this.VoidName;
 			this.SetIconTexture(this.powerState | this.activeState);
 
-			if (this is VOID_EditorCore)
-			{
-				this.ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.EDITOR);
-			}
-			else
-			{
-				this.ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
-			}
+			this.ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.EDITOR, GameScenes.FLIGHT, GameScenes.SPH);
 
 			this.ToolbarButton.OnClick += 
 				(e) =>
