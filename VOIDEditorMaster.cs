@@ -37,27 +37,27 @@ using Engineer.VesselSimulator;
 
 namespace VOID
 {
-	[KSPAddon(KSPAddon.Startup.Flight, false)]
-	public class VOIDFlightMaster : MonoBehaviour
+	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
+	public class VOIDEditorMaster : MonoBehaviour
 	{
-		protected VOID_Core Core;
+		protected VOID_EditorCore Core;
 
 		public void Awake()
 		{
-			Tools.PostDebugMessage ("VOIDFlightMaster: Waking up.");
-			this.Core = (VOID_Core)VOID_Core.Instance;
+			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
+			this.Core = VOID_EditorCore.Instance;
 			this.Core.ResetGUI ();
 			SimManager.HardReset();
-			Tools.PostDebugMessage ("VOIDFlightMaster: Awake.");
+			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
 		}
 
 		public void Update()
 		{
-			if (!HighLogic.LoadedSceneIsFlight && this.Core != null)
+			if (!HighLogic.LoadedSceneIsEditor && this.Core != null)
 			{
 				this.Core.SaveConfig ();
 				this.Core = null;
-				VOID_Core.Reset();
+				VOID_EditorCore.Reset();
 				return;
 			}
 
@@ -70,15 +70,15 @@ namespace VOID
 
 			if (this.Core.factoryReset)
 			{
-				KSP.IO.File.Delete<VOID_Core>("config.xml");
+				KSP.IO.File.Delete<VOID_EditorCore>("config.xml");
 				this.Core = null;
-				VOID_Core.Reset();
+				VOID_EditorCore.Reset();
 			}
 		}
 
 		public void FixedUpdate()
 		{
-			if (this.Core == null || !HighLogic.LoadedSceneIsFlight)
+			if (this.Core == null || !HighLogic.LoadedSceneIsEditor)
 			{
 				return;
 			}
@@ -95,5 +95,5 @@ namespace VOID
 
 			this.Core.OnGUI();
 		}
-    }
+	}
 }
