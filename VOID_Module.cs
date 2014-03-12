@@ -199,39 +199,39 @@ namespace VOID
 
 		public virtual void ModuleWindow(int _)
 		{
-			if (VOID_Core.Instance.updateTimer - this.lastUpdate > VOID_Core.Instance.updatePeriod) {
-				foreach (var fieldinfo in this.GetType().GetFields(
-					BindingFlags.Instance |
-					BindingFlags.NonPublic |
-					BindingFlags.Public |
-					BindingFlags.FlattenHierarchy
-				))
-				{
-					object field = null;
-
-					try
-					{
-						field = fieldinfo.GetValue (this);
-					}
-					catch (NullReferenceException) {
-						Tools.PostDebugMessage(string.Format(
-							"{0}: caught NullReferenceException, could not get value for field {1}.",
-							this.GetType().Name,
-							fieldinfo.Name
-						));
-					}
-
-					if (field == null) {
-						continue;
-					}
-
-					if (typeof(IVOID_DataValue).IsAssignableFrom (field.GetType ())) {
-						(field as IVOID_DataValue).Refresh ();
-					}
-				}
-
-				this.lastUpdate = VOID_Core.Instance.updateTimer;
-			}
+//			if (VOID_Core.Instance.updateTimer - this.lastUpdate > VOID_Core.Instance.updatePeriod) {
+//				foreach (var fieldinfo in this.GetType().GetFields(
+//					BindingFlags.Instance |
+//					BindingFlags.NonPublic |
+//					BindingFlags.Public |
+//					BindingFlags.FlattenHierarchy
+//				))
+//				{
+//					object field = null;
+//
+//					try
+//					{
+//						field = fieldinfo.GetValue (this);
+//					}
+//					catch (NullReferenceException) {
+//						Tools.PostDebugMessage(string.Format(
+//							"{0}: caught NullReferenceException, could not get value for field {1}.",
+//							this.GetType().Name,
+//							fieldinfo.Name
+//						));
+//					}
+//
+//					if (field == null) {
+//						continue;
+//					}
+//
+//					if (typeof(IVOID_DataValue).IsAssignableFrom (field.GetType ())) {
+//						(field as IVOID_DataValue).Refresh ();
+//					}
+//				}
+//
+//				this.lastUpdate = VOID_Core.Instance.updateTimer;
+//			}
 		}
 
 		public override void DrawGUI()

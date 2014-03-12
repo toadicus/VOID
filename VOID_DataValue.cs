@@ -48,6 +48,7 @@ namespace VOID
 		 * */
 		protected T cache;
 		protected Func<T> ValueFunc;
+		protected float lastUpdate;
 
 		/* 
 		 * Properties
@@ -55,8 +56,17 @@ namespace VOID
 		public string Label { get; protected set; }
 		public string Units { get; protected set; }
 
-		public T Value {
-			get {
+		public T Value
+		{
+			get
+			{
+				if (
+					(VOID_Core.Instance.updateTimer - this.lastUpdate > VOID_Core.Instance.updatePeriod) ||
+					(this.lastUpdate > VOID_Core.Instance.updateTimer)
+				)
+				{
+					this.Refresh();
+				}
 				return (T)this.cache;
 			}
 		}
@@ -69,11 +79,13 @@ namespace VOID
 			this.Label = Label;
 			this.Units = Units;
 			this.ValueFunc = ValueFunc;
+			this.lastUpdate = 0;
 		}
 
 		public void Refresh()
 		{
 			this.cache = this.ValueFunc.Invoke ();
+			this.lastUpdate = VOID_Core.Instance.updateTimer;
 		}
 
 		public T GetFreshValue()
@@ -106,30 +118,94 @@ namespace VOID
 		}
 	}
 
-	internal interface IVOID_NumericValue
+	public abstract class VOID_NumValue<T> : VOID_DataValue<T>
+		where T : IFormattable, IConvertible, IComparable
 	{
-		double ToDouble();
-		string ToString(string format);
-		string ToSIString(int digits, int MinMagnitude, int MaxMagnitude);
-	}
+		public static implicit operator Double(VOID_NumValue<T> v)
+		{
+			return v.ToDouble();
+		}
 
-	public abstract class VOID_NumValue<T> : VOID_DataValue<T>, IVOID_NumericValue
-	{
-		public VOID_NumValue(string Label, Func<T> ValueFunc, string Units = "") : base(Label, ValueFunc, Units) {}
+		public static implicit operator Int32(VOID_NumValue<T> v)
+		{
+			return v.ToInt32();
+		}
 
-		public abstract double ToDouble();
-		public abstract string ToString(string Format);
-		public abstract string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue);
 
-		public abstract string ValueUnitString(string format);
+		public static implicit operator Single(VOID_NumValue<T> v)
+		{
+			return v.ToSingle();
+		}
+
+
+		protected IFormatProvider formatProvider;
+
+		public VOID_NumValue(string Label, Func<T> ValueFunc, string Units = "") : base(Label, ValueFunc, Units)
+		{
+			this.formatProvider = System.Globalization.CultureInfo.CurrentUICulture;
+		}
+
+		public virtual double ToDouble(IFormatProvider provider)
+		{
+			return this.Value.ToDouble(provider);
+		}
+
+		public virtual double ToDouble()
+		{
+			return this.ToDouble(this.formatProvider);
+		}
+
+		public virtual int ToInt32(IFormatProvider provider)
+		{
+			return this.Value.ToInt32(provider);
+		}
+
+		public virtual int ToInt32()
+		{
+			return this.ToInt32(this.formatProvider);
+		}
+
+		public virtual float ToSingle(IFormatProvider provider)
+		{
+			return this.Value.ToSingle(provider);
+		}
+
+		public virtual float ToSingle()
+		{
+			return this.ToSingle(this.formatProvider);
+		}
+
+		public virtual string ToString(string Format)
+		{
+			return string.Format (
+				"{0}: {1}{2}",
+				this.Label,
+				this.Value.ToString(Format, this.formatProvider),
+				this.Units
+			);
+		}
+
+		public virtual string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
+		{
+			return string.Format (
+				"{0}{1}",
+				Tools.MuMech_ToSI (this, digits, MinMagnitude, MaxMagnitude),
+				this.Units
+			);
+		}
+
+		public virtual string ValueUnitString(string format)
+		{
+			return this.Value.ToString(format, this.formatProvider) + this.Units;
+		}
 		
 		public virtual string ValueUnitString(int digits) {
-			return Tools.MuMech_ToSI(this.ToDouble(), digits) + this.Units;
+			return Tools.MuMech_ToSI(this, digits) + this.Units;
 		}
 
 		public virtual string ValueUnitString(int digits, int MinMagnitude, int MaxMagnitude)
 		{
-			return Tools.MuMech_ToSI(this.ToDouble(), digits, MinMagnitude, MaxMagnitude) + this.Units;
+			return Tools.MuMech_ToSI(this, digits, MinMagnitude, MaxMagnitude) + this.Units;
 		}
 
 		public virtual void DoGUIHorizontal(string format)
@@ -162,7 +238,7 @@ namespace VOID
 			float magnitude;
 			float magLimit;
 
-			magnitude = (float)Math.Log10(Math.Abs(this.ToDouble()));
+			magnitude = (float)Math.Log10(Math.Abs(this));
 
 			magLimit = Mathf.Max(magnitude, 6f);
 			magLimit = Mathf.Round((float)Math.Ceiling(magLimit / 3f) * 3f);
@@ -198,103 +274,19 @@ namespace VOID
 		}
 	}
 
-	public class VOID_DoubleValue : VOID_NumValue<double>, IVOID_NumericValue
+	public class VOID_DoubleValue : VOID_NumValue<double>
 	{
 		public VOID_DoubleValue(string Label, Func<double> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
-
-		public override double ToDouble ()
-		{
-			return this.Value;
-		}
-
-		public override string ToString(string format)
-		{
-			return string.Format (
-				"{0}: {1}{2}",
-				this.Label,
-				this.Value.ToString (format),
-				this.Units
-			);
-		}
-
-		public override string ValueUnitString(string format) {
-			return this.Value.ToString(format) + this.Units;
-		}
-
-		public override string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
-		{
-			return string.Format (
-				"{0}{1}",
-				Tools.MuMech_ToSI (this.Value, digits, MinMagnitude, MaxMagnitude),
-				this.Units
-			);
-		}
 	}
-	public class VOID_FloatValue : VOID_NumValue<float>, IVOID_NumericValue
+	public class VOID_FloatValue : VOID_NumValue<float>
 	{
 		public VOID_FloatValue(string Label, Func<float> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
-
-		public override double ToDouble ()
-		{
-			return (double)this.Value;
-		}
-
-		public override string ValueUnitString(string format) {
-			return this.Value.ToString(format) + this.Units;
-		}
-
-		public override string ToString(string format)
-		{
-			return string.Format (
-				"{0}: {1}{2}",
-				this.Label,
-				this.Value.ToString (format),
-				this.Units
-			);
-		}
-
-		public override string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
-		{
-			return string.Format (
-				"{0}{1}",
-				Tools.MuMech_ToSI ((double)this.Value, digits, MinMagnitude, MaxMagnitude),
-				this.Units
-			);
-		}
 	}
-	public class VOID_IntValue : VOID_NumValue<int>, IVOID_NumericValue
+
+	public class VOID_IntValue : VOID_NumValue<int>
 	{
 		public VOID_IntValue(string Label, Func<int> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
-
-		public override double ToDouble ()
-		{
-			return (double)this.Value;
-		}
-
-		public override string ValueUnitString(string format) {
-			return this.Value.ToString(format) + this.Units;
-		}
-
-		public override string ToString(string format)
-		{
-			return string.Format (
-				"{0}: {1}{2}",
-				this.Label,
-				this.Value.ToString (format),
-				this.Units
-			);
-		}
-
-		public override string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
-		{
-			return string.Format (
-				"{0}{1}",
-				Tools.MuMech_ToSI ((double)this.Value, digits, MinMagnitude, MaxMagnitude),
-				this.Units
-			);
-		}
 	}
-
 
 	public class VOID_StrValue : VOID_DataValue<string>
 	{

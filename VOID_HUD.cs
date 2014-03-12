@@ -24,6 +24,7 @@ using KSP;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace VOID
 {
@@ -85,36 +86,59 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
+			StringBuilder leftHUD;
+			StringBuilder rightHUD;
+
 			GUI.skin = VOID_Core.Instance.Skin;
 
 			if (VOID_Core.Instance.powerAvailable)
 			{
+				leftHUD = new StringBuilder();
+				rightHUD = new StringBuilder();
+
 				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
+
+				leftHUD.AppendFormat("Obt Alt: {0} Obt Vel: {1}",
+					VOID_Data.orbitAltitude.ToSIString(),
+					VOID_Data.orbitVelocity.ToSIString()
+				);
+				leftHUD.AppendFormat("\nAp: {0} ETA {1}",
+					VOID_Data.orbitApoAlt.ToSIString(),
+					VOID_Data.timeToApo.ValueUnitString()
+				);
+				leftHUD.AppendFormat("\nPe: {0} ETA {1}",
+					VOID_Data.oribtPeriAlt.ToSIString(),
+					VOID_Data.timeToPeri.ValueUnitString()
+				);
+				leftHUD.AppendFormat("\nInc: {0}", VOID_Data.orbitInclination.ValueUnitString("F3"));
+				leftHUD.AppendFormat("\nPrimary: {0}", VOID_Data.primaryName.ValueUnitString());
+
+				rightHUD.AppendFormat("Srf Alt: {0} Srf Vel: {1}",
+					VOID_Data.trueAltitude.ToSIString(),
+					VOID_Data.surfVelocity.ToSIString()
+				);
+				rightHUD.AppendFormat("\nVer: {0} Hor: {1}",
+					VOID_Data.vertVelocity.ToSIString(),
+					VOID_Data.horzVelocity.ToSIString()
+				);
+				rightHUD.AppendFormat("\nLat: {0} Lon: {1}",
+					VOID_Data.surfLatitude.ValueUnitString(),
+					VOID_Data.surfLongitude.ValueUnitString()
+				);
+				rightHUD.AppendFormat("\nHdg: {0}", VOID_Data.vesselHeading.ValueUnitString());
+				rightHUD.AppendFormat("\nBiome: {0} Sit: {1}",
+					VOID_Data.currBiome.ValueUnitString(),
+					VOID_Data.expSituation.ValueUnitString()
+				);
 
 				GUI.Label (
 					new Rect ((Screen.width * .2083f), 0, 300f, 70f),
-					"Obt Alt: " + Tools.MuMech_ToSI (vessel.orbit.altitude) + "m" +
-					" Obt Vel: " + Tools.MuMech_ToSI (vessel.orbit.vel.magnitude) + "m/s" +
-					"\nAp: " + Tools.MuMech_ToSI (vessel.orbit.ApA) + "m" +
-					" ETA " + Tools.ConvertInterval (vessel.orbit.timeToAp) +
-					"\nPe: " + Tools.MuMech_ToSI (vessel.orbit.PeA) + "m" +
-					" ETA " + Tools.ConvertInterval (vessel.orbit.timeToPe) +
-					"\nInc: " + vessel.orbit.inclination.ToString ("F3") + "°" +
-					"\nPrimary: " + vessel.mainBody.bodyName,
+					leftHUD.ToString(),
 					VOID_Core.Instance.LabelStyles["hud"]);
-				// Toadicus edit: Added "Biome: " line to surf/atmo HUD
+
 				GUI.Label (
 					new Rect ((Screen.width * .625f), 0, 300f, 90f),
-					"Srf Alt: " + Tools.MuMech_ToSI (Tools.TrueAltitude (vessel)) + "m" +
-					" Srf Vel: " + Tools.MuMech_ToSI (vessel.srf_velocity.magnitude) + "m/s" +
-					"\nVer: " + Tools.MuMech_ToSI (vessel.verticalSpeed) + "m/s" +
-					" Hor: " + Tools.MuMech_ToSI (vessel.horizontalSrfSpeed) + "m/s" +
-					"\nLat: " + Tools.GetLatitudeString (vessel, "F3") +
-					" Lon: " + Tools.GetLongitudeString (vessel, "F3") +
-					"\nHdg: " + Tools.MuMech_get_heading (vessel).ToString ("F2") + "° " +
-					Tools.get_heading_text (Tools.MuMech_get_heading (vessel)) +
-					"\nBiome: " + Tools.Toadicus_GetAtt (vessel).name +
-					" Sit: " + vessel.GetExperimentSituation().HumanString(),
+					rightHUD.ToString(),
 					VOID_Core.Instance.LabelStyles["hud"]);
 			}
 			else
@@ -132,5 +156,13 @@ namespace VOID
 				++this.ColorIndex;
 			}
 		}
+	}
+
+	public static partial class VOID_Data
+	{
+		public static VOID_StrValue expSituation = new VOID_StrValue(
+			"Situation",
+			new Func<string> (() => VOID_Core.Instance.vessel.GetExperimentSituation().HumanString())
+		);
 	}
 }

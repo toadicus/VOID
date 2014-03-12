@@ -33,117 +33,6 @@ namespace VOID
 		protected long _precisionValues = 230584300921369395;
 		protected IntCollection precisionValues;
 
-		protected VOID_StrValue primaryName = new VOID_StrValue (
-			VOIDLabels.void_primary,
-			new Func<string> (() => VOID_Core.Instance.vessel.mainBody.name)
-		);
-
-		protected VOID_DoubleValue orbitAltitude = new VOID_DoubleValue (
-			"Altitude (ASL)",
-			new Func<double> (() => VOID_Core.Instance.vessel.orbit.altitude),
-			"m"
-		);
-
-		protected VOID_DoubleValue orbitVelocity = new VOID_DoubleValue (
-			VOIDLabels.void_velocity,
-			new Func<double> (() => VOID_Core.Instance.vessel.orbit.vel.magnitude),
-			"m/s"
-		);
-
-		protected VOID_DoubleValue orbitApoAlt = new VOID_DoubleValue(
-			VOIDLabels.void_apoapsis,
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.ApA),
-			"m"
-		);
-
-		protected VOID_DoubleValue oribtPeriAlt = new VOID_DoubleValue(
-			VOIDLabels.void_periapsis,
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.PeA),
-			"m"
-		);
-
-		protected VOID_StrValue timeToApo = new VOID_StrValue(
-		"Time to Apoapsis",
-			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToAp))
-		);
-
-		protected VOID_StrValue timeToPeri = new VOID_StrValue(
-			"Time to Periapsis",
-			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToPe))
-		);
-
-		protected VOID_DoubleValue orbitInclination = new VOID_DoubleValue(
-			"Inclination",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.inclination),
-			"°"
-		);
-
-		protected VOID_DoubleValue gravityAccel = new VOID_DoubleValue(
-			"Gravity",
-			delegate()
-			{
-				double orbitRadius = VOID_Core.Instance.vessel.mainBody.Radius +
-				VOID_Core.Instance.vessel.mainBody.GetAltitude(VOID_Core.Instance.vessel.findWorldCenterOfMass());
-				return (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
-				Math.Pow(orbitRadius, 2);
-			},
-			"m/s²"
-		);
-
-		protected VOID_StrValue orbitPeriod = new VOID_StrValue(
-			"Period",
-			 new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.period))
-		);
-
-		protected VOID_DoubleValue semiMajorAxis = new VOID_DoubleValue(
-			"Semi-Major Axis",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.semiMajorAxis),
-			"m"
-		);
-
-		protected VOID_DoubleValue eccentricity = new VOID_DoubleValue(
-			"Eccentricity",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.eccentricity),
-			""
-		);
-
-		protected VOID_DoubleValue meanAnomaly = new VOID_DoubleValue(
-			"Mean Anomaly",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.meanAnomaly * 180d / Math.PI),
-			"°"
-		);
-
-		protected VOID_DoubleValue trueAnomaly = new VOID_DoubleValue(
-			"True Anomaly",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.trueAnomaly),
-			"°"
-		);
-
-		protected VOID_DoubleValue eccAnomaly = new VOID_DoubleValue(
-		"Eccentric Anomaly",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.eccentricAnomaly * 180d / Math.PI),
-			"°"
-		);
-
-		protected VOID_DoubleValue longitudeAscNode = new VOID_DoubleValue(
-			"Long. Ascending Node",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.LAN),
-			"°"
-		);
-
-		protected VOID_DoubleValue argumentPeriapsis = new VOID_DoubleValue(
-			"Argument of Periapsis",
-			new Func<double>(() => VOID_Core.Instance.vessel.orbit.argumentOfPeriapsis),
-			"°"
-	    );
-
-		protected VOID_DoubleValue localSiderealLongitude = new VOID_DoubleValue(
-			"Local Sidereal Longitude",
-			new Func<double>(() => Tools.FixDegreeDomain(
-				VOID_Core.Instance.vessel.longitude + VOID_Core.Instance.vessel.orbit.referenceBody.rotationAngle)),
-			"°"
-		);
-
 		public VOID_Orbital()
 		{
 			this._Name = "Orbital Information";
@@ -160,51 +49,51 @@ namespace VOID
 
             GUILayout.BeginVertical();
 
-			this.primaryName.DoGUIHorizontal ();
+			VOID_Data.primaryName.DoGUIHorizontal ();
 
-			this.precisionValues [idx]= (ushort)this.orbitAltitude.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.orbitAltitude.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)this.orbitVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.orbitVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)this.orbitApoAlt.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.orbitApoAlt.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.timeToApo.DoGUIHorizontal();
+			VOID_Data.timeToApo.DoGUIHorizontal();
 
-			this.precisionValues [idx]= (ushort)this.oribtPeriAlt.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.oribtPeriAlt.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.timeToPeri.DoGUIHorizontal();
+			VOID_Data.timeToPeri.DoGUIHorizontal();
 
-			this.orbitInclination.DoGUIHorizontal("F3");
+			VOID_Data.orbitInclination.DoGUIHorizontal("F3");
 
-			this.precisionValues [idx]= (ushort)this.gravityAccel.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.gravityAccel.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			this.toggleExtended.value = GUILayout.Toggle(this.toggleExtended, "Extended info");
 
 			if (this.toggleExtended)
             {
-				this.orbitPeriod.DoGUIHorizontal();
+				VOID_Data.orbitPeriod.DoGUIHorizontal();
 
-				this.precisionValues [idx]= (ushort)this.semiMajorAxis.DoGUIHorizontal (this.precisionValues [idx]);
+				this.precisionValues [idx]= (ushort)VOID_Data.semiMajorAxis.DoGUIHorizontal (this.precisionValues [idx]);
 				idx++;
 
-				this.eccentricity.DoGUIHorizontal("F4");
+				VOID_Data.eccentricity.DoGUIHorizontal("F4");
 
-				this.meanAnomaly.DoGUIHorizontal("F3");
+				VOID_Data.meanAnomaly.DoGUIHorizontal("F3");
 
-				this.trueAnomaly.DoGUIHorizontal("F3");
+				VOID_Data.trueAnomaly.DoGUIHorizontal("F3");
 
-				this.eccAnomaly.DoGUIHorizontal("F3");
+				VOID_Data.eccAnomaly.DoGUIHorizontal("F3");
 
-				this.longitudeAscNode.DoGUIHorizontal("F3");
+				VOID_Data.longitudeAscNode.DoGUIHorizontal("F3");
 
-				this.argumentPeriapsis.DoGUIHorizontal("F3");
+				VOID_Data.argumentPeriapsis.DoGUIHorizontal("F3");
 
-				this.localSiderealLongitude.DoGUIHorizontal("F3");
+				VOID_Data.localSiderealLongitude.DoGUIHorizontal("F3");
             }
 
             GUILayout.EndVertical();
@@ -224,6 +113,121 @@ namespace VOID
 
 			base._SaveToConfig (config);
 		}
+	}
+
+
+	public static partial class VOID_Data
+	{
+		public static VOID_StrValue primaryName = new VOID_StrValue (
+			VOIDLabels.void_primary,
+			new Func<string> (() => VOID_Core.Instance.vessel.mainBody.name)
+		);
+
+		public static VOID_DoubleValue orbitAltitude = new VOID_DoubleValue (
+			"Altitude (ASL)",
+			new Func<double> (() => VOID_Core.Instance.vessel.orbit.altitude),
+			"m"
+		);
+
+		public static VOID_DoubleValue orbitVelocity = new VOID_DoubleValue (
+			VOIDLabels.void_velocity,
+			new Func<double> (() => VOID_Core.Instance.vessel.orbit.vel.magnitude),
+			"m/s"
+		);
+
+		public static VOID_DoubleValue orbitApoAlt = new VOID_DoubleValue(
+			VOIDLabels.void_apoapsis,
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.ApA),
+			"m"
+		);
+
+		public static VOID_DoubleValue oribtPeriAlt = new VOID_DoubleValue(
+			VOIDLabels.void_periapsis,
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.PeA),
+			"m"
+		);
+
+		public static VOID_StrValue timeToApo = new VOID_StrValue(
+			"Time to Apoapsis",
+			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToAp))
+		);
+
+		public static VOID_StrValue timeToPeri = new VOID_StrValue(
+			"Time to Periapsis",
+			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToPe))
+		);
+
+		public static VOID_DoubleValue orbitInclination = new VOID_DoubleValue(
+			"Inclination",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.inclination),
+			"°"
+		);
+
+		public static VOID_DoubleValue gravityAccel = new VOID_DoubleValue(
+			"Gravity",
+			delegate()
+		{
+			double orbitRadius = VOID_Core.Instance.vessel.mainBody.Radius +
+				VOID_Core.Instance.vessel.mainBody.GetAltitude(VOID_Core.Instance.vessel.findWorldCenterOfMass());
+			return (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
+				Math.Pow(orbitRadius, 2);
+		},
+			"m/s²"
+		);
+
+		public static VOID_StrValue orbitPeriod = new VOID_StrValue(
+			"Period",
+			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.period))
+		);
+
+		public static VOID_DoubleValue semiMajorAxis = new VOID_DoubleValue(
+			"Semi-Major Axis",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.semiMajorAxis),
+			"m"
+		);
+
+		public static VOID_DoubleValue eccentricity = new VOID_DoubleValue(
+			"Eccentricity",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.eccentricity),
+			""
+		);
+
+		public static VOID_DoubleValue meanAnomaly = new VOID_DoubleValue(
+			"Mean Anomaly",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.meanAnomaly * 180d / Math.PI),
+			"°"
+		);
+
+		public static VOID_DoubleValue trueAnomaly = new VOID_DoubleValue(
+			"True Anomaly",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.trueAnomaly),
+			"°"
+		);
+
+		public static VOID_DoubleValue eccAnomaly = new VOID_DoubleValue(
+			"Eccentric Anomaly",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.eccentricAnomaly * 180d / Math.PI),
+			"°"
+		);
+
+		public static VOID_DoubleValue longitudeAscNode = new VOID_DoubleValue(
+			"Long. Ascending Node",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.LAN),
+			"°"
+		);
+
+		public static VOID_DoubleValue argumentPeriapsis = new VOID_DoubleValue(
+			"Argument of Periapsis",
+			new Func<double>(() => VOID_Core.Instance.vessel.orbit.argumentOfPeriapsis),
+			"°"
+		);
+
+		public static VOID_DoubleValue localSiderealLongitude = new VOID_DoubleValue(
+			"Local Sidereal Longitude",
+			new Func<double>(() => Tools.FixDegreeDomain(
+				VOID_Core.Instance.vessel.longitude + VOID_Core.Instance.vessel.orbit.referenceBody.rotationAngle)),
+			"°"
+		);
 	}
 }
 
