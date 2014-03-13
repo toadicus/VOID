@@ -34,9 +34,20 @@ namespace VOID
 		 * Fields
 		 * */
 		[AVOID_SaveValue("colorIndex")]
-		protected VOID_SaveValue<int> _colorIndex = 0;
+		protected VOID_SaveValue<int> _colorIndex;
 
-		protected List<Color> textColors = new List<Color>();
+		protected List<Color> textColors;
+
+		protected Rect leftHUDdefaultPos;
+		protected Rect rightHUDdefaultPos;
+
+		[AVOID_SaveValue("leftHUDPos")]
+		protected VOID_SaveValue<Rect> leftHUDPos;
+		[AVOID_SaveValue("rightHUDPos")]
+		protected VOID_SaveValue<Rect> rightHUDPos;
+
+		[AVOID_SaveValue("positionsLocked")]
+		protected VOID_SaveValue<bool> positionsLocked;
 
 		/*
 		 * Properties
@@ -68,6 +79,10 @@ namespace VOID
 
 			this._Active.value = true;
 
+			this._colorIndex = 0;
+
+			this.textColors = new List<Color>();
+
 			this.textColors.Add(Color.green);
 			this.textColors.Add(Color.black);
 			this.textColors.Add(Color.white);
@@ -81,23 +96,25 @@ namespace VOID
 			VOID_Core.Instance.LabelStyles["hud"] = new GUIStyle();
 			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = this.textColors [this.ColorIndex];
 
+			this.leftHUDdefaultPos = new Rect(Screen.width * .2083f, 0f, 300f, 90f);
+			this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
+
+			this.rightHUDdefaultPos = new Rect(Screen.width * .625f, 0f, 300f, 90f);
+			this.rightHUDPos = new Rect(this.rightHUDdefaultPos);
+
+			this.positionsLocked = true;
+
 			Tools.PostDebugMessage ("VOID_HUD: Constructed.");
 		}
 
-		public override void DrawGUI()
+		protected void leftHUDWindow(int id)
 		{
 			StringBuilder leftHUD;
-			StringBuilder rightHUD;
 
-			GUI.skin = VOID_Core.Instance.Skin;
+			leftHUD = new StringBuilder();
 
 			if (VOID_Core.Instance.powerAvailable)
 			{
-				leftHUD = new StringBuilder();
-				rightHUD = new StringBuilder();
-
-				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
-
 				leftHUD.AppendFormat("Obt Alt: {0} Obt Vel: {1}",
 					VOID_Data.orbitAltitude.ToSIString(),
 					VOID_Data.orbitVelocity.ToSIString()
@@ -113,6 +130,27 @@ namespace VOID
 				leftHUD.AppendFormat("\nInc: {0}", VOID_Data.orbitInclination.ValueUnitString("F3"));
 				leftHUD.AppendFormat("\nPrimary: {0}", VOID_Data.primaryName.ValueUnitString());
 
+				GUILayout.Label(leftHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+			}
+			else
+			{
+				leftHUD.Append(string.Intern("-- POWER LOST --"));
+			}
+
+			if (!this.positionsLocked)
+			{
+				GUI.DragWindow();
+			}
+		}
+
+		protected void rightHUDWindow(int id)
+		{
+			StringBuilder rightHUD;
+
+			rightHUD = new StringBuilder();
+
+			if (VOID_Core.Instance.powerAvailable)
+			{
 				rightHUD.AppendFormat("Srf Alt: {0} Srf Vel: {1}",
 					VOID_Data.trueAltitude.ToSIString(),
 					VOID_Data.surfVelocity.ToSIString()
@@ -130,23 +168,42 @@ namespace VOID
 					VOID_Data.currBiome.ValueUnitString(),
 					VOID_Data.expSituation.ValueUnitString()
 				);
-
-				GUI.Label (
-					new Rect ((Screen.width * .2083f), 0, 300f, 70f),
-					leftHUD.ToString(),
-					VOID_Core.Instance.LabelStyles["hud"]);
-
-				GUI.Label (
-					new Rect ((Screen.width * .625f), 0, 300f, 90f),
-					rightHUD.ToString(),
-					VOID_Core.Instance.LabelStyles["hud"]);
 			}
 			else
 			{
-				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
-				GUI.Label (new Rect ((Screen.width * .2083f), 0, 300f, 70f), "-- POWER LOST --", VOID_Core.Instance.LabelStyles["hud"]);
-				GUI.Label (new Rect ((Screen.width * .625f), 0, 300f, 70f), "-- POWER LOST --", VOID_Core.Instance.LabelStyles["hud"]);
+				rightHUD.Append(string.Intern("-- POWER LOST --"));
 			}
+
+
+			GUILayout.Label(rightHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+
+			if (!this.positionsLocked)
+			{
+				GUI.DragWindow();
+			}
+		}
+
+		public override void DrawGUI()
+		{
+			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
+
+			// GUI.skin = VOID_Core.Instance.Skin;
+
+			this.leftHUDPos = GUI.Window(
+				VOID_Core.Instance.windowID,
+				this.leftHUDPos,
+				this.leftHUDWindow,
+				GUIContent.none,
+				GUIStyle.none
+			);
+
+			this.rightHUDPos = GUI.Window(
+				VOID_Core.Instance.windowID,
+				this.rightHUDPos,
+				this.leftHUDWindow,
+				GUIContent.none,
+				GUIStyle.none
+			);
 		}
 
 		public override void DrawConfigurables()
@@ -155,6 +212,16 @@ namespace VOID
 			{
 				++this.ColorIndex;
 			}
+
+			if (GUILayout.Button("Reset HUD Positions", GUILayout.ExpandWidth(false)))
+			{
+				this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
+				this.rightHUDPos = new Rect(this.rightHUDdefaultPos);
+			}
+
+			this.positionsLocked = GUILayout.Toggle(this.positionsLocked,
+				string.Intern("Lock HUD Positions"),
+				GUILayout.ExpandWidth(false));
 		}
 	}
 
