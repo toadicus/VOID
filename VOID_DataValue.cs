@@ -278,6 +278,7 @@ namespace VOID
 	{
 		public VOID_DoubleValue(string Label, Func<double> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
 	}
+
 	public class VOID_FloatValue : VOID_NumValue<float>
 	{
 		public VOID_FloatValue(string Label, Func<float> ValueFunc, string Units) : base(Label, ValueFunc, Units) {}
