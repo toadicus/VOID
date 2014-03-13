@@ -29,25 +29,105 @@ namespace VOID
 {
 	public class VOID_VesselInfo : VOID_WindowModule
 	{
-		protected VOID_DoubleValue geeForce = new VOID_DoubleValue(
+		public VOID_VesselInfo() : base()
+		{
+			this._Name = "Vessel Information";
+
+			this.WindowPos.x = Screen.width - 260;
+			this.WindowPos.y = 450;
+		}
+
+		public override void ModuleWindow(int _)
+		{
+			base.ModuleWindow (_);
+
+			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
+			{
+				SimManager.Instance.RequestSimulation();
+			}
+
+			GUILayout.BeginVertical();
+
+			GUILayout.Label(
+				vessel.vesselName,
+				VOID_Core.Instance.LabelStyles["center_bold"],
+				GUILayout.ExpandWidth(true));
+
+			Tools.PostDebugMessage("Starting VesselInfo window.");
+
+			VOID_Data.geeForce.DoGUIHorizontal ("F2");
+
+			Tools.PostDebugMessage("GeeForce done.");
+
+			VOID_Data.partCount.DoGUIHorizontal ();
+
+			Tools.PostDebugMessage("PartCount done.");
+
+			VOID_Data.totalMass.DoGUIHorizontal ("F1");
+
+			Tools.PostDebugMessage("TotalMass done.");
+
+			VOID_Data.resourceMass.DoGUIHorizontal ("F1");
+
+			Tools.PostDebugMessage("ResourceMass done.");
+
+			VOID_Data.stageDeltaV.DoGUIHorizontal (3, false);
+
+			Tools.PostDebugMessage("Stage deltaV done.");
+
+			VOID_Data.totalDeltaV.DoGUIHorizontal (3, false);
+
+			Tools.PostDebugMessage("Total deltaV done.");
+
+			VOID_Data.mainThrottle.DoGUIHorizontal ("F0");
+
+			Tools.PostDebugMessage("MainThrottle done.");
+
+			VOID_Data.currmaxThrust.DoGUIHorizontal ();
+
+			Tools.PostDebugMessage("CurrMaxThrust done.");
+
+			VOID_Data.currmaxThrustWeight.DoGUIHorizontal ();
+
+			Tools.PostDebugMessage("CurrMaxTWR done.");
+
+			VOID_Data.surfaceThrustWeight.DoGUIHorizontal ("F2");
+
+			Tools.PostDebugMessage("surfaceTWR done.");
+
+			VOID_Data.intakeAirStatus.DoGUIHorizontal();
+
+			Tools.PostDebugMessage("intakeAirStatus done.");
+
+			GUILayout.EndVertical();
+
+			Tools.PostDebugMessage("VesselInfo window done.");
+
+			GUI.DragWindow();
+		}
+	}
+
+	public static partial class VOID_Data
+	{
+		public static VOID_DoubleValue geeForce = new VOID_DoubleValue(
 			"G-force",
 			new Func<double>(() => VOID_Core.Instance.vessel.geeForce),
 			"gees"
 		);
 
-		protected VOID_IntValue partCount = new VOID_IntValue(
+		public static VOID_IntValue partCount = new VOID_IntValue(
 			"Parts",
 			new Func<int>(() => VOID_Core.Instance.vessel.Parts.Count),
 			""
 		);
 
-		protected VOID_DoubleValue totalMass = new VOID_DoubleValue(
+		public static VOID_DoubleValue totalMass = new VOID_DoubleValue(
 			"Total Mass",
 			new Func<double> (() => SimManager.Instance.TryGetLastMass()),
 			"tons"
 		);
 
-		protected VOID_DoubleValue resourceMass = new VOID_DoubleValue(
+		public static VOID_DoubleValue resourceMass = new VOID_DoubleValue(
 			"Resource Mass",
 			delegate()
 			{
@@ -61,20 +141,20 @@ namespace VOID
 			"tons"
 		);
 
-		protected VOID_DoubleValue stageDeltaV = new VOID_DoubleValue(
+		public static VOID_DoubleValue stageDeltaV = new VOID_DoubleValue(
 			"DeltaV (Current Stage)",
 			delegate()
 			{
 				if (SimManager.Instance.Stages == null ||
-			    	SimManager.Instance.Stages.Length <= Staging.lastStage
-			    )
+					SimManager.Instance.Stages.Length <= Staging.lastStage
+				)
 					return double.NaN;
 				return SimManager.Instance.Stages[Staging.lastStage].deltaV;
 			},
 			"m/s"
 		);
 
-		protected VOID_DoubleValue totalDeltaV = new VOID_DoubleValue(
+		public static VOID_DoubleValue totalDeltaV = new VOID_DoubleValue(
 			"DeltaV (Total)",
 			delegate()
 			{
@@ -85,13 +165,13 @@ namespace VOID
 			"m/s"
 		);
 
-		protected VOID_FloatValue mainThrottle = new VOID_FloatValue(
+		public static VOID_FloatValue mainThrottle = new VOID_FloatValue(
 			"Throttle",
 			new Func<float>(() => VOID_Core.Instance.vessel.ctrlState.mainThrottle * 100f),
 			"%"
 		);
 
-		protected VOID_StrValue currmaxThrust = new VOID_StrValue(
+		public static VOID_StrValue currmaxThrust = new VOID_StrValue(
 			"Thrust (curr/max)",
 			delegate()
 			{
@@ -109,7 +189,7 @@ namespace VOID
 			}
 		);
 
-		protected VOID_StrValue currmaxThrustWeight = new VOID_StrValue(
+		public static VOID_StrValue currmaxThrustWeight = new VOID_StrValue(
 			"T:W (curr/max)",
 			delegate()
 			{
@@ -120,10 +200,10 @@ namespace VOID
 				double maxThrust = SimManager.Instance.LastStage.thrust;
 				double mass = SimManager.Instance.TryGetLastMass();
 				double gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
-				                 Math.Pow(
-					                 VOID_Core.Instance.vessel.mainBody.Radius + VOID_Core.Instance.vessel.altitude,
-					                 2
-					                );
+					Math.Pow(
+						VOID_Core.Instance.vessel.mainBody.Radius + VOID_Core.Instance.vessel.altitude,
+						2
+					);
 				double weight = mass * gravity;
 
 				return string.Format(
@@ -134,7 +214,7 @@ namespace VOID
 			}
 		);
 
-		protected VOID_DoubleValue surfaceThrustWeight = new VOID_DoubleValue(
+		public static VOID_DoubleValue surfaceThrustWeight = new VOID_DoubleValue(
 			"Max T:W @ surface",
 			delegate()
 			{
@@ -144,7 +224,7 @@ namespace VOID
 				double maxThrust = SimManager.Instance.LastStage.thrust;
 				double mass = SimManager.Instance.TryGetLastMass();
 				double gravity = (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
-				                 Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
 				double weight = mass * gravity;
 
 				return maxThrust / weight;
@@ -152,7 +232,7 @@ namespace VOID
 			""
 		);
 
-		protected VOID_StrValue intakeAirStatus = new VOID_StrValue(
+		public static VOID_StrValue intakeAirStatus = new VOID_StrValue(
 			"Intake Air (Curr / Req)",
 			delegate()
 			{
@@ -196,56 +276,5 @@ namespace VOID
 				return string.Format("{0:F3} / {1:F3}", currentAmount, currentRequirement);
 			}
 		);
-
-		public VOID_VesselInfo() : base()
-		{
-			this._Name = "Vessel Information";
-
-			this.WindowPos.x = Screen.width - 260;
-			this.WindowPos.y = 450;
-		}
-
-		public override void ModuleWindow(int _)
-		{
-			base.ModuleWindow (_);
-
-			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
-			{
-				SimManager.Instance.RequestSimulation();
-			}
-
-			GUILayout.BeginVertical();
-
-			GUILayout.Label(
-				vessel.vesselName,
-				VOID_Core.Instance.LabelStyles["center_bold"],
-				GUILayout.ExpandWidth(true));
-
-			this.geeForce.DoGUIHorizontal ("F2");
-
-			this.partCount.DoGUIHorizontal ();
-
-			this.totalMass.DoGUIHorizontal ("F1");
-
-			this.resourceMass.DoGUIHorizontal ("F1");
-
-			this.stageDeltaV.DoGUIHorizontal (3, false);
-
-			this.totalDeltaV.DoGUIHorizontal (3, false);
-
-			this.mainThrottle.DoGUIHorizontal ("F0");
-
-			this.currmaxThrust.DoGUIHorizontal ();
-
-			this.currmaxThrustWeight.DoGUIHorizontal ();
-
-			this.surfaceThrustWeight.DoGUIHorizontal ("F2");
-
-			this.intakeAirStatus.DoGUIHorizontal();
-
-			GUILayout.EndVertical();
-			GUI.DragWindow();
-		}
 	}
 }
-

@@ -30,98 +30,6 @@ namespace VOID
 		protected long _precisionValues = 230584300921369395;
 		protected IntCollection precisionValues;
 
-		protected VOID_DoubleValue trueAltitude = new VOID_DoubleValue(
-			"Altitude (true)",
-			delegate()
-			{
-				double alt_true = VOID_Core.Instance.vessel.orbit.altitude - VOID_Core.Instance.vessel.terrainAltitude;
-				// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m,
-				// and water covers the whole surface at 0 m.
-				if (VOID_Core.Instance.vessel.terrainAltitude < 0 && VOID_Core.Instance.vessel.mainBody.ocean )
-					alt_true = VOID_Core.Instance.vessel.orbit.altitude;
-				return alt_true;
-			},
-			"m"
-		);
-
-		protected VOID_StrValue surfLatitude = new VOID_StrValue(
-			"Latitude",
-			new Func<string> (() => Tools.GetLatitudeString(VOID_Core.Instance.vessel))
-		);
-
-		protected VOID_StrValue surfLongitude = new VOID_StrValue(
-			"Longitude",
-			new Func<string> (() => Tools.GetLongitudeString(VOID_Core.Instance.vessel))
-		);
-
-		protected VOID_StrValue vesselHeading = new VOID_StrValue(
-			"Heading",
-			delegate()
-			{
-				double heading = Tools.MuMech_get_heading(VOID_Core.Instance.vessel);
-				string cardinal = Tools.get_heading_text(heading);
-
-				return string.Format(
-					"{0}° {1}",
-					heading.ToString("F2"),
-					cardinal
-				);
-			}
-		);
-
-		protected VOID_DoubleValue terrainElevation = new VOID_DoubleValue(
-			"Terrain elevation",
-			new Func<double> (() => VOID_Core.Instance.vessel.terrainAltitude),
-			"m"
-		);
-
-		protected VOID_DoubleValue surfVelocity = new VOID_DoubleValue(
-			"Surface velocity",
-			new Func<double> (() => VOID_Core.Instance.vessel.srf_velocity.magnitude),
-			"m/s"
-		);
-
-		protected VOID_DoubleValue vertVelocity = new VOID_DoubleValue(
-			"Vertical speed",
-			new Func<double> (() => VOID_Core.Instance.vessel.verticalSpeed),
-			"m/s"
-		);
-
-		protected VOID_DoubleValue horzVelocity = new VOID_DoubleValue(
-			"Horizontal speed",
-			new Func<double> (() => VOID_Core.Instance.vessel.horizontalSrfSpeed),
-			"m/s"
-		);
-
-		protected VOID_FloatValue temperature = new VOID_FloatValue(
-			"Temperature",
-			new Func<float> (() => VOID_Core.Instance.vessel.flightIntegrator.getExternalTemperature()),
-			"°C"
-		);
-
-		protected VOID_DoubleValue atmDensity = new VOID_DoubleValue (
-			"Atmosphere Density",
-			new Func<double> (() => VOID_Core.Instance.vessel.atmDensity * 1000f),
-			"g/m³"
-		);
-
-		protected VOID_DoubleValue atmPressure = new VOID_DoubleValue (
-			"Pressure",
-			new Func<double> (() => VOID_Core.Instance.vessel.staticPressure),
-			"atm"
-		);
-
-		protected VOID_FloatValue atmLimit = new VOID_FloatValue(
-			"Atmosphere Limit",
-			new Func<float> (() => VOID_Core.Instance.vessel.mainBody.maxAtmosphereAltitude),
-			"m"
-		);
-
-		protected VOID_StrValue currBiome = new VOID_StrValue(
-			"Biome",
-			new Func<string> (() => Tools.Toadicus_GetAtt(VOID_Core.Instance.vessel).name)
-		);
-
 		public VOID_SurfAtmo()
 		{
 			this._Name = "Surface & Atmospheric Information";
@@ -138,38 +46,38 @@ namespace VOID
 
 			GUILayout.BeginVertical();
 
-			this.precisionValues [idx]= (ushort)this.trueAltitude.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.trueAltitude.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.surfLatitude.DoGUIHorizontal ();
+			VOID_Data.surfLatitude.DoGUIHorizontal ();
 
-			this.surfLongitude.DoGUIHorizontal ();
+			VOID_Data.surfLongitude.DoGUIHorizontal ();
 
-			this.vesselHeading.DoGUIHorizontal ();
+			VOID_Data.vesselHeading.DoGUIHorizontal ();
 
-			this.precisionValues [idx]= (ushort)this.terrainElevation.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.terrainElevation.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)this.surfVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.surfVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)this.vertVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.vertVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)this.horzVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.horzVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.temperature.DoGUIHorizontal ("F2");
+			VOID_Data.temperature.DoGUIHorizontal ("F2");
 
-			this.atmDensity.DoGUIHorizontal (3);
+			VOID_Data.atmDensity.DoGUIHorizontal (3);
 
-			this.atmPressure.DoGUIHorizontal ("F2");
+			VOID_Data.atmPressure.DoGUIHorizontal ("F2");
 
-			this.precisionValues [idx]= (ushort)this.atmLimit.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.atmLimit.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			// Toadicus edit: added Biome
-			this.currBiome.DoGUIHorizontal ();
+			VOID_Data.currBiome.DoGUIHorizontal ();
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
@@ -188,5 +96,101 @@ namespace VOID
 
 			base._SaveToConfig (config);
 		}
+	}
+
+	public static partial class VOID_Data
+	{
+		public static VOID_DoubleValue trueAltitude = new VOID_DoubleValue(
+			"Altitude (true)",
+			delegate()
+			{
+				double alt_true = VOID_Core.Instance.vessel.orbit.altitude - VOID_Core.Instance.vessel.terrainAltitude;
+				// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m,
+				// and water covers the whole surface at 0 m.
+				if (VOID_Core.Instance.vessel.terrainAltitude < 0 && VOID_Core.Instance.vessel.mainBody.ocean )
+					alt_true = VOID_Core.Instance.vessel.orbit.altitude;
+				return alt_true;
+			},
+			"m"
+		);
+
+		public static VOID_StrValue surfLatitude = new VOID_StrValue(
+			"Latitude",
+			new Func<string> (() => Tools.GetLatitudeString(VOID_Core.Instance.vessel))
+		);
+
+		public static VOID_StrValue surfLongitude = new VOID_StrValue(
+			"Longitude",
+			new Func<string> (() => Tools.GetLongitudeString(VOID_Core.Instance.vessel))
+		);
+
+		public static VOID_StrValue vesselHeading = new VOID_StrValue(
+			"Heading",
+			delegate()
+		{
+			double heading = Tools.MuMech_get_heading(VOID_Core.Instance.vessel);
+			string cardinal = Tools.get_heading_text(heading);
+
+			return string.Format(
+				"{0}° {1}",
+				heading.ToString("F2"),
+				cardinal
+			);
+		}
+		);
+
+		public static VOID_DoubleValue terrainElevation = new VOID_DoubleValue(
+			"Terrain elevation",
+			new Func<double> (() => VOID_Core.Instance.vessel.terrainAltitude),
+			"m"
+		);
+
+		public static VOID_DoubleValue surfVelocity = new VOID_DoubleValue(
+			"Surface velocity",
+			new Func<double> (() => VOID_Core.Instance.vessel.srf_velocity.magnitude),
+			"m/s"
+		);
+
+		public static VOID_DoubleValue vertVelocity = new VOID_DoubleValue(
+			"Vertical speed",
+			new Func<double> (() => VOID_Core.Instance.vessel.verticalSpeed),
+			"m/s"
+		);
+
+		public static VOID_DoubleValue horzVelocity = new VOID_DoubleValue(
+			"Horizontal speed",
+			new Func<double> (() => VOID_Core.Instance.vessel.horizontalSrfSpeed),
+			"m/s"
+		);
+
+		public static VOID_FloatValue temperature = new VOID_FloatValue(
+			"Temperature",
+			new Func<float> (() => VOID_Core.Instance.vessel.flightIntegrator.getExternalTemperature()),
+			"°C"
+		);
+
+		public static VOID_DoubleValue atmDensity = new VOID_DoubleValue (
+			"Atmosphere Density",
+			new Func<double> (() => VOID_Core.Instance.vessel.atmDensity * 1000f),
+			"g/m³"
+		);
+
+		public static VOID_DoubleValue atmPressure = new VOID_DoubleValue (
+			"Pressure",
+			new Func<double> (() => VOID_Core.Instance.vessel.staticPressure),
+			"atm"
+		);
+
+		public static VOID_FloatValue atmLimit = new VOID_FloatValue(
+			"Atmosphere Limit",
+			new Func<float> (() => VOID_Core.Instance.vessel.mainBody.maxAtmosphereAltitude),
+			"m"
+		);
+
+		public static VOID_StrValue currBiome = new VOID_StrValue(
+			"Biome",
+			new Func<string> (() => Tools.Toadicus_GetAtt(VOID_Core.Instance.vessel).name)
+		);
+
 	}
 }
