@@ -141,6 +141,8 @@ namespace VOID
 			{
 				GUI.DragWindow();
 			}
+
+			GUI.BringWindowToBack(id);
 		}
 
 		protected void rightHUDWindow(int id)
@@ -181,13 +183,13 @@ namespace VOID
 			{
 				GUI.DragWindow();
 			}
+
+			GUI.BringWindowToBack(id);
 		}
 
 		public override void DrawGUI()
 		{
 			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
-
-			// GUI.skin = VOID_Core.Instance.Skin;
 
 			this.leftHUDPos = GUI.Window(
 				VOID_Core.Instance.windowID,
@@ -208,12 +210,12 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
-			if (GUILayout.Button ("Change HUD color", GUILayout.ExpandWidth (false)))
+			if (GUILayout.Button (string.Intern("Change HUD color"), GUILayout.ExpandWidth (false)))
 			{
 				++this.ColorIndex;
 			}
 
-			if (GUILayout.Button("Reset HUD Positions", GUILayout.ExpandWidth(false)))
+			if (GUILayout.Button(string.Intern("Reset HUD Positions"), GUILayout.ExpandWidth(false)))
 			{
 				this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
 				this.rightHUDPos = new Rect(this.rightHUDdefaultPos);
