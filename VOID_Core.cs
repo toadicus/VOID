@@ -978,5 +978,32 @@ namespace VOID
 			Active = 8
 		}
 	}
+
+	public static partial class VOID_Data
+	{
+		public static VOID_Core core
+		{
+			get
+			{
+				return VOID_Core.Instance;
+			}
+		}
+
+		public static Engineer.VesselSimulator.SimManager simManager
+		{
+			get
+			{
+				return Engineer.VesselSimulator.SimManager.Instance;
+			}
+		}
+
+		public static double KerbinGee
+		{
+			get
+			{
+				return core.Kerbin.gravParameter / Math.Pow(core.Kerbin.Radius, 2);
+			}
+		}
+	}
 }
 
