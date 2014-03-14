@@ -122,8 +122,7 @@ namespace VOID
 
 			if (EditorLogic.SortedShipList.Count > 0)
 			{
-				SimManager.Instance.Gravity = this.Kerbin.gravParameter /
-					Math.Pow(this.Kerbin.Radius, 2);
+				SimManager.Instance.Gravity = VOID_Data.KerbinGee;
 				SimManager.Instance.TryStartSimulation();
 			}
 
