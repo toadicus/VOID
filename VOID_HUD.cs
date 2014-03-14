@@ -93,10 +93,7 @@ namespace VOID
 			this.textColors.Add(Color.cyan);
 			this.textColors.Add(Color.magenta);
 
-			VOID_Core.Instance.LabelStyles["hud"] = new GUIStyle();
-			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = this.textColors [this.ColorIndex];
-
-			this.leftHUDdefaultPos = new Rect(Screen.width * .2083f, 0f, 300f, 90f);
+			this.leftHUDdefaultPos = new Rect(Screen.width * .375f - 300f, 0f, 300f, 90f);
 			this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
 
 			this.rightHUDdefaultPos = new Rect(Screen.width * .625f, 0f, 300f, 90f);
@@ -113,9 +110,15 @@ namespace VOID
 
 			leftHUD = new StringBuilder();
 
+			VOID_Core.Instance.LabelStyles["hud"].alignment = TextAnchor.UpperRight;
+
 			if (VOID_Core.Instance.powerAvailable)
 			{
-				leftHUD.AppendFormat("Obt Alt: {0} Obt Vel: {1}",
+				leftHUD.AppendFormat("Primary: {0} Inc: {1}",
+					VOID_Data.primaryName.ValueUnitString(),
+					VOID_Data.orbitInclination.ValueUnitString("F3")
+				);
+				leftHUD.AppendFormat("\nObt Alt: {0} Obt Vel: {1}",
 					VOID_Data.orbitAltitude.ToSIString(),
 					VOID_Data.orbitVelocity.ToSIString()
 				);
@@ -127,15 +130,14 @@ namespace VOID
 					VOID_Data.oribtPeriAlt.ToSIString(),
 					VOID_Data.timeToPeri.ValueUnitString()
 				);
-				leftHUD.AppendFormat("\nInc: {0}", VOID_Data.orbitInclination.ValueUnitString("F3"));
-				leftHUD.AppendFormat("\nPrimary: {0}", VOID_Data.primaryName.ValueUnitString());
-
-				GUILayout.Label(leftHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
 			}
 			else
 			{
+				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
 				leftHUD.Append(string.Intern("-- POWER LOST --"));
 			}
+
+			GUILayout.Label(leftHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
 
 			if (!this.positionsLocked)
 			{
@@ -150,6 +152,8 @@ namespace VOID
 			StringBuilder rightHUD;
 
 			rightHUD = new StringBuilder();
+
+			VOID_Core.Instance.LabelStyles["hud"].alignment = TextAnchor.UpperLeft;
 
 			if (VOID_Core.Instance.powerAvailable)
 			{
@@ -173,6 +177,7 @@ namespace VOID
 			}
 			else
 			{
+				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
 				rightHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
@@ -189,6 +194,11 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
+			if (!VOID_Core.Instance.LabelStyles.ContainsKey("hud"))
+			{
+				VOID_Core.Instance.LabelStyles["hud"] = new GUIStyle(GUI.skin.label);
+			}
+
 			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
 
 			this.leftHUDPos = GUI.Window(
@@ -202,7 +212,7 @@ namespace VOID
 			this.rightHUDPos = GUI.Window(
 				VOID_Core.Instance.windowID,
 				this.rightHUDPos,
-				this.leftHUDWindow,
+				this.rightHUDWindow,
 				GUIContent.none,
 				GUIStyle.none
 			);
@@ -233,5 +243,61 @@ namespace VOID
 			"Situation",
 			new Func<string> (() => VOID_Core.Instance.vessel.GetExperimentSituation().HumanString())
 		);
+
+		public static VOID_DoubleValue stageMassFlow = new VOID_DoubleValue(
+			"Stage Mass Flow",
+			delegate()
+			{
+				if (simManager.LastStage == null)
+				{
+					return double.NaN;
+				}
+
+				double stageIsp = simManager.LastStage.isp;
+				double stageThrust = simManager.LastStage.actualThrust;
+
+				return stageThrust / (stageIsp * KerbinGee);
+			},
+			"Mg/s"
+		);
+
+		public static VOID_DoubleValue burnTimeCompleteAtNode = new VOID_DoubleValue(
+			"Full burn time to complete at node",
+			delegate()
+			{
+				if (simManager.LastStage == null)
+				{
+					return double.NaN;
+				}
+			    
+				double nextManeuverDV = core.vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude;
+				double stageThrust = simManager.LastStage.actualThrust;
+
+				return burnTime(nextManeuverDV, totalMass, stageMassFlow, stageThrust);
+			},
+			"s"
+		);
+
+		public static VOID_DoubleValue burnTimeHalfDoneAtNode = new VOID_DoubleValue(
+			"Full burn time to be half done at node",
+			delegate()
+			{
+				if (simManager.LastStage == null)
+				{
+					return double.NaN;
+				}
+			    
+				double nextManeuverDV = core.vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude / 2d;
+				double stageThrust = simManager.LastStage.actualThrust;
+
+				return burnTime(nextManeuverDV, totalMass, stageMassFlow, stageThrust);
+			},
+			"s"
+		);
+
+		protected static double burnTime(double deltaV, double initialMass, double massFlow, double thrust)
+		{
+			return initialMass / massFlow * (Math.Exp(deltaV * massFlow / thrust) - 1d);
+		}
 	}
 }
