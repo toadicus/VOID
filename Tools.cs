@@ -149,67 +149,17 @@ namespace VOID
 			return string.Format("{0}° {1}", Math.Abs(v_lat).ToString(format), dir_lat);
 		}
 
-		///////////////////////////////////////////////////////////////////////////////
+		/*
+		* MuMechLib Methods
+		* The methods below are adapted from MuMechLib, © 2013-2014 r4m0n
+		* The following methods are a derivative work of the code from MuMechLib in the MechJeb project.
+		* Used under license.
+		* */
 
-		//For MuMech_get_heading()
-		public class MuMech_MovingAverage
+		// Derived from MechJeb2/VesselState.cs
+		public static Quaternion getSurfaceRotation(this Vessel vessel)
 		{
-			private double[] store;
-			private int storeSize;
-			private int nextIndex = 0;
-
-			public double value
-			{
-				get
-				{
-					double tmp = 0;
-					foreach (double i in store)
-					{
-						tmp += i;
-					}
-					return tmp / storeSize;
-				}
-				set
-				{
-					store[nextIndex] = value;
-					nextIndex = (nextIndex + 1) % storeSize;
-				}
-			}
-
-			public MuMech_MovingAverage(int size = 10, double startingValue = 0)
-			{
-				storeSize = size;
-				store = new double[size];
-				force(startingValue);
-			}
-
-			public void force(double newValue)
-			{
-				for (int i = 0; i < storeSize; i++)
-				{
-					store[i] = newValue;
-				}
-			}
-
-			public static implicit operator double(MuMech_MovingAverage v)
-			{
-				return v.value;
-			}
-
-			public override string ToString()
-			{
-				return value.ToString();
-			}
-
-			public string ToString(string format)
-			{
-				return value.ToString(format);
-			}
-		}
-		//From http://svn.mumech.com/KSP/trunk/MuMechLib/VOID.vesselState.cs
-		public static double MuMech_get_heading(Vessel vessel)
-		{
-			Vector3d CoM;
+			Vector3 CoM;
 
 			try
 			{
@@ -217,25 +167,42 @@ namespace VOID
 			}
 			catch
 			{
-				return double.NaN;
+				return new Quaternion();
 			}
 
-			Vector3d up = (CoM - vessel.mainBody.position).normalized;
-			Vector3d north = Vector3d.Exclude(
-				                 up,
-				                 (vessel.mainBody.position +
-				                 vessel.mainBody.transform.up * (float)vessel.mainBody.Radius
-				                 ) - CoM).normalized;
+			Vector3 bodyPosition = vessel.mainBody.position;
+			Vector3 bodyUp = vessel.mainBody.transform.up;
 
-			Quaternion rotationSurface = Quaternion.LookRotation(north, up);
-			Quaternion rotationvesselSurface = Quaternion.Inverse(
-				                                   Quaternion.Euler(90, 0, 0) *
-				                                   Quaternion.Inverse(vessel.transform.rotation) *
-				                                   rotationSurface);
+			Vector3 surfaceUp = (CoM - vessel.mainBody.position).normalized;
+			Vector3 surfaceNorth = Vector3.Exclude(
+				surfaceUp,
+				(bodyPosition + bodyUp * (float)vessel.mainBody.Radius) - CoM
+			).normalized;
 
-			return rotationvesselSurface.eulerAngles.y;
+			Quaternion surfaceRotation = Quaternion.LookRotation(surfaceNorth, surfaceUp);
+
+			return Quaternion.Inverse(
+				Quaternion.Euler(90, 0, 0) * Quaternion.Inverse(vessel.GetTransform().rotation) * surfaceRotation
+			);
 		}
-		//From http://svn.mumech.com/KSP/trunk/MuMechLib/MuUtils.cs
+
+		// Derived from MechJeb2/VesselState.cs
+		public static double getSurfaceHeading(this Vessel vessel)
+		{
+			return vessel.getSurfaceRotation().eulerAngles.y;
+		}
+
+		// Derived from MechJeb2/VesselState.cs
+		public static double getSurfacePitch(this Vessel vessel)
+		{
+			Quaternion vesselSurfaceRotation = vessel.getSurfaceRotation();
+
+			return (vesselSurfaceRotation.eulerAngles.x > 180f) ?
+				(360f - vesselSurfaceRotation.eulerAngles.x) :
+				-vesselSurfaceRotation.eulerAngles.x;
+		}
+
+		// Derived from MechJeb2/MuUtils.cs
 		public static string MuMech_ToSI(
 			double d, int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue
 		)
@@ -324,6 +291,10 @@ namespace VOID
 				return "0";
 			}
 		}
+
+		/*
+		 * END MuMecLib METHODS
+		 * */
 
 		public static string ConvertInterval(double seconds)
 		{
