@@ -130,6 +130,10 @@ namespace VOID
 					VOID_Data.oribtPeriAlt.ToSIString(),
 					VOID_Data.timeToPeri.ValueUnitString()
 				);
+				leftHUD.AppendFormat("\nTot Δv: {0} Stg Δv: {1}",
+					VOID_Data.totalDeltaV.ToSIString(2),
+					VOID_Data.stageDeltaV.ToSIString(2)
+				);
 			}
 			else
 			{
@@ -157,7 +161,11 @@ namespace VOID
 
 			if (VOID_Core.Instance.powerAvailable)
 			{
-				rightHUD.AppendFormat("Srf Alt: {0} Srf Vel: {1}",
+				rightHUD.AppendFormat("Biome: {0} Sit: {1}",
+					VOID_Data.currBiome.ValueUnitString(),
+					VOID_Data.expSituation.ValueUnitString()
+				);
+				rightHUD.AppendFormat("\nSrf Alt: {0} Srf Vel: {1}",
 					VOID_Data.trueAltitude.ToSIString(),
 					VOID_Data.surfVelocity.ToSIString()
 				);
@@ -169,10 +177,9 @@ namespace VOID
 					VOID_Data.surfLatitude.ValueUnitString(),
 					VOID_Data.surfLongitude.ValueUnitString()
 				);
-				rightHUD.AppendFormat("\nHdg: {0}", VOID_Data.vesselHeading.ValueUnitString());
-				rightHUD.AppendFormat("\nBiome: {0} Sit: {1}",
-					VOID_Data.currBiome.ValueUnitString(),
-					VOID_Data.expSituation.ValueUnitString()
+				rightHUD.AppendFormat("\nHdg: {0} Pit: {1}",
+					VOID_Data.vesselHeading.ValueUnitString(),
+					VOID_Data.vesselPitch.ToSIString(2)
 				);
 			}
 			else
@@ -244,6 +251,12 @@ namespace VOID
 			new Func<string> (() => VOID_Core.Instance.vessel.GetExperimentSituation().HumanString())
 		);
 
+		public static VOID_DoubleValue vesselPitch = new VOID_DoubleValue(
+			"Pitch",
+			() => core.vessel.getSurfacePitch(),
+			"°"
+		);
+
 		public static VOID_DoubleValue stageMassFlow = new VOID_DoubleValue(
 			"Stage Mass Flow",
 			delegate()
@@ -295,7 +308,7 @@ namespace VOID
 			"s"
 		);
 
-		protected static double burnTime(double deltaV, double initialMass, double massFlow, double thrust)
+		private static double burnTime(double deltaV, double initialMass, double massFlow, double thrust)
 		{
 			return initialMass / massFlow * (Math.Exp(deltaV * massFlow / thrust) - 1d);
 		}
