@@ -128,7 +128,7 @@ namespace VOID
 			"Heading",
 			delegate()
 		{
-			double heading = Tools.MuMech_get_heading(VOID_Core.Instance.vessel);
+			double heading = core.vessel.getSurfaceHeading();
 			string cardinal = Tools.get_heading_text(heading);
 
 			return string.Format(
