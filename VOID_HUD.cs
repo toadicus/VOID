@@ -208,7 +208,7 @@ namespace VOID
 
 			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
 
-			this.leftHUDPos = GUI.Window(
+			this.leftHUDPos.value = GUI.Window(
 				VOID_Core.Instance.windowID,
 				this.leftHUDPos,
 				this.leftHUDWindow,
@@ -216,7 +216,7 @@ namespace VOID
 				GUIStyle.none
 			);
 
-			this.rightHUDPos = GUI.Window(
+			this.rightHUDPos.value = GUI.Window(
 				VOID_Core.Instance.windowID,
 				this.rightHUDPos,
 				this.rightHUDWindow,
