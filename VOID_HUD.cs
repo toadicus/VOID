@@ -246,18 +246,18 @@ namespace VOID
 
 	public static partial class VOID_Data
 	{
-		public static VOID_StrValue expSituation = new VOID_StrValue(
+		public static readonly VOID_StrValue expSituation = new VOID_StrValue(
 			"Situation",
 			new Func<string> (() => VOID_Core.Instance.vessel.GetExperimentSituation().HumanString())
 		);
 
-		public static VOID_DoubleValue vesselPitch = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue vesselPitch = new VOID_DoubleValue(
 			"Pitch",
 			() => core.vessel.getSurfacePitch(),
 			"°"
 		);
 
-		public static VOID_DoubleValue stageMassFlow = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue stageMassFlow = new VOID_DoubleValue(
 			"Stage Mass Flow",
 			delegate()
 			{
@@ -274,7 +274,7 @@ namespace VOID
 			"Mg/s"
 		);
 
-		public static VOID_DoubleValue burnTimeCompleteAtNode = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue burnTimeCompleteAtNode = new VOID_DoubleValue(
 			"Full burn time to complete at node",
 			delegate()
 			{
@@ -291,7 +291,7 @@ namespace VOID
 			"s"
 		);
 
-		public static VOID_DoubleValue burnTimeHalfDoneAtNode = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue burnTimeHalfDoneAtNode = new VOID_DoubleValue(
 			"Full burn time to be half done at node",
 			delegate()
 			{

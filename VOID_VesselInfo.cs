@@ -109,25 +109,25 @@ namespace VOID
 
 	public static partial class VOID_Data
 	{
-		public static VOID_DoubleValue geeForce = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue geeForce = new VOID_DoubleValue(
 			"G-force",
 			new Func<double>(() => VOID_Core.Instance.vessel.geeForce),
 			"gees"
 		);
 
-		public static VOID_IntValue partCount = new VOID_IntValue(
+		public static readonly VOID_IntValue partCount = new VOID_IntValue(
 			"Parts",
 			new Func<int>(() => VOID_Core.Instance.vessel.Parts.Count),
 			""
 		);
 
-		public static VOID_DoubleValue totalMass = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue totalMass = new VOID_DoubleValue(
 			"Total Mass",
 			new Func<double> (() => SimManager.Instance.TryGetLastMass()),
 			"tons"
 		);
 
-		public static VOID_DoubleValue resourceMass = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue resourceMass = new VOID_DoubleValue(
 			"Resource Mass",
 			delegate()
 			{
@@ -141,7 +141,7 @@ namespace VOID
 			"tons"
 		);
 
-		public static VOID_DoubleValue stageDeltaV = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue stageDeltaV = new VOID_DoubleValue(
 			"DeltaV (Current Stage)",
 			delegate()
 			{
@@ -154,7 +154,7 @@ namespace VOID
 			"m/s"
 		);
 
-		public static VOID_DoubleValue totalDeltaV = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue totalDeltaV = new VOID_DoubleValue(
 			"DeltaV (Total)",
 			delegate()
 			{
@@ -165,13 +165,13 @@ namespace VOID
 			"m/s"
 		);
 
-		public static VOID_FloatValue mainThrottle = new VOID_FloatValue(
+		public static readonly VOID_FloatValue mainThrottle = new VOID_FloatValue(
 			"Throttle",
 			new Func<float>(() => VOID_Core.Instance.vessel.ctrlState.mainThrottle * 100f),
 			"%"
 		);
 
-		public static VOID_StrValue currmaxThrust = new VOID_StrValue(
+		public static readonly VOID_StrValue currmaxThrust = new VOID_StrValue(
 			"Thrust (curr/max)",
 			delegate()
 			{
@@ -189,7 +189,7 @@ namespace VOID
 			}
 		);
 
-		public static VOID_StrValue currmaxThrustWeight = new VOID_StrValue(
+		public static readonly VOID_StrValue currmaxThrustWeight = new VOID_StrValue(
 			"T:W (curr/max)",
 			delegate()
 			{
@@ -214,7 +214,7 @@ namespace VOID
 			}
 		);
 
-		public static VOID_DoubleValue surfaceThrustWeight = new VOID_DoubleValue(
+		public static readonly VOID_DoubleValue surfaceThrustWeight = new VOID_DoubleValue(
 			"Max T:W @ surface",
 			delegate()
 			{
@@ -232,7 +232,7 @@ namespace VOID
 			""
 		);
 
-		public static VOID_StrValue intakeAirStatus = new VOID_StrValue(
+		public static readonly VOID_StrValue intakeAirStatus = new VOID_StrValue(
 			"Intake Air (Curr / Req)",
 			delegate()
 			{
