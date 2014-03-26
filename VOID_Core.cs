@@ -134,10 +134,13 @@ namespace VOID
 		public float saveTimer = 0;
 
 		protected string defaultSkin = "KSP window 2";
+
 		[AVOID_SaveValue("defaultSkin")]
 		protected VOID_SaveValue<string> _skinName;
-		protected Dictionary<string, GUISkin> skin_list;
-		protected List<string> skinNames;
+		protected int _skinIdx;
+
+		protected Dictionary<string, GUISkin> validSkins;
+		protected string[] skinNames;
 		protected string[] forbiddenSkins =
 			{
 				"PlaqueDialogSkin",
@@ -180,11 +183,18 @@ namespace VOID
 		{
 			get
 			{
-				if (!this.skinsLoaded || this._skinName == null)
+				if (this.skinsLoaded)
 				{
-					return AssetBase.GetGUISkin(this.defaultSkin);
+					try
+					{
+						return this.validSkins[this._skinName];
+					}
+					catch
+					{
+					}
 				}
-				return this.skin_list[this._skinName];
+
+				return AssetBase.GetGUISkin(this.defaultSkin);
 			}
 		}
 
@@ -306,12 +316,10 @@ namespace VOID
 					this.ToolbarButton.Destroy();
 					this.ToolbarButton = null;
 				}
-				if (value == true && this.ToolbarButton == null)
+				if (value == true)
 				{
 					this.InitializeToolbarButton();
 				}
-
-				this.SetIconTexture(this.powerState | this.activeState);
 
 				_UseToolbarManager.value = value;
 			}
@@ -594,8 +602,6 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
-			int skinIdx;
-
 			GUIContent _content;
 
 			if (HighLogic.LoadedSceneIsFlight)
@@ -613,32 +619,17 @@ namespace VOID
 
 			_content = new GUIContent();
 
-			if (skinNames.Contains(this._skinName))
-			{
-				skinIdx = skinNames.IndexOf(this._skinName);
-			}
-			else if (skinNames.Contains(this.defaultSkin))
-			{
-				skinIdx = skinNames.IndexOf(this.defaultSkin);
-			}
-			else
-			{
-				skinIdx = 0;
-			}
-
 			_content.text = "◄";
 			_content.tooltip = "Select previous skin";
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.GUIStylesLoaded = false;
-				skinIdx--;
-				if (skinIdx < 0)
-					skinIdx = skinNames.Count - 1;
+				this._skinIdx--;
 				Tools.PostDebugMessage(string.Format(
 					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this._skinName,
-					this.skin_list.Count
+					this.validSkins.Count
 				));
 			}
 
@@ -651,20 +642,24 @@ namespace VOID
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.GUIStylesLoaded = false;
-				skinIdx++;
-				if (skinIdx >= skinNames.Count)
-					skinIdx = 0;
+				this._skinIdx++;
 				Tools.PostDebugMessage(string.Format(
 					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this._skinName,
-					this.skin_list.Count
+					this.validSkins.Count
 				));
 			}
 
-			if (this._skinName != skinNames[skinIdx])
+			this._skinIdx %= this.skinNames.Length;
+			if (this._skinIdx < 0)
 			{
-				this._skinName = skinNames[skinIdx];
+				this._skinIdx += this.skinNames.Length;
+			}
+
+			if (this._skinName != skinNames[this._skinIdx])
+			{
+				this._skinName.value = skinNames[this._skinIdx];
 			}
 
 			GUILayout.EndHorizontal();
@@ -767,7 +762,7 @@ namespace VOID
 				)
 			);
 
-			this.skin_list = Resources.FindObjectsOfTypeAll(typeof(GUISkin))
+			this.validSkins = Resources.FindObjectsOfTypeAll(typeof(GUISkin))
 				.Where(s => !this.forbiddenSkins.Contains(s.name))
 				.Select(s => s as GUISkin)
 				.GroupBy(s => s.name)
@@ -777,19 +772,33 @@ namespace VOID
 			Tools.PostDebugMessage(string.Format(
 				"{0}: loaded {1} GUISkins.",
 				this.GetType().Name,
-				this.skin_list.Count
+				this.validSkins.Count
 			));
 
-			this.skinNames = this.skin_list.Keys.ToList();
-			this.skinNames.Sort();
+			this.skinNames = this.validSkins.Keys.ToArray();
+			Array.Sort(this.skinNames);
 
-			if (this._skinName == null || !this.skinNames.Contains(this._skinName))
+			int defaultIdx = int.MinValue;
+
+			for (int i = 0; i < this.skinNames.Length; i++)
 			{
-				this._skinName = this.defaultSkin;
-				Tools.PostDebugMessage(string.Format(
-					"{0}: resetting _skinIdx to default.",
-					this.GetType().Name
-				));
+				if (this.skinNames[i] == this._skinName)
+				{
+					this._skinIdx = i;
+				}
+				if (this.skinNames[i] == this.defaultSkin)
+				{
+					defaultIdx = i;
+				}
+				if (this._skinIdx != int.MinValue && defaultIdx != int.MinValue)
+				{
+					break;
+				}
+			}
+
+			if (this._skinIdx == int.MinValue)
+			{
+				this._skinIdx = defaultIdx;
 			}
 
 			Tools.PostDebugMessage(string.Format(
@@ -860,6 +869,8 @@ namespace VOID
 			{
 				this.ToggleMainWindow();
 			};
+
+			Tools.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
 		}
 
 		protected void ToggleMainWindow()
@@ -891,14 +902,12 @@ namespace VOID
 
 		protected void SetIconTexture(string texturePath)
 		{
-			if (this.UseToolbarManager && this.ToolbarButton != null)
+			if (this.ToolbarButton != null)
 			{
 				this.ToolbarButton.TexturePath = texturePath;
 			}
-			else
-			{
-				this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath, false);
-			}
+
+			this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath, false);
 		}
 
 		protected void CheckAndSave()
@@ -957,6 +966,7 @@ namespace VOID
 			this._Active.value = true;
 
 			this._skinName = this.defaultSkin;
+			this._skinIdx = int.MinValue;
 
 			this.VOIDIconOnInactivePath = "VOID/Textures/void_icon_light_glow";
 			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_dark_glow";
