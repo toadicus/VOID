@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using Engineer.VesselSimulator;
 using KSP;
 using UnityEngine;
 using System;
@@ -207,6 +208,11 @@ namespace VOID
 			}
 
 			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
+
+			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
+			{
+				SimManager.Instance.RequestSimulation();
+			}
 
 			this.leftHUDPos.value = GUI.Window(
 				VOID_Core.Instance.windowID,
