@@ -59,13 +59,13 @@ namespace VOID
 			if (FlightGlobals.fetch.VesselTarget != null)
 			{
 				//a KSP Target (body or vessel) is selected
-				if (FlightGlobals.fetch.vesselTargetMode == FlightGlobals.VesselTargetModes.Direction)
+				if (FlightGlobals.fetch.vesselTargetMode == VesselTargetModes.Direction)
 				{
 					//a Body is selected
 					rendezbody = vessel.patchedConicSolver.targetBody;
 					display_rendezvous_info(null, rendezbody);
 				}
-				else if (FlightGlobals.fetch.vesselTargetMode == FlightGlobals.VesselTargetModes.DirectionAndVelocity)
+				else if (FlightGlobals.fetch.vesselTargetMode == VesselTargetModes.DirectionAndVelocity)
 				{
 					//a Vessel is selected
 					rendezvessel = FlightGlobals.fetch.VesselTarget.GetVessel();
