@@ -211,7 +211,7 @@ namespace VOID
 
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
-				SimManager.Instance.RequestSimulation();
+				SimManager.RequestSimulation();
 			}
 
 			this.leftHUDPos.value = GUI.Window(
@@ -267,13 +267,13 @@ namespace VOID
 			"Stage Mass Flow",
 			delegate()
 			{
-				if (simManager.LastStage == null)
+			if (SimManager.LastStage == null)
 				{
 					return double.NaN;
 				}
 
-				double stageIsp = simManager.LastStage.isp;
-				double stageThrust = simManager.LastStage.actualThrust;
+				double stageIsp = SimManager.LastStage.isp;
+				double stageThrust = SimManager.LastStage.actualThrust;
 
 				return stageThrust / (stageIsp * KerbinGee);
 			},
@@ -284,13 +284,13 @@ namespace VOID
 			"Full burn time to complete at node",
 			delegate()
 			{
-				if (simManager.LastStage == null)
+			if (SimManager.LastStage == null)
 				{
 					return double.NaN;
 				}
 			    
 				double nextManeuverDV = core.vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude;
-				double stageThrust = simManager.LastStage.actualThrust;
+				double stageThrust = SimManager.LastStage.actualThrust;
 
 				return burnTime(nextManeuverDV, totalMass, stageMassFlow, stageThrust);
 			},
@@ -301,13 +301,13 @@ namespace VOID
 			"Full burn time to be half done at node",
 			delegate()
 			{
-				if (simManager.LastStage == null)
+				if (SimManager.LastStage == null)
 				{
 					return double.NaN;
 				}
 			    
 				double nextManeuverDV = core.vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude / 2d;
-				double stageThrust = simManager.LastStage.actualThrust;
+				double stageThrust = SimManager.LastStage.actualThrust;
 
 				return burnTime(nextManeuverDV, totalMass, stageMassFlow, stageThrust);
 			},

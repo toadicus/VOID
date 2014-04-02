@@ -47,7 +47,6 @@ namespace VOID
 			Tools.PostDebugMessage ("VOIDFlightMaster: Waking up.");
 			this.Core = (VOID_Core)VOID_Core.Instance;
 			this.Core.ResetGUI ();
-			SimManager.HardReset();
 			Tools.PostDebugMessage ("VOIDFlightMaster: Awake.");
 		}
 

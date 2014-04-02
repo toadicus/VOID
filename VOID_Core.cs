@@ -465,9 +465,9 @@ namespace VOID
 
 			if (this.vessel != null)
 			{
-				SimManager.Instance.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
+				SimManager.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
 					Math.Pow(VOID_Core.Instance.vessel.Radius(), 2);
-				SimManager.Instance.TryStartSimulation();
+				SimManager.TryStartSimulation();
 			}
 
 			if (!this.guiRunning)
@@ -996,14 +996,6 @@ namespace VOID
 			get
 			{
 				return VOID_Core.Instance;
-			}
-		}
-
-		public static Engineer.VesselSimulator.SimManager simManager
-		{
-			get
-			{
-				return Engineer.VesselSimulator.SimManager.Instance;
 			}
 		}
 

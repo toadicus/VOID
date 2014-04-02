@@ -47,7 +47,6 @@ namespace VOID
 			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
 			this.Core = VOID_EditorCore.Instance;
 			this.Core.ResetGUI ();
-			SimManager.HardReset();
 			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
 		}
 

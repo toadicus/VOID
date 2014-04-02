@@ -43,7 +43,7 @@ namespace VOID
 
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
-				SimManager.Instance.RequestSimulation();
+				SimManager.RequestSimulation();
 			}
 
 			GUILayout.BeginVertical();
@@ -123,7 +123,15 @@ namespace VOID
 
 		public static readonly VOID_DoubleValue totalMass = new VOID_DoubleValue(
 			"Total Mass",
-			new Func<double> (() => SimManager.Instance.TryGetLastMass()),
+			delegate()
+		{
+			if (SimManager.LastStage == null)
+			{
+				return double.NaN;
+			}
+
+			return SimManager.LastStage.totalMass;
+		},
 			"tons"
 		);
 
@@ -145,11 +153,11 @@ namespace VOID
 			"DeltaV (Current Stage)",
 			delegate()
 			{
-				if (SimManager.Instance.Stages == null ||
-					SimManager.Instance.Stages.Length <= Staging.lastStage
+				if (SimManager.Stages == null ||
+					SimManager.Stages.Length <= Staging.lastStage
 				)
 					return double.NaN;
-				return SimManager.Instance.Stages[Staging.lastStage].deltaV;
+				return SimManager.Stages[Staging.lastStage].deltaV;
 			},
 			"m/s"
 		);
@@ -158,9 +166,9 @@ namespace VOID
 			"DeltaV (Total)",
 			delegate()
 			{
-				if (SimManager.Instance.Stages == null)
+				if (SimManager.Stages == null)
 					return double.NaN;
-				return SimManager.Instance.LastStage.totalDeltaV;
+				return SimManager.LastStage.totalDeltaV;
 			},
 			"m/s"
 		);
@@ -175,11 +183,11 @@ namespace VOID
 			"Thrust (curr/max)",
 			delegate()
 			{
-				if (SimManager.Instance.Stages == null)
+				if (SimManager.Stages == null)
 					return "N/A";
 
-				double currThrust = SimManager.Instance.LastStage.actualThrust;
-				double maxThrust = SimManager.Instance.LastStage.thrust;
+				double currThrust = SimManager.LastStage.actualThrust;
+				double maxThrust = SimManager.LastStage.thrust;
 
 				return string.Format(
 					"{0} / {1}",
@@ -193,12 +201,12 @@ namespace VOID
 			"T:W (curr/max)",
 			delegate()
 			{
-				if (SimManager.Instance.Stages == null)
+				if (SimManager.Stages == null || SimManager.LastStage == null)
 					return "N/A";
 
-				double currThrust = SimManager.Instance.LastStage.actualThrust;
-				double maxThrust = SimManager.Instance.LastStage.thrust;
-				double mass = SimManager.Instance.TryGetLastMass();
+				double currThrust = SimManager.LastStage.actualThrust;
+				double maxThrust = SimManager.LastStage.thrust;
+				double mass = SimManager.LastStage.totalMass;
 				double gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
 					Math.Pow(
 						VOID_Core.Instance.vessel.mainBody.Radius + VOID_Core.Instance.vessel.altitude,
@@ -218,11 +226,11 @@ namespace VOID
 			"Max T:W @ surface",
 			delegate()
 			{
-				if (SimManager.Instance.Stages == null)
+			if (SimManager.Stages == null || SimManager.LastStage == null)
 					return double.NaN;
 
-				double maxThrust = SimManager.Instance.LastStage.thrust;
-				double mass = SimManager.Instance.TryGetLastMass();
+				double maxThrust = SimManager.LastStage.thrust;
+				double mass = SimManager.LastStage.totalMass;
 				double gravity = (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
 					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
 				double weight = mass * gravity;

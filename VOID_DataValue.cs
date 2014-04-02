@@ -262,10 +262,11 @@ namespace VOID
 					else if (Event.current.button == 1)
 					{
 						digits = (digits - 3) % (int)magLimit;
-						if (digits < 0)
-						{
-							digits = (int)magLimit - 3;
-						}
+					}
+
+					if (digits < 0)
+					{
+						digits = (int)magLimit - 3;
 					}
 				}
 			}

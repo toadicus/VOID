@@ -134,9 +134,9 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
-			SimManager.Instance.RequestSimulation();
+			SimManager.RequestSimulation();
 
-			if (SimManager.Instance.LastStage == null)
+			if (SimManager.LastStage == null)
 			{
 				return;
 			}
@@ -166,7 +166,7 @@ namespace VOID
 			labelStyle.normal.textColor = textColors [ColorIndex];
 
 			hudString.Append("Total Mass: ");
-			hudString.Append(SimManager.Instance.LastStage.totalMass.ToString("F3"));
+			hudString.Append(SimManager.LastStage.totalMass.ToString("F3"));
 			hudString.Append('t');
 
 			hudString.Append(' ');
@@ -177,19 +177,19 @@ namespace VOID
 			hudString.Append('\n');
 
 			hudString.Append("Total Delta-V: ");
-			hudString.Append(Tools.MuMech_ToSI(SimManager.Instance.LastStage.totalDeltaV));
+			hudString.Append(Tools.MuMech_ToSI(SimManager.LastStage.totalDeltaV));
 			hudString.Append("m/s");
 
 			hudString.Append('\n');
 
 			hudString.Append("Bottom Stage Delta-V");
-			hudString.Append(Tools.MuMech_ToSI(SimManager.Instance.LastStage.deltaV));
+			hudString.Append(Tools.MuMech_ToSI(SimManager.LastStage.deltaV));
 			hudString.Append("m/s");
 
 			hudString.Append('\n');
 
 			hudString.Append("Bottom Stage T/W Ratio: ");
-			hudString.Append(SimManager.Instance.LastStage.thrustToWeight.ToString("F3"));
+			hudString.Append(SimManager.LastStage.thrustToWeight.ToString("F3"));
 
 			if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
 			{
