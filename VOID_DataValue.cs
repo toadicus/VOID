@@ -235,19 +235,26 @@ namespace VOID
 
 		public virtual int DoGUIHorizontalPrec(int digits)
 		{
-			float magnitude;
-			float magLimit;
+			double magnitude;
+			double magLimit;
 
-			magnitude = (float)Math.Log10(Math.Abs(this));
+			magnitude = Math.Log10(Math.Abs((double)this));
 
-			magLimit = Mathf.Max(magnitude, 6f);
-			magLimit = Mathf.Round((float)Math.Ceiling(magLimit / 3f) * 3f);
+			magLimit = Math.Max(Math.Abs(magnitude), 3d) + 3d;
+			magLimit = Math.Round(Math.Ceiling(magLimit / 3f)) * 3d;
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(this.Label + "ⁱ:", GUILayout.ExpandWidth(true));
 			GUILayout.FlexibleSpace();
 
-			GUILayout.Label(this.ValueUnitString(3, int.MinValue, (int)magnitude - digits), GUILayout.ExpandWidth(false));
+			if (magnitude >= 0)
+			{
+				GUILayout.Label(this.ValueUnitString(3, int.MinValue, (int)magnitude - digits), GUILayout.ExpandWidth(false));
+			}
+			else
+			{
+				GUILayout.Label(this.ValueUnitString(3, (int)magnitude + digits, int.MaxValue), GUILayout.ExpandWidth(false));
+			}
 			GUILayout.EndHorizontal();
 
 			if (Event.current.type == EventType.mouseUp)
@@ -255,6 +262,11 @@ namespace VOID
 				Rect lastRect = GUILayoutUtility.GetLastRect();
 				if (lastRect.Contains(Event.current.mousePosition))
 				{
+					Tools.PostDebugMessage(string.Format("{0}: Changing digits from {1} within magLimit {2}.",
+						this.GetType().Name,
+						digits,
+						magLimit));
+
 					if (Event.current.button == 0)
 					{
 						digits = (digits + 3) % (int)magLimit;
@@ -266,8 +278,18 @@ namespace VOID
 
 					if (digits < 0)
 					{
-						digits = (int)magLimit - 3;
+						digits += (int)magLimit;
 					}
+
+					Tools.PostDebugMessage(string.Format("{0}: Changed digits to {1}." +
+						"\n\tNew minMagnitude: {2}, maxMagnitude: {3}" +
+						"\n\tMagnitude: {4}",
+						this.GetType().Name,
+						digits,
+						magnitude >= 0 ? int.MinValue : (int)magnitude - 4 + digits,
+						magnitude >= 0 ? (int)magnitude - digits : int.MaxValue,
+						magnitude
+					));
 				}
 			}
 
