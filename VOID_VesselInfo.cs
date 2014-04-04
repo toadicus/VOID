@@ -53,55 +53,29 @@ namespace VOID
 				VOID_Core.Instance.LabelStyles["center_bold"],
 				GUILayout.ExpandWidth(true));
 
-			Tools.PostDebugMessage("Starting VesselInfo window.");
-
 			VOID_Data.geeForce.DoGUIHorizontal ("F2");
-
-			Tools.PostDebugMessage("GeeForce done.");
 
 			VOID_Data.partCount.DoGUIHorizontal ();
 
-			Tools.PostDebugMessage("PartCount done.");
-
 			VOID_Data.totalMass.DoGUIHorizontal ("F1");
-
-			Tools.PostDebugMessage("TotalMass done.");
 
 			VOID_Data.resourceMass.DoGUIHorizontal ("F1");
 
-			Tools.PostDebugMessage("ResourceMass done.");
-
 			VOID_Data.stageDeltaV.DoGUIHorizontal (3, false);
-
-			Tools.PostDebugMessage("Stage deltaV done.");
 
 			VOID_Data.totalDeltaV.DoGUIHorizontal (3, false);
 
-			Tools.PostDebugMessage("Total deltaV done.");
-
 			VOID_Data.mainThrottle.DoGUIHorizontal ("F0");
-
-			Tools.PostDebugMessage("MainThrottle done.");
 
 			VOID_Data.currmaxThrust.DoGUIHorizontal ();
 
-			Tools.PostDebugMessage("CurrMaxThrust done.");
-
 			VOID_Data.currmaxThrustWeight.DoGUIHorizontal ();
-
-			Tools.PostDebugMessage("CurrMaxTWR done.");
 
 			VOID_Data.surfaceThrustWeight.DoGUIHorizontal ("F2");
 
-			Tools.PostDebugMessage("surfaceTWR done.");
-
 			VOID_Data.intakeAirStatus.DoGUIHorizontal();
 
-			Tools.PostDebugMessage("intakeAirStatus done.");
-
 			GUILayout.EndVertical();
-
-			Tools.PostDebugMessage("VesselInfo window done.");
 
 			GUI.DragWindow();
 		}
