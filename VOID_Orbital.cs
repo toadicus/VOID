@@ -18,8 +18,10 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 using KSP;
 using System;
+using ToadicusTools;
 using UnityEngine;
 
 namespace VOID
@@ -119,7 +121,7 @@ namespace VOID
 	public static partial class VOID_Data
 	{
 		public static readonly VOID_StrValue primaryName = new VOID_StrValue (
-			VOIDLabels.void_primary,
+			VOID_Localization.void_primary,
 			new Func<string> (() => VOID_Core.Instance.vessel.mainBody.name)
 		);
 
@@ -130,19 +132,19 @@ namespace VOID
 		);
 
 		public static readonly VOID_DoubleValue orbitVelocity = new VOID_DoubleValue (
-			VOIDLabels.void_velocity,
+			VOID_Localization.void_velocity,
 			new Func<double> (() => VOID_Core.Instance.vessel.orbit.vel.magnitude),
 			"m/s"
 		);
 
 		public static readonly VOID_DoubleValue orbitApoAlt = new VOID_DoubleValue(
-			VOIDLabels.void_apoapsis,
+			VOID_Localization.void_apoapsis,
 			new Func<double>(() => VOID_Core.Instance.vessel.orbit.ApA),
 			"m"
 		);
 
 		public static readonly VOID_DoubleValue oribtPeriAlt = new VOID_DoubleValue(
-			VOIDLabels.void_periapsis,
+			VOID_Localization.void_periapsis,
 			new Func<double>(() => VOID_Core.Instance.vessel.orbit.PeA),
 			"m"
 		);

@@ -31,9 +31,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-using System;
-using UnityEngine;
 using Engineer.VesselSimulator;
+using KSP;
+using System;
+using ToadicusTools;
+using UnityEngine;
 
 namespace VOID
 {

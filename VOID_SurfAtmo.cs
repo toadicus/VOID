@@ -18,8 +18,10 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 using KSP;
 using System;
+using ToadicusTools;
 using UnityEngine;
 
 namespace VOID
@@ -189,7 +191,7 @@ namespace VOID
 
 		public static readonly VOID_StrValue currBiome = new VOID_StrValue(
 			"Biome",
-			new Func<string> (() => Tools.Toadicus_GetAtt(VOID_Core.Instance.vessel).name)
+			new Func<string> (() => Tools.GetBiome(VOID_Core.Instance.vessel).name)
 		);
 
 	}
