@@ -311,7 +311,7 @@ namespace VOID
 		{
 			get
 			{
-				return _UseToolbarManager;
+				return _UseToolbarManager & ToolbarManager.ToolbarAvailable;
 			}
 			set
 			{
@@ -867,6 +867,12 @@ namespace VOID
 
 		protected void InitializeToolbarButton()
 		{
+			// Do nothing if the Toolbar is not available.
+			if (!ToolbarManager.ToolbarAvailable)
+			{
+				return;
+			}
+
 			this.ToolbarButton = ToolbarManager.Instance.add(this.VoidName, "coreToggle");
 			this.ToolbarButton.Text = this.VoidName;
 			this.SetIconTexture(this.powerState | this.activeState);
