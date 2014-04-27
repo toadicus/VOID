@@ -58,7 +58,10 @@ namespace VOID
 			Vessel rendezvessel = new Vessel();
 			CelestialBody rendezbody = new CelestialBody();
 
-			this.RegisterModule = VOID_Core.Instance.Modules.Where(m => typeof(VOID_VesselRegister).IsAssignableFrom(m.GetType())).FirstOrDefault() as VOID_VesselRegister;
+			if (this.RegisterModule == null)
+			{
+				this.RegisterModule = VOID_Core.Instance.Modules.Where(m => typeof(VOID_VesselRegister).IsAssignableFrom(m.GetType())).FirstOrDefault() as VOID_VesselRegister;
+			}
 
 			GUILayout.BeginVertical();
 

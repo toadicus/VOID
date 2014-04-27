@@ -26,12 +26,13 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+using Engineer.VesselSimulator;
+using Engineer.Extensions;
 using KSP;
 using System;
 using System.Collections.Generic;
+using ToadicusTools;
 using UnityEngine;
-using Engineer.VesselSimulator;
-using Engineer.Extensions;
 
 namespace VOID
 {
@@ -107,7 +108,7 @@ namespace VOID
 			"Total Mass",
 			delegate()
 		{
-			if (SimManager.LastStage == null)
+			if (SimManager.Stages == null || SimManager.LastStage == null)
 			{
 				return double.NaN;
 			}
@@ -121,12 +122,12 @@ namespace VOID
 			"Resource Mass",
 			delegate()
 			{
-				double rscMass = 0;
-				foreach (Part part in VOID_Core.Instance.vessel.Parts)
+				if (SimManager.Stages == null || SimManager.LastStage == null)
 				{
-					rscMass += part.GetResourceMass();
+					return double.NaN;
 				}
-				return rscMass;
+
+				return SimManager.LastStage.totalBaseMass;
 			},
 			"tons"
 		);
@@ -135,11 +136,9 @@ namespace VOID
 			"DeltaV (Current Stage)",
 			delegate()
 			{
-				if (SimManager.Stages == null ||
-					SimManager.Stages.Length <= Staging.lastStage
-				)
+				if (SimManager.Stages == null || SimManager.LastStage == null)
 					return double.NaN;
-				return SimManager.Stages[Staging.lastStage].deltaV;
+				return SimManager.LastStage.deltaV;
 			},
 			"m/s"
 		);
@@ -148,7 +147,7 @@ namespace VOID
 			"DeltaV (Total)",
 			delegate()
 			{
-				if (SimManager.Stages == null)
+				if (SimManager.Stages == null || SimManager.LastStage == null)
 					return double.NaN;
 				return SimManager.LastStage.totalDeltaV;
 			},
@@ -165,7 +164,7 @@ namespace VOID
 			"Thrust (curr/max)",
 			delegate()
 			{
-				if (SimManager.Stages == null)
+				if (SimManager.Stages == null || SimManager.LastStage == null)
 					return "N/A";
 
 				double currThrust = SimManager.LastStage.actualThrust;
@@ -236,15 +235,17 @@ namespace VOID
 				{
 					if (part.enabled)
 					{
+						ModuleEngines engineModule;
+						ModuleEnginesFX enginesFXModule;
 						List<Propellant> propellantList = null;
 
-						if (part.HasModule<ModuleEngines>())
+						if (part.tryGetFirstModuleOfType<ModuleEngines>(out engineModule))
 						{
-							propellantList = part.GetModule<ModuleEngines>().propellants;
+							propellantList = engineModule.propellants;
 						}
-						else if (part.HasModule<ModuleEnginesFX>())
+						else if (part.tryGetFirstModuleOfType<ModuleEnginesFX>(out enginesFXModule))
 						{
-							propellantList = part.GetModule<ModuleEnginesFX>().propellants;
+							propellantList = enginesFXModule.propellants;
 						}
 							
 						if (propellantList != null)
@@ -260,10 +261,10 @@ namespace VOID
 						}
 					}
 
-					if (part.HasModule<ModuleResourceIntake>() && part.enabled)
-					{
-						ModuleResourceIntake intakeModule = part.GetModule<ModuleResourceIntake>();
+					ModuleResourceIntake intakeModule;
 
+					if (part.enabled && part.tryGetFirstModuleOfType<ModuleResourceIntake>(out intakeModule))
+					{
 						if (intakeModule.resourceName == "IntakeAir")
 						{
 							currentAmount += intakeModule.airFlow;
