@@ -115,7 +115,7 @@ namespace VOID
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(
-				Tools.UppercaseFirst(vesselSituation) + " " + selectedVesselType.ToString() + "s  @ " + seletedBody.bodyName,
+				VOID_Tools.UppercaseFirst(vesselSituation) + " " + selectedVesselType.ToString() + "s  @ " + seletedBody.bodyName,
 				VOID_Core.Instance.LabelStyles["center"],
 				GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();

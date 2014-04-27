@@ -125,12 +125,12 @@ namespace VOID
 
 		public static readonly VOID_StrValue surfLatitude = new VOID_StrValue(
 			"Latitude",
-			new Func<string> (() => Tools.GetLatitudeString(VOID_Core.Instance.vessel))
+			new Func<string> (() => VOID_Tools.GetLatitudeString(VOID_Core.Instance.vessel))
 		);
 
 		public static readonly VOID_StrValue surfLongitude = new VOID_StrValue(
 			"Longitude",
-			new Func<string> (() => Tools.GetLongitudeString(VOID_Core.Instance.vessel))
+			new Func<string> (() => VOID_Tools.GetLongitudeString(VOID_Core.Instance.vessel))
 		);
 
 		public static readonly VOID_StrValue vesselHeading = new VOID_StrValue(
@@ -138,7 +138,7 @@ namespace VOID
 			delegate()
 		{
 			double heading = core.vessel.getSurfaceHeading();
-			string cardinal = Tools.get_heading_text(heading);
+			string cardinal = VOID_Tools.get_heading_text(heading);
 
 			return string.Format(
 				"{0}° {1}",
@@ -198,7 +198,7 @@ namespace VOID
 
 		public static readonly VOID_StrValue currBiome = new VOID_StrValue(
 			"Biome",
-			new Func<string> (() => Tools.GetBiome(VOID_Core.Instance.vessel).name)
+			new Func<string> (() => VOID_Tools.GetBiome(VOID_Core.Instance.vessel).name)
 		);
 
 	}

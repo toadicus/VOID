@@ -148,7 +148,7 @@ namespace VOID
 					// Toadicus edit: added local sidereal longitude.
 					// Toadicus edit: added local sidereal longitude.
 					double LSL = v.longitude + v.orbit.referenceBody.rotationAngle;
-					LSL = Tools.FixDegreeDomain (LSL);
+					LSL = VOID_Tools.FixDegreeDomain (LSL);
 
 					//display orbital info for orbiting/flying/suborbital/escaping vessels only
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -196,7 +196,7 @@ namespace VOID
 					{
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						GUILayout.Label("Period:");
-						GUILayout.Label(Tools.ConvertInterval(v.orbit.period), GUILayout.ExpandWidth(false));
+						GUILayout.Label(VOID_Tools.ConvertInterval(v.orbit.period), GUILayout.ExpandWidth(false));
 						GUILayout.EndHorizontal();
 
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -247,12 +247,12 @@ namespace VOID
 				{
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Latitude:");
-					GUILayout.Label(Tools.GetLatitudeString(vessel), GUILayout.ExpandWidth(false));
+					GUILayout.Label(VOID_Tools.GetLatitudeString(vessel), GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Longitude:");
-					GUILayout.Label(Tools.GetLongitudeString(vessel), GUILayout.ExpandWidth(false));
+					GUILayout.Label(VOID_Tools.GetLongitudeString(vessel), GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -297,28 +297,28 @@ namespace VOID
 				//SUN2PLANET:
 				if (vessel.mainBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody)
 				{
-					Tools.display_transfer_angles_SUN2PLANET(cb, vessel);
+					VOID_Tools.display_transfer_angles_SUN2PLANET(cb, vessel);
 					//if (debugging) Debug.Log("[VOID] SUN2PLANET OK");
 				}
 
 				//PLANET2PLANET
 				else if (vessel.mainBody.referenceBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody.referenceBody)
 				{
-					Tools.display_transfer_angles_PLANET2PLANET(cb, vessel);
+					VOID_Tools.display_transfer_angles_PLANET2PLANET(cb, vessel);
 					//if (debugging) Debug.Log("[VOID] PLANET2PLANET OK");
 				}
 
 				//PLANET2MOON
 				else if (vessel.mainBody.referenceBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody)
 				{
-					Tools.display_transfer_angles_PLANET2MOON(cb, vessel);
+					VOID_Tools.display_transfer_angles_PLANET2MOON(cb, vessel);
 					//if (debugging) Debug.Log("[VOID] PLANET2MOON OK");
 				}
 
 				//MOON2MOON
 				else if (vessel.mainBody.referenceBody.referenceBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody.referenceBody)
 				{
-					Tools.display_transfer_angles_MOON2MOON(cb, vessel);
+					VOID_Tools.display_transfer_angles_MOON2MOON(cb, vessel);
 					//if (debugging) Debug.Log("[VOID] MOON2MOON OK");
 				}
 

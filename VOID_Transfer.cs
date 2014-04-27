@@ -68,7 +68,7 @@ namespace VOID
 
 					if (selectedBodies.Contains(body))
 					{
-						Tools.display_transfer_angles_SUN2PLANET(body, vessel);  //show phase angles for each selected body
+						VOID_Tools.display_transfer_angles_SUN2PLANET(body, vessel);  //show phase angles for each selected body
 						tad_targeting(body);    //display Set/Unset Target button for each selected body
 					}
 			    }
@@ -91,7 +91,7 @@ namespace VOID
 
 			            if (selectedBodies.Contains(body))
 			            {
-			                Tools.display_transfer_angles_PLANET2PLANET(body, vessel);
+			                VOID_Tools.display_transfer_angles_PLANET2PLANET(body, vessel);
 			                tad_targeting(body);    //display Set/Unset Target button
 			            }
 			        }
@@ -110,7 +110,7 @@ namespace VOID
 
 			        if (selectedBodies.Contains(body))
 			        {
-			            Tools.display_transfer_angles_PLANET2MOON(body, vessel);
+			            VOID_Tools.display_transfer_angles_PLANET2MOON(body, vessel);
 			            tad_targeting(body);    //display Set/Unset Target button
 			        }
 			    }
@@ -133,7 +133,7 @@ namespace VOID
 
 						if (selectedBodies.Contains(body))
 						{
-							Tools.display_transfer_angles_MOON2MOON(body, vessel);
+							VOID_Tools.display_transfer_angles_MOON2MOON(body, vessel);
 							tad_targeting(body);    //display Set/Unset Target button
 						}
 					}

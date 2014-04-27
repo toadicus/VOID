@@ -158,12 +158,12 @@ namespace VOID
 
 		public static readonly VOID_StrValue timeToApo = new VOID_StrValue(
 			"Time to Apoapsis",
-			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToAp))
+			new Func<string>(() => VOID_Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToAp))
 		);
 
 		public static readonly VOID_StrValue timeToPeri = new VOID_StrValue(
 			"Time to Periapsis",
-			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToPe))
+			new Func<string>(() => VOID_Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.timeToPe))
 		);
 
 		public static readonly VOID_DoubleValue orbitInclination = new VOID_DoubleValue(
@@ -186,7 +186,7 @@ namespace VOID
 
 		public static readonly VOID_StrValue orbitPeriod = new VOID_StrValue(
 			"Period",
-			new Func<string>(() => Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.period))
+			new Func<string>(() => VOID_Tools.ConvertInterval(VOID_Core.Instance.vessel.orbit.period))
 		);
 
 		public static readonly VOID_DoubleValue semiMajorAxis = new VOID_DoubleValue(
@@ -233,7 +233,7 @@ namespace VOID
 
 		public static readonly VOID_DoubleValue localSiderealLongitude = new VOID_DoubleValue(
 			"Local Sidereal Longitude",
-			new Func<double>(() => Tools.FixDegreeDomain(
+			new Func<double>(() => VOID_Tools.FixDegreeDomain(
 				VOID_Core.Instance.vessel.longitude + VOID_Core.Instance.vessel.orbit.referenceBody.rotationAngle)),
 			"°"
 		);

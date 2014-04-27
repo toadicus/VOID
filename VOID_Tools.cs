@@ -30,9 +30,9 @@ using KSP;
 using System;
 using UnityEngine;
 
-namespace ToadicusTools
+namespace VOID
 {
-	public static partial class Tools
+	public static partial class VOID_Tools
 	{
 		#region VESSEL_EXTENSIONS_SCIENCE
 		public static CBAttributeMap.MapAttribute GetBiome(this Vessel vessel)
@@ -511,7 +511,7 @@ namespace ToadicusTools
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Phase angle (curr/trans):");
 			GUILayout.Label(
-				Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + Tools.Nivvy_CalcTransferPhaseAngle(
+				VOID_Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + VOID_Tools.Nivvy_CalcTransferPhaseAngle(
 					vessel.orbit.semiMajorAxis,
 					body.orbit.semiMajorAxis,
 					vessel.mainBody.gravParameter
@@ -523,7 +523,7 @@ namespace ToadicusTools
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Transfer velocity:");
 			GUILayout.Label(
-				(Tools.Younata_DeltaVToGetToOtherBody(
+				(VOID_Tools.Younata_DeltaVToGetToOtherBody(
 					(vessel.mainBody.gravParameter / 1000000000),
 					(vessel.orbit.semiMajorAxis / 1000),
 					(body.orbit.semiMajorAxis / 1000)
@@ -535,46 +535,46 @@ namespace ToadicusTools
 
 		public static void display_transfer_angles_PLANET2PLANET(CelestialBody body, Vessel vessel)
 		{
-			double dv1 = Tools.Younata_DeltaVToGetToOtherBody(
+			double dv1 = VOID_Tools.Younata_DeltaVToGetToOtherBody(
 				(vessel.mainBody.referenceBody.gravParameter / 1000000000),
 				(vessel.mainBody.orbit.semiMajorAxis / 1000),
 				(body.orbit.semiMajorAxis / 1000)
 			);
-			double dv2 = Tools.Younata_DeltaVToExitSOI(
+			double dv2 = VOID_Tools.Younata_DeltaVToExitSOI(
 				(vessel.mainBody.gravParameter / 1000000000),
 				(vessel.orbit.semiMajorAxis / 1000),
 				(vessel.mainBody.sphereOfInfluence / 1000),
 				Math.Abs(dv1)
 			);
 
-			double trans_ejection_angle = Tools.Younata_TransferBurnPoint(
+			double trans_ejection_angle = VOID_Tools.Younata_TransferBurnPoint(
 				(vessel.orbit.semiMajorAxis / 1000),
 				dv2,
 				(Math.PI / 2.0),
 				(vessel.mainBody.gravParameter / 1000000000)
 			);
-			double curr_ejection_angle = Tools.Adammada_CurrentEjectionAngle(
+			double curr_ejection_angle = VOID_Tools.Adammada_CurrentEjectionAngle(
 				FlightGlobals.ActiveVessel.longitude,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.rotationAngle,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
 			);
 
-			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(
+			double trans_phase_angle = VOID_Tools.Nivvy_CalcTransferPhaseAngle(
 				vessel.mainBody.orbit.semiMajorAxis,
 				body.orbit.semiMajorAxis,
 				vessel.mainBody.referenceBody.gravParameter
 			) % 360;
-			double curr_phase_angle = Tools.Adammada_CurrrentPhaseAngle(
+			double curr_phase_angle = VOID_Tools.Adammada_CurrrentPhaseAngle(
 				body.orbit.LAN,
 				body.orbit.orbitPercent,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
 			);
 
-			double adj_phase_angle = Tools.adjustCurrPhaseAngle(trans_phase_angle, curr_phase_angle);
-			double adj_trans_ejection_angle = Tools.adjust_transfer_ejection_angle(trans_ejection_angle, trans_phase_angle);
-			double adj_curr_ejection_angle = Tools.adjust_current_ejection_angle(curr_ejection_angle);
+			double adj_phase_angle = VOID_Tools.adjustCurrPhaseAngle(trans_phase_angle, curr_phase_angle);
+			double adj_trans_ejection_angle = VOID_Tools.adjust_transfer_ejection_angle(trans_ejection_angle, trans_phase_angle);
+			double adj_curr_ejection_angle = VOID_Tools.adjust_current_ejection_angle(curr_ejection_angle);
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Phase angle (curr/trans):");
@@ -600,13 +600,13 @@ namespace ToadicusTools
 
 		public static void display_transfer_angles_PLANET2MOON(CelestialBody body, Vessel vessel)
 		{
-			double dv1 = Tools.Younata_DeltaVToGetToOtherBody(
+			double dv1 = VOID_Tools.Younata_DeltaVToGetToOtherBody(
 				(vessel.mainBody.gravParameter / 1000000000),
 				(vessel.orbit.semiMajorAxis / 1000),
 				(body.orbit.semiMajorAxis / 1000)
 			);
 
-			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(
+			double trans_phase_angle = VOID_Tools.Nivvy_CalcTransferPhaseAngle(
 				vessel.orbit.semiMajorAxis,
 				body.orbit.semiMajorAxis,
 				vessel.mainBody.gravParameter
@@ -615,7 +615,7 @@ namespace ToadicusTools
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("Phase angle (curr/trans):");
 			GUILayout.Label(
-				Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°",
+				VOID_Tools.mrenigma03_calcphase(vessel, body).ToString("F3") + "° / " + trans_phase_angle.ToString("F3") + "°",
 				GUILayout.ExpandWidth(false)
 			);
 			GUILayout.EndHorizontal();
@@ -628,50 +628,50 @@ namespace ToadicusTools
 
 		public static void display_transfer_angles_MOON2MOON(CelestialBody body, Vessel vessel)
 		{
-			double dv1 = Tools.Younata_DeltaVToGetToOtherBody(
+			double dv1 = VOID_Tools.Younata_DeltaVToGetToOtherBody(
 				(vessel.mainBody.referenceBody.gravParameter / 1000000000),
 				(vessel.mainBody.orbit.semiMajorAxis / 1000),
 				(body.orbit.semiMajorAxis / 1000)
 			);
-			double dv2 = Tools.Younata_DeltaVToExitSOI(
+			double dv2 = VOID_Tools.Younata_DeltaVToExitSOI(
 				(vessel.mainBody.gravParameter / 1000000000),
 				(vessel.orbit.semiMajorAxis / 1000),
 				(vessel.mainBody.sphereOfInfluence / 1000),
 				Math.Abs(dv1)
 			);
-			double trans_ejection_angle = Tools.Younata_TransferBurnPoint(
+			double trans_ejection_angle = VOID_Tools.Younata_TransferBurnPoint(
 				(vessel.orbit.semiMajorAxis / 1000),
 				dv2,
 				(Math.PI / 2.0),
 				(vessel.mainBody.gravParameter / 1000000000)
 			);
 
-			double curr_phase_angle = Tools.Adammada_CurrrentPhaseAngle(
+			double curr_phase_angle = VOID_Tools.Adammada_CurrrentPhaseAngle(
 				body.orbit.LAN,
 				body.orbit.orbitPercent,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
 			);
-			double curr_ejection_angle = Tools.Adammada_CurrentEjectionAngle(
+			double curr_ejection_angle = VOID_Tools.Adammada_CurrentEjectionAngle(
 				FlightGlobals.ActiveVessel.longitude,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.rotationAngle,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.LAN,
 				FlightGlobals.ActiveVessel.orbit.referenceBody.orbit.orbitPercent
 			);
 
-			double trans_phase_angle = Tools.Nivvy_CalcTransferPhaseAngle(
+			double trans_phase_angle = VOID_Tools.Nivvy_CalcTransferPhaseAngle(
 				vessel.mainBody.orbit.semiMajorAxis,
 				body.orbit.semiMajorAxis,
 				vessel.mainBody.referenceBody.gravParameter
 			) % 360;
 
-			double adj_phase_angle = Tools.adjustCurrPhaseAngle(trans_phase_angle, curr_phase_angle);
+			double adj_phase_angle = VOID_Tools.adjustCurrPhaseAngle(trans_phase_angle, curr_phase_angle);
 			//double adj_ejection_angle = adjustCurrEjectionAngle(trans_phase_angle, curr_ejection_angle);
 
 			//new stuff
 			//
-			double adj_trans_ejection_angle = Tools.adjust_transfer_ejection_angle(trans_ejection_angle, trans_phase_angle);
-			double adj_curr_ejection_angle = Tools.adjust_current_ejection_angle(curr_ejection_angle);
+			double adj_trans_ejection_angle = VOID_Tools.adjust_transfer_ejection_angle(trans_ejection_angle, trans_phase_angle);
+			double adj_curr_ejection_angle = VOID_Tools.adjust_current_ejection_angle(curr_ejection_angle);
 			//
 			//
 

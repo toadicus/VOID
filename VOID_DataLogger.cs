@@ -97,7 +97,7 @@ namespace VOID
 			GUILayout.BeginVertical();
 
 			GUILayout.Label("System time: " + DateTime.Now.ToString("HH:mm:ss"));
-			GUILayout.Label(Tools.ConvertInterval(stopwatch1));
+			GUILayout.Label(VOID_Tools.ConvertInterval(stopwatch1));
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("Start"))

@@ -217,13 +217,13 @@ namespace VOID
 		    else GUILayout.Label((body.orbit.ApA / 1000).ToString("##,#") + "km", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(Tools.ConvertInterval(body.orbit.timeToAp), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.timeToAp), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 		    else GUILayout.Label((body.orbit.PeA / 1000).ToString("##,#") + "km", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(Tools.ConvertInterval(body.orbit.timeToPe), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.timeToPe), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 		    else GUILayout.Label((body.orbit.semiMajorAxis / 1000).ToString("##,#") + "km", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
@@ -232,10 +232,10 @@ namespace VOID
 		    else GUILayout.Label(body.orbit.eccentricity.ToString("F4") + "", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(Tools.ConvertInterval(body.orbit.period), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.period), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(Tools.ConvertInterval(body.rotationPeriod), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.rotationPeriod), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 		    else GUILayout.Label((body.orbit.orbitalSpeed / 1000).ToString("F2") + "km/s", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
