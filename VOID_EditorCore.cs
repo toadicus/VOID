@@ -129,7 +129,7 @@ namespace VOID
 				this.StartGUI();
 			}
 
-			if (EditorLogic.SortedShipList.Count > 0)
+			if (EditorLogic.SortedShipList.Count > 0 && this.vesselSimActive)
 			{
 				SimManager.Gravity = VOID_Data.KerbinGee;
 				SimManager.TryStartSimulation();

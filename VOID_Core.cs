@@ -38,6 +38,7 @@ namespace VOID
 {
 	public class VOID_Core : VOID_Module, IVOID_Module
 	{
+		#region Singleton Members
 		/*
 		 * Static Members
 		 * */
@@ -72,8 +73,10 @@ namespace VOID
 			_instance = null;
 			_initialized = false;
 		}
+		#endregion
 
 		public static double Constant_G = 6.674e-11;
+
 		/*
 		 * Fields
 		 * */
@@ -136,6 +139,9 @@ namespace VOID
 		protected VOID_SaveValue<double> _updatePeriod = 1001f / 15000f;
 		protected float _updateTimer = 0f;
 		protected string stringFrequency;
+
+		[AVOID_SaveValue("vesselSimActive")]
+		protected VOID_SaveValue<bool> vesselSimActive;
 
 		// Vessel Type Housekeeping
 		protected List<VesselType> _allVesselTypes = new List<VesselType>();
@@ -472,7 +478,7 @@ namespace VOID
 		{
 			this.LoadBeforeUpdate();
 
-			if (this.vessel != null)
+			if (this.vessel != null && this.vesselSimActive)
 			{
 				SimManager.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
 					Math.Pow(VOID_Core.Instance.vessel.Radius(), 2);
@@ -621,6 +627,9 @@ namespace VOID
 			}
 
 			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
+
+			this.vesselSimActive.value = GUILayout.Toggle(this.vesselSimActive.value,
+				"Enable Engineering Calculations");
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
@@ -987,6 +996,8 @@ namespace VOID
 			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_dark_glow";
 			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_light";
 			this.VOIDIconOffActivePath = "VOID/Textures/void_icon_dark";
+
+			this.vesselSimActive = true;
 
 			this.UseToolbarManager = false;
 
