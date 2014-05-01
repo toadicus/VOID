@@ -484,6 +484,10 @@ namespace VOID
 					Math.Pow(VOID_Core.Instance.vessel.Radius(), 2);
 				SimManager.TryStartSimulation();
 			}
+			else if (!this.vesselSimActive)
+			{
+				SimManager.ClearResults();
+			}
 
 			if (!this.guiRunning)
 			{

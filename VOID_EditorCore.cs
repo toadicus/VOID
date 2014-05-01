@@ -134,6 +134,10 @@ namespace VOID
 				SimManager.Gravity = VOID_Data.KerbinGee;
 				SimManager.TryStartSimulation();
 			}
+			else if (!this.vesselSimActive)
+			{
+				SimManager.ClearResults();
+			}
 
 			this.CheckAndSave ();
 		}
