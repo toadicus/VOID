@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug_win</Configuration>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{45ACC1CC-942C-4A66-BFC7-8BE375938B18}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -116,6 +116,10 @@
     <ProjectReference Include="..\ToadicusTools\ToadicusTools.csproj">
       <Project>{D48A5542-6655-4149-BC27-B27DF0466F1C}</Project>
       <Name>ToadicusTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VesselSimulator\VesselSimulator.csproj">
+      <Project>{30FD6C0B-D36E-462F-B0FF-F0FAC9C666CF}</Project>
+      <Name>VesselSimulator</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
