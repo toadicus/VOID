@@ -41,6 +41,34 @@
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_linux|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG; TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="cp -afv ${TargetFile} /opt/games/KSP_linux/GameData/${ProjectName}/Plugins/" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_linux|AnyCPU' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="cp -afv ${TargetFile} /opt/games/KSP_linux/GameData/${ProjectName}/Plugins/" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="IVOID_Module.cs" />
@@ -74,21 +102,17 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\Games\KSP_win\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System">
-      <HintPath>..\..\..\Games\KSP_win\KSP_Data\Managed\System.dll</HintPath>
+      <HintPath>..\_KSPAssemblies\System.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\_KSPAssemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Games\KSP_win\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\_KSPAssemblies\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VesselSimulator\VesselSimulator.csproj">
-      <Project>{30FD6C0B-D36E-462F-B0FF-F0FAC9C666CF}</Project>
-      <Name>VesselSimulator</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ToadicusTools\ToadicusTools.csproj">
       <Project>{D48A5542-6655-4149-BC27-B27DF0466F1C}</Project>
       <Name>ToadicusTools</Name>
