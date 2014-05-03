@@ -129,7 +129,14 @@ namespace VOID
 	{
 		public static readonly VOID_StrValue primaryName = new VOID_StrValue (
 			VOID_Localization.void_primary,
-			new Func<string> (() => VOID_Core.Instance.vessel.mainBody.name)
+			delegate()
+		{
+			if (VOID_Core.Instance.vessel == null)
+			{
+				return string.Empty;
+			}
+			return VOID_Core.Instance.vessel.mainBody.name;
+		}
 		);
 
 		public static readonly VOID_DoubleValue orbitAltitude = new VOID_DoubleValue (

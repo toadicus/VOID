@@ -111,6 +111,11 @@ namespace VOID
 
 		public static ExperimentSituations GetExperimentSituation(this Vessel vessel)
 		{
+			if (vessel == null)
+			{
+				return ExperimentSituations.SrfSplashed;
+			}
+
 			Vessel.Situations situation = vessel.situation;
 
 			switch (situation)
