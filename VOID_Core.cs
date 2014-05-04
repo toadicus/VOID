@@ -81,7 +81,7 @@ namespace VOID
 		 * Fields
 		 * */
 		protected string VoidName = "VOID";
-		protected string VoidVersion = "0.10.0";
+		protected string VoidVersion = "0.11.0";
 
 		protected bool _factoryReset = false;
 
