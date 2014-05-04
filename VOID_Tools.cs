@@ -256,54 +256,69 @@ namespace VOID
 		}
 		#endregion
 
+		/// <summary>
+		/// Converts the interval given in seconds to a human-friendly
+		/// time period in [years], [days], hours, minutes, and seconds.
+		/// 
+		/// Uses sidereal days, since "6 hours per day" is the Kerbal standard.
+		/// </summary>
+		/// <returns>Human readable interval</returns>
+		/// <param name="seconds"></param>
 		public static string ConvertInterval(double seconds)
 		{
-			string format_1 = "{0:D1}y {1:D1}d {2:D2}h {3:D2}m {4:D2}.{5:D1}s";
-			string format_2 = "{0:D1}d {1:D2}h {2:D2}m {3:D2}.{4:D1}s";
-			string format_3 = "{0:D2}h {1:D2}m {2:D2}.{3:D1}s";
+			double SecondsPerMinute = 60d;
+			double SecondsPerHour = 3600d;
+			double SecondsPerDay;
+			double SecondsPerYear;
 
-			TimeSpan interval;
-
-			try
+			if (GameSettings.KERBIN_TIME)
 			{
-				interval = TimeSpan.FromSeconds(seconds);
-			}
-			catch (OverflowException)
-			{
-				return "NaN";
-			}
-
-			int years = interval.Days / 365;
-
-			string output;
-			if (years > 0)
-			{
-				output = string.Format(format_1,
-					years,
-					interval.Days - (years * 365), //  subtract years * 365 for accurate day count
-					interval.Hours,
-					interval.Minutes,
-					interval.Seconds,
-					interval.Milliseconds.ToString().Substring(0, 1));
-			}
-			else if (interval.Days > 0)
-			{
-				output = string.Format(format_2,
-					interval.Days,
-					interval.Hours,
-					interval.Minutes,
-					interval.Seconds,
-					interval.Milliseconds.ToString().Substring(0, 1));
+				SecondsPerDay = 21600d;
+				SecondsPerYear = 9203545d;
 			}
 			else
 			{
-				output = string.Format(format_3,
-					interval.Hours,
-					interval.Minutes,
-					interval.Seconds,
-					interval.Milliseconds.ToString().Substring(0, 1));
+				SecondsPerDay = 86164.1d;
+				SecondsPerYear = 31558149d;
 			}
-			return output;
+
+			int years;
+			int days;
+			int hours;
+			int minutes;
+
+			years = (int)(seconds / SecondsPerYear);
+
+			seconds %= SecondsPerYear;
+
+			days = (int)(seconds / SecondsPerDay);
+
+			seconds %= SecondsPerDay;
+
+			hours = (int)(seconds / SecondsPerHour);
+
+			seconds %= SecondsPerHour;
+
+			minutes = (int)(seconds / SecondsPerMinute);
+
+			seconds %= SecondsPerMinute;
+
+			string format_1 = "{0:D1}y {1:D1}d {2:D2}h {3:D2}m {4:00.0}s";
+			string format_2 = "{0:D1}d {1:D2}h {2:D2}m {3:00.0}s";
+			string format_3 = "{0:D2}h {1:D2}m {2:00.0}s";
+
+			if (years > 0)
+			{
+				return string.Format(format_1, years, days, hours, minutes, seconds);
+			}
+			else if (days > 0)
+			{
+				return string.Format(format_2, days, hours, minutes, seconds);
+			}
+			else
+			{
+				return string.Format(format_3, hours, minutes, seconds);
+			}
 		}
 
 		public static string UppercaseFirst(string s)
