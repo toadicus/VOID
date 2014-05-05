@@ -9,7 +9,6 @@
     <RootNamespace>VOID</RootNamespace>
     <AssemblyName>VOID</AssemblyName>
     <CodePage>65001</CodePage>
-    <UseMSBuildEngine>False</UseMSBuildEngine>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ReleaseVersion>0.11</ReleaseVersion>
