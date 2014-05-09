@@ -92,6 +92,7 @@
     <Compile Include="VOIDEditorMaster.cs" />
     <Compile Include="VOID_Tools.cs" />
     <Compile Include="VOID_Localization.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
