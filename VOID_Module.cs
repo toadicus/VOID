@@ -51,6 +51,14 @@ namespace VOID
 		/*
 		 * Properties
 		 * */
+		protected virtual VOID_Core core
+		{
+			get
+			{
+				return VOID_Core.Instance;
+			}
+		}
+
 		public virtual bool toggleActive
 		{
 			get
