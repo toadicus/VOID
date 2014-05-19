@@ -1033,7 +1033,7 @@ namespace VOID
 		{
 			get
 			{
-				return core.Kerbin.gravParameter / Math.Pow(core.Kerbin.Radius, 2);
+				return core.Kerbin.gravParameter / (core.Kerbin.Radius * core.Kerbin.Radius);
 			}
 		}
 	}
