@@ -303,9 +303,11 @@ namespace VOID
 
 			seconds %= SecondsPerMinute;
 
-			string format_1 = "{0:D1}y {1:D1}d {2:D2}h {3:D2}m {4:00.0}s";
-			string format_2 = "{0:D1}d {1:D2}h {2:D2}m {3:00.0}s";
-			string format_3 = "{0:D2}h {1:D2}m {2:00.0}s";
+			string format_1 = string.Intern("{0:D1}y {1:D1}d {2:D2}h {3:D2}m {4:00.0}s");
+			string format_2 = string.Intern("{0:D1}d {1:D2}h {2:D2}m {3:00.0}s");
+			string format_3 = string.Intern("{0:D2}h {1:D2}m {2:00.0}s");
+			string format_4 = string.Intern("{0:D2}m {1:00.0}s");
+			string format_5 = string.Intern("{0:00.0}s");
 
 			if (years > 0)
 			{
@@ -315,9 +317,17 @@ namespace VOID
 			{
 				return string.Format(format_2, days, hours, minutes, seconds);
 			}
-			else
+			else if (hours > 0)
 			{
 				return string.Format(format_3, hours, minutes, seconds);
+			}
+			else if (minutes > 0)
+			{
+				return string.Format(format_4, minutes, seconds);
+			}
+			else
+			{
+				return string.Format(format_5, seconds);
 			}
 		}
 
