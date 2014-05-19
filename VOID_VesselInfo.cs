@@ -178,6 +178,34 @@ namespace VOID
 			}
 		);
 
+		public static readonly VOID_DoubleValue currThrustWeight = new VOID_DoubleValue(
+			"T:W Ratio",
+			delegate()
+		{
+			if (SimManager.LastStage == null)
+			{
+				return double.NaN;
+			}
+
+			return SimManager.LastStage.actualThrustToWeight;
+		},
+			""
+		);
+
+		public static readonly VOID_DoubleValue maxThrustWeight = new VOID_DoubleValue(
+			"T:W Ratio",
+			delegate()
+		{
+			if (SimManager.LastStage == null)
+			{
+				return double.NaN;
+			}
+
+			return SimManager.LastStage.maxThrustToWeight;
+		},
+			""
+		);
+
 		public static readonly VOID_StrValue currmaxThrustWeight = new VOID_StrValue(
 			"T:W (curr/max)",
 			delegate()
@@ -185,20 +213,10 @@ namespace VOID
 				if (SimManager.Stages == null || SimManager.LastStage == null)
 					return "N/A";
 
-				double currThrust = SimManager.LastStage.actualThrust;
-				double maxThrust = SimManager.LastStage.thrust;
-				double mass = SimManager.LastStage.totalMass;
-				double gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
-					Math.Pow(
-						VOID_Core.Instance.vessel.mainBody.Radius + VOID_Core.Instance.vessel.altitude,
-						2
-					);
-				double weight = mass * gravity;
-
 				return string.Format(
 					"{0} / {1}",
-					(currThrust / weight).ToString("F2"),
-					(maxThrust / weight).ToString("F2")
+					(VOID_Data.currThrustWeight.Value).ToString("F2"),
+					(VOID_Data.maxThrustWeight.Value).ToString("F2")
 				);
 			}
 		);
