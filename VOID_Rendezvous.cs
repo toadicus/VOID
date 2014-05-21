@@ -193,7 +193,13 @@ namespace VOID
 					GUILayout.Label(Tools.MuMech_ToSI((vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude) + "m", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
-					//target_vessel_extended_orbital_info = GUILayout.Toggle(target_vessel_extended_orbital_info, "Extended info");
+					// Toadicus edit: added local sidereal longitude.
+					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+					GUILayout.Label("Local Sidereal Longitude:");
+					GUILayout.Label(LSL.ToString("F3") + "°", VOID_Core.Instance.LabelStyles["right"]);
+					GUILayout.EndHorizontal();
+
+					toggleExtendedOrbital.value = GUILayout.Toggle(toggleExtendedOrbital, "Extended info");
 
 					if (toggleExtendedOrbital)
 					{
@@ -237,12 +243,6 @@ namespace VOID
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						GUILayout.Label("Arg. of periapsis:");
 						GUILayout.Label(v.orbit.argumentOfPeriapsis.ToString("F3") + "°", GUILayout.ExpandWidth(false));
-						GUILayout.EndHorizontal();
-
-						// Toadicus edit: added local sidereal longitude.
-						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-						GUILayout.Label("Local Sidereal Longitude:");
-						GUILayout.Label(LSL.ToString("F3") + "°", VOID_Core.Instance.LabelStyles["right"]);
 						GUILayout.EndHorizontal();
 					}
 				}
