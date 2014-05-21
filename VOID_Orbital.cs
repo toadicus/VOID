@@ -186,7 +186,7 @@ namespace VOID
 			double orbitRadius = VOID_Core.Instance.vessel.mainBody.Radius +
 				VOID_Core.Instance.vessel.mainBody.GetAltitude(VOID_Core.Instance.vessel.findWorldCenterOfMass());
 			return (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
-				Math.Pow(orbitRadius, 2);
+				(orbitRadius * orbitRadius);
 		},
 			"m/s²"
 		);

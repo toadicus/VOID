@@ -274,14 +274,14 @@ namespace VOID
 
 			GUILayout.Label((body.Radius / 1000).ToString("##,#") + "km", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
-			GUILayout.Label(((Math.Pow((body.Radius), 2) * 4 * Math.PI) / 1000).ToString("0.00e+00") + "km²", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label((((body.Radius * body.Radius) * 4 * Math.PI) / 1000).ToString("0.00e+00") + "km²", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 			// divide by 1000 to convert m to km
-			GUILayout.Label((((4d / 3) * Math.PI * Math.Pow(body.Radius, 3)) / 1000).ToString("0.00e+00") + "km³", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label((((4d / 3) * Math.PI * (body.Radius * body.Radius * body.Radius)) / 1000).ToString("0.00e+00") + "km³", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(body.Mass.ToString("0.00e+00") + "kg", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
-			double p = body.Mass / (Math.Pow(body.Radius, 3) * (4d / 3) * Math.PI);
+			double p = body.Mass / ((body.Radius * body.Radius * body.Radius) * (4d / 3) * Math.PI);
 
 			GUILayout.Label(p.ToString("##,#") + "kg/m³", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
@@ -299,7 +299,7 @@ namespace VOID
 
 			GUILayout.Label(num_art_sats.ToString(), VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 
-			double g_ASL = (VOID_Core.Constant_G * body.Mass) / Math.Pow(body.Radius, 2);
+			double g_ASL = (VOID_Core.Constant_G * body.Mass) / (body.Radius * body.Radius);
 
 			GUILayout.Label(Tools.MuMech_ToSI(g_ASL) + "m/s²", VOID_Core.Instance.LabelStyles["right"], GUILayout.ExpandWidth(true));
 

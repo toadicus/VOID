@@ -231,7 +231,7 @@ namespace VOID
 				double maxThrust = SimManager.LastStage.thrust;
 				double mass = SimManager.LastStage.totalMass;
 				double gravity = (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
-					Math.Pow(VOID_Core.Instance.vessel.mainBody.Radius, 2);
+				(VOID_Core.Instance.vessel.mainBody.Radius * VOID_Core.Instance.vessel.mainBody.Radius);
 				double weight = mass * gravity;
 
 				return maxThrust / weight;

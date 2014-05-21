@@ -234,7 +234,7 @@ namespace VOID
 			line += vessel.flightIntegrator.getExternalTemperature().ToString("F2") + ";";
 			//gravity
 			double r_vessel = vessel.mainBody.Radius + vessel.mainBody.GetAltitude(vessel.findWorldCenterOfMass());
-			double g_vessel = (VOID_Core.Constant_G * vessel.mainBody.Mass) / Math.Pow(r_vessel, 2);
+			double g_vessel = (VOID_Core.Constant_G * vessel.mainBody.Mass) / (r_vessel * r_vessel);
 			line += g_vessel.ToString("F3") + ";";
 			//atm density
 			line += (vessel.atmDensity * 1000).ToString("F3") + ";";

@@ -345,8 +345,14 @@ namespace VOID
 		//transfer angles
 		public static double Nivvy_CalcTransferPhaseAngle(double r_current, double r_target, double grav_param)
 		{
-			double T_target = (2 * Math.PI) * Math.Sqrt(Math.Pow((r_target / 1000), 3) / (grav_param / 1000000000));
-			double T_transfer = (2 * Math.PI) * Math.Sqrt(Math.Pow((((r_target / 1000) + (r_current / 1000)) / 2), 3) / (grav_param / 1000000000));
+			r_target /= 1000;
+			r_current /= 1000;
+			grav_param /= 1000000000;
+
+			double midpoint = (r_target + r_current) / 2;
+
+			double T_target = (2 * Math.PI) * Math.Sqrt((r_target * r_target * r_target) / grav_param);
+			double T_transfer = (2 * Math.PI) * Math.Sqrt((midpoint * midpoint * midpoint) / grav_param);
 			return 360 * (0.5 - (T_transfer / (2 * T_target)));
 		}
 
@@ -385,7 +391,7 @@ namespace VOID
             r = r1*r2
             return math.sqrt(bar / r)
             */
-			double foo = r2 * Math.Pow(v, 2) - 2 * mu;
+			double foo = r2 * (v * v) - 2 * mu;
 			double bar = r1 * foo + (2 * r2 * mu);
 			double r = r1 * r2;
 			return Math.Sqrt(bar / r);
@@ -407,9 +413,9 @@ namespace VOID
             return 180 - degrees
             */
 			double epsilon, h, ee, theta, degrees;
-			epsilon = (Math.Pow(v, 2) / 2) - (mu / r);
+			epsilon = ((v * v) / 2) - (mu / r);
 			h = r * v * Math.Sin(angle);
-			ee = Math.Sqrt(1 + ((2 * epsilon * Math.Pow(h, 2)) / Math.Pow(mu, 2)));
+			ee = Math.Sqrt(1 + ((2 * epsilon * (h * h)) / (mu * mu)));
 			theta = Math.Acos(1.0 / ee);
 			degrees = theta * (180.0 / Math.PI);
 			return 180 - degrees;

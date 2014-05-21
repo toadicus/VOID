@@ -480,8 +480,9 @@ namespace VOID
 
 			if (this.vessel != null && this.vesselSimActive)
 			{
+				double radius = VOID_Core.Instance.vessel.Radius();
 				SimManager.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
-					Math.Pow(VOID_Core.Instance.vessel.Radius(), 2);
+					(radius * radius);
 				SimManager.TryStartSimulation();
 			}
 			else if (!this.vesselSimActive)
