@@ -103,7 +103,7 @@ namespace VOID
 			return (T)this.cache;
 		}
 
-		public string ValueUnitString() {
+		public virtual string ValueUnitString() {
 			return this.Value.ToString() + this.Units;
 		}
 
@@ -145,7 +145,6 @@ namespace VOID
 		{
 			return v.ToSingle();
 		}
-
 
 		protected IFormatProvider formatProvider;
 
@@ -324,6 +323,26 @@ namespace VOID
 	public class VOID_StrValue : VOID_DataValue<string>
 	{
 		public VOID_StrValue(string Label, Func<string> ValueFunc) : base(Label, ValueFunc, "") {}
+	}
+
+	public class VOID_Vector3dValue : VOID_DataValue<Vector3d>
+	{
+		public VOID_Vector3dValue(string Label, Func<Vector3d> ValueFunc, string Units)
+			: base(Label, ValueFunc, Units)
+		{}
+
+		public string ToString(string format)
+		{
+			return string.Format("{0}: {1}{2}",
+				this.Label,
+				this.Value.ToString(format),
+				this.Units
+			);
+		}
+
+		public string ValueUnitString(string format) {
+			return this.Value.ToString(format) + this.Units;
+		}
 	}
 }
 
