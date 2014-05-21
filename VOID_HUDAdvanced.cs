@@ -80,10 +80,18 @@ namespace VOID
 
 			this._Active.value = true;
 
-			this.leftHUDdefaultPos = new Rect(Screen.width * .375f - 300f, Screen.height * .5f, 300f, 90f);
+			this.leftHUDdefaultPos = new Rect(
+				Screen.width * .5f - (float)GameSettings.UI_SIZE * .25f - 300f,
+				Screen.height - 200f,
+				300f, 90f
+			);
 			this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
 
-			this.rightHUDdefaultPos = new Rect(Screen.width * .625f, Screen.height * .5f, 300f, 90f);
+			this.rightHUDdefaultPos = new Rect(
+				Screen.width * .5f + (float)GameSettings.UI_SIZE * .25f,
+				Screen.height - 200f,
+				300f, 90f
+			);
 			this.rightHUDPos = new Rect(this.rightHUDdefaultPos);
 
 			this.positionsLocked = true;
@@ -122,9 +130,17 @@ namespace VOID
 				);
 
 				leftHUD.AppendFormat(
-					string.Intern("Ang Vel: {0}"),
+					string.Intern("Ang Vel: {0}\n"),
 					VOID_Data.vesselAngularVelocity.ToSIString(2)
 				);
+
+				if (VOID_Data.stageNominalThrust != 0)
+				{
+					leftHUD.AppendFormat(
+						string.Intern("Thrust Offset: {0}\n"),
+						VOID_Data.vesselThrustOffset.Value.ToString("F1")
+					);
+				}
 			}
 			else
 			{
@@ -170,13 +186,20 @@ namespace VOID
 					VOID_Tools.ConvertInterval(VOID_Data.currentNodeBurnDuration.Value)
 				);
 
-				rightHUD.AppendFormat("Start T - {0} (done @ node)\n",
-					VOID_Data.burnTimeDoneAtNode.Value
-				);
+				if (VOID_Data.burnTimeDoneAtNode.Value != string.Empty)
+				{
+					rightHUD.AppendFormat("{0} (done @ node)\n",
+						VOID_Data.burnTimeDoneAtNode.Value
+					);
 
-				rightHUD.AppendFormat("Start T - {0} (½ done @ node)",
-					VOID_Data.burnTimeHalfDoneAtNode.Value
-				);
+					rightHUD.AppendFormat("{0} (½ done @ node)",
+						VOID_Data.burnTimeHalfDoneAtNode.Value
+					);
+				}
+				else
+				{
+					rightHUD.Append("Node is past");
+				}
 			}
 			else
 			{
@@ -237,7 +260,7 @@ namespace VOID
 		public override void DrawConfigurables()
 		{
 			this.positionsLocked = GUILayout.Toggle(this.positionsLocked,
-				string.Intern("Lock HUDAdvanced Positions"),
+				string.Intern("Lock Advanced HUD Positions"),
 				GUILayout.ExpandWidth(false));
 		}
 	}
@@ -260,23 +283,25 @@ namespace VOID
 			}
 		}
 
-		public static readonly VOID_DoubleValue vesselThrustOffset = new VOID_DoubleValue(
+		public static readonly VOID_Vector3dValue vesselThrustOffset = new VOID_Vector3dValue(
 			"Thrust Offset",
 			delegate()
 		{
 			if (core.vessel == null)
 			{
-				return double.NaN;
+				return Vector3d.zero;
 			}
 
 			List<PartModule> engineModules = core.vessel.getModulesOfType<PartModule>();
 
 			Vector3d thrustPos = Vector3d.zero;
 			Vector3d thrustDir = Vector3d.zero;
-			double thrust = 0;
+			float thrust = 0;
 
 			foreach (PartModule engine in engineModules)
 			{
+				float moduleThrust = 0;
+
 				switch (engine.moduleName)
 				{
 					case "ModuleEngines":
@@ -297,13 +322,22 @@ namespace VOID
 				{
 					ModuleEngines engineModule = engine as ModuleEngines;
 
+					moduleThrust = engineModule.finalThrust;
+
 					engineModule.OnCenterOfThrustQuery(cotQuery);
 				}
 				else // engine is ModuleEnginesFX
 				{
 					ModuleEnginesFX engineFXModule = engine as ModuleEnginesFX;
 
+					moduleThrust = engineFXModule.finalThrust;
+
 					engineFXModule.OnCenterOfThrustQuery(cotQuery);
+				}
+
+				if (moduleThrust != 0d)
+				{
+					cotQuery.thrust = moduleThrust;
 				}
 
 				thrustPos += cotQuery.pos * cotQuery.thrust;
@@ -311,11 +345,27 @@ namespace VOID
 				thrust += cotQuery.thrust;
 			}
 
-			if (thrust > 0)
+			if (thrust != 0)
 			{
 				thrustPos /= thrust;
 				thrustDir /= thrust;
 			}
+
+			Vector3d thrustOffset = VectorTools.PointDistanceToLine(
+				thrustPos, thrustDir.normalized, core.vessel.findWorldCenterOfMass());
+
+			Tools.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
+				"\tthrustPos: {0}\n" +
+				"\tthrustDir: {1}\n" +
+				"\tthrustOffset: {2}\n" +
+				"\tvessel.CoM: {3}",
+				thrustPos,
+				thrustDir.normalized,
+				thrustOffset,
+				core.vessel.findWorldCenterOfMass()
+			);
+
+			return thrustOffset;
 		},
 			"m"
 		);
@@ -528,7 +578,28 @@ namespace VOID
 
 			ManeuverNode node = core.vessel.patchedConicSolver.maneuverNodes[0];
 
-			return VOID_Tools.ConvertInterval((node.UT - currentNodeBurnDuration) - Planetarium.GetUniversalTime());
+			if ((node.UT - Planetarium.GetUniversalTime()) < 0)
+			{
+				return string.Empty;
+			}
+
+			double interval = (node.UT - currentNodeBurnDuration) - Planetarium.GetUniversalTime();
+
+			int sign = Math.Sign(interval);
+			interval = Math.Abs(interval);
+
+			string format;
+
+			if (sign >= 0)
+			{
+				format = string.Intern("T - {0}");
+			}
+			else
+			{
+				format = string.Intern("T + {0}");
+			}
+
+			return string.Format(format, VOID_Tools.ConvertInterval(interval));
 		}
 		);
 
@@ -536,14 +607,35 @@ namespace VOID
 			"Full burn time to be half done at node",
 			delegate()
 			{
-				if (SimManager.LastStage == null && upcomingManeuverNodes < 1)
-				{
-					return "N/A";
-				}
+			if (SimManager.LastStage == null && upcomingManeuverNodes < 1)
+			{
+				return "N/A";
+			}
 
-				ManeuverNode node = core.vessel.patchedConicSolver.maneuverNodes[0];
+			ManeuverNode node = core.vessel.patchedConicSolver.maneuverNodes[0];
 
-			return VOID_Tools.ConvertInterval((node.UT - currentNodeHalfBurnDuration) - Planetarium.GetUniversalTime());
+			if ((node.UT - Planetarium.GetUniversalTime()) < 0)
+			{
+				return string.Empty;
+			}
+
+			double interval = (node.UT - currentNodeHalfBurnDuration) - Planetarium.GetUniversalTime();
+
+			int sign = Math.Sign(interval);
+			interval = Math.Abs(interval);
+
+			string format;
+
+			if (sign >= 0)
+			{
+				format = string.Intern("T - {0}");
+			}
+			else
+			{
+				format = string.Intern("T + {0}");
+			}
+
+			return string.Format(format, VOID_Tools.ConvertInterval(interval));
 			}
 		);
 
