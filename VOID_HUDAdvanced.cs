@@ -351,8 +351,13 @@ namespace VOID
 				thrustDir /= thrust;
 			}
 
+			Transform vesselTransform = core.vessel.transform;
+
+			thrustPos = vesselTransform.InverseTransformPoint(thrustPos);
+			thrustDir = vesselTransform.InverseTransformDirection(thrustDir);
+
 			Vector3d thrustOffset = VectorTools.PointDistanceToLine(
-				thrustPos, thrustDir.normalized, core.vessel.findWorldCenterOfMass());
+				thrustPos, thrustDir.normalized, core.vessel.findLocalCenterOfMass());
 
 			Tools.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
 				"\tthrustPos: {0}\n" +
