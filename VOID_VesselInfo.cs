@@ -127,7 +127,7 @@ namespace VOID
 					return double.NaN;
 				}
 
-				return SimManager.LastStage.totalBaseMass;
+				return SimManager.LastStage.totalMass - SimManager.LastStage.totalBaseMass;
 			},
 			"tons"
 		);
