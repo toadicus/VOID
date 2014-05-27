@@ -35,6 +35,64 @@ namespace VOID
 {
 	public static partial class VOID_Tools
 	{
+		#region CelestialBody Utilities
+		public static bool hasAncestor(this CelestialBody bodyA, CelestialBody bodyB)
+		{
+			if (bodyA == null || bodyB == null)
+			{
+				return false;
+			}
+
+			while (bodyA.orbitDriver != null)
+			{
+				if (bodyA.orbit.referenceBody == bodyB)
+				{
+					return true;
+				}
+
+				bodyA = bodyA.orbit.referenceBody;
+			} 
+
+			return false;
+		}
+
+		public static bool NearestRelatedParents(ref CelestialBody bodyA, ref CelestialBody bodyB)
+		{
+			if (bodyA == null || bodyB == null || bodyA.orbitDriver == null || bodyB.orbitDriver == null)
+			{
+				throw new ArgumentException(string.Concat(
+					"CelestialBody::FindRelatedParents: ",
+					"Neither body may be null, and both bodies must have orbits."
+				));
+			}
+
+			CelestialBody a, b;
+
+			a = bodyA;
+
+			while (bodyA.orbitDriver != null)
+			{
+				b = bodyB;
+
+				while (b.orbitDriver != null)
+				{
+					if (a.orbit.referenceBody == b.orbit.referenceBody)
+					{
+						bodyA = a;
+						bodyB = b;
+						return true;
+					}
+
+					b = b.orbit.referenceBody;
+				}
+
+				a = a.orbit.referenceBody;
+			}
+
+			return false;
+		}
+		#endregion
+
 		#region VESSEL_EXTENSIONS_SCIENCE
 		public static CBAttributeMap.MapAttribute GetBiome(this Vessel vessel)
 		{
