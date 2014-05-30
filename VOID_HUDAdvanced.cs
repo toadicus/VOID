@@ -249,7 +249,7 @@ namespace VOID
 					this.rightHUDPos.value = GUI.Window(
 						VOID_Core.Instance.windowID,
 						this.rightHUDPos,
-						VOID_Tools.GetWindowHandler(this.leftHUDWindow),
+						VOID_Tools.GetWindowHandler(this.rightHUDWindow),
 						GUIContent.none,
 						GUIStyle.none
 					);
