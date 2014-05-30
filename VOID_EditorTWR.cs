@@ -24,9 +24,21 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
+			if (Event.current.type != EventType.Layout)
+			{
+				return;
+			}
+
+			Engineer.VesselSimulator.SimManager.RequestSimulation();
+
+			GUILayout.Label(
+				this._Name,
+				VOID_EditorCore.Instance.LabelStyles["center_bold"],
+				GUILayout.ExpandWidth(true));
+
 			if (bodyGeeValues == null)
 			{
-				if (FlightGlobals.ready && FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
+				if (FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
 				{
 					this.bodyGeeValues = new Dictionary<string, double>();
 
@@ -43,28 +55,36 @@ namespace VOID
 				}
 				else
 				{
-					return;
+					GUILayout.BeginVertical();
+					GUILayout.BeginHorizontal();
+					GUILayout.Label("Unavailable.");
+					GUILayout.EndHorizontal();
+					GUILayout.EndVertical();
 				}
 			}
-
-			GUILayout.BeginVertical();
-
-			foreach (CelestialBody body in this.sortedBodyList)
+			else
 			{
-				Tools.PostDebugMessage(this, "Doing label for {0}", body.bodyName);
-				GUILayout.BeginHorizontal();
+				GUILayout.BeginVertical();
 
-				GUILayout.Label(body.bodyName);
-				GUILayout.FlexibleSpace();
-				GUILayout.Label(
-					(VOID_Data.currThrustWeight.Value / this.bodyGeeValues[body.bodyName]).ToString("#.0##"),
-					GUILayout.ExpandWidth(true)
-				);
+				foreach (CelestialBody body in this.sortedBodyList)
+				{
+					Tools.PostDebugMessage(this, "Doing label for {0}", body.bodyName);
+					GUILayout.BeginHorizontal();
 
-				GUILayout.EndHorizontal();
+					GUILayout.Label(body.bodyName);
+					GUILayout.FlexibleSpace();
+					GUILayout.Label(
+						(VOID_Data.currThrustWeight.Value / this.bodyGeeValues[body.bodyName]).ToString("0.0##"),
+						GUILayout.ExpandWidth(true)
+					);
+
+					GUILayout.EndHorizontal();
+				}
+
+				GUILayout.EndVertical();
 			}
 
-			GUILayout.EndVertical();
+			GUI.DragWindow();
 		}
 	}
 
@@ -144,6 +164,23 @@ namespace VOID
 
 			return 0;
 		}
+	}
+
+	public static partial class VOID_Data
+	{
+		public static readonly VOID_DoubleValue nominalThrustWeight = new VOID_DoubleValue(
+			"Thrust-to-Weight Ratio",
+			delegate()
+		{
+			if (HighLogic.LoadedSceneIsEditor || currThrustWeight.Value == 0d)
+			{
+				return maxThrustWeight.Value;
+			}
+
+			return currThrustWeight.Value;
+		},
+			""
+		);
 	}
 }
 
