@@ -28,6 +28,7 @@
 
 using KSP;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VOID
@@ -255,6 +256,39 @@ namespace VOID
 			return FixAngleDomain(Angle, true);
 		}
 		#endregion
+
+		private static Dictionary<int, GUI.WindowFunction> functionCache;
+		public static UnityEngine.GUI.WindowFunction GetWindowHandler(Action<int> func)
+		{
+			if (functionCache == null)
+			{
+				functionCache = new Dictionary<int, GUI.WindowFunction>();
+			}
+
+			int hashCode = func.GetHashCode();
+
+			if (!functionCache.ContainsKey(hashCode))
+			{
+				functionCache[hashCode] = delegate (int id)
+				{
+					try
+					{
+						func(id);
+					}
+					catch (ArgumentException ex)
+					{
+						Debug.LogWarning(
+							string.Format("[{0}]: ArgumentException caught during window call.", func.Target.GetType().Name)
+						);
+						#if DEBUG
+						Debug.LogException(ex);
+						#endif
+					}
+				};
+			}
+
+			return functionCache[hashCode];
+		}
 
 		/// <summary>
 		/// Converts the interval given in seconds to a human-friendly
