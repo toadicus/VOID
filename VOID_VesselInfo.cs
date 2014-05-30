@@ -48,8 +48,6 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
-			base.ModuleWindow (_);
-
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
 				SimManager.RequestSimulation();

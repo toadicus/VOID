@@ -52,8 +52,6 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
-			base.ModuleWindow (_);
-
 			int idx = 0;
 
             GUILayout.BeginVertical();
