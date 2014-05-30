@@ -134,7 +134,7 @@ namespace VOID
 					VOID_Data.vesselAngularVelocity.ToSIString(2)
 				);
 
-				if (VOID_Data.stageNominalThrust != 0)
+				if (VOID_Data.stageNominalThrust != 0d)
 				{
 					leftHUD.AppendFormat(
 						string.Intern("Thrust Offset: {0}\n"),
@@ -239,7 +239,7 @@ namespace VOID
 				this.leftHUDPos.value = GUI.Window(
 					VOID_Core.Instance.windowID,
 					this.leftHUDPos,
-					this.leftHUDWindow,
+					VOID_Tools.GetWindowHandler(this.leftHUDWindow),
 					GUIContent.none,
 					GUIStyle.none
 				);
@@ -249,7 +249,7 @@ namespace VOID
 					this.rightHUDPos.value = GUI.Window(
 						VOID_Core.Instance.windowID,
 						this.rightHUDPos,
-						this.rightHUDWindow,
+						VOID_Tools.GetWindowHandler(this.leftHUDWindow),
 						GUIContent.none,
 						GUIStyle.none
 					);
