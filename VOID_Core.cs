@@ -81,7 +81,7 @@ namespace VOID
 		 * Fields
 		 * */
 		protected string VoidName = "VOID";
-		protected string VoidVersion = "0.11.0";
+		protected string VoidVersion;
 
 		protected bool _factoryReset = false;
 
@@ -991,6 +991,10 @@ namespace VOID
 		protected VOID_Core()
 		{
 			this._Name = "VOID Core";
+
+			System.Version version = this.GetType().Assembly.GetName().Version;
+
+			this.VoidVersion = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.MajorRevision);
 
 			this._Active.value = true;
 
