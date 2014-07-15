@@ -66,7 +66,7 @@ namespace VOID
 
 			VOID_Data.totalMass.DoGUIHorizontal ("F3");
 
-			VOID_Data.resourceMass.DoGUIHorizontal ("F3");
+			VOID_Data.comboResourceMass.DoGUIHorizontal ();
 
 			VOID_Data.stageDeltaV.DoGUIHorizontal (3, false);
 
@@ -128,6 +128,28 @@ namespace VOID
 				return SimManager.LastStage.totalMass - SimManager.LastStage.totalBaseMass;
 			},
 			"tons"
+		);
+
+		public static readonly VOID_DoubleValue stageResourceMass = new VOID_DoubleValue(
+			"Resource Mass (Current Stage)",
+			delegate()
+			{
+				if (SimManager.LastStage == null)
+				{
+					return double.NaN;
+				}
+
+				return SimManager.LastStage.mass - SimManager.LastStage.baseMass;
+			},
+			"tons"
+		);
+
+		public static readonly VOID_StrValue comboResourceMass = new VOID_StrValue(
+			"Resource Mass (curr / total)",
+			delegate()
+		{
+			return string.Format("{0} / {1}", stageResourceMass.ValueUnitString(), resourceMass.ValueUnitString());
+		}
 		);
 
 		public static readonly VOID_DoubleValue stageDeltaV = new VOID_DoubleValue(
