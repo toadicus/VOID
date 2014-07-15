@@ -75,7 +75,7 @@ namespace VOID
 		}
 		#endregion
 
-		public static double Constant_G = 6.674e-11;
+		public static readonly double Constant_G = 6.674e-11;
 
 		/*
 		 * Fields
@@ -384,7 +384,7 @@ namespace VOID
 				_mainWindowPos = GUILayout.Window(
 					this.windowID,
 					_mainWindowPos,
-					this.VOIDMainWindow,
+					VOID_Tools.GetWindowHandler(this.VOIDMainWindow),
 					string.Join(" ", new string[] { this.VoidName, this.VoidVersion }),
 					GUILayout.Width(250),
 					GUILayout.Height(50)
@@ -405,7 +405,7 @@ namespace VOID
 				_configWindowPos = GUILayout.Window(
 					this.windowID,
 					_configWindowPos,
-					this.VOIDConfigWindow,
+					VOID_Tools.GetWindowHandler(this.VOIDConfigWindow),
 					string.Join(" ", new string[] { this.VoidName, "Configuration" }),
 					GUILayout.Width(250),
 					GUILayout.Height(50)
@@ -480,8 +480,8 @@ namespace VOID
 
 			if (this.vessel != null && this.vesselSimActive)
 			{
-				double radius = VOID_Core.Instance.vessel.Radius();
-				SimManager.Gravity = VOID_Core.Instance.vessel.mainBody.gravParameter /
+				double radius = this.vessel.Radius();
+				SimManager.Gravity = this.vessel.mainBody.gravParameter /
 					(radius * radius);
 				SimManager.TryStartSimulation();
 			}
@@ -1030,7 +1030,14 @@ namespace VOID
 		{
 			get
 			{
-				return VOID_Core.Instance;
+				if (HighLogic.LoadedSceneIsEditor)
+				{
+					return VOID_EditorCore.Instance;
+				}
+				else
+				{
+					return VOID_Core.Instance;
+				}
 			}
 		}
 

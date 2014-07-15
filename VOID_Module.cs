@@ -55,6 +55,11 @@ namespace VOID
 		{
 			get
 			{
+				if (HighLogic.LoadedSceneIsEditor)
+				{
+					return VOID_EditorCore.Instance as VOID_Core;
+				}
+
 				return VOID_Core.Instance;
 			}
 		}
@@ -218,17 +223,15 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
-			GUI.skin = VOID_Core.Instance.Skin;
+			GUI.skin = this.core.Skin;
 
 			Rect _Pos = this.WindowPos;
 
 			_Pos = GUILayout.Window(
-				VOID_Core.Instance.windowID,
+				this.core.windowID,
 				_Pos,
-				this.ModuleWindow,
-				this.Name,
-				GUILayout.Width(this.defWidth),
-				GUILayout.Height(this.defHeight)
+				VOID_Tools.GetWindowHandler(this.ModuleWindow),
+				this.Name
 			);
 
 			_Pos = Tools.ClampRectToScreen (_Pos);
@@ -236,7 +239,7 @@ namespace VOID
 			if (_Pos != this.WindowPos)
 			{
 				this.WindowPos = _Pos;
-				VOID_Core.Instance.configDirty = true;
+				this.core.configDirty = true;
 			}
 		}
 	}

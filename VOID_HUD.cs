@@ -118,9 +118,9 @@ namespace VOID
 
 			leftHUD = new StringBuilder();
 
-			VOID_Core.Instance.LabelStyles["hud"].alignment = TextAnchor.UpperRight;
+			this.core.LabelStyles["hud"].alignment = TextAnchor.UpperRight;
 
-			if (VOID_Core.Instance.powerAvailable)
+			if (this.core.powerAvailable)
 			{
 				leftHUD.AppendFormat("Primary: {0} Inc: {1}",
 					VOID_Data.primaryName.ValueUnitString(),
@@ -145,11 +145,11 @@ namespace VOID
 			}
 			else
 			{
-				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
+				this.core.LabelStyles["hud"].normal.textColor = Color.red;
 				leftHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
-			GUILayout.Label(leftHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(leftHUD.ToString(), this.core.LabelStyles["hud"], GUILayout.ExpandWidth(true));
 
 			if (!this.positionsLocked)
 			{
@@ -165,9 +165,9 @@ namespace VOID
 
 			rightHUD = new StringBuilder();
 
-			VOID_Core.Instance.LabelStyles["hud"].alignment = TextAnchor.UpperLeft;
+			this.core.LabelStyles["hud"].alignment = TextAnchor.UpperLeft;
 
-			if (VOID_Core.Instance.powerAvailable)
+			if (this.core.powerAvailable)
 			{
 				rightHUD.AppendFormat("Biome: {0} Sit: {1}",
 					VOID_Data.currBiome.ValueUnitString(),
@@ -192,12 +192,12 @@ namespace VOID
 			}
 			else
 			{
-				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
+				this.core.LabelStyles["hud"].normal.textColor = Color.red;
 				rightHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
 
-			GUILayout.Label(rightHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(rightHUD.ToString(), this.core.LabelStyles["hud"], GUILayout.ExpandWidth(true));
 
 			if (!this.positionsLocked)
 			{
@@ -209,12 +209,12 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
-			if (!VOID_Core.Instance.LabelStyles.ContainsKey("hud"))
+			if (!this.core.LabelStyles.ContainsKey("hud"))
 			{
-				VOID_Core.Instance.LabelStyles["hud"] = new GUIStyle(GUI.skin.label);
+				this.core.LabelStyles["hud"] = new GUIStyle(GUI.skin.label);
 			}
 
-			VOID_Core.Instance.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
+			this.core.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
 
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
@@ -222,7 +222,7 @@ namespace VOID
 			}
 
 			this.leftHUDPos.value = GUI.Window(
-				VOID_Core.Instance.windowID,
+				this.core.windowID,
 				this.leftHUDPos,
 				this.leftHUDWindow,
 				GUIContent.none,
@@ -230,7 +230,7 @@ namespace VOID
 			);
 
 			this.rightHUDPos.value = GUI.Window(
-				VOID_Core.Instance.windowID,
+				this.core.windowID,
 				this.rightHUDPos,
 				this.rightHUDWindow,
 				GUIContent.none,
@@ -261,7 +261,7 @@ namespace VOID
 	{
 		public static readonly VOID_StrValue expSituation = new VOID_StrValue(
 			"Situation",
-			new Func<string> (() => VOID_Core.Instance.vessel.GetExperimentSituation().HumanString())
+			new Func<string> (() => core.vessel.GetExperimentSituation().HumanString())
 		);
 
 		public static readonly VOID_DoubleValue vesselPitch = new VOID_DoubleValue(

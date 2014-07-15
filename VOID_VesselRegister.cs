@@ -69,7 +69,7 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
-			if (!VOID_Core.Instance.allVesselTypes.Any())
+			if (!this.core.allVesselTypes.Any())
 			{
 				return;
 			}
@@ -80,33 +80,33 @@ namespace VOID
 			if (GUILayout.Button("<"))
 			{
 				selectedBodyIdx--;
-				if (selectedBodyIdx < 0) selectedBodyIdx = VOID_Core.Instance.allBodies.Count - 1;
+				if (selectedBodyIdx < 0) selectedBodyIdx = this.core.allBodies.Count - 1;
 			}
-			GUILayout.Label(VOID_Core.Instance.allBodies[selectedBodyIdx].bodyName, VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.allBodies[selectedBodyIdx].bodyName, this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
 				selectedBodyIdx++;
-				if (selectedBodyIdx > VOID_Core.Instance.allBodies.Count - 1) selectedBodyIdx = 0;
+				if (selectedBodyIdx > this.core.allBodies.Count - 1) selectedBodyIdx = 0;
 			}
 			GUILayout.EndHorizontal();
 
-			seletedBody = VOID_Core.Instance.allBodies[selectedBodyIdx];
+			seletedBody = this.core.allBodies[selectedBodyIdx];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<"))
 			{
 				selectedVesselTypeIdx--;
-				if (selectedVesselTypeIdx < 0) selectedVesselTypeIdx = VOID_Core.Instance.allVesselTypes.Count - 1;
+				if (selectedVesselTypeIdx < 0) selectedVesselTypeIdx = this.core.allVesselTypes.Count - 1;
 			}
-			GUILayout.Label(VOID_Core.Instance.allVesselTypes[selectedVesselTypeIdx].ToString(), VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.allVesselTypes[selectedVesselTypeIdx].ToString(), this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
 				selectedVesselTypeIdx++;
-				if (selectedVesselTypeIdx > VOID_Core.Instance.allVesselTypes.Count - 1) selectedVesselTypeIdx = 0;
+				if (selectedVesselTypeIdx > this.core.allVesselTypes.Count - 1) selectedVesselTypeIdx = 0;
 			}
 			GUILayout.EndHorizontal();
 
-			selectedVesselType = VOID_Core.Instance.allVesselTypes[selectedVesselTypeIdx];
+			selectedVesselType = this.core.allVesselTypes[selectedVesselTypeIdx];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("Landed", GUILayout.ExpandWidth(true))) vesselSituation = "Landed";
@@ -116,7 +116,7 @@ namespace VOID
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(
 				VOID_Tools.UppercaseFirst(vesselSituation) + " " + selectedVesselType.ToString() + "s  @ " + seletedBody.bodyName,
-				VOID_Core.Instance.LabelStyles["center"],
+				this.core.LabelStyles["center"],
 				GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
 

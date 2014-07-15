@@ -105,9 +105,9 @@ namespace VOID
 
 			leftHUD = new StringBuilder();
 
-			VOID_Core.Instance.LabelStyles["hud"].alignment = TextAnchor.UpperRight;
+			this.core.LabelStyles["hud"].alignment = TextAnchor.UpperRight;
 
-			if (VOID_Core.Instance.powerAvailable)
+			if (this.core.powerAvailable)
 			{
 				leftHUD.AppendFormat(
 					string.Intern("Mass: {0}\n"),
@@ -144,11 +144,11 @@ namespace VOID
 			}
 			else
 			{
-				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
+				this.core.LabelStyles["hud"].normal.textColor = Color.red;
 				leftHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
-			GUILayout.Label(leftHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(leftHUD.ToString(), this.core.LabelStyles["hud"], GUILayout.ExpandWidth(true));
 
 			if (!this.positionsLocked)
 			{
@@ -164,9 +164,9 @@ namespace VOID
 
 			rightHUD = new StringBuilder();
 
-			VOID_Core.Instance.LabelStyles["hud"].alignment = TextAnchor.UpperLeft;
+			this.core.LabelStyles["hud"].alignment = TextAnchor.UpperLeft;
 
-			if (VOID_Core.Instance.powerAvailable)
+			if (this.core.powerAvailable)
 			{
 				rightHUD.AppendFormat(
 					"Burn Δv (Rem/Tot): {0} / {1}\n",
@@ -203,11 +203,11 @@ namespace VOID
 			}
 			else
 			{
-				VOID_Core.Instance.LabelStyles["hud"].normal.textColor = Color.red;
+				this.core.LabelStyles["hud"].normal.textColor = Color.red;
 				rightHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
-			GUILayout.Label(rightHUD.ToString(), VOID_Core.Instance.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(rightHUD.ToString(), this.core.LabelStyles["hud"], GUILayout.ExpandWidth(true));
 
 			if (!this.positionsLocked)
 			{
@@ -221,7 +221,7 @@ namespace VOID
 		{
 			if (this.primaryHUD == null)
 			{
-				foreach (IVOID_Module module in VOID_Core.Instance.Modules)
+				foreach (IVOID_Module module in this.core.Modules)
 				{
 					if (module is VOID_HUD)
 					{
@@ -237,7 +237,7 @@ namespace VOID
 				}
 
 				this.leftHUDPos.value = GUI.Window(
-					VOID_Core.Instance.windowID,
+					this.core.windowID,
 					this.leftHUDPos,
 					VOID_Tools.GetWindowHandler(this.leftHUDWindow),
 					GUIContent.none,
@@ -247,7 +247,7 @@ namespace VOID
 				if (VOID_Data.upcomingManeuverNodes > 0)
 				{
 					this.rightHUDPos.value = GUI.Window(
-						VOID_Core.Instance.windowID,
+						this.core.windowID,
 						this.rightHUDPos,
 						VOID_Tools.GetWindowHandler(this.rightHUDWindow),
 						GUIContent.none,

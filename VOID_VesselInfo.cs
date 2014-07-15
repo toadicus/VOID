@@ -57,7 +57,7 @@ namespace VOID
 
 			GUILayout.Label(
 				vessel.vesselName,
-				VOID_Core.Instance.LabelStyles["center_bold"],
+				core.LabelStyles["center_bold"],
 				GUILayout.ExpandWidth(true));
 
 			VOID_Data.geeForce.DoGUIHorizontal ("F2");
@@ -92,13 +92,13 @@ namespace VOID
 	{
 		public static readonly VOID_DoubleValue geeForce = new VOID_DoubleValue(
 			"G-force",
-			new Func<double>(() => VOID_Core.Instance.vessel.geeForce),
+			new Func<double>(() => core.vessel.geeForce),
 			"gees"
 		);
 
 		public static readonly VOID_IntValue partCount = new VOID_IntValue(
 			"Parts",
-			new Func<int>(() => VOID_Core.Instance.vessel.Parts.Count),
+			new Func<int>(() => core.vessel.Parts.Count),
 			""
 		);
 
@@ -176,7 +176,7 @@ namespace VOID
 
 		public static readonly VOID_FloatValue mainThrottle = new VOID_FloatValue(
 			"Throttle",
-			new Func<float>(() => VOID_Core.Instance.vessel.ctrlState.mainThrottle * 100f),
+			new Func<float>(() => core.vessel.ctrlState.mainThrottle * 100f),
 			"%"
 		);
 
@@ -221,7 +221,7 @@ namespace VOID
 				return double.NaN;
 			}
 
-			return SimManager.LastStage.maxThrustToWeight;
+			return SimManager.LastStage.thrustToWeight;
 		},
 			""
 		);
@@ -250,8 +250,8 @@ namespace VOID
 
 				double maxThrust = SimManager.LastStage.thrust;
 				double mass = SimManager.LastStage.totalMass;
-				double gravity = (VOID_Core.Constant_G * VOID_Core.Instance.vessel.mainBody.Mass) /
-				(VOID_Core.Instance.vessel.mainBody.Radius * VOID_Core.Instance.vessel.mainBody.Radius);
+				double gravity = (VOID_Core.Constant_G * core.vessel.mainBody.Mass) /
+				(core.vessel.mainBody.Radius * core.vessel.mainBody.Radius);
 				double weight = mass * gravity;
 
 				return maxThrust / weight;
@@ -269,7 +269,7 @@ namespace VOID
 				currentAmount = 0d;
 				currentRequirement = 0d;
 
-				foreach (Part part in VOID_Core.Instance.vessel.Parts)
+				foreach (Part part in core.vessel.Parts)
 				{
 					if (part.enabled)
 					{

@@ -70,6 +70,7 @@ namespace VOID
 			get
 			{
 				if (
+					HighLogic.LoadedSceneIsEditor ||
 					(VOID_Core.Instance.updateTimer - this.lastUpdate > VOID_Core.Instance.updatePeriod) ||
 					(this.lastUpdate > VOID_Core.Instance.updateTimer)
 				)

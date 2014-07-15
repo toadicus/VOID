@@ -111,11 +111,11 @@ namespace VOID
 			"Altitude (true)",
 			delegate()
 			{
-				double alt_true = VOID_Core.Instance.vessel.orbit.altitude - VOID_Core.Instance.vessel.terrainAltitude;
+				double alt_true = core.vessel.orbit.altitude - core.vessel.terrainAltitude;
 				// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m,
 				// and water covers the whole surface at 0 m.
-				if (VOID_Core.Instance.vessel.terrainAltitude < 0 && VOID_Core.Instance.vessel.mainBody.ocean )
-					alt_true = VOID_Core.Instance.vessel.orbit.altitude;
+				if (core.vessel.terrainAltitude < 0 && core.vessel.mainBody.ocean )
+					alt_true = core.vessel.orbit.altitude;
 				return alt_true;
 			},
 			"m"
@@ -123,12 +123,12 @@ namespace VOID
 
 		public static readonly VOID_StrValue surfLatitude = new VOID_StrValue(
 			"Latitude",
-			new Func<string> (() => VOID_Tools.GetLatitudeString(VOID_Core.Instance.vessel))
+			new Func<string> (() => VOID_Tools.GetLatitudeString(core.vessel))
 		);
 
 		public static readonly VOID_StrValue surfLongitude = new VOID_StrValue(
 			"Longitude",
-			new Func<string> (() => VOID_Tools.GetLongitudeString(VOID_Core.Instance.vessel))
+			new Func<string> (() => VOID_Tools.GetLongitudeString(core.vessel))
 		);
 
 		public static readonly VOID_StrValue vesselHeading = new VOID_StrValue(
@@ -148,55 +148,55 @@ namespace VOID
 
 		public static readonly VOID_DoubleValue terrainElevation = new VOID_DoubleValue(
 			"Terrain elevation",
-			new Func<double> (() => VOID_Core.Instance.vessel.terrainAltitude),
+			new Func<double> (() => core.vessel.terrainAltitude),
 			"m"
 		);
 
 		public static readonly VOID_DoubleValue surfVelocity = new VOID_DoubleValue(
 			"Surface velocity",
-			new Func<double> (() => VOID_Core.Instance.vessel.srf_velocity.magnitude),
+			new Func<double> (() => core.vessel.srf_velocity.magnitude),
 			"m/s"
 		);
 
 		public static readonly VOID_DoubleValue vertVelocity = new VOID_DoubleValue(
 			"Vertical speed",
-			new Func<double> (() => VOID_Core.Instance.vessel.verticalSpeed),
+			new Func<double> (() => core.vessel.verticalSpeed),
 			"m/s"
 		);
 
 		public static readonly VOID_DoubleValue horzVelocity = new VOID_DoubleValue(
 			"Horizontal speed",
-			new Func<double> (() => VOID_Core.Instance.vessel.horizontalSrfSpeed),
+			new Func<double> (() => core.vessel.horizontalSrfSpeed),
 			"m/s"
 		);
 
 		public static readonly VOID_FloatValue temperature = new VOID_FloatValue(
 			"Temperature",
-			new Func<float> (() => VOID_Core.Instance.vessel.flightIntegrator.getExternalTemperature()),
+			new Func<float> (() => core.vessel.flightIntegrator.getExternalTemperature()),
 			"°C"
 		);
 
 		public static readonly VOID_DoubleValue atmDensity = new VOID_DoubleValue (
 			"Atmosphere Density",
-			new Func<double> (() => VOID_Core.Instance.vessel.atmDensity * 1000f),
+			new Func<double> (() => core.vessel.atmDensity * 1000f),
 			"g/m³"
 		);
 
 		public static readonly VOID_DoubleValue atmPressure = new VOID_DoubleValue (
 			"Pressure",
-			new Func<double> (() => VOID_Core.Instance.vessel.staticPressure),
+			new Func<double> (() => core.vessel.staticPressure),
 			"atm"
 		);
 
 		public static readonly VOID_FloatValue atmLimit = new VOID_FloatValue(
 			"Atmosphere Limit",
-			new Func<float> (() => VOID_Core.Instance.vessel.mainBody.maxAtmosphereAltitude),
+			new Func<float> (() => core.vessel.mainBody.maxAtmosphereAltitude),
 			"m"
 		);
 
 		public static readonly VOID_StrValue currBiome = new VOID_StrValue(
 			"Biome",
-			new Func<string> (() => VOID_Tools.GetBiome(VOID_Core.Instance.vessel).name)
+			new Func<string> (() => VOID_Tools.GetBiome(core.vessel).name)
 		);
 
 	}

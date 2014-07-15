@@ -338,9 +338,9 @@ namespace VOID
 						Debug.LogWarning(
 							string.Format("[{0}]: ArgumentException caught during window call.", func.Target.GetType().Name)
 						);
-						#if DEBUG
+						/*#if DEBUG
 						Debug.LogException(ex);
-						#endif
+						#endif*/
 					}
 				};
 			}

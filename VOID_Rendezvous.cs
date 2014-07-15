@@ -60,14 +60,14 @@ namespace VOID
 
 			if (this.RegisterModule == null)
 			{
-				this.RegisterModule = VOID_Core.Instance.Modules.Where(m => typeof(VOID_VesselRegister).IsAssignableFrom(m.GetType())).FirstOrDefault() as VOID_VesselRegister;
+				this.RegisterModule = this.core.Modules.Where(m => typeof(VOID_VesselRegister).IsAssignableFrom(m.GetType())).FirstOrDefault() as VOID_VesselRegister;
 			}
 
 			GUILayout.BeginVertical();
 
 			//display both
 			//Show Target Info
-			GUILayout.Label("Target:", VOID_Core.Instance.LabelStyles["center_bold"]);
+			GUILayout.Label("Target:", this.core.LabelStyles["center_bold"]);
 			if (FlightGlobals.fetch.VesselTarget != null)
 			{
 				//a KSP Target (body or vessel) is selected
@@ -94,13 +94,13 @@ namespace VOID
 			else
 			{
 				//no KSP Target selected
-				GUILayout.Label("No Target Selected", VOID_Core.Instance.LabelStyles["center_bold"]);
+				GUILayout.Label("No Target Selected", this.core.LabelStyles["center_bold"]);
 			}
 
 			//Show Vessel Register vessel info
 			if (untoggleRegisterInfo == false && this.RegisterModule != default(IVOID_Module))
 			{
-				GUILayout.Label("Vessel Register:", VOID_Core.Instance.LabelStyles["center_bold"]);
+				GUILayout.Label("Vessel Register:", this.core.LabelStyles["center_bold"]);
 				if (this.RegisterModule.selectedVessel != null)
 				{
 					rendezvessel = this.RegisterModule.selectedVessel;
@@ -122,7 +122,7 @@ namespace VOID
 				{
 					//vesreg Vessel is null
 					//targ = null;
-					GUILayout.Label("No Vessel Selected", VOID_Core.Instance.LabelStyles["center_bold"]);
+					GUILayout.Label("No Vessel Selected", this.core.LabelStyles["center_bold"]);
 				}
 			}
 
@@ -143,7 +143,7 @@ namespace VOID
 			{
 				//Display vessel rendezvous info
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-				GUILayout.Label(v.vesselName, VOID_Core.Instance.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+				GUILayout.Label(v.vesselName, this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
 				GUILayout.EndHorizontal();
 
 				if (v.situation == Vessel.Situations.ESCAPING || v.situation == Vessel.Situations.FLYING || v.situation == Vessel.Situations.ORBITING || v.situation == Vessel.Situations.SUB_ORBITAL)
@@ -196,7 +196,7 @@ namespace VOID
 					// Toadicus edit: added local sidereal longitude.
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Local Sidereal Longitude:");
-					GUILayout.Label(LSL.ToString("F3") + "°", VOID_Core.Instance.LabelStyles["right"]);
+					GUILayout.Label(LSL.ToString("F3") + "°", this.core.LabelStyles["right"]);
 					GUILayout.EndHorizontal();
 
 					toggleExtendedOrbital.value = GUILayout.Toggle(toggleExtendedOrbital, "Extended info");
@@ -267,7 +267,7 @@ namespace VOID
 			else if (cb != null && v == null)
 			{
 				//Display CelstialBody rendezvous info
-				GUILayout.Label(cb.bodyName, VOID_Core.Instance.LabelStyles["center_bold"]);
+				GUILayout.Label(cb.bodyName, this.core.LabelStyles["center_bold"]);
 
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 				GUILayout.Label("Ap/Pe:");
