@@ -12,41 +12,32 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_EditorTWR : VOID_WindowModule, IVOID_EditorModule
+	public class VOID_TWR : VOID_WindowModule
 	{
-		private Dictionary<string, double> bodyGeeValues;
 		private List<CelestialBody> sortedBodyList;
 
-		public VOID_EditorTWR() : base()
+		public VOID_TWR() : base()
 		{
 			this._Name = "IP Thrust-to-Weight Ratios";
 		}
 
 		public override void ModuleWindow(int _)
 		{
-			if (Event.current.type != EventType.Layout)
+			if (
+				HighLogic.LoadedSceneIsEditor ||
+				(TimeWarp.WarpMode == TimeWarp.Modes.LOW) ||
+				(TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate)
+			)
 			{
-				return;
+				Engineer.VesselSimulator.SimManager.RequestSimulation();
 			}
 
-			Engineer.VesselSimulator.SimManager.RequestSimulation();
+			GUILayout.BeginVertical();
 
-			GUILayout.Label(
-				this._Name,
-				VOID_EditorCore.Instance.LabelStyles["center_bold"],
-				GUILayout.ExpandWidth(true));
-
-			if (bodyGeeValues == null)
+			if (this.sortedBodyList == null)
 			{
 				if (FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
 				{
-					this.bodyGeeValues = new Dictionary<string, double>();
-
-					foreach (CelestialBody body in FlightGlobals.Bodies)
-					{
-						this.bodyGeeValues[body.name] = body.GeeASL;
-					}
-
 					this.sortedBodyList = new List<CelestialBody>(FlightGlobals.Bodies);
 					this.sortedBodyList.Sort(new CBListComparer());
 					this.sortedBodyList.Reverse();
@@ -55,38 +46,35 @@ namespace VOID
 				}
 				else
 				{
-					GUILayout.BeginVertical();
 					GUILayout.BeginHorizontal();
 					GUILayout.Label("Unavailable.");
 					GUILayout.EndHorizontal();
-					GUILayout.EndVertical();
 				}
 			}
 			else
 			{
-				GUILayout.BeginVertical();
-
 				foreach (CelestialBody body in this.sortedBodyList)
 				{
-					Tools.PostDebugMessage(this, "Doing label for {0}", body.bodyName);
-					GUILayout.BeginHorizontal();
+					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
 					GUILayout.Label(body.bodyName);
 					GUILayout.FlexibleSpace();
 					GUILayout.Label(
-						(VOID_Data.currThrustWeight.Value / this.bodyGeeValues[body.bodyName]).ToString("0.0##"),
+						(VOID_Data.nominalThrustWeight.Value / body.GeeASL).ToString("0.0##"),
 						GUILayout.ExpandWidth(true)
 					);
 
 					GUILayout.EndHorizontal();
 				}
-
-				GUILayout.EndVertical();
 			}
+
+			GUILayout.EndVertical();
 
 			GUI.DragWindow();
 		}
 	}
+
+	public class VOID_EditorTWR : VOID_TWR, IVOID_EditorModule {}
 
 	public class CBListComparer : IComparer<CelestialBody>
 	{
