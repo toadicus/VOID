@@ -148,7 +148,10 @@ namespace VOID
 			"Resource Mass (curr / total)",
 			delegate()
 		{
-			return string.Format("{0} / {1}", stageResourceMass.ValueUnitString(), resourceMass.ValueUnitString());
+			return string.Format("{0} / {1}",
+				stageResourceMass.ValueUnitString("F3"),
+				resourceMass.ValueUnitString("F3")
+			);
 		}
 		);
 
