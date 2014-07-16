@@ -378,7 +378,7 @@ namespace VOID
 		public static readonly VOID_DoubleValue vesselAccel = new VOID_DoubleValue(
 			"Acceleration",
 			() => geeForce * KerbinGee,
-			"m/s"
+			"m/s²"
 		);
 
 		public static readonly VOID_IntValue vesselCrewCount = new VOID_IntValue(
