@@ -491,6 +491,7 @@ namespace VOID
 				double radius = this.vessel.Radius();
 				SimManager.Gravity = this.vessel.mainBody.gravParameter /
 					(radius * radius);
+				SimManager.minSimTime = (long)(this.updatePeriod * 1000);
 				SimManager.TryStartSimulation();
 			}
 			else if (!this.vesselSimActive)
