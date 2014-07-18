@@ -175,6 +175,8 @@ namespace VOID
 		protected VOID_SaveValue<bool> _UseToolbarManager;
 		internal IButton ToolbarButton;
 
+		internal ApplicationLauncherButton AppLauncherButton;
+
 		/*
 		 * Properties
 		 * */
@@ -333,6 +335,12 @@ namespace VOID
 				}
 				if (value == true)
 				{
+					if (this.AppLauncherButton != null)
+					{
+						ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
+						this.AppLauncherButton = null;
+					}
+
 					this.InitializeToolbarButton();
 				}
 
@@ -366,9 +374,9 @@ namespace VOID
 
 			if (!this.UseToolbarManager)
 			{
-				if (GUI.Button(VOIDIconPos, VOIDIconTexture, this.iconStyle) && this.VOIDIconLocked)
+				if (this.AppLauncherButton == null)
 				{
-					this.ToggleMainWindow();
+					this.InitializeAppLauncherButton();
 				}
 			}
 			else if (this.ToolbarButton == null)
@@ -902,6 +910,27 @@ namespace VOID
 			Tools.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
 		}
 
+		protected void InitializeAppLauncherButton()
+		{
+			if (ApplicationLauncher.Ready)
+			{
+				this.AppLauncherButton = ApplicationLauncher.Instance.AddModApplication(
+					this.ToggleMainWindow, this.ToggleMainWindow,
+					HighLogic.LoadedScene.ToAppScenes(),
+					this.VOIDIconTexture
+				);
+
+				Tools.PostDebugMessage(
+					this,
+					"AppLauncherButton initialized in {0}",
+					Enum.GetName(
+						typeof(GameScenes),
+						HighLogic.LoadedScene
+					)
+				);
+			}
+		}
+
 		protected void ToggleMainWindow()
 		{
 			this.mainGuiMinimized = !this.mainGuiMinimized;
@@ -937,6 +966,11 @@ namespace VOID
 			}
 
 			this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath, false);
+
+			if (this.AppLauncherButton != null)
+			{
+				this.AppLauncherButton.SetTexture(VOIDIconTexture);
+			}
 		}
 
 		protected void CheckAndSave()
@@ -986,6 +1020,27 @@ namespace VOID
 			config.save();
 
 			this.configDirty = false;
+		}
+
+		public void onSceneChangeRequested(GameScenes scene)
+		{
+			if (this.AppLauncherButton != null)
+			{
+				if (this is VOID_EditorCore)
+				{
+					if (!HighLogic.LoadedSceneIsEditor)
+					{
+						ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
+					}
+				}
+				else
+				{
+					if (!HighLogic.LoadedSceneIsFlight)
+					{
+						ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
+					}
+				}
+			}
 		}
 
 		protected VOID_Core()
