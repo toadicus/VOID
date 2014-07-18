@@ -334,7 +334,11 @@ namespace VOID
 					{
 						func(id);
 					}
+					#if DEBUG
 					catch (ArgumentException ex)
+					#else
+					catch (ArgumentException)
+					#endif
 					{
 						Debug.LogWarning(
 							string.Format("[{0}]: ArgumentException caught during window call.", func.Target.GetType().Name)
