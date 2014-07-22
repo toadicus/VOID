@@ -966,7 +966,7 @@ namespace VOID
 				this.ToolbarButton.TexturePath = texturePath;
 			}
 
-			this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath, false);
+			this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath.Replace("icon", "appIcon"), false);
 
 			if (this.AppLauncherButton != null)
 			{
