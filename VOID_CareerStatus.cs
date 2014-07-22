@@ -46,11 +46,11 @@ namespace VOID
 		{
 			if (delta > 0)
 			{
-				return string.Format(string.Intern("<color='green'>{0:#,#.##}↑</color>"), delta);
+				return string.Format("<color='green'>{0:#,#.##}↑</color>", delta);
 			}
 			else if (delta < 0)
 			{
-				return string.Format(string.Intern("<color='red'>{0:#,#.##}↓</color>"), delta);
+				return string.Format("<color='red'>{0:#,#.##}↓</color>", delta);
 			}
 			else
 			{
@@ -63,12 +63,9 @@ namespace VOID
 			return formatDelta((double)delta);
 		}
 
-		private int fontSize;
-		private Texture2D origFundsGreen;
-		private Texture2D origFundsRed;
-		private Texture2D origRepGreen;
-		private Texture2D origRepRed;
-		private Texture2D origScience;
+		private GUIContent fundsContent;
+		private GUIContent repContent;
+		private GUIContent scienceContent;
 
 		public Texture2D fundsIconGreen
 		{
@@ -120,100 +117,68 @@ namespace VOID
 
 		public double currentFunds
 		{
-			get
-			{
-				if (Funding.Instance != null)
-				{
-					return Funding.Instance.Funds;
-				}
-				else
-				{
-					return double.NaN;
-				}
-			}
+			get;
+			private set;
 		}
 
 		public float currentReputation
 		{
-			get
-			{
-				if (Reputation.Instance != null)
-				{
-					return Reputation.Instance.reputation;
-				}
-				else
-				{
-					return float.NaN;
-				}
-			}
+			get;
+			private set;
 		}
 
 		public float currentScience
 		{
-			get
-			{
-				if (ResearchAndDevelopment.Instance != null)
-				{
-					return ResearchAndDevelopment.Instance.Science;
-				}
-				else
-				{
-					return float.NaN;
-				}
-			}
+			get;
+			private set;
 		}
 
 		public override void ModuleWindow(int _)
 		{
-
-			/*if (this.fontSize != this.core.Skin.label.fontSize)
-			{
-				this.fontSize = this.core.Skin.label.fontSize;
-
-				this.fundsIconGreen = this.origFundsGreen.Clone().ResizeByHeight(this.fontSize);
-				this.fundsIconRed = this.origFundsRed.Clone().ResizeByHeight(this.fontSize);
-				this.reputationIconGreen = this.origRepGreen.Clone().ResizeByHeight(this.fontSize);
-				this.reputationIconRed = this.origRepRed.Clone().ResizeByHeight(this.fontSize);
-				this.scienceIcon = this.origScience.Clone().ResizeByHeight(this.fontSize);
-
-				GC.Collect();
-			}*/
-
 			GUILayout.BeginVertical();
 
-			// VOID_Data.fundingStatus.DoGUIHorizontal();
-
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-
 			GUILayout.Label(VOID_Data.fundingStatus.Label);
 			GUILayout.FlexibleSpace();
-			// GUILayout.Label(this.fundsIconGreen);
-			GUILayout.Label(VOID_Data.fundingStatus.Value, GUILayout.ExpandWidth(false));
-
+			this.fundsContent.text = VOID_Data.fundingStatus.Value;
+			GUILayout.Label(this.fundsContent, GUILayout.ExpandWidth(false));
 			GUILayout.EndHorizontal();
 
-			VOID_Data.reputationStatus.DoGUIHorizontal();
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+			GUILayout.Label(VOID_Data.reputationStatus.Label);
+			GUILayout.FlexibleSpace();
+			this.repContent.text = VOID_Data.reputationStatus.Value;
+			GUILayout.Label(this.repContent, GUILayout.ExpandWidth(false));
+			GUILayout.EndHorizontal();
 
-			VOID_Data.scienceStatus.DoGUIHorizontal();
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+			GUILayout.Label(VOID_Data.scienceStatus.Label);
+			GUILayout.FlexibleSpace();
+			this.scienceContent.text = VOID_Data.scienceStatus.Value;
+			GUILayout.Label(this.scienceContent, GUILayout.ExpandWidth(false));
+			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
 
 			GUI.DragWindow();
 		}
 
-		private void onFundsChange(double delta)
+		private void onFundsChange(double newValue)
 		{
-			this.lastFundsChange = delta;
+			this.lastFundsChange = newValue - this.currentFunds;
+			this.currentFunds = newValue;
 		}
 
-		private void onRepChange(float delta)
+		private void onRepChange(float newValue)
 		{
-			this.lastRepChange = delta;
+			this.lastRepChange = newValue - this.currentReputation;
+			this.currentReputation = newValue;
 		}
 
-		private void onScienceChange(float delta)
+		private void onScienceChange(float newValue)
 		{
-			this.lastScienceChange = delta;
+			this.lastScienceChange = newValue - this.currentScience;
+			this.currentScience = newValue;
 		}
 
 		/*
@@ -228,46 +193,38 @@ namespace VOID
 			VOID_CareerStatus.Instance = this;
 
 			this._Name = "Career Status";
-			this.fontSize = int.MinValue;
 
 			GameEvents.OnFundsChanged.Add(this.onFundsChange);
 			GameEvents.OnReputationChanged.Add(this.onRepChange);
 			GameEvents.OnScienceChanged.Add(this.onScienceChange);
 
-			foreach (Texture2D tex in Resources.FindObjectsOfTypeAll<Texture2D>())
-			{
-				if (
-					this.origFundsGreen != null &&
-					this.origFundsRed != null &&
-					this.origRepGreen != null &&
-					this.origRepRed != null &&
-					this.origScience != null
-				)
-				{
-					break;
-				}
+			string texturePath = string.Format(
+				"{0}/../Textures/",
+				System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
+			);
 
-				switch (tex.name)
-				{
-					case "UiElements_05":
-						this.fundsIconGreen = this.origFundsGreen = tex;
-						break;
-					case "UiElements_06":
-						this.fundsIconRed = this.origFundsRed = tex;
-						break;
-					case "UiElements_07":
-						this.reputationIconGreen = this.origRepGreen = tex;
-						break;
-					case "UiElements_08":
-						this.reputationIconRed = this.origRepRed = tex;
-						break;
-					case "UiElements_12":
-						this.scienceIcon = this.origScience = tex;
-						break;
-					default:
-						continue;
-				}
-			}
+			this.fundsIconGreen = new Texture2D(10, 18);
+			this.fundsIconGreen.LoadImage(System.IO.File.ReadAllBytes(texturePath + "fundsgreen.png"));
+
+			this.fundsIconRed = new Texture2D(10, 18);
+			this.fundsIconRed.LoadImage(System.IO.File.ReadAllBytes(texturePath + "fundsred.png"));
+
+			this.reputationIconGreen = new Texture2D(16, 18);
+			this.reputationIconGreen.LoadImage(System.IO.File.ReadAllBytes(texturePath + "repgreen.png"));
+
+			this.reputationIconRed = new Texture2D(16, 18);
+			this.reputationIconRed.LoadImage(System.IO.File.ReadAllBytes(texturePath + "repred.png"));
+
+			this.scienceIcon = new Texture2D(16, 18);
+			this.scienceIcon.LoadImage(System.IO.File.ReadAllBytes(texturePath + "science.png"));
+
+			this.fundsContent = new GUIContent(this.fundsIconGreen);
+			this.repContent = new GUIContent(this.reputationIconGreen);
+			this.scienceContent = new GUIContent(this.scienceIcon);
+
+			this.currentFunds = Funding.Instance.Funds;
+			this.currentReputation = Reputation.Instance.reputation;
+			this.currentScience = ResearchAndDevelopment.Instance.Science;
 		}
 
 		~VOID_CareerStatus()
@@ -291,8 +248,8 @@ namespace VOID
 				return string.Empty;
 			}
 
-			return string.Format("√{0} ({1})",
-				VOID_CareerStatus.Instance.currentFunds,
+			return string.Format("{0} ({1})",
+				VOID_CareerStatus.Instance.currentFunds.ToString("#,#.##"),
 				VOID_CareerStatus.formatDelta(VOID_CareerStatus.Instance.lastFundsChange)
 			);
 		}
@@ -308,7 +265,7 @@ namespace VOID
 			}
 
 			return string.Format("{0} ({1})",
-				VOID_CareerStatus.Instance.currentReputation,
+				VOID_CareerStatus.Instance.currentReputation.ToString("#,#.##"),
 				VOID_CareerStatus.formatDelta(VOID_CareerStatus.Instance.lastRepChange)
 			);
 		}
@@ -324,7 +281,7 @@ namespace VOID
 			}
 
 			return string.Format("{0} ({1})",
-				VOID_CareerStatus.Instance.currentScience,
+				VOID_CareerStatus.Instance.currentScience.ToString("#,#.##"),
 				VOID_CareerStatus.formatDelta(VOID_CareerStatus.Instance.lastScienceChange)
 			);
 		}
