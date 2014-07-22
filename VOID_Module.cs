@@ -231,7 +231,9 @@ namespace VOID
 				this.core.windowID,
 				_Pos,
 				VOID_Tools.GetWindowHandler(this.ModuleWindow),
-				this.Name
+				this.Name,
+				GUILayout.Width(this.defWidth),
+				GUILayout.Height(this.defHeight)
 			);
 
 			_Pos = Tools.ClampRectToScreen (_Pos);
