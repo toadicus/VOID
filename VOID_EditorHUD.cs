@@ -164,6 +164,8 @@ namespace VOID
 				return;
 			}
 
+			GUI.skin = this.core.Skin;
+
 			Rect hudPos = new Rect (hudLeft, 48, 300, 32);
 
 			hudString = new StringBuilder();

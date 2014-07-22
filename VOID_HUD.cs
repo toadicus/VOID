@@ -216,6 +216,8 @@ namespace VOID
 
 			this.core.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
 
+			GUI.skin = this.core.Skin;
+
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
 				SimManager.RequestSimulation();
