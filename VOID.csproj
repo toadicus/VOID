@@ -96,6 +96,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VOID_HUDAdvanced.cs" />
     <Compile Include="VOID_TWR.cs" />
+    <Compile Include="VOID_CareerStatus.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
