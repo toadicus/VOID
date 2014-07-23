@@ -67,34 +67,37 @@ namespace VOID
 		private GUIContent repContent;
 		private GUIContent scienceContent;
 
-		public Texture2D fundsIconGreen
-		{
-			get;
-			private set;
-		}
+		private Texture2D fundsIconGreen;
+		private Texture2D fundsIconRed;
+		private Texture2D reputationIconGreen;
+		private Texture2D reputationIconRed;
+		private Texture2D scienceIcon;
 
-		public Texture2D fundsIconRed
+		public override bool toggleActive
 		{
-			get;
-			private set;
-		}
-
-		public Texture2D reputationIconGreen
-		{
-			get;
-			private set;
-		}
-
-		public Texture2D reputationIconRed
-		{
-			get;
-			private set;
-		}
-
-		public Texture2D scienceIcon
-		{
-			get;
-			private set;
+			get
+			{
+				switch (HighLogic.CurrentGame.Mode)
+				{
+					case Game.Modes.CAREER:
+					case Game.Modes.SCIENCE_SANDBOX:
+						return base.toggleActive;
+					default:
+						return false;
+				}
+			}
+			set
+			{
+				switch (HighLogic.CurrentGame.Mode)
+				{
+					case Game.Modes.CAREER:
+					case Game.Modes.SCIENCE_SANDBOX:
+						base.toggleActive = value;
+						break;
+					default:
+						return;
+				}
+			}
 		}
 
 		public double lastFundsChange
@@ -198,33 +201,29 @@ namespace VOID
 			GameEvents.OnReputationChanged.Add(this.onRepChange);
 			GameEvents.OnScienceChanged.Add(this.onScienceChange);
 
-			string texturePath = string.Format(
-				"{0}/../Textures/",
-				System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
-			);
+			bool texturesLoaded;
 
-			this.fundsIconGreen = new Texture2D(10, 18);
-			this.fundsIconGreen.LoadImage(System.IO.File.ReadAllBytes(texturePath + "fundsgreen.png"));
+			texturesLoaded = IOTools.LoadTexture(out this.fundsIconGreen, "VOID/Textures/fundsgreen.png", 10, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.fundsIconRed, "VOID/Textures/fundsred.png", 10, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.reputationIconGreen, "VOID/Textures/repgreen.png", 16, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.reputationIconRed, "VOID/Textures/repred.png", 16, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.scienceIcon, "VOID/Textures/science.png", 16, 18);
 
-			this.fundsIconRed = new Texture2D(10, 18);
-			this.fundsIconRed.LoadImage(System.IO.File.ReadAllBytes(texturePath + "fundsred.png"));
+			this.fundsContent = new GUIContent();
+			this.repContent = new GUIContent();
+			this.scienceContent = new GUIContent();
 
-			this.reputationIconGreen = new Texture2D(16, 18);
-			this.reputationIconGreen.LoadImage(System.IO.File.ReadAllBytes(texturePath + "repgreen.png"));
+			if (texturesLoaded)
+			{
+				this.fundsContent.image = this.fundsIconGreen;
+				this.repContent.image = this.reputationIconGreen;
+				this.scienceContent.image = this.scienceIcon;
+			}
 
-			this.reputationIconRed = new Texture2D(16, 18);
-			this.reputationIconRed.LoadImage(System.IO.File.ReadAllBytes(texturePath + "repred.png"));
-
-			this.scienceIcon = new Texture2D(16, 18);
-			this.scienceIcon.LoadImage(System.IO.File.ReadAllBytes(texturePath + "science.png"));
-
-			this.fundsContent = new GUIContent(this.fundsIconGreen);
-			this.repContent = new GUIContent(this.reputationIconGreen);
-			this.scienceContent = new GUIContent(this.scienceIcon);
-
-			this.currentFunds = Funding.Instance.Funds;
-			this.currentReputation = Reputation.Instance.reputation;
-			this.currentScience = ResearchAndDevelopment.Instance.Science;
+			this.currentFunds = Funding.Instance != null ? Funding.Instance.Funds : double.NaN;
+			this.currentReputation = Reputation.Instance != null ? Reputation.Instance.reputation : float.NaN;
+			this.currentScience = ResearchAndDevelopment.Instance != null ?
+				ResearchAndDevelopment.Instance.Science : float.NaN;
 		}
 
 		~VOID_CareerStatus()
