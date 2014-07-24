@@ -85,7 +85,7 @@ namespace VOID
 		{
 			this._Name = "Heads-Up Display";
 
-			this._Active.value = true;
+			this.toggleActive = true;
 
 			this._colorIndex = 0;
 

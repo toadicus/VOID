@@ -78,7 +78,7 @@ namespace VOID
 		{
 			this._Name = "Advanced Heads-Up Display";
 
-			this._Active.value = true;
+			this.toggleActive = true;
 
 			this.leftHUDdefaultPos = new Rect(
 				Screen.width * .5f - (float)GameSettings.UI_SIZE * .25f - 300f,

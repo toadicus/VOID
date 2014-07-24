@@ -1052,7 +1052,7 @@ namespace VOID
 
 			this.VoidVersion = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.MajorRevision);
 
-			this._Active.value = true;
+			this.toggleActive = true;
 
 			this._skinName = this.defaultSkin;
 			this._skinIdx = int.MinValue;

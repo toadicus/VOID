@@ -130,7 +130,7 @@ namespace VOID
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(" ", GUILayout.ExpandWidth(true));
-			if (GUILayout.Button("Close", GUILayout.ExpandWidth(false))) this._Active = false;
+			if (GUILayout.Button("Close", GUILayout.ExpandWidth(false))) this.toggleActive = false;
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();

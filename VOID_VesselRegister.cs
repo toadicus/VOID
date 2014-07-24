@@ -142,7 +142,7 @@ namespace VOID
 							if (_selectedVessel != v)
 							{
 								_selectedVessel = v; //set clicked vessel as selected_vessel
-								this._Active.value = true;    //turn bool on to open the window if closed
+								this.toggleActive = true;    //turn bool on to open the window if closed
 							}
 							else
 							{
