@@ -87,7 +87,7 @@ namespace VOID
 			this._Name = "VOID Editor Core";
 		}
 
-		public new void OnGUI() {}
+		public override void OnGUI() {}
 
 		public override void DrawGUI()
 		{
@@ -108,7 +108,7 @@ namespace VOID
 			base.DrawGUI();
 		}
 
-		public new void Update()
+		public override void Update()
 		{
 			foreach (IVOID_EditorModule module in this.Modules)
 			{
@@ -150,7 +150,7 @@ namespace VOID
 			this.CheckAndSave ();
 		}
 
-		public new void FixedUpdate() {}
+		public override void FixedUpdate() {}
 	}
 }
 

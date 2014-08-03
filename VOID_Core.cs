@@ -437,7 +437,7 @@ namespace VOID
 			}
 		}
 
-		public void OnGUI()
+		public virtual void OnGUI()
 		{
 			if (Event.current.type == EventType.Repaint)
 			{
@@ -491,7 +491,7 @@ namespace VOID
 			}
 		}
 
-		public void Update()
+		public virtual void Update()
 		{
 			this.LoadBeforeUpdate();
 
@@ -542,7 +542,7 @@ namespace VOID
 			this._updateTimer += Time.deltaTime;
 		}
 
-		public void FixedUpdate()
+		public virtual void FixedUpdate()
 		{
 			bool newPowerState = this.powerAvailable;
 
