@@ -348,6 +348,21 @@ namespace VOID
 			}
 		}
 
+		protected ApplicationLauncher.AppScenes appIconVisibleScenes
+		{
+			get
+			{
+				if (this is VOID_EditorCore)
+				{
+					return ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH;
+				}
+				else
+				{
+					return ApplicationLauncher.AppScenes.FLIGHT;
+				}
+			}
+		}
+
 		/*
 		 * Methods
 		 * */
@@ -917,7 +932,7 @@ namespace VOID
 			{
 				this.AppLauncherButton = ApplicationLauncher.Instance.AddModApplication(
 					this.ToggleMainWindow, this.ToggleMainWindow,
-					HighLogic.LoadedScene.ToAppScenes(),
+					this.appIconVisibleScenes,
 					this.VOIDIconTexture
 				);
 
@@ -1021,27 +1036,6 @@ namespace VOID
 			config.save();
 
 			this.configDirty = false;
-		}
-
-		public void onSceneChangeRequested(GameScenes scene)
-		{
-			if (this.AppLauncherButton != null)
-			{
-				if (this is VOID_EditorCore)
-				{
-					if (!HighLogic.LoadedSceneIsEditor)
-					{
-						ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
-					}
-				}
-				else
-				{
-					if (!HighLogic.LoadedSceneIsFlight)
-					{
-						ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
-					}
-				}
-			}
 		}
 
 		protected VOID_Core()
