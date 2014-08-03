@@ -58,7 +58,7 @@ namespace VOID
 			}
 		}
 
-		public VOID_VesselRegister()
+		public VOID_VesselRegister() : base()
 		{
 			this._Name = "Vessel Register";
 

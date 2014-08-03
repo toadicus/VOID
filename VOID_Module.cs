@@ -215,9 +215,17 @@ namespace VOID
 	public abstract class VOID_WindowModule : VOID_Module
 	{
 		[AVOID_SaveValue("WindowPos")]
-		protected Rect WindowPos = new Rect(Screen.width / 2, Screen.height / 2, 250f, 50f);
-		protected float defWidth = 250f;
-		protected float defHeight = 50f;
+		protected Rect WindowPos;
+		protected float defWidth;
+		protected float defHeight;
+
+		public VOID_WindowModule() : base()
+		{
+			this.defWidth = 250f;
+			this.defHeight = 50f;
+
+			this.WindowPos = new Rect(Screen.width / 2, Screen.height / 2, this.defWidth, this.defHeight);
+		}
 
 		public abstract void ModuleWindow(int _);
 

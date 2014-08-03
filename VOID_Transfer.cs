@@ -39,7 +39,7 @@ namespace VOID
 	{
 		protected List<CelestialBody> selectedBodies = new List<CelestialBody>();
 
-		public VOID_Transfer()
+		public VOID_Transfer() : base()
 		{
 			this._Name = "Transfer Angle Information";
 
