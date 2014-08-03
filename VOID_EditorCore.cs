@@ -74,6 +74,14 @@ namespace VOID
 			}
 		}
 
+		protected override ApplicationLauncher.AppScenes appIconVisibleScenes
+		{
+			get
+			{
+				return ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH;
+			}
+		}
+
 		public VOID_EditorCore() : base()
 		{
 			this._Name = "VOID Editor Core";

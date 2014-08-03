@@ -70,6 +70,7 @@ namespace VOID
 		public static void Reset()
 		{
 			_instance.StopGUI();
+			_instance.Dispose();
 			_instance = null;
 			_initialized = false;
 		}
@@ -348,18 +349,11 @@ namespace VOID
 			}
 		}
 
-		protected ApplicationLauncher.AppScenes appIconVisibleScenes
+		protected virtual ApplicationLauncher.AppScenes appIconVisibleScenes
 		{
 			get
 			{
-				if (this is VOID_EditorCore)
-				{
-					return ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH;
-				}
-				else
-				{
-					return ApplicationLauncher.AppScenes.FLIGHT;
-				}
+				return ApplicationLauncher.AppScenes.FLIGHT;
 			}
 		}
 
@@ -1063,6 +1057,20 @@ namespace VOID
 			this.LoadConfig();
 
 			this.SetIconTexture(this.powerState | this.activeState);
+		}
+
+		public virtual void Dispose()
+		{
+			if (this.AppLauncherButton != null)
+			{
+				ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
+				this.AppLauncherButton = null;
+			}
+			if (this.ToolbarButton != null)
+			{
+				this.ToolbarButton.Destroy();
+				this.ToolbarButton = null;
+			}
 		}
 
 		protected enum IconState
