@@ -631,6 +631,11 @@ namespace VOID
 
 			double interval = (node.UT - currentNodeHalfBurnDuration) - Planetarium.GetUniversalTime();
 
+			if (double.IsNaN(interval))
+			{
+				return string.Intern("NaN");
+			}
+
 			int sign = Math.Sign(interval);
 			interval = Math.Abs(interval);
 
