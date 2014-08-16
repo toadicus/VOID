@@ -292,14 +292,8 @@ namespace VOID
 
 		public Stage LastStage
 		{
-			get
-			{
-				if (Stages != null && Stages.Count() > 0)
-				{
-					return Stages[0];
-				}
-				return null;
-			}
+			get;
+			protected set;
 		}
 
 		protected IconState powerState
@@ -747,6 +741,11 @@ namespace VOID
 				Tools.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
 
 				this.Stages = SimManager.Stages;
+
+				if (this.Stages != null)
+				{
+					this.LastStage = this.Stages.Last();
+				}
 
 				if (HighLogic.LoadedSceneIsEditor)
 				{
