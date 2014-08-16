@@ -284,6 +284,24 @@ namespace VOID
 			}
 		}
 
+		public Stage[] Stages
+		{
+			get;
+			protected set;
+		}
+
+		public Stage LastStage
+		{
+			get
+			{
+				if (Stages != null && Stages.Count() > 0)
+				{
+					return Stages[0];
+				}
+				return null;
+			}
+		}
+
 		protected IconState powerState
 		{
 			get
@@ -497,15 +515,8 @@ namespace VOID
 
 			if (this.vessel != null && this.vesselSimActive)
 			{
-				double radius = this.vessel.Radius();
-				SimManager.Gravity = this.vessel.mainBody.gravParameter /
-					(radius * radius);
-				SimManager.minSimTime = (long)(this.updatePeriod * 1000);
-				SimManager.TryStartSimulation();
-			}
-			else if (!this.vesselSimActive)
-			{
-				SimManager.ClearResults();
+				Tools.PostDebugMessage(this, "Updating SimManager.");
+				this.UpdateSimManager();
 			}
 
 			if (!this.guiRunning)
@@ -729,6 +740,36 @@ namespace VOID
 			this._factoryReset = GUILayout.Toggle(this._factoryReset, "Factory Reset");
 		}
 
+		protected void UpdateSimManager()
+		{
+			if (SimManager.ResultsReady())
+			{
+				Tools.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
+
+				this.Stages = SimManager.Stages;
+
+				if (HighLogic.LoadedSceneIsEditor)
+				{
+					SimManager.Gravity = VOID_Data.KerbinGee;
+				}
+				else
+				{
+					double radius = this.vessel.Radius();
+					SimManager.Gravity = this.vessel.mainBody.gravParameter / (radius * radius);
+				}
+
+				SimManager.minSimTime = (long)(this.updatePeriod * 1000);
+
+				SimManager.TryStartSimulation();
+			}
+			#if DEBUG
+			else
+			{
+				Tools.PostDebugMessage(this, "VesselSimulator results not ready.");
+			}
+			#endif
+		}
+
 		protected void LoadModulesOfType<T>()
 		{
 			var types = AssemblyLoader.loadedAssemblies
@@ -899,7 +940,7 @@ namespace VOID
 
 		protected void InitializeToolbarButton()
 		{
-			// Do nothing if the Toolbar is not available.
+			// Do nothing if (the Toolbar is not available.
 			if (!ToolbarManager.ToolbarAvailable)
 			{
 				return;
@@ -1103,9 +1144,16 @@ namespace VOID
 		{
 			get
 			{
-				return core.Kerbin.gravParameter / (core.Kerbin.Radius * core.Kerbin.Radius);
+				if (kerbinGee == default(double))
+				{
+					kerbinGee = core.Kerbin.gravParameter / (core.Kerbin.Radius * core.Kerbin.Radius);
+				}
+
+				return kerbinGee;
 			}
 		}
+
+		private static double kerbinGee;
 	}
 }
 

@@ -143,7 +143,7 @@ namespace VOID
 		{
 			SimManager.RequestSimulation();
 
-			if (SimManager.LastStage == null)
+			if (this.core.LastStage == null)
 			{
 				return;
 			}
@@ -175,7 +175,7 @@ namespace VOID
 			labelStyle.normal.textColor = textColors [ColorIndex];
 
 			hudString.Append("Total Mass: ");
-			hudString.Append(SimManager.LastStage.totalMass.ToString("F3"));
+			hudString.Append(this.core.LastStage.totalMass.ToString("F3"));
 			hudString.Append('t');
 
 			hudString.Append(' ');
@@ -186,19 +186,19 @@ namespace VOID
 			hudString.Append('\n');
 
 			hudString.Append("Total Delta-V: ");
-			hudString.Append(Tools.MuMech_ToSI(SimManager.LastStage.totalDeltaV));
+			hudString.Append(Tools.MuMech_ToSI(this.core.LastStage.totalDeltaV));
 			hudString.Append("m/s");
 
 			hudString.Append('\n');
 
 			hudString.Append("Bottom Stage Delta-V");
-			hudString.Append(Tools.MuMech_ToSI(SimManager.LastStage.deltaV));
+			hudString.Append(Tools.MuMech_ToSI(this.core.LastStage.deltaV));
 			hudString.Append("m/s");
 
 			hudString.Append('\n');
 
 			hudString.Append("Bottom Stage T/W Ratio: ");
-			hudString.Append(SimManager.LastStage.thrustToWeight.ToString("F3"));
+			hudString.Append(this.core.LastStage.thrustToWeight.ToString("F3"));
 
 			if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
 			{

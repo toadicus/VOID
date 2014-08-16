@@ -433,18 +433,18 @@ namespace VOID
 			"Nominal Stage Thrust",
 			delegate()
 		{
-			if (SimManager.LastStage == null)
+			if (core.LastStage == null)
 			{
 				return double.NaN;
 			}
 
-			if (SimManager.LastStage.actualThrust == 0d)
+			if (core.LastStage.actualThrust == 0d)
 			{
-				return SimManager.LastStage.thrust;
+				return core.LastStage.thrust;
 			}
 			else
 			{
-				return SimManager.LastStage.actualThrust;
+				return core.LastStage.actualThrust;
 			}
 		},
 			"kN"
@@ -454,12 +454,12 @@ namespace VOID
 			"Stage Mass Flow",
 			delegate()
 			{
-				if (SimManager.LastStage == null)
+				if (core.LastStage == null)
 				{
 					return double.NaN;
 				}
 
-			double stageIsp = SimManager.LastStage.isp;
+			double stageIsp = core.LastStage.isp;
 			double stageThrust = stageNominalThrust;
 
 			Tools.PostDebugMessage(typeof(VOID_Data), "calculating stageMassFlow from:\n" +
@@ -528,7 +528,7 @@ namespace VOID
 			"Total Burn Time",
 			delegate()
 			{
-				if (SimManager.LastStage == null || currManeuverDeltaV.Value == double.NaN)
+				if (core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
 				{
 					return double.NaN;
 				}
@@ -544,7 +544,7 @@ namespace VOID
 			"Burn Time Remaining",
 			delegate()
 			{
-				if (SimManager.LastStage == null || currManeuverDVRemaining == double.NaN)
+				if (core.LastStage == null || currManeuverDVRemaining == double.NaN)
 				{
 					return double.NaN;
 				}
@@ -560,7 +560,7 @@ namespace VOID
 			"Half Burn Time",
 			delegate()
 		{
-			if (SimManager.LastStage == null || currManeuverDeltaV.Value == double.NaN)
+			if (core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
 			{
 				return double.NaN;
 			}
@@ -576,7 +576,7 @@ namespace VOID
 			"Full burn time to be half done at node",
 			delegate()
 		{
-			if (SimManager.LastStage == null && upcomingManeuverNodes < 1)
+			if (core.LastStage == null && upcomingManeuverNodes < 1)
 			{
 				return "N/A";
 			}
@@ -617,7 +617,7 @@ namespace VOID
 			"Full burn time to be half done at node",
 			delegate()
 			{
-			if (SimManager.LastStage == null && upcomingManeuverNodes < 1)
+			if (core.LastStage == null && upcomingManeuverNodes < 1)
 			{
 				return "N/A";
 			}

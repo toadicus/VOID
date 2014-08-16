@@ -108,12 +108,12 @@ namespace VOID
 			"Total Mass",
 			delegate()
 		{
-			if (SimManager.Stages == null || SimManager.LastStage == null)
+			if (core.Stages == null || core.LastStage == null)
 			{
 				return double.NaN;
 			}
 
-			return SimManager.LastStage.totalMass;
+			return core.LastStage.totalMass;
 		},
 			"tons"
 		);
@@ -122,12 +122,12 @@ namespace VOID
 			"Resource Mass",
 			delegate()
 			{
-				if (SimManager.Stages == null || SimManager.LastStage == null)
+				if (core.Stages == null || core.LastStage == null)
 				{
 					return double.NaN;
 				}
 
-				return SimManager.LastStage.totalMass - SimManager.LastStage.totalBaseMass;
+				return core.LastStage.totalMass - core.LastStage.totalBaseMass;
 			},
 			"tons"
 		);
@@ -136,12 +136,12 @@ namespace VOID
 			"Resource Mass (Stage)",
 			delegate()
 			{
-				if (SimManager.LastStage == null)
+				if (core.LastStage == null)
 				{
 					return double.NaN;
 				}
 
-				return SimManager.LastStage.mass - SimManager.LastStage.baseMass;
+				return core.LastStage.mass - core.LastStage.baseMass;
 			},
 			"tons"
 		);
@@ -161,9 +161,9 @@ namespace VOID
 			"DeltaV (Current Stage)",
 			delegate()
 			{
-				if (SimManager.Stages == null || SimManager.LastStage == null)
+			if (core.Stages == null || core.LastStage == null)
 					return double.NaN;
-				return SimManager.LastStage.deltaV;
+				return core.LastStage.deltaV;
 			},
 			"m/s"
 		);
@@ -172,9 +172,9 @@ namespace VOID
 			"DeltaV (Total)",
 			delegate()
 			{
-				if (SimManager.Stages == null || SimManager.LastStage == null)
+			if (core.Stages == null || core.LastStage == null)
 					return double.NaN;
-				return SimManager.LastStage.totalDeltaV;
+				return core.LastStage.totalDeltaV;
 			},
 			"m/s"
 		);
@@ -189,11 +189,11 @@ namespace VOID
 			"Thrust (curr/max)",
 			delegate()
 			{
-				if (SimManager.Stages == null || SimManager.LastStage == null)
+				if (core.Stages == null || core.LastStage == null)
 					return "N/A";
 
-				double currThrust = SimManager.LastStage.actualThrust;
-				double maxThrust = SimManager.LastStage.thrust;
+				double currThrust = core.LastStage.actualThrust;
+				double maxThrust = core.LastStage.thrust;
 
 				return string.Format(
 					"{0} / {1}",
@@ -207,12 +207,12 @@ namespace VOID
 			"T:W Ratio",
 			delegate()
 		{
-			if (SimManager.LastStage == null)
+			if (core.LastStage == null)
 			{
 				return double.NaN;
 			}
 
-			return SimManager.LastStage.actualThrustToWeight;
+			return core.LastStage.actualThrustToWeight;
 		},
 			""
 		);
@@ -221,12 +221,12 @@ namespace VOID
 			"T:W Ratio",
 			delegate()
 		{
-			if (SimManager.LastStage == null)
+			if (core.LastStage == null)
 			{
 				return double.NaN;
 			}
 
-			return SimManager.LastStage.thrustToWeight;
+			return core.LastStage.thrustToWeight;
 		},
 			""
 		);
@@ -235,7 +235,7 @@ namespace VOID
 			"T:W (curr/max)",
 			delegate()
 			{
-				if (SimManager.Stages == null || SimManager.LastStage == null)
+				if (core.Stages == null || core.LastStage == null)
 					return "N/A";
 
 				return string.Format(
@@ -250,11 +250,11 @@ namespace VOID
 			"Max T:W @ surface",
 			delegate()
 			{
-			if (SimManager.Stages == null || SimManager.LastStage == null)
+			if (core.Stages == null || core.LastStage == null)
 					return double.NaN;
 
-				double maxThrust = SimManager.LastStage.thrust;
-				double mass = SimManager.LastStage.totalMass;
+				double maxThrust = core.LastStage.thrust;
+				double mass = core.LastStage.totalMass;
 				double gravity = (VOID_Core.Constant_G * core.vessel.mainBody.Mass) /
 				(core.vessel.mainBody.Radius * core.vessel.mainBody.Radius);
 				double weight = mass * gravity;
