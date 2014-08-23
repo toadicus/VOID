@@ -51,6 +51,9 @@ namespace VOID
 		[AVOID_SaveValue("togglePhysical")]
 		protected VOID_SaveValue<bool> togglePhysical = false;
 
+		[AVOID_SaveValue("toggleScience")]
+		protected VOID_SaveValue<bool> toggleScience = false;
+
 		public VOID_CBInfoBrowser()
 		{
 			this._Name = "Celestial Body Information Browser";
@@ -208,6 +211,72 @@ namespace VOID
 				GUILayout.EndHorizontal();
 			}
 
+			if (GUILayout.Button("Scientific Parameters", GUILayout.ExpandWidth(true)))
+			{
+				toggleScience.value = !toggleScience;
+			}
+
+			if (toggleScience)
+			{
+				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+				//begin physical info value label column
+				GUILayout.BeginVertical(GUILayout.Width(150));
+
+
+				/*
+				 *  public float RecoveryValue = 1f;
+
+					public float InSpaceHighDataValue = 1f;
+
+					public float spaceAltitudeThreshold = 250000f;
+
+					public float flyingAltitudeThreshold = 18000f;
+
+					public float InSpaceLowDataValue = 1f;
+
+					public float SplashedDataValue = 1f;
+
+					public float LandedDataValue = 1f;
+
+					public float FlyingHighDataValue = 1f;
+
+					public float FlyingLowDataValue = 1f;
+					*/
+
+				GUILayout.Label("Surface Science Multiplier:");
+				GUILayout.Label("Ocean Science Multiplier:");
+				GUILayout.Label("Low-Atmosphere Science Multiplier:");
+				GUILayout.Label("High-Atmosphere Science Multiplier:");
+				GUILayout.Label("Low Orbit Science Multiplier:");
+				GUILayout.Label("High Orbit Science Multiplier:");
+				GUILayout.Label("'Flying' Altitude:");
+				GUILayout.Label("'In Space' Altitude:");
+				GUILayout.Label("Recovery Multiplier:");
+
+				//end physical info value label column
+				GUILayout.EndVertical();
+
+				//begin primary physical values column
+				GUILayout.BeginVertical(GUILayout.Width(150));
+
+				body_OP_show_physical_info(selectedBody1);
+
+				//end primary physical column
+				GUILayout.EndVertical();
+
+				//begin secondary physical values column
+				GUILayout.BeginVertical(GUILayout.Width(150));
+
+				body_OP_show_physical_info(selectedBody2);
+
+				//end target physical values column
+				GUILayout.EndVertical();
+
+				//end physical value horizontal chunk
+				GUILayout.EndHorizontal();
+			}
+
 			GUI.DragWindow();
 		}
 
@@ -322,6 +391,62 @@ namespace VOID
 			string ocean = "No";
 			if (body.ocean == true) ocean = "Yes";
 			GUILayout.Label(ocean, this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		}
+
+		private void cbColumnScience(CelestialBody body)
+		{
+			/*GUILayout.Label("Surface Science Multiplier:");
+			GUILayout.Label("Ocean Science Multiplier:");
+			GUILayout.Label("Low-Atmosphere Science Multiplier:");
+			GUILayout.Label("High-Atmosphere Science Multiplier:");
+			GUILayout.Label("Low Orbit Science Multiplier:");
+			GUILayout.Label("High Orbit Science Multiplier:");
+			GUILayout.Label("'In Space' Altitude:");
+			GUILayout.Label("'Flying' Altitude:");
+			GUILayout.Label("Recovery Multiplier:");*/
+
+			var scienceValues = body.scienceValues;
+
+			GUILayout.Label(scienceValues.LandedDataValue.ToString("0.0#"),
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(
+				body.ocean ? scienceValues.SplashedDataValue.ToString("0.0#") : "N/A",
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(
+				body.atmosphere ? scienceValues.FlyingLowDataValue.ToString("0.0#") : "N/A",
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(
+				body.atmosphere ? scienceValues.FlyingHighDataValue.ToString("0.0#") : "N/A",
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(scienceValues.InSpaceLowDataValue.ToString("0.0#"),
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(scienceValues.InSpaceHighDataValue.ToString("0.0#"),
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(
+				body.atmosphere ? scienceValues.flyingAltitudeThreshold.ToString("N0") : "N/A",
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(
+				body.atmosphere ? scienceValues.spaceAltitudeThreshold.ToString("N0") : "N/A",
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
+
+			GUILayout.Label(scienceValues.RecoveryValue.ToString("0.0#"),
+				this.core.LabelStyles["right"],
+				GUILayout.ExpandWidth(true));
 		}
 	}
 }
