@@ -260,7 +260,7 @@ namespace VOID
 				//begin primary physical values column
 				GUILayout.BeginVertical(GUILayout.Width(150));
 
-				body_OP_show_physical_info(selectedBody1);
+				this.cbColumnScience(selectedBody1);
 
 				//end primary physical column
 				GUILayout.EndVertical();
@@ -268,7 +268,7 @@ namespace VOID
 				//begin secondary physical values column
 				GUILayout.BeginVertical(GUILayout.Width(150));
 
-				body_OP_show_physical_info(selectedBody2);
+				this.cbColumnScience(selectedBody2);
 
 				//end target physical values column
 				GUILayout.EndVertical();
