@@ -244,14 +244,14 @@ namespace VOID
 					public float FlyingLowDataValue = 1f;
 					*/
 
-				GUILayout.Label("Surface Science Multiplier:");
-				GUILayout.Label("Ocean Science Multiplier:");
-				GUILayout.Label("Low-Atmosphere Science Multiplier:");
-				GUILayout.Label("High-Atmosphere Science Multiplier:");
-				GUILayout.Label("Low Orbit Science Multiplier:");
-				GUILayout.Label("High Orbit Science Multiplier:");
-				GUILayout.Label("'Flying' Altitude:");
-				GUILayout.Label("'In Space' Altitude:");
+				GUILayout.Label("Surface Multiplier:");
+				GUILayout.Label("Ocean Multiplier:");
+				GUILayout.Label("Flying-Low Multiplier:");
+				GUILayout.Label("Flying-High Multiplier:");
+				GUILayout.Label("Low Orbit Multiplier:");
+				GUILayout.Label("High Orbit Multiplier:");
+				GUILayout.Label("'Flying-High' Altitude:");
+				GUILayout.Label("'High Orbit' Altitude:");
 				GUILayout.Label("Recovery Multiplier:");
 
 				//end physical info value label column
@@ -440,7 +440,7 @@ namespace VOID
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(
-				body.atmosphere ? scienceValues.spaceAltitudeThreshold.ToString("N0") : "N/A",
+				scienceValues.spaceAltitudeThreshold.ToString("N0"),
 				this.core.LabelStyles["right"],
 				GUILayout.ExpandWidth(true));
 
