@@ -29,6 +29,7 @@
 using KSP;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using ToadicusTools;
 using UnityEngine;
 
@@ -139,7 +140,10 @@ namespace VOID
 			GUILayout.EndHorizontal();
 
 			float new_log_interval;
-			if (Single.TryParse(csv_log_interval_str, out new_log_interval)) csv_log_interval = new_log_interval;
+			if (float.TryParse(csv_log_interval_str, out new_log_interval))
+			{
+				csv_log_interval = new_log_interval;
+			}
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
@@ -206,41 +210,91 @@ namespace VOID
 			//called if logging is on and interval has passed
 			//writes one line to the csvList
 
-			string line = "";
+			StringBuilder line = new StringBuilder();
+
 			if (first_write && !KSP.IO.File.Exists<VOID_Core>(vessel.vesselName + "_data.csv", null))
 			{
 				first_write = false;
-				line += "Mission Elapsed Time (s);Altitude ASL (m);Altitude above terrain (m);Orbital Velocity (m/s);Surface Velocity (m/s);Vertical Speed (m/s);Horizontal Speed (m/s);Gee Force (gees);Temperature (°C);Gravity (m/s²);Atmosphere Density (g/m³);\n";
+				line.Append(
+					"Mission Elapsed Time (s);" +
+					"Altitude ASL (m);" +
+					"Altitude above terrain (m);" +
+					"Surface Latitude (°);" +
+					"Surface Longitude (°);" +
+					"Orbital Velocity (m/s);" +
+					"Surface Velocity (m/s);" +
+					"Vertical Speed (m/s);" +
+					"Horizontal Speed (m/s);" +
+					"Gee Force (gees);" +
+					"Temperature (°C);" +
+					"Gravity (m/s²);" +
+					"Atmosphere Density (g/m³);" +
+					"\n"
+				);
 			}
+
 			//Mission time
-			line += vessel.missionTime.ToString("F3") + ";";
+			line.Append(vessel.missionTime.ToString("F3"));
+			line.Append(';');
+
 			//Altitude ASL
-			line += vessel.orbit.altitude.ToString("F3") + ";";
+			line.Append(vessel.orbit.altitude.ToString("F3"));
+			line.Append(';');
+
 			//Altitude (true)
 			double alt_true = vessel.orbit.altitude - vessel.terrainAltitude;
 			if (vessel.terrainAltitude < 0) alt_true = vessel.orbit.altitude;
-			line += alt_true.ToString("F3") + ";";
+			line.Append(alt_true.ToString("F3"));
+			line.Append(';');
+
+			// Surface Latitude
+			line.Append(VOID_Data.surfLatitude.Value);
+			line.Append(';');
+
+			// Surface Longitude
+			line.Append(VOID_Data.surfLongitude.Value);
+			line.Append(';');
+
 			//Orbital velocity
-			line += vessel.orbit.vel.magnitude.ToString("F3") + ";";
+			line.Append(vessel.orbit.vel.magnitude.ToString("F3"));
+			line.Append(';');
+
 			//surface velocity
-			line += vessel.srf_velocity.magnitude.ToString("F3") + ";";
+			line.Append(vessel.srf_velocity.magnitude.ToString("F3"));
+			line.Append(';');
+
 			//vertical speed
-			line += vessel.verticalSpeed.ToString("F3") + ";";
+			line.Append(vessel.verticalSpeed.ToString("F3"));
+			line.Append(';');
+
 			//horizontal speed
-			line += vessel.horizontalSrfSpeed.ToString("F3") + ";";
+			line.Append(vessel.horizontalSrfSpeed.ToString("F3"));
+			line.Append(';');
+
 			//gee force
-			line += vessel.geeForce.ToString("F3") + ";";
+			line.Append(vessel.geeForce.ToString("F3"));
+			line.Append(';');
+
 			//temperature
-			line += vessel.flightIntegrator.getExternalTemperature().ToString("F2") + ";";
+			line.Append(vessel.flightIntegrator.getExternalTemperature().ToString("F2"));
+			line.Append(';');
+
 			//gravity
 			double r_vessel = vessel.mainBody.Radius + vessel.mainBody.GetAltitude(vessel.findWorldCenterOfMass());
 			double g_vessel = (VOID_Core.Constant_G * vessel.mainBody.Mass) / (r_vessel * r_vessel);
-			line += g_vessel.ToString("F3") + ";";
+			line.Append(g_vessel.ToString("F3"));
+			line.Append(';');
+
 			//atm density
-			line += (vessel.atmDensity * 1000).ToString("F3") + ";";
-			line += "\n";
-			if (csvList.Contains(line) == false) csvList.Add(line);
+			line.Append((vessel.atmDensity * 1000).ToString("F3"));
+			line.Append(';');
+
+			line.Append('\n');
+
+			csvList.Add(line.ToString());
+
 			csvCollectTimer = 0f;
 		}
 	}
 }
+
