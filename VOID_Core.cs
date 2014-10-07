@@ -718,7 +718,7 @@ namespace VOID
 				this.stringFrequency = (1f / this.updatePeriod).ToString();
 			}
 			this.stringFrequency = GUILayout.TextField(this.stringFrequency.ToString(), 5, GUILayout.ExpandWidth(true));
-			// GUILayout.FlexibleSpace();
+
 			if (GUILayout.Button("Apply"))
 			{
 				double updateFreq = 1f / this.updatePeriod;
@@ -925,10 +925,7 @@ namespace VOID
 
 			this.iconStyle = new GUIStyle(GUI.skin.button);
 			this.iconStyle.padding = new RectOffset(0, 0, 0, 0);
-			// this.iconStyle.margin = new RectOffset(0, 0, 0, 0);
-			// this.iconStyle.contentOffset = new Vector2(0, 0);
 			this.iconStyle.overflow = new RectOffset(0, 0, 0, 0);
-			// this.iconStyle.border = new RectOffset(0, 0, 0, 0);
 
 			this.GUIStylesLoaded = true;
 		}
