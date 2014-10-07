@@ -31,6 +31,7 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ToadicusTools;
 using UnityEngine;
 
@@ -771,43 +772,52 @@ namespace VOID
 
 		protected void LoadModulesOfType<T>()
 		{
-			var types = AssemblyLoader.loadedAssemblies
-				.Select(a => a.assembly.GetExportedTypes())
-				.SelectMany(t => t)
-				.Where(v => typeof(T).IsAssignableFrom(v)
-					&& !(v.IsInterface || v.IsAbstract) &&
-					!typeof(VOID_Core).IsAssignableFrom(v)
-				);
+			StringBuilder sb = new StringBuilder("Loading modules...");
+			sb.AppendLine();
 
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Found {1} modules to check.",
-				this.GetType().Name,
-				types.Count()
-			));
-			foreach (var voidType in types)
+			foreach (AssemblyLoader.LoadedAssembly assy in AssemblyLoader.loadedAssemblies)
 			{
-				if (!HighLogic.LoadedSceneIsEditor &&
-					typeof(IVOID_EditorModule).IsAssignableFrom(voidType))
+				foreach (Type loadedType in assy.assembly.GetExportedTypes())
 				{
-					continue;
+					if (
+						loadedType.IsInterface ||
+						loadedType.IsAbstract ||
+						!typeof(T).IsAssignableFrom(loadedType) ||
+						this.GetType().IsAssignableFrom(loadedType)
+					)
+					{
+						continue;
+					}
+
+					// HACK: This stops editor modules from loading in flight.  It is a dirty hack and should be fixed.
+					if (!HighLogic.LoadedSceneIsEditor && typeof(IVOID_EditorModule).IsAssignableFrom(loadedType))
+					{
+						continue;
+					}
+
+					sb.AppendFormat("Loading IVOID_Module type {0}...", loadedType.Name);
+
+					try
+					{
+						this.LoadModule(loadedType);
+						sb.AppendLine("Success.");
+					}
+					catch (Exception ex)
+					{
+						sb.AppendFormat("Failed, caught {0}", ex.GetType().Name);
+						sb.AppendLine();
+
+						#if DEBUG
+						Debug.LogException(ex);
+						#endif
+					}
 				}
-
-				Tools.PostDebugMessage(string.Format(
-					"{0}: found Type {1}",
-					this.GetType().Name,
-					voidType.Name
-				));
-
-				this.LoadModule(voidType);
 			}
 
 			this._modulesLoaded = true;
 
-			Tools.PostDebugMessage(string.Format(
-				"{0}: Loaded {1} modules.",
-				this.GetType().Name,
-				this.Modules.Count
-			));
+			sb.AppendFormat("Loaded {0} modules.", this.Modules.Count);
+			sb.AppendLine();
 		}
 
 		protected void LoadModule(Type T)
