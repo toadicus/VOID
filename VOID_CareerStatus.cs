@@ -166,19 +166,20 @@ namespace VOID
 			GUI.DragWindow();
 		}
 
-		private void onFundsChange(double newValue)
+		// TODO: Update event handlers to do something useful with the new "reasons" parameter.
+		private void onFundsChange(double newValue, TransactionReasons reasons)
 		{
 			this.lastFundsChange = newValue - this.currentFunds;
 			this.currentFunds = newValue;
 		}
 
-		private void onRepChange(float newValue)
+		private void onRepChange(float newValue, TransactionReasons reasons)
 		{
 			this.lastRepChange = newValue - this.currentReputation;
 			this.currentReputation = newValue;
 		}
 
-		private void onScienceChange(float newValue)
+		private void onScienceChange(float newValue, TransactionReasons reasons)
 		{
 			this.lastScienceChange = newValue - this.currentScience;
 			this.currentScience = newValue;
