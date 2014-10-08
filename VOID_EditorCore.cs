@@ -69,6 +69,7 @@ namespace VOID
 			if (_initialized)
 			{
 				_instance.StopGUI();
+				_instance.Dispose();
 				_instance = null;
 				_initialized = false;
 			}
