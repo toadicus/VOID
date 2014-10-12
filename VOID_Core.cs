@@ -392,17 +392,33 @@ namespace VOID
 			if (!this.GUIStylesLoaded)
 			{
 				this.LoadGUIStyles();
+
+				Tools.PostDebugMessage(
+					this,
+					"ToolbarAvailable: {0}, UseToobarManager: {1}",
+					ToolbarManager.ToolbarAvailable,
+					this.UseToolbarManager);
 			}
 
 			if (!this.UseToolbarManager)
 			{
 				if (this.AppLauncherButton == null)
 				{
+					Tools.PostDebugMessage(this,
+						"UseToolbarManager = false (ToolbarAvailable = {0}) and " +
+						"AppLauncherButton is null, making AppLauncher button.",
+						ToolbarManager.ToolbarAvailable
+					);
 					this.InitializeAppLauncherButton();
 				}
 			}
 			else if (this.ToolbarButton == null)
 			{
+				Tools.PostDebugMessage(this,
+					"UseToolbarManager = true (ToolbarAvailable = {0}) and " +
+					"ToolbarButton is null, making Toolbar button.",
+					ToolbarManager.ToolbarAvailable
+				);
 				this.InitializeToolbarButton();
 			}
 
@@ -949,6 +965,7 @@ namespace VOID
 			// Do nothing if (the Toolbar is not available.
 			if (!ToolbarManager.ToolbarAvailable)
 			{
+				Tools.PostDebugMessage(this, "Refusing to make a ToolbarButton: ToolbarAvailable = false");
 				return;
 			}
 
