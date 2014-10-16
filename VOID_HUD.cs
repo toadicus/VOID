@@ -189,6 +189,19 @@ namespace VOID
 					VOID_Data.vesselHeading.ValueUnitString(),
 					VOID_Data.vesselPitch.ToSIString(2)
 				);
+
+				if (
+					this.core.vessel.mainBody == this.core.Kerbin &&
+					(
+						this.core.vessel.situation == Vessel.Situations.FLYING ||
+						this.core.vessel.situation == Vessel.Situations.SUB_ORBITAL ||
+						this.core.vessel.situation == Vessel.Situations.LANDED ||
+						this.core.vessel.situation == Vessel.Situations.SPLASHED
+					)
+				)
+				{
+					rightHUD.AppendFormat("\nRange to KSC: {0}", VOID_Data.downrangeDistance.ValueUnitString(2));
+				}
 			}
 			else
 			{
@@ -270,6 +283,41 @@ namespace VOID
 			"Pitch",
 			() => core.vessel.getSurfacePitch(),
 			"°"
+		);
+
+		public static readonly VOID_DoubleValue downrangeDistance = new VOID_DoubleValue(
+			"Downrange Distance",
+			delegate() {
+
+			if (core.vessel.mainBody != Planetarium.fetch.Home)
+			{
+				return double.NaN;
+			}
+
+			double vesselLongitude = core.vessel.longitude * Math.PI / 180d;
+			double vesselLatitude = core.vessel.latitude * Math.PI / 180d;
+
+			const double kscLongitude = 285.442323427289 * Math.PI / 180d;
+			const double kscLatitude = -0.0972112860655246 * Math.PI / 180d;
+
+			double diffLon = vesselLongitude - kscLongitude;
+			double diffLat = vesselLatitude - kscLatitude;
+
+			double sinHalfDiffLat = Math.Sin(diffLat / 2d);
+			double sinHalfDiffLon = Math.Sin(diffLon / 2d);
+
+			double cosVesselLon = Math.Cos(vesselLongitude);
+			double cosKSCLon = Math.Cos(kscLongitude);
+
+			double haversine =
+				sinHalfDiffLat * sinHalfDiffLat +
+				cosVesselLon * cosKSCLon * sinHalfDiffLon * sinHalfDiffLon;
+
+			double arc = 2d * Math.Atan2(Math.Sqrt(haversine), Math.Sqrt(1d - haversine));
+
+			return core.vessel.mainBody.Radius * arc;
+		},
+			"m"
 		);
 	}
 }
