@@ -289,7 +289,10 @@ namespace VOID
 			"Downrange Distance",
 			delegate() {
 
-			if (core.vessel.mainBody != Planetarium.fetch.Home)
+			if (core.vessel == null ||
+				Planetarium.fetch == null ||
+				core.vessel.mainBody != Planetarium.fetch.Home
+			)
 			{
 				return double.NaN;
 			}
