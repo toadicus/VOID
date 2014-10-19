@@ -65,6 +65,9 @@ namespace VOID
 			this.precisionValues [idx]= (ushort)VOID_Data.terrainElevation.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
+			this.precisionValues[idx] = (ushort)VOID_Data.downrangeDistance.DoGUIHorizontal(this.precisionValues[idx]);
+			idx++;
+
 			this.precisionValues [idx]= (ushort)VOID_Data.surfVelocity.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
@@ -76,7 +79,8 @@ namespace VOID
 
 			VOID_Data.temperature.DoGUIHorizontal ("F2");
 
-			VOID_Data.atmDensity.DoGUIHorizontal (3);
+			this.precisionValues [idx]= (ushort)VOID_Data.atmDensity.DoGUIHorizontal (this.precisionValues [idx]);
+			idx++;
 
 			VOID_Data.atmPressure.DoGUIHorizontal ("F2");
 
