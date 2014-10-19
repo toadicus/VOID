@@ -229,6 +229,7 @@ namespace VOID
 					"Temperature (°C);" +
 					"Gravity (m/s²);" +
 					"Atmosphere Density (g/m³);" +
+					"Downrange Distance  (m);" +
 					"\n"
 				);
 			}
@@ -287,6 +288,10 @@ namespace VOID
 
 			//atm density
 			line.Append((vessel.atmDensity * 1000).ToString("F3"));
+			line.Append(';');
+
+			// Downrange Distance
+			line.Append((VOID_Data.downrangeDistance.Value.ToString("G3")));
 			line.Append(';');
 
 			line.Append('\n');
