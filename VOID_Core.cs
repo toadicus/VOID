@@ -245,6 +245,12 @@ namespace VOID
 			}
 		}
 
+		public List<CelestialBody> sortedBodyList
+		{
+			get;
+			private set;
+		}
+
 		public CelestialBody Kerbin
 		{
 			get
@@ -958,6 +964,16 @@ namespace VOID
 			{
 				this.LoadVesselTypes();
 			}
+
+			if (this.sortedBodyList == null && FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
+			{
+				this.sortedBodyList = new List<CelestialBody>(FlightGlobals.Bodies);
+				this.sortedBodyList.Sort(new CBListComparer());
+				this.sortedBodyList.Reverse();
+
+				Debug.Log(string.Format("sortedBodyList: {0}", string.Join("\n\t", this.sortedBodyList.Select(b => b.bodyName).ToArray())));
+			}
+
 		}
 
 		protected void InitializeToolbarButton()

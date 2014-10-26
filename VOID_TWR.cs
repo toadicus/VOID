@@ -14,8 +14,6 @@ namespace VOID
 {
 	public class VOID_TWR : VOID_WindowModule
 	{
-		private List<CelestialBody> sortedBodyList;
-
 		public VOID_TWR() : base()
 		{
 			this._Name = "IP Thrust-to-Weight Ratios";
@@ -34,26 +32,17 @@ namespace VOID
 
 			GUILayout.BeginVertical();
 
-			if (this.sortedBodyList == null)
+			if (core.sortedBodyList == null)
 			{
-				if (FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
-				{
-					this.sortedBodyList = new List<CelestialBody>(FlightGlobals.Bodies);
-					this.sortedBodyList.Sort(new CBListComparer());
-					this.sortedBodyList.Reverse();
+				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
-					Debug.Log(string.Format("sortedBodyList: {0}", string.Join("\n\t", this.sortedBodyList.Select(b => b.bodyName).ToArray())));
-				}
-				else
-				{
-					GUILayout.BeginHorizontal();
-					GUILayout.Label("Unavailable.");
-					GUILayout.EndHorizontal();
-				}
+				GUILayout.Label("Unavailable");
+
+				GUILayout.EndHorizontal();
 			}
 			else
 			{
-				foreach (CelestialBody body in this.sortedBodyList)
+				foreach (CelestialBody body in core.sortedBodyList)
 				{
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 

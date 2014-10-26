@@ -111,6 +111,8 @@ namespace VOID
 
 		public override void Update()
 		{
+			this.LoadBeforeUpdate();
+
 			foreach (IVOID_EditorModule module in this.Modules)
 			{
 				if (EditorLogic.startPod == null)
