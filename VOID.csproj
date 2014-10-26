@@ -97,6 +97,7 @@
     <Compile Include="VOID_HUDAdvanced.cs" />
     <Compile Include="VOID_TWR.cs" />
     <Compile Include="VOID_CareerStatus.cs" />
+    <Compile Include="VOID_StageInfo.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
