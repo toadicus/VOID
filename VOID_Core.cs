@@ -167,7 +167,8 @@ namespace VOID
 				"ExpRecoveryDialogSkin",
 				"KSP window 5",
 				"KSP window 6",
-				"PartTooltipSkin"
+				"PartTooltipSkin",
+				"KSCContextMenuSkin"
 			};
 		protected bool skinsLoaded = false;
 
@@ -442,7 +443,14 @@ namespace VOID
 					GUILayout.Height(50)
 				);
 
-				_mainWindowPos = Tools.ClampRectToScreen(_mainWindowPos);
+				if (HighLogic.LoadedSceneIsEditor)
+				{
+					_mainWindowPos = Tools.ClampRectToEditorPad(_mainWindowPos);
+				}
+				else
+				{
+					_mainWindowPos = Tools.ClampRectToScreen(_mainWindowPos);
+				}
 
 				if (_mainWindowPos != this.mainWindowPos)
 				{
@@ -463,7 +471,14 @@ namespace VOID
 					GUILayout.Height(50)
 				);
 
-				_configWindowPos = Tools.ClampRectToScreen(_configWindowPos);
+				if (HighLogic.LoadedSceneIsEditor)
+				{
+					_configWindowPos = Tools.ClampRectToEditorPad(_configWindowPos);
+				}
+				else
+				{
+					_configWindowPos = Tools.ClampRectToScreen(_configWindowPos);
+				}
 
 				if (_configWindowPos != this.configWindowPos)
 				{

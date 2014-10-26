@@ -99,7 +99,7 @@ namespace VOID
 
 			Rect _iconPos = Tools.DockToWindow (this.VOIDIconPos, this.mainWindowPos);
 
-			_iconPos = Tools.ClampRectToScreen (_iconPos, (int)_iconPos.width, (int)_iconPos.height);
+			_iconPos = Tools.ClampRectToEditorPad (_iconPos);
 
 			if (_iconPos != this.VOIDIconPos)
 			{

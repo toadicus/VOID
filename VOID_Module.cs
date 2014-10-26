@@ -219,10 +219,14 @@ namespace VOID
 		protected float defWidth;
 		protected float defHeight;
 
+		protected string inputLockName;
+
 		public VOID_WindowModule() : base()
 		{
 			this.defWidth = 250f;
 			this.defHeight = 50f;
+
+			this.inputLockName = string.Concat(this.Name, "_edlock");
 
 			this.WindowPos = new Rect(Screen.width / 2, Screen.height / 2, this.defWidth, this.defHeight);
 		}
@@ -244,7 +248,56 @@ namespace VOID
 				GUILayout.Height(this.defHeight)
 			);
 
-			_Pos = Tools.ClampRectToScreen (_Pos);
+			bool cursorInWindow = _Pos.Contains(Mouse.screenPos);
+
+			switch (HighLogic.LoadedScene)
+			{
+				case GameScenes.EDITOR:
+				case GameScenes.SPH:
+					if (cursorInWindow)
+					{
+						InputLockManager.SetControlLock(
+							ControlTypes.EDITOR_ICON_HOVER | ControlTypes.EDITOR_ICON_PICK |
+							ControlTypes.EDITOR_PAD_PICK_COPY | ControlTypes.EDITOR_PAD_PICK_COPY,
+							this.inputLockName
+						);
+						EditorLogic.fetch.Lock(false, false, false, this.inputLockName);
+					}
+					else
+					{
+						EditorLogic.fetch.Unlock(this.inputLockName);
+					}
+					break;
+				case GameScenes.FLIGHT:
+					if (cursorInWindow)
+					{
+						InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, this.inputLockName);
+					}
+					else if (InputLockManager.GetControlLock(this.inputLockName) != ControlTypes.None)
+					{
+						InputLockManager.RemoveControlLock(this.inputLockName);
+					}
+					break;
+				case GameScenes.SPACECENTER:
+					if (cursorInWindow)
+					{
+						InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, this.inputLockName);
+					}
+					else if (InputLockManager.GetControlLock(this.inputLockName) != ControlTypes.None)
+					{
+						InputLockManager.RemoveControlLock(this.inputLockName);
+					}
+					break;
+			}
+
+			if (HighLogic.LoadedSceneIsEditor)
+			{
+				_Pos = Tools.ClampRectToEditorPad(_Pos);
+			}
+			else
+			{
+				_Pos = Tools.ClampRectToScreen(_Pos);
+			}
 
 			if (_Pos != this.WindowPos)
 			{
