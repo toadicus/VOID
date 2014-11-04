@@ -666,7 +666,7 @@ namespace VOID
 				massFlow,
 				thrust
 			);
-			return initialMass / massFlow * (Math.Exp(deltaV * massFlow / thrust) - 1d);
+			return initialMass / massFlow * (1d - Math.Exp(-deltaV * massFlow / thrust));
 		}
 	}
 }
