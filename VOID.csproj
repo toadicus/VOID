@@ -99,6 +99,7 @@
     <Compile Include="VOID_CareerStatus.cs" />
     <Compile Include="VOID_StageInfo.cs" />
     <Compile Include="VOID_Styles.cs" />
+    <Compile Include="VOID_Data.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -1153,38 +1153,5 @@ namespace VOID
 			Active = 8
 		}
 	}
-
-	public static partial class VOID_Data
-	{
-		public static VOID_Core core
-		{
-			get
-			{
-				if (HighLogic.LoadedSceneIsEditor)
-				{
-					return VOID_EditorCore.Instance;
-				}
-				else
-				{
-					return VOID_Core.Instance;
-				}
-			}
-		}
-
-		public static double KerbinGee
-		{
-			get
-			{
-				if (kerbinGee == default(double))
-				{
-					kerbinGee = core.Kerbin.gravParameter / (core.Kerbin.Radius * core.Kerbin.Radius);
-				}
-
-				return kerbinGee;
-			}
-		}
-
-		private static double kerbinGee;
-	}
 }
 

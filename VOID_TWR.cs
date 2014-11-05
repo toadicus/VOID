@@ -64,22 +64,5 @@ namespace VOID
 	}
 
 	public class VOID_EditorTWR : VOID_TWR, IVOID_EditorModule {}
-
-	public static partial class VOID_Data
-	{
-		public static readonly VOID_DoubleValue nominalThrustWeight = new VOID_DoubleValue(
-			"Thrust-to-Weight Ratio",
-			delegate()
-		{
-			if (HighLogic.LoadedSceneIsEditor || currThrustWeight.Value == 0d)
-			{
-				return maxThrustWeight.Value;
-			}
-
-			return currThrustWeight.Value;
-		},
-			""
-		);
-	}
 }
 

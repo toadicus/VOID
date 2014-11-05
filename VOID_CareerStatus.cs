@@ -236,56 +236,5 @@ namespace VOID
 			VOID_CareerStatus.Instance = null;
 		}
 	}
-
-	public static partial class VOID_Data
-	{
-		public static readonly VOID_StrValue fundingStatus = new VOID_StrValue(
-			string.Intern("Funds"),
-			delegate()
-		{
-			if (VOID_CareerStatus.Instance == null)
-			{
-				return string.Empty;
-			}
-
-			return string.Format("{0} ({1})",
-				VOID_CareerStatus.Instance.currentFunds.ToString("#,#.##"),
-				VOID_CareerStatus.formatDelta(VOID_CareerStatus.Instance.lastFundsChange)
-			);
-		}
-		);
-
-		public static readonly VOID_StrValue reputationStatus = new VOID_StrValue(
-			string.Intern("Reputation"),
-			delegate()
-		{
-			if (VOID_CareerStatus.Instance == null)
-			{
-				return string.Empty;
-			}
-
-			return string.Format("{0} ({1})",
-				VOID_CareerStatus.Instance.currentReputation.ToString("#,#.##"),
-				VOID_CareerStatus.formatDelta(VOID_CareerStatus.Instance.lastRepChange)
-			);
-		}
-		);
-
-		public static readonly VOID_StrValue scienceStatus = new VOID_StrValue(
-			string.Intern("Science"),
-			delegate()
-		{
-			if (VOID_CareerStatus.Instance == null)
-			{
-				return string.Empty;
-			}
-
-			return string.Format("{0} ({1})",
-				VOID_CareerStatus.Instance.currentScience.ToString("#,#.##"),
-				VOID_CareerStatus.formatDelta(VOID_CareerStatus.Instance.lastScienceChange)
-			);
-		}
-		);
-	}
 }
 
