@@ -99,8 +99,8 @@ namespace VOID
 
 			if (!this.stylesApplied)
 			{
-				this.stageTable.ApplyCellStyle(core.LabelStyles["center"]);
-				this.stageTable.ApplyHeaderStyle(core.LabelStyles["center_bold"]);
+				this.stageTable.ApplyCellStyle(VOID_Styles.labelCenter);
+				this.stageTable.ApplyHeaderStyle(VOID_Styles.labelCenterBold);
 			}
 
 			this.stageTable.ClearColumns();
@@ -184,7 +184,7 @@ namespace VOID
 		{
 			foreach (CelestialBody body in core.sortedBodyList)
 			{
-				if (GUILayout.Button(body.bodyName, GUI.skin.button))
+				if (GUILayout.Button(body.bodyName, VOID_Styles.labelDefault))
 				{
 					Debug.Log("Picked new body focus: " + body.bodyName);
 					this.bodyIdx = core.sortedBodyList.IndexOf(body);

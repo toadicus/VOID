@@ -67,7 +67,7 @@ namespace VOID
 
 			//display both
 			//Show Target Info
-			GUILayout.Label("Target:", this.core.LabelStyles["center_bold"]);
+			GUILayout.Label("Target:", VOID_Styles.labelCenterBold);
 			if (FlightGlobals.fetch.VesselTarget != null)
 			{
 				//a KSP Target (body or vessel) is selected
@@ -94,13 +94,13 @@ namespace VOID
 			else
 			{
 				//no KSP Target selected
-				GUILayout.Label("No Target Selected", this.core.LabelStyles["center_bold"]);
+				GUILayout.Label("No Target Selected", VOID_Styles.labelCenterBold);
 			}
 
 			//Show Vessel Register vessel info
 			if (untoggleRegisterInfo == false && this.RegisterModule != default(IVOID_Module))
 			{
-				GUILayout.Label("Vessel Register:", this.core.LabelStyles["center_bold"]);
+				GUILayout.Label("Vessel Register:", VOID_Styles.labelCenterBold);
 				if (this.RegisterModule.selectedVessel != null)
 				{
 					rendezvessel = this.RegisterModule.selectedVessel;
@@ -122,7 +122,7 @@ namespace VOID
 				{
 					//vesreg Vessel is null
 					//targ = null;
-					GUILayout.Label("No Vessel Selected", this.core.LabelStyles["center_bold"]);
+					GUILayout.Label("No Vessel Selected", VOID_Styles.labelCenterBold);
 				}
 			}
 
@@ -143,7 +143,7 @@ namespace VOID
 			{
 				//Display vessel rendezvous info
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-				GUILayout.Label(v.vesselName, this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+				GUILayout.Label(v.vesselName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 				GUILayout.EndHorizontal();
 
 				if (v.situation == Vessel.Situations.ESCAPING || v.situation == Vessel.Situations.FLYING || v.situation == Vessel.Situations.ORBITING || v.situation == Vessel.Situations.SUB_ORBITAL)
@@ -196,7 +196,7 @@ namespace VOID
 					// Toadicus edit: added local sidereal longitude.
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Local Sidereal Longitude:");
-					GUILayout.Label(LSL.ToString("F3") + "°", this.core.LabelStyles["right"]);
+					GUILayout.Label(LSL.ToString("F3") + "°", VOID_Styles.labelRight);
 					GUILayout.EndHorizontal();
 
 					toggleExtendedOrbital.value = GUILayout.Toggle(toggleExtendedOrbital, "Extended info");
@@ -267,7 +267,7 @@ namespace VOID
 			else if (cb != null && v == null)
 			{
 				//Display CelstialBody rendezvous info
-				GUILayout.Label(cb.bodyName, this.core.LabelStyles["center_bold"]);
+				GUILayout.Label(cb.bodyName, VOID_Styles.labelCenterBold);
 
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 				GUILayout.Label("Ap/Pe:");

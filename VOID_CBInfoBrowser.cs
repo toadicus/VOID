@@ -84,7 +84,7 @@ namespace VOID
 				selectedBodyIdx1--;
 				if (selectedBodyIdx1 < 0) selectedBodyIdx1 = this.core.allBodies.Count - 1;
 			}
-			GUILayout.Label(this.core.allBodies[selectedBodyIdx1].bodyName, this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.allBodies[selectedBodyIdx1].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx1++;
@@ -100,7 +100,7 @@ namespace VOID
 				selectedBodyIdx2--;
 				if (selectedBodyIdx2 < 0) selectedBodyIdx2 = this.core.allBodies.Count - 1;
 			}
-			GUILayout.Label(this.core.allBodies[selectedBodyIdx2].bodyName, this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.allBodies[selectedBodyIdx2].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx2++;
@@ -282,82 +282,82 @@ namespace VOID
 
 		private void body_OP_show_orbital_info(CelestialBody body)
 		{
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label((body.orbit.ApA / 1000).ToString("##,#") + "km", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label((body.orbit.ApA / 1000).ToString("##,#") + "km", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.timeToAp), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.timeToAp), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label((body.orbit.PeA / 1000).ToString("##,#") + "km", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label((body.orbit.PeA / 1000).ToString("##,#") + "km", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.timeToPe), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.timeToPe), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label((body.orbit.semiMajorAxis / 1000).ToString("##,#") + "km", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label((body.orbit.semiMajorAxis / 1000).ToString("##,#") + "km", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(body.orbit.eccentricity.ToString("F4") + "", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(body.orbit.eccentricity.ToString("F4") + "", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.period), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.orbit.period), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.rotationPeriod), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(VOID_Tools.ConvertInterval(body.rotationPeriod), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label((body.orbit.orbitalSpeed / 1000).ToString("F2") + "km/s", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label((body.orbit.orbitalSpeed / 1000).ToString("F2") + "km/s", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			// Toadicus edit: convert mean anomaly into degrees.
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label((body.orbit.meanAnomaly * 180d / Math.PI).ToString("F3") + "°", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label((body.orbit.meanAnomaly * 180d / Math.PI).ToString("F3") + "°", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(body.orbit.trueAnomaly.ToString("F3") + "°", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(body.orbit.trueAnomaly.ToString("F3") + "°", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			// Toadicus edit: convert eccentric anomaly into degrees.
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label((body.orbit.eccentricAnomaly * 180d / Math.PI).ToString("F3") + "°", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label((body.orbit.eccentricAnomaly * 180d / Math.PI).ToString("F3") + "°", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(body.orbit.inclination.ToString("F3") + "°", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(body.orbit.inclination.ToString("F3") + "°", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(body.orbit.LAN.ToString("F3") + "°", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(body.orbit.LAN.ToString("F3") + "°", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-		    else GUILayout.Label(body.orbit.argumentOfPeriapsis.ToString("F3") + "°", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+		    else GUILayout.Label(body.orbit.argumentOfPeriapsis.ToString("F3") + "°", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-		    if (body.bodyName == "Sun") GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		    if (body.bodyName == "Sun") GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 		    else
 		    {
 		        string body_tidally_locked = "No";
 		        if (body.tidallyLocked) body_tidally_locked = "Yes";
-		        GUILayout.Label(body_tidally_locked, this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+		        GUILayout.Label(body_tidally_locked, VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 		    }
 		}
 
 		private void body_OP_show_physical_info(CelestialBody body)
 		{
 
-			GUILayout.Label((body.Radius / 1000).ToString("##,#") + "km", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label((body.Radius / 1000).ToString("##,#") + "km", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-			GUILayout.Label((((body.Radius * body.Radius) * 4 * Math.PI) / 1000).ToString("0.00e+00") + "km²", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label((((body.Radius * body.Radius) * 4 * Math.PI) / 1000).ToString("0.00e+00") + "km²", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			// divide by 1000 to convert m to km
-			GUILayout.Label((((4d / 3) * Math.PI * (body.Radius * body.Radius * body.Radius)) / 1000).ToString("0.00e+00") + "km³", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label((((4d / 3) * Math.PI * (body.Radius * body.Radius * body.Radius)) / 1000).ToString("0.00e+00") + "km³", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-			GUILayout.Label(body.Mass.ToString("0.00e+00") + "kg", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(body.Mass.ToString("0.00e+00") + "kg", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			double p = body.Mass / ((body.Radius * body.Radius * body.Radius) * (4d / 3) * Math.PI);
 
-			GUILayout.Label(p.ToString("##,#") + "kg/m³", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(p.ToString("##,#") + "kg/m³", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-			if (body.bodyName == "Sun") GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-			else GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			if (body.bodyName == "Sun") GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+			else GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-			GUILayout.Label(body.orbitingBodies.Count.ToString(), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(body.orbitingBodies.Count.ToString(), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			//show # artificial satellites
 			int num_art_sats = 0;
@@ -366,31 +366,31 @@ namespace VOID
 				if (v.mainBody == body && v.situation.ToString() == "ORBITING") num_art_sats++;
 			}
 
-			GUILayout.Label(num_art_sats.ToString(), this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(num_art_sats.ToString(), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			double g_ASL = (VOID_Core.Constant_G * body.Mass) / (body.Radius * body.Radius);
 
-			GUILayout.Label(Tools.MuMech_ToSI(g_ASL) + "m/s²", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(Tools.MuMech_ToSI(g_ASL) + "m/s²", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			if (body.atmosphere)
 			{
 				GUILayout.Label("≈ " + Tools.MuMech_ToSI(body.maxAtmosphereAltitude) + "m",
-					this.core.LabelStyles["right"],
+					VOID_Styles.labelRight,
 					GUILayout.ExpandWidth(true));
 
 				string O2 = "No";
 				if (body.atmosphereContainsOxygen == true) O2 = "Yes";
-				GUILayout.Label(O2, this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+				GUILayout.Label(O2, VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 			}
 			else
 			{
-				GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
-				GUILayout.Label("N/A", this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+				GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+				GUILayout.Label("N/A", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 			}
 
 			string ocean = "No";
 			if (body.ocean == true) ocean = "Yes";
-			GUILayout.Label(ocean, this.core.LabelStyles["right"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(ocean, VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 		}
 
 		private void cbColumnScience(CelestialBody body)
@@ -408,44 +408,44 @@ namespace VOID
 			var scienceValues = body.scienceValues;
 
 			GUILayout.Label(scienceValues.LandedDataValue.ToString("0.0#"),
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(
 				body.ocean ? scienceValues.SplashedDataValue.ToString("0.0#") : "N/A",
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(
 				body.atmosphere ? scienceValues.FlyingLowDataValue.ToString("0.0#") : "N/A",
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(
 				body.atmosphere ? scienceValues.FlyingHighDataValue.ToString("0.0#") : "N/A",
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(scienceValues.InSpaceLowDataValue.ToString("0.0#"),
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(scienceValues.InSpaceHighDataValue.ToString("0.0#"),
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(
 				body.atmosphere ? scienceValues.flyingAltitudeThreshold.ToString("N0") : "N/A",
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(
 				scienceValues.spaceAltitudeThreshold.ToString("N0"),
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(scienceValues.RecoveryValue.ToString("0.0#"),
-				this.core.LabelStyles["right"],
+				VOID_Styles.labelRight,
 				GUILayout.ExpandWidth(true));
 		}
 	}

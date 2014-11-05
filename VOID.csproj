@@ -98,6 +98,7 @@
     <Compile Include="VOID_TWR.cs" />
     <Compile Include="VOID_CareerStatus.cs" />
     <Compile Include="VOID_StageInfo.cs" />
+    <Compile Include="VOID_Styles.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

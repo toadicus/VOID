@@ -662,7 +662,7 @@ namespace VOID
 			}
 			else
 			{
-				GUILayout.Label("-- POWER LOST --", this.LabelStyles["red"]);
+				GUILayout.Label("-- POWER LOST --", VOID_Styles.labelRed);
 			}
 
 			this.configWindowMinimized.value = !GUILayout.Toggle(!this.configWindowMinimized, "Configuration");
@@ -707,7 +707,6 @@ namespace VOID
 			_content.tooltip = "Select previous skin";
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
-				this.GUIStylesLoaded = false;
 				this._skinIdx--;
 				Tools.PostDebugMessage(string.Format(
 					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
@@ -719,13 +718,12 @@ namespace VOID
 
 			_content.text = this.Skin.name;
 			_content.tooltip = "Current skin";
-			GUILayout.Label(_content, this.LabelStyles["center"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(_content, VOID_Styles.labelCenter, GUILayout.ExpandWidth(true));
 
 			_content.text = "►";
 			_content.tooltip = "Select next skin";
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
-				this.GUIStylesLoaded = false;
 				this._skinIdx++;
 				Tools.PostDebugMessage(string.Format(
 					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
@@ -744,6 +742,7 @@ namespace VOID
 			if (this._skinName != skinNames[this._skinIdx])
 			{
 				this._skinName.value = skinNames[this._skinIdx];
+				this.GUIStylesLoaded = false;
 			}
 
 			GUILayout.EndHorizontal();
@@ -940,29 +939,7 @@ namespace VOID
 
 		protected void LoadGUIStyles()
 		{
-			this.LabelStyles["link"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["link"].fontStyle = FontStyle.Bold;
-
-			this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["center"].normal.textColor = Color.white;
-			this.LabelStyles["center"].alignment = TextAnchor.UpperCenter;
-
-			this.LabelStyles["center_bold"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["center_bold"].normal.textColor = Color.white;
-			this.LabelStyles["center_bold"].alignment = TextAnchor.UpperCenter;
-			this.LabelStyles["center_bold"].fontStyle = FontStyle.Bold;
-
-			this.LabelStyles["right"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["right"].normal.textColor = Color.white;
-			this.LabelStyles["right"].alignment = TextAnchor.UpperRight;
-
-			this.LabelStyles["red"] = new GUIStyle(GUI.skin.label);
-			this.LabelStyles["red"].normal.textColor = Color.red;
-			this.LabelStyles["red"].alignment = TextAnchor.MiddleCenter;
-
-			this.iconStyle = new GUIStyle(GUI.skin.button);
-			this.iconStyle.padding = new RectOffset(0, 0, 0, 0);
-			this.iconStyle.overflow = new RectOffset(0, 0, 0, 0);
+			VOID_Styles.OnSkinChanged();
 
 			this.GUIStylesLoaded = true;
 		}

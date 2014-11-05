@@ -57,7 +57,7 @@ namespace VOID
 
 			GUILayout.Label(
 				vessel.vesselName,
-				core.LabelStyles["center_bold"],
+				VOID_Styles.labelCenterBold,
 				GUILayout.ExpandWidth(true));
 
 			VOID_Data.geeForce.DoGUIHorizontal ("F2");

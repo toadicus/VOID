@@ -82,7 +82,7 @@ namespace VOID
 				selectedBodyIdx--;
 				if (selectedBodyIdx < 0) selectedBodyIdx = this.core.allBodies.Count - 1;
 			}
-			GUILayout.Label(this.core.allBodies[selectedBodyIdx].bodyName, this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.allBodies[selectedBodyIdx].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
 				selectedBodyIdx++;
@@ -98,7 +98,7 @@ namespace VOID
 				selectedVesselTypeIdx--;
 				if (selectedVesselTypeIdx < 0) selectedVesselTypeIdx = this.core.allVesselTypes.Count - 1;
 			}
-			GUILayout.Label(this.core.allVesselTypes[selectedVesselTypeIdx].ToString(), this.core.LabelStyles["center_bold"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.allVesselTypes[selectedVesselTypeIdx].ToString(), VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
 				selectedVesselTypeIdx++;
@@ -116,7 +116,7 @@ namespace VOID
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(
 				VOID_Tools.UppercaseFirst(vesselSituation) + " " + selectedVesselType.ToString() + "s  @ " + seletedBody.bodyName,
-				this.core.LabelStyles["center"],
+				VOID_Styles.labelCenter,
 				GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
 
