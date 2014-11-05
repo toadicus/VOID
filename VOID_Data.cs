@@ -726,6 +726,20 @@ namespace VOID
 
 		#region Kinematics
 
+		public static readonly VOID_DoubleValue geeForce =
+			new VOID_DoubleValue(
+				"G-force",
+				new Func<double>(() => core.vessel.geeForce),
+				"gees"
+			);
+
+		public static readonly VOID_DoubleValue horzVelocity =
+			new VOID_DoubleValue(
+				"Horizontal speed",
+				new Func<double>(() => core.vessel.horizontalSrfSpeed),
+				"m/s"
+			);
+
 		public static readonly VOID_DoubleValue surfVelocity =
 			new VOID_DoubleValue(
 				"Surface velocity",
@@ -740,20 +754,12 @@ namespace VOID
 				"m/s"
 			);
 
-		public static readonly VOID_DoubleValue horzVelocity =
+		public static readonly VOID_DoubleValue vesselAccel =
 			new VOID_DoubleValue(
-				"Horizontal speed",
-				new Func<double>(() => core.vessel.horizontalSrfSpeed),
-				"m/s"
+				"Acceleration",
+				() => geeForce * KerbinGee,
+				"m/s²"
 			);
-
-		public static readonly VOID_DoubleValue geeForce =
-			new VOID_DoubleValue(
-				"G-force",
-				new Func<double>(() => core.vessel.geeForce),
-				"gees"
-			);
-
 
 		public static readonly VOID_DoubleValue vesselAngularVelocity =
 			new VOID_DoubleValue(
@@ -770,13 +776,6 @@ namespace VOID
 					}
 				},
 				"rad/s"
-			);
-
-		public static readonly VOID_DoubleValue vesselAccel =
-			new VOID_DoubleValue(
-				"Acceleration",
-				() => geeForce * KerbinGee,
-				"m/s²"
 			);
 
 		#endregion
@@ -797,108 +796,6 @@ namespace VOID
 				return core.vessel.patchedConicSolver.maneuverNodes.Count;
 			}
 		}
-
-		public static readonly VOID_DoubleValue currManeuverDeltaV =
-			new VOID_DoubleValue(
-				"Current Maneuver Delta-V",
-				delegate()
-				{
-					if (upcomingManeuverNodes > 0)
-					{
-						return core.vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude;
-					}
-					else
-					{
-						return double.NaN;
-					}
-				},
-				"m/s"
-			);
-
-		public static readonly VOID_DoubleValue currManeuverDVRemaining =
-			new VOID_DoubleValue(
-				"Remaining Maneuver Delta-V",
-				delegate()
-				{
-					if (upcomingManeuverNodes > 0)
-					{
-						return core.vessel.patchedConicSolver.maneuverNodes[0].GetBurnVector(core.vessel.orbit).magnitude;
-					}
-					else
-					{
-						return double.NaN;
-					}
-				},
-				"m/s"
-			);
-
-		public static readonly VOID_DoubleValue nextManeuverDeltaV =
-			new VOID_DoubleValue(
-				"Current Maneuver Delta-V",
-				delegate()
-				{
-					if (upcomingManeuverNodes > 1)
-					{
-						return core.vessel.patchedConicSolver.maneuverNodes[1].DeltaV.magnitude;
-					}
-					else
-					{
-						return double.NaN;
-					}
-				},
-				"m/s"
-			);
-
-		public static readonly VOID_DoubleValue currentNodeBurnDuration =
-			new VOID_DoubleValue(
-				"Total Burn Time",
-				delegate()
-				{
-					if (core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
-					{
-						return double.NaN;
-					}
-
-					double stageThrust = stageNominalThrust;
-
-					return burnTime(currManeuverDeltaV.Value, totalMass, stageMassFlow, stageThrust);
-				},
-				"s"
-			);
-
-		public static readonly VOID_DoubleValue currentNodeBurnRemaining =
-			new VOID_DoubleValue(
-				"Burn Time Remaining",
-				delegate()
-				{
-					if (core.LastStage == null || currManeuverDVRemaining == double.NaN)
-					{
-						return double.NaN;
-					}
-
-					double stageThrust = stageNominalThrust;
-
-					return burnTime(currManeuverDVRemaining, totalMass, stageMassFlow, stageThrust);
-				},
-				"s"
-			);
-
-		public static readonly VOID_DoubleValue currentNodeHalfBurnDuration =
-			new VOID_DoubleValue(
-				"Half Burn Time",
-				delegate()
-				{
-					if (core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
-					{
-						return double.NaN;
-					}
-
-					double stageThrust = stageNominalThrust;
-
-					return burnTime(currManeuverDeltaV.Value / 2d, totalMass, stageMassFlow, stageThrust);
-				},
-				"s"
-			);
 
 		public static readonly VOID_StrValue burnTimeDoneAtNode =
 			new VOID_StrValue(
@@ -982,6 +879,108 @@ namespace VOID
 
 					return string.Format(format, VOID_Tools.ConvertInterval(interval));
 				}
+			);
+
+		public static readonly VOID_DoubleValue currManeuverDeltaV =
+			new VOID_DoubleValue(
+				"Current Maneuver Delta-V",
+				delegate()
+				{
+					if (upcomingManeuverNodes > 0)
+					{
+						return core.vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude;
+					}
+					else
+					{
+						return double.NaN;
+					}
+				},
+				"m/s"
+			);
+
+		public static readonly VOID_DoubleValue currManeuverDVRemaining =
+			new VOID_DoubleValue(
+				"Remaining Maneuver Delta-V",
+				delegate()
+				{
+					if (upcomingManeuverNodes > 0)
+					{
+						return core.vessel.patchedConicSolver.maneuverNodes[0].GetBurnVector(core.vessel.orbit).magnitude;
+					}
+					else
+					{
+						return double.NaN;
+					}
+				},
+				"m/s"
+			);
+
+		public static readonly VOID_DoubleValue currentNodeBurnDuration =
+			new VOID_DoubleValue(
+				"Total Burn Time",
+				delegate()
+				{
+					if (core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
+					{
+						return double.NaN;
+					}
+
+					double stageThrust = stageNominalThrust;
+
+					return burnTime(currManeuverDeltaV.Value, totalMass, stageMassFlow, stageThrust);
+				},
+				"s"
+			);
+
+		public static readonly VOID_DoubleValue currentNodeBurnRemaining =
+			new VOID_DoubleValue(
+				"Burn Time Remaining",
+				delegate()
+				{
+					if (core.LastStage == null || currManeuverDVRemaining == double.NaN)
+					{
+						return double.NaN;
+					}
+
+					double stageThrust = stageNominalThrust;
+
+					return burnTime(currManeuverDVRemaining, totalMass, stageMassFlow, stageThrust);
+				},
+				"s"
+			);
+
+		public static readonly VOID_DoubleValue currentNodeHalfBurnDuration =
+			new VOID_DoubleValue(
+				"Half Burn Time",
+				delegate()
+				{
+					if (core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
+					{
+						return double.NaN;
+					}
+
+					double stageThrust = stageNominalThrust;
+
+					return burnTime(currManeuverDeltaV.Value / 2d, totalMass, stageMassFlow, stageThrust);
+				},
+				"s"
+			);
+
+		public static readonly VOID_DoubleValue nextManeuverDeltaV =
+			new VOID_DoubleValue(
+				"Current Maneuver Delta-V",
+				delegate()
+				{
+					if (upcomingManeuverNodes > 1)
+					{
+						return core.vessel.patchedConicSolver.maneuverNodes[1].DeltaV.magnitude;
+					}
+					else
+					{
+						return double.NaN;
+					}
+				},
+				"m/s"
 			);
 
 		#endregion
