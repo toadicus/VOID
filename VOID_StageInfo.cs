@@ -177,6 +177,18 @@ namespace VOID
 				GUILayout.EndHorizontal();
 			}
 
+			GUILayout.BeginHorizontal();
+
+			if (
+				GUILayout.Button("Engineering data powered by <i>VesselSimulator from KER</i>.",
+					VOID_Styles.labelLink)
+			)
+			{
+				Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/18230");
+			}
+
+			GUILayout.EndHorizontal();
+
 			GUI.DragWindow();
 		}
 
