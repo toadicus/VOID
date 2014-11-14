@@ -29,14 +29,6 @@
 using System;
 using UnityEngine;
 
-#if COMMENT
-this.LabelStyles["link"] = new GUIStyle(GUI.skin.label);
-this.LabelStyles["center"] = new GUIStyle(GUI.skin.label);
-this.LabelStyles["center_bold"] = new GUIStyle(GUI.skin.label);
-this.LabelStyles["right"] = new GUIStyle(GUI.skin.label);
-labelRed = new GUIStyle(GUI.skin.label);
-#endif
-
 namespace VOID
 {
 	public static class VOID_Styles
