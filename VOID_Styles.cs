@@ -71,6 +71,12 @@ namespace VOID
 			private set;
 		}
 
+		public static GUIStyle labelHud
+		{
+			get;
+			private set;
+		}
+
 		public static GUIStyle labelRight
 		{
 			get;
@@ -99,6 +105,8 @@ namespace VOID
 			labelCenterBold.normal.textColor = Color.white;
 			labelCenterBold.alignment = TextAnchor.UpperCenter;
 			labelCenterBold.fontStyle = FontStyle.Bold;
+
+			labelHud = new GUIStyle(labelDefault);
 
 			labelRight = new GUIStyle(GUI.skin.label);
 			labelRight.normal.textColor = Color.white;

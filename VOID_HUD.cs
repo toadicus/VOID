@@ -118,7 +118,7 @@ namespace VOID
 
 			leftHUD = new StringBuilder();
 
-			this.core.LabelStyles["hud"].alignment = TextAnchor.UpperRight;
+			VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
 
 			if (this.core.powerAvailable)
 			{
@@ -145,11 +145,11 @@ namespace VOID
 			}
 			else
 			{
-				this.core.LabelStyles["hud"].normal.textColor = Color.red;
+				VOID_Styles.labelHud.normal.textColor = Color.red;
 				leftHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
-			GUILayout.Label(leftHUD.ToString(), this.core.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(leftHUD.ToString(), VOID_Styles.labelHud, GUILayout.ExpandWidth(true));
 
 			if (!this.positionsLocked)
 			{
@@ -165,7 +165,7 @@ namespace VOID
 
 			rightHUD = new StringBuilder();
 
-			this.core.LabelStyles["hud"].alignment = TextAnchor.UpperLeft;
+			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
 			if (this.core.powerAvailable)
 			{
@@ -205,12 +205,12 @@ namespace VOID
 			}
 			else
 			{
-				this.core.LabelStyles["hud"].normal.textColor = Color.red;
+				VOID_Styles.labelHud.normal.textColor = Color.red;
 				rightHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
 
-			GUILayout.Label(rightHUD.ToString(), this.core.LabelStyles["hud"], GUILayout.ExpandWidth(true));
+			GUILayout.Label(rightHUD.ToString(), VOID_Styles.labelHud, GUILayout.ExpandWidth(true));
 
 			if (!this.positionsLocked)
 			{
@@ -222,12 +222,7 @@ namespace VOID
 
 		public override void DrawGUI()
 		{
-			if (!this.core.LabelStyles.ContainsKey("hud"))
-			{
-				this.core.LabelStyles["hud"] = new GUIStyle(GUI.skin.label);
-			}
-
-			this.core.LabelStyles["hud"].normal.textColor = textColors [ColorIndex];
+			VOID_Styles.labelHud.normal.textColor = textColors [ColorIndex];
 
 			GUI.skin = this.core.Skin;
 

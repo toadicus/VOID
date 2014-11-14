@@ -120,7 +120,6 @@ namespace VOID
 		protected int _windowID = 0;
 
 		protected bool GUIStylesLoaded = false;
-		protected Dictionary<string, GUIStyle> _LabelStyles = new Dictionary<string, GUIStyle>();
 
 		protected CelestialBody _Kerbin;
 
@@ -227,14 +226,6 @@ namespace VOID
 					this._windowID = this.windowBaseID;
 				}
 				return this._windowID++;
-			}
-		}
-
-		public Dictionary<string, GUIStyle> LabelStyles
-		{
-			get
-			{
-				return this._LabelStyles;
 			}
 		}
 
