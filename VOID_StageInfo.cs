@@ -138,7 +138,7 @@ namespace VOID
 				this.stageTotalMassCol.Add(stage.totalMass);      
 
 				this.stageThrustCol.Add(stage.thrust * 1000f);
-				this.stageTWRCol.Add(stage.thrustToWeight / (this.selectedBody ?? core.Kerbin).GeeASL);
+				this.stageTWRCol.Add(stage.thrustToWeight / (this.selectedBody ?? core.HomeBody).GeeASL);
 			}
 
 			this.stageTable.Render();
@@ -152,7 +152,7 @@ namespace VOID
 					this.bodyIdx--;
 				}
 
-				this.showBodyList = GUILayout.Toggle(this.showBodyList, (this.selectedBody ?? core.Kerbin).bodyName, GUI.skin.button);
+				this.showBodyList = GUILayout.Toggle(this.showBodyList, (this.selectedBody ?? core.HomeBody).bodyName, GUI.skin.button);
 				Rect bodyButtonPos = GUILayoutUtility.GetLastRect();
 
 				if (Event.current.type == EventType.Repaint)

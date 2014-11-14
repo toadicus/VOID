@@ -191,7 +191,7 @@ namespace VOID
 				);
 
 				if (
-					this.core.vessel.mainBody == this.core.Kerbin &&
+					this.core.vessel.mainBody == this.core.HomeBody &&
 					(
 						this.core.vessel.situation == Vessel.Situations.FLYING ||
 						this.core.vessel.situation == Vessel.Situations.SUB_ORBITAL ||

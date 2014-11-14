@@ -121,7 +121,7 @@ namespace VOID
 
 		protected bool GUIStylesLoaded = false;
 
-		protected CelestialBody _Kerbin;
+		protected CelestialBody _homeBody;
 
 		[AVOID_SaveValue("togglePower")]
 		public VOID_SaveValue<bool> togglePower = true;
@@ -243,19 +243,19 @@ namespace VOID
 			private set;
 		}
 
-		public CelestialBody Kerbin
+		public CelestialBody HomeBody
 		{
 			get
 			{
-				if (this._Kerbin == null)
+				if (this._homeBody == null)
 				{
-					if (FlightGlobals.Bodies != null)
+					if (Planetarium.fetch != null)
 					{
-						this._Kerbin = FlightGlobals.Bodies.First(b => b.name == "Kerbin");
+						this._homeBody = Planetarium.fetch.Home;
 					}
 				}
 
-				return this._Kerbin;
+				return this._homeBody;
 			}
 		}
 

@@ -47,7 +47,7 @@ namespace VOID
 			{
 				if (kerbinGee == default(double))
 				{
-					kerbinGee = core.Kerbin.gravParameter / (core.Kerbin.Radius * core.Kerbin.Radius);
+					kerbinGee = core.HomeBody.gravParameter / (core.HomeBody.Radius * core.HomeBody.Radius);
 				}
 
 				return kerbinGee;
