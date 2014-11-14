@@ -20,6 +20,7 @@ namespace VOID
 		private Table.Column<int> stageNumberCol;
 		private Table.Column<double> stageDeltaVCol;
 		private Table.Column<double> stageTotalDVCol;
+		private Table.Column<double> stageInvertDVCol;
 		private Table.Column<double> stageMassCol;
 		private Table.Column<double> stageTotalMassCol;
 		private Table.Column<double> stageThrustCol;
@@ -58,6 +59,10 @@ namespace VOID
 			this.stageTotalDVCol = new Table.Column<double>("Total ΔV [m/s]", 80f);
 			this.stageTotalDVCol.Format = "S2";
 			this.stageTable.Add(this.stageTotalDVCol);
+
+			this.stageInvertDVCol = new Table.Column<double>("Invert ΔV [m/s]", 80f);
+			this.stageTotalDVCol.Format = "S2";
+			this.stageTable.Add(this.stageInvertDVCol);
 
 			this.stageMassCol = new Table.Column<double>("Mass [Mg]", 80f);
 			this.stageMassCol.Format = "#.#";
@@ -127,6 +132,7 @@ namespace VOID
 
 				this.stageDeltaVCol.Add(stage.deltaV);
 				this.stageTotalDVCol.Add(stage.totalDeltaV);
+				this.stageInvertDVCol.Add(stage.inverseTotalDeltaV);
 
 				this.stageMassCol.Add(stage.mass);
 				this.stageTotalMassCol.Add(stage.totalMass);      
