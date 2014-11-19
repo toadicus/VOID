@@ -34,6 +34,10 @@ namespace VOID
 {
 	public interface IVOID_DataValue
 	{
+		string Label { get; }
+		string Units { get; }
+		object Value { get; }
+
 		void Refresh();
 		string ValueUnitString();
 		void DoGUIHorizontal();
@@ -65,6 +69,14 @@ namespace VOID
 		public string Label { get; protected set; }
 		public string Units { get; protected set; }
 
+		object IVOID_DataValue.Value
+		{
+			get
+			{
+				return (object)this.Value;
+			}
+		}
+
 		public T Value
 		{
 			get
@@ -90,6 +102,8 @@ namespace VOID
 			this.Units = Units;
 			this.ValueFunc = ValueFunc;
 			this.lastUpdate = 0;
+
+			VOID_Data.DataValues[this.GetHashCode()] = this;
 		}
 
 		public void Refresh()
@@ -115,6 +129,21 @@ namespace VOID
 			GUILayout.FlexibleSpace ();
 			GUILayout.Label (this.ValueUnitString(), GUILayout.ExpandWidth (false));
 			GUILayout.EndHorizontal ();
+		}
+
+		public override int GetHashCode()
+		{
+			int hash;
+			unchecked
+			{
+				hash = 79999;
+
+				hash = hash * 104399 + this.Label.GetHashCode();
+				hash = hash * 104399 + this.ValueFunc.GetHashCode();
+				hash = hash * 104399 + this.Units.GetHashCode();
+			}
+
+			return hash;
 		}
 
 		public override string ToString()

@@ -37,6 +37,15 @@ namespace VOID
 {
 	public static class VOID_Data
 	{
+		private static Dictionary<int, IVOID_DataValue> dataValues = new Dictionary<int, IVOID_DataValue>();
+		public static Dictionary<int, IVOID_DataValue> DataValues
+		{
+			get
+			{
+				return dataValues;
+			}
+		}
+
 		#region Constants
 
 		private static double kerbinGee;
