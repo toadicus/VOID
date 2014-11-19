@@ -57,6 +57,8 @@ namespace VOID
 		protected System.Text.UTF8Encoding utf8Encoding;
 		protected FileStream _outputFile;
 
+		protected uint outstandingWrites;
+
 		protected List<string> csvList = new List<string>();
 
 		/*
@@ -161,6 +163,7 @@ namespace VOID
 			this.csv_log_interval_str = "0.5";
 
 			this.csvCollectTimer = 0;
+			this.outstandingWrites = 0;
 
 			this.WindowPos.x = Screen.width - 520;
 			this.WindowPos.y = 85;
@@ -288,6 +291,11 @@ namespace VOID
 				this.AsyncWriteData();
 			}
 
+			while (this.outstandingWrites > 0)
+			{
+				System.Threading.Thread.Sleep(10);
+			}
+
 			if (this._outputFile != null)
 			{
 				logger.Append(" Closing File...");
@@ -298,11 +306,17 @@ namespace VOID
 			logger.Print();
 		}
 
+		~VOID_DataLogger()
+		{
+			this.OnDestroy();
+		}
+
 		protected void AsyncWriteCallback(IAsyncResult result)
 		{
 			Tools.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
 
 			this.outputFile.EndWrite(result);
+			this.outstandingWrites--;
 		}
 
 		private void AsyncWriteData()
@@ -323,7 +337,9 @@ namespace VOID
 			WriteState state = new WriteState();
 
 			state.bytes = bytes.ToArray();
+			state.stream = this.outputFile;
 
+			this.outstandingWrites++;
 			var writeCallback = new AsyncCallback(this.AsyncWriteCallback);
 
 			this.outputFile.BeginWrite(state.bytes, 0, state.bytes.Length, writeCallback, state);
@@ -433,7 +449,7 @@ namespace VOID
 		private class WriteState
 		{
 			public byte[] bytes;
-			public KSP.IO.FileStream stream;
+			public FileStream stream;
 		}
 	}
 }
