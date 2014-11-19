@@ -380,14 +380,13 @@ namespace VOID
 			line.Append(vessel.missionTime.ToString("F3"));
 			line.Append(',');
 
+
 			//Altitude ASL
-			line.Append(vessel.orbit.altitude.ToString("F3"));
+			line.Append(VOID_Data.orbitAltitude.Value.ToString("F3"));
 			line.Append(',');
 
 			//Altitude (true)
-			double alt_true = vessel.orbit.altitude - vessel.terrainAltitude;
-			if (vessel.terrainAltitude < 0) alt_true = vessel.orbit.altitude;
-			line.Append(alt_true.ToString("F3"));
+			line.Append(VOID_Data.trueAltitude.Value.ToString("F3"));
 			line.Append(',');
 
 			// Surface Latitude
@@ -403,37 +402,35 @@ namespace VOID
 			line.Append(',');
 
 			//Orbital velocity
-			line.Append(vessel.orbit.vel.magnitude.ToString("F3"));
+			line.Append(VOID_Data.orbitVelocity.Value.ToString("F3"));
 			line.Append(',');
 
 			//surface velocity
-			line.Append(vessel.srf_velocity.magnitude.ToString("F3"));
+			line.Append(VOID_Data.surfVelocity.Value.ToString("F3"));
 			line.Append(',');
 
 			//vertical speed
-			line.Append(vessel.verticalSpeed.ToString("F3"));
+			line.Append(VOID_Data.vertVelocity.Value.ToString("F3"));
 			line.Append(',');
 
 			//horizontal speed
-			line.Append(vessel.horizontalSrfSpeed.ToString("F3"));
+			line.Append(VOID_Data.horzVelocity.Value.ToString("F3"));
 			line.Append(',');
 
 			//gee force
-			line.Append(vessel.geeForce.ToString("F3"));
+			line.Append(VOID_Data.geeForce.Value.ToString("F3"));
 			line.Append(',');
 
 			//temperature
-			line.Append(vessel.flightIntegrator.getExternalTemperature().ToString("F2"));
+			line.Append(VOID_Data.temperature.Value.ToString("F2"));
 			line.Append(',');
 
 			//gravity
-			double r_vessel = vessel.mainBody.Radius + vessel.mainBody.GetAltitude(vessel.findWorldCenterOfMass());
-			double g_vessel = (VOID_Core.Constant_G * vessel.mainBody.Mass) / (r_vessel * r_vessel);
-			line.Append(g_vessel.ToString("F3"));
+			line.Append(VOID_Data.gravityAccel.Value.ToString("F3"));
 			line.Append(',');
 
 			//atm density
-			line.Append((vessel.atmDensity * 1000).ToString("F3"));
+			line.Append(Tools.MuMech_ToSI(VOID_Data.atmDensity.Value * 1000d, 3));
 			line.Append(',');
 
 			// Downrange Distance
