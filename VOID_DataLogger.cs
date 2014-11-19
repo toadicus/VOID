@@ -54,6 +54,8 @@ namespace VOID
 		protected double csvWriteTimer;
 		protected double csvCollectTimer;
 
+		protected System.Text.UTF8Encoding enc;
+
 		protected List<string> csvList = new List<string>();
 
 		/*
@@ -197,12 +199,34 @@ namespace VOID
 
 		private void Innsewerants_writeData(string[] csvArray)
 		{
-			var efile = KSP.IO.File.AppendText<VOID_Core>(vessel.vesselName + "_data.csv", null);
+			if (this.enc == null)
+			{
+				this.enc = new System.Text.UTF8Encoding(true, true);
+			}
+
+			KSP.IO.FileStream bFile;
+
+			if (KSP.IO.File.Exists<VOID_Core>(vessel.vesselName + "_data.csv", null))
+			{
+				bFile = KSP.IO.File.Open<VOID_Core>(vessel.vesselName + "_data.csv", KSP.IO.FileMode.Append, null);
+			}
+			else
+			{
+				bFile = KSP.IO.File.Open<VOID_Core>(vessel.vesselName + "_data.csv", KSP.IO.FileMode.Create, null);
+
+				byte[] bom = enc.GetPreamble();
+
+				bFile.Write(bom, 0, bom.Length);
+			}
+
 			foreach (string line in csvArray)
 			{
-				efile.Write(line);
+				byte[] lineBytes = enc.GetBytes(line);
+
+				bFile.Write(lineBytes, 0, lineBytes.Length);
 			}
-			efile.Close();
+
+			bFile.Dispose();
 		}
 
 		private void line_to_csvList()
@@ -212,87 +236,90 @@ namespace VOID
 
 			StringBuilder line = new StringBuilder();
 
-			if (first_write && !KSP.IO.File.Exists<VOID_Core>(vessel.vesselName + "_data.csv", null))
+			if (first_write)
 			{
 				first_write = false;
 				line.Append(
-					"Mission Elapsed Time (s);" +
-					"Altitude ASL (m);" +
-					"Altitude above terrain (m);" +
-					"Surface Latitude (°);" +
-					"Surface Longitude (°);" +
-					"Orbital Velocity (m/s);" +
-					"Surface Velocity (m/s);" +
-					"Vertical Speed (m/s);" +
-					"Horizontal Speed (m/s);" +
-					"Gee Force (gees);" +
-					"Temperature (°C);" +
-					"Gravity (m/s²);" +
-					"Atmosphere Density (g/m³);" +
-					"Downrange Distance  (m);" +
+					"\"Mission Elapsed Time (s)\t\"," +
+					"\"Altitude ASL (m)\"," +
+					"\"Altitude above terrain (m)\"," +
+					"\"Surface Latitude (°)\"," +
+					"\"Surface Longitude (°)\"," +
+					"\"Orbital Velocity (m/s)\"," +
+					"\"Surface Velocity (m/s)\"," +
+					"\"Vertical Speed (m/s)\"," +
+					"\"Horizontal Speed (m/s)\"," +
+					"\"Gee Force (gees)\"," +
+					"\"Temperature (°C)\"," +
+					"\"Gravity (m/s²)\"," +
+					"\"Atmosphere Density (g/m³)\"," +
+					"\"Downrange Distance  (m)\"," +
 					"\n"
 				);
 			}
 
 			//Mission time
 			line.Append(vessel.missionTime.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//Altitude ASL
 			line.Append(vessel.orbit.altitude.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//Altitude (true)
 			double alt_true = vessel.orbit.altitude - vessel.terrainAltitude;
 			if (vessel.terrainAltitude < 0) alt_true = vessel.orbit.altitude;
 			line.Append(alt_true.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			// Surface Latitude
+			line.Append('"');
 			line.Append(VOID_Data.surfLatitude.Value);
-			line.Append(';');
+			line.Append('"');
+			line.Append(',');
 
 			// Surface Longitude
+			line.Append('"');
 			line.Append(VOID_Data.surfLongitude.Value);
-			line.Append(';');
+			line.Append('"');
+			line.Append(',');
 
 			//Orbital velocity
 			line.Append(vessel.orbit.vel.magnitude.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//surface velocity
 			line.Append(vessel.srf_velocity.magnitude.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//vertical speed
 			line.Append(vessel.verticalSpeed.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//horizontal speed
 			line.Append(vessel.horizontalSrfSpeed.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//gee force
 			line.Append(vessel.geeForce.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//temperature
 			line.Append(vessel.flightIntegrator.getExternalTemperature().ToString("F2"));
-			line.Append(';');
+			line.Append(',');
 
 			//gravity
 			double r_vessel = vessel.mainBody.Radius + vessel.mainBody.GetAltitude(vessel.findWorldCenterOfMass());
 			double g_vessel = (VOID_Core.Constant_G * vessel.mainBody.Mass) / (r_vessel * r_vessel);
 			line.Append(g_vessel.ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			//atm density
 			line.Append((vessel.atmDensity * 1000).ToString("F3"));
-			line.Append(';');
+			line.Append(',');
 
 			// Downrange Distance
 			line.Append((VOID_Data.downrangeDistance.Value.ToString("G3")));
-			line.Append(';');
 
 			line.Append('\n');
 
