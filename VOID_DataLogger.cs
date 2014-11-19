@@ -29,6 +29,7 @@
 using KSP;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using ToadicusTools;
 using UnityEngine;
@@ -42,7 +43,7 @@ namespace VOID
 		 * */
 		protected bool stopwatch1_running;
 
-		protected bool csv_logging;
+		protected bool _loggingActive;
 		protected bool first_write;
 
 		protected double stopwatch1;
@@ -51,17 +52,98 @@ namespace VOID
 
 		protected float csv_log_interval;
 
-		protected double csvWriteTimer;
 		protected double csvCollectTimer;
 
-		protected System.Text.UTF8Encoding enc;
+		protected System.Text.UTF8Encoding utf8Encoding;
+		protected FileStream _outputFile;
 
 		protected List<string> csvList = new List<string>();
 
 		/*
 		 * Properties
 		 * */
+		// TODO: Add configurable or incremental file names.
+		protected bool loggingActive
+		{
+			get
+			{
+				return this._loggingActive;
+			}
+			set
+			{
+				if (value != this._loggingActive)
+				{
+					if (value)
+					{
 
+					}
+					else
+					{
+						if (this._outputFile != null)
+						{
+							Tools.DebugLogger logger = Tools.DebugLogger.New(this);
+
+							logger.Append("CSV logging disabled, ");
+
+							logger.Append("disposing file.");
+							logger.Print();
+							this.outputFile.Dispose();
+							this._outputFile = null;
+						}
+					}
+
+					this._loggingActive = value;
+				}
+			}
+		}
+		protected string fileName
+		{
+			get
+			{
+				return KSP.IO.IOUtils.GetFilePathFor(
+					typeof(VOID_Core),
+					string.Format(
+						"{0}_{1}",
+						this.vessel.vesselName,
+						"data.csv"
+					),
+					null
+				);
+			}
+		}
+
+		protected FileStream outputFile
+		{
+			get
+			{
+				if (this._outputFile == null)
+				{
+					Tools.DebugLogger logger = Tools.DebugLogger.New(this);
+					logger.AppendFormat("Initializing output file '{0}' with mode ", this.fileName);
+
+					if (File.Exists(this.fileName))
+					{
+						logger.Append("append");
+						this._outputFile = new FileStream(this.fileName, FileMode.Append, FileAccess.Write, FileShare.Write, 512, true);
+					}
+					else
+					{
+						logger.Append("create");
+						this._outputFile = new FileStream(this.fileName, FileMode.Create, FileAccess.Write, FileShare.Write, 512, true);
+
+						byte[] bom = utf8Encoding.GetPreamble();
+
+						logger.Append(" and writing preamble");
+						outputFile.Write(bom, 0, bom.Length);
+					}
+
+					logger.Append('.');
+					logger.Print();
+				}
+
+				return this._outputFile;
+			}
+		}
 
 		/*
 		 * Methods
@@ -72,13 +154,12 @@ namespace VOID
 
 			this.stopwatch1_running = false;
 
-			this.csv_logging = false;
+			this.loggingActive = false;
 			this.first_write = true;
 
 			this.stopwatch1 = 0;
 			this.csv_log_interval_str = "0.5";
 
-			this.csvWriteTimer = 0;
 			this.csvCollectTimer = 0;
 
 			this.WindowPos.x = Screen.width - 520;
@@ -120,18 +201,19 @@ namespace VOID
 
 			GUIStyle label_style = txt_white;
 			string log_label = "Inactive";
-			if (csv_logging && vessel.situation.ToString() == "PRELAUNCH")
+			if (loggingActive && vessel.situation.ToString() == "PRELAUNCH")
 			{
 				log_label = "Awaiting launch";
 				label_style = txt_yellow;
 			}
-			if (csv_logging && vessel.situation.ToString() != "PRELAUNCH")
+			if (loggingActive && vessel.situation.ToString() != "PRELAUNCH")
 			{
 				log_label = "Active";
 				label_style = txt_green;
 			}
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			csv_logging = GUILayout.Toggle(csv_logging, "Data logging: ", GUILayout.ExpandWidth(false));
+			this.loggingActive = GUILayout.Toggle(loggingActive, "Data logging: ", GUILayout.ExpandWidth(false));
+
 			GUILayout.Label(log_label, label_style, GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
 
@@ -155,11 +237,10 @@ namespace VOID
 		{
 			// CSV Logging
 			// from ISA MapSat
-			if (csv_logging)
+			if (loggingActive)
 			{
 				//data logging is on
 				//increment timers
-				csvWriteTimer += Time.deltaTime;
 				csvCollectTimer += Time.deltaTime;
 
 				if (csvCollectTimer >= csv_log_interval && vessel.situation != Vessel.Situations.PRELAUNCH)
@@ -169,22 +250,20 @@ namespace VOID
 					line_to_csvList();  //write to the csv
 				}
 
-				if (csvList.Count != 0 && csvWriteTimer >= 15f)
+				if (csvList.Count > 0)
 				{
 					// csvList is not empty and interval between writings to file has elapsed
 					//write it
-					string[] csvData;
-					csvData = (string[])csvList.ToArray();
-					Innsewerants_writeData(csvData);
-					csvList.Clear();
-					csvWriteTimer = 0f;
+
+					// Tools.PostDebugMessage("")
+
+					this.AsyncWriteData();
 				}
 			}
 			else
 			{
 				//data logging is off
 				//reset any timers and clear anything from csvList
-				csvWriteTimer = 0f;
 				csvCollectTimer = 0f;
 				if (csvList.Count > 0) csvList.Clear();
 			}
@@ -197,36 +276,59 @@ namespace VOID
 
 		public void FixedUpdate() {}
 
-		private void Innsewerants_writeData(string[] csvArray)
+		public void OnDestroy()
 		{
-			if (this.enc == null)
+			Tools.DebugLogger logger = Tools.DebugLogger.New(this);
+
+			logger.Append("Destroying...");
+
+			if (this.csvList.Count > 0)
 			{
-				this.enc = new System.Text.UTF8Encoding(true, true);
+				logger.Append(" Writing final data...");
+				this.AsyncWriteData();
 			}
 
-			KSP.IO.FileStream bFile;
-
-			if (KSP.IO.File.Exists<VOID_Core>(vessel.vesselName + "_data.csv", null))
+			if (this._outputFile != null)
 			{
-				bFile = KSP.IO.File.Open<VOID_Core>(vessel.vesselName + "_data.csv", KSP.IO.FileMode.Append, null);
-			}
-			else
-			{
-				bFile = KSP.IO.File.Open<VOID_Core>(vessel.vesselName + "_data.csv", KSP.IO.FileMode.Create, null);
-
-				byte[] bom = enc.GetPreamble();
-
-				bFile.Write(bom, 0, bom.Length);
+				logger.Append(" Closing File...");
+				this.outputFile.Close();
 			}
 
-			foreach (string line in csvArray)
-			{
-				byte[] lineBytes = enc.GetBytes(line);
+			logger.Append(" Done.");
+			logger.Print();
+		}
 
-				bFile.Write(lineBytes, 0, lineBytes.Length);
+		protected void AsyncWriteCallback(IAsyncResult result)
+		{
+			Tools.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
+
+			this.outputFile.EndWrite(result);
+		}
+
+		private void AsyncWriteData()
+		{
+			if (this.utf8Encoding == null)
+			{
+				this.utf8Encoding = new System.Text.UTF8Encoding(true, true);
 			}
 
-			bFile.Dispose();
+			List<byte> bytes = new List<byte>();
+
+			foreach (string line in this.csvList)
+			{
+				byte[] lineBytes = utf8Encoding.GetBytes(line);
+				bytes.AddRange(lineBytes);
+			}
+
+			WriteState state = new WriteState();
+
+			state.bytes = bytes.ToArray();
+
+			var writeCallback = new AsyncCallback(this.AsyncWriteCallback);
+
+			this.outputFile.BeginWrite(state.bytes, 0, state.bytes.Length, writeCallback, state);
+
+			this.csvList.Clear();
 		}
 
 		private void line_to_csvList()
@@ -326,6 +428,12 @@ namespace VOID
 			csvList.Add(line.ToString());
 
 			csvCollectTimer = 0f;
+		}
+
+		private class WriteState
+		{
+			public byte[] bytes;
+			public KSP.IO.FileStream stream;
 		}
 	}
 }

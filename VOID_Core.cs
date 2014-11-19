@@ -605,10 +605,23 @@ namespace VOID
 				}
 			}
 
-			foreach (IVOID_BehaviorModule module in
-			         this._modules.OfType<IVOID_BehaviorModule>().Where(m => !m.GetType().IsAbstract))
+			foreach (IVOID_Module module in this.Modules)
 			{
-				module.FixedUpdate();
+				if (module is IVOID_BehaviorModule)
+				{
+					((IVOID_BehaviorModule)module).FixedUpdate();
+				}
+			}
+		}
+
+		public void OnDestroy()
+		{
+			foreach (IVOID_Module module in this.Modules)
+			{
+				if (module is IVOID_BehaviorModule)
+				{
+					((IVOID_BehaviorModule)module).OnDestroy();
+				}
 			}
 		}
 

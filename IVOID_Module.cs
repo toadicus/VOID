@@ -51,6 +51,7 @@ namespace VOID
 	{
 		void Update();
 		void FixedUpdate();
+		void OnDestroy();
 	}
 
 	public interface IVOID_EditorModule : IVOID_Module {}
