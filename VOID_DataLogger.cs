@@ -370,7 +370,7 @@ namespace VOID
 			line.Append(',');
 
 			//atm density
-			line.Append(Tools.MuMech_ToSI(VOID_Data.atmDensity.Value, 3));
+			line.Append(VOID_Data.atmDensity.Value.ToString("G3"));
 			line.Append(',');
 
 			// Downrange Distance
