@@ -180,6 +180,12 @@ namespace VOID
 		internal ApplicationLauncherButton AppLauncherButton;
 
 		/*
+		 * Events
+		 * */
+		public delegate void VOIDEventHandler(object sender);
+		public event VOIDEventHandler onApplicationQuit;
+
+		/*
 		 * Properties
 		 * */
 		public bool factoryReset
@@ -623,6 +629,11 @@ namespace VOID
 					((IVOID_BehaviorModule)module).OnDestroy();
 				}
 			}
+		}
+
+		public void OnApplicationQuit()
+		{
+			this.onApplicationQuit(this);
 		}
 
 		public void ResetGUI()

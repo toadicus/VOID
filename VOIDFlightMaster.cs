@@ -104,5 +104,25 @@ namespace VOID
 
 			this.Core.OnGUI();
 		}
+
+		public void OnDestroy()
+		{
+			if (this.Core == null)
+			{
+				return;
+			}
+
+			this.Core.OnDestroy();
+		}
+
+		public void OnApplicationQuit()
+		{
+			if (this.Core == null)
+			{
+				return;
+			}
+
+			this.Core.OnApplicationQuit();
+		}
     }
 }
