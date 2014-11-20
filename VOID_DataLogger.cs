@@ -466,6 +466,11 @@ namespace VOID
 
 			this.WindowPos.x = Screen.width - 520f;
 			this.WindowPos.y = 85f;
+
+			this.core.onApplicationQuit += delegate(object sender)
+			{
+				this.CloseFileIfOpen();
+			};
 		}
 
 		~VOID_DataLogger()
