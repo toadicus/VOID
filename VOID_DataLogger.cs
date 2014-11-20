@@ -266,6 +266,7 @@ namespace VOID
 			if (float.TryParse(logIntervalStr, out newLogInterval))
 			{
 				logInterval.value = newLogInterval;
+				this.logIntervalStr = this.logInterval.value.ToString("{0:0.0##}");
 			}
 
 			GUILayout.EndVertical();
