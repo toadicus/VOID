@@ -335,7 +335,7 @@ namespace VOID
 						func(id);
 					}
 					#if DEBUG
-					catch (ArgumentException ex)
+					catch (ArgumentException)
 					#else
 					catch (ArgumentException)
 					#endif
