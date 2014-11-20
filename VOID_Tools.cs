@@ -366,8 +366,8 @@ namespace VOID
 		}
 
 		/// <summary>
-		/// Converts the interval given in seconds to a human-friendly
-		/// time period in [years], [days], hours, minutes, and seconds.
+		/// Formats the interval given in seconds as a human-friendly
+		/// time period in [[[[years, ]days, ]hours, ]minutes, and ]seconds.
 		/// 
 		/// Uses sidereal days, since "6 hours per day" is the Kerbal standard.
 		/// </summary>
@@ -375,69 +375,162 @@ namespace VOID
 		/// <param name="seconds"></param>
 		public static string ConvertInterval(double seconds)
 		{
-			double SecondsPerMinute = 60d;
-			double SecondsPerHour = 3600d;
-			double SecondsPerDay;
-			double SecondsPerYear;
+			return UnpackedTime.FromSeconds(seconds).FormatAsSpan();
+		}
 
-			if (GameSettings.KERBIN_TIME)
+		/// <summary>
+		/// Formats the date given in seconds since epoch as a human-friendly
+		/// date in the format YY, DD, HH:MM:SS
+		/// </summary>
+		/// <returns>The date.</returns>
+		/// <param name="seconds">Seconds.</param>
+		public static string FormatDate(double seconds)
+		{
+			return UnpackedTime.FromSeconds(seconds).FormatAsDate();
+		}
+
+		public class UnpackedTime
+		{
+			public const double SecondsPerMinute = 60d;
+			public const double SecondsPerHour = 3600d;
+
+			public static double SecondsPerDay
 			{
-				SecondsPerDay = 21600d;
-				SecondsPerYear = 9203545d;
+				get
+				{
+					if (GameSettings.KERBIN_TIME)
+					{
+						return 21600d;
+					}
+					else
+					{
+						return 86164.1d;
+					}
+				}
 			}
-			else
+
+			public static double SecondsPerYear
 			{
-				SecondsPerDay = 86164.1d;
-				SecondsPerYear = 31558149d;
+				get
+				{
+					if (GameSettings.KERBIN_TIME)
+					{
+						return 9203545d;
+					}
+					else
+					{
+						return 31558149d;
+					}
+				}
 			}
 
-			int years;
-			int days;
-			int hours;
-			int minutes;
-
-			years = (int)(seconds / SecondsPerYear);
-
-			seconds %= SecondsPerYear;
-
-			days = (int)(seconds / SecondsPerDay);
-
-			seconds %= SecondsPerDay;
-
-			hours = (int)(seconds / SecondsPerHour);
-
-			seconds %= SecondsPerHour;
-
-			minutes = (int)(seconds / SecondsPerMinute);
-
-			seconds %= SecondsPerMinute;
-
-			string format_1 = string.Intern("{0:D1}y {1:D1}d {2:D2}h {3:D2}m {4:00.0}s");
-			string format_2 = string.Intern("{0:D1}d {1:D2}h {2:D2}m {3:00.0}s");
-			string format_3 = string.Intern("{0:D2}h {1:D2}m {2:00.0}s");
-			string format_4 = string.Intern("{0:D2}m {1:00.0}s");
-			string format_5 = string.Intern("{0:00.0}s");
-
-			if (years > 0)
+			public static UnpackedTime FromSeconds(double seconds)
 			{
-				return string.Format(format_1, years, days, hours, minutes, seconds);
+				UnpackedTime time = new UnpackedTime();
+
+				time.years = (int)(seconds / SecondsPerYear);
+
+				seconds %= SecondsPerYear;
+
+				time.days = (int)(seconds / SecondsPerDay);
+
+				seconds %= SecondsPerDay;
+
+				time.hours = (int)(seconds / SecondsPerHour);
+
+				seconds %= SecondsPerHour;
+
+				time.minutes = (int)(seconds / SecondsPerMinute);
+
+				seconds %= SecondsPerMinute;
+
+				time.seconds = seconds;
+
+				return time;
 			}
-			else if (days > 0)
+
+			public static explicit operator UnpackedTime(double seconds)
 			{
-				return string.Format(format_2, days, hours, minutes, seconds);
+				return FromSeconds(seconds);
 			}
-			else if (hours > 0)
+
+			public static implicit operator double(UnpackedTime time)
 			{
-				return string.Format(format_3, hours, minutes, seconds);
+				return time.ToSeconds();
 			}
-			else if (minutes > 0)
+
+			public static UnpackedTime operator+ (UnpackedTime lhs, UnpackedTime rhs)
 			{
-				return string.Format(format_4, minutes, seconds);
+				return FromSeconds(lhs.ToSeconds() + rhs.ToSeconds());
 			}
-			else
+
+			public static UnpackedTime operator- (UnpackedTime lhs, UnpackedTime rhs)
 			{
-				return string.Format(format_5, seconds);
+				return FromSeconds(lhs.ToSeconds() - rhs.ToSeconds());
 			}
+
+			public int years;
+			public int days;
+			public int hours;
+			public int minutes;
+			public double seconds;
+
+			public double ToSeconds()
+			{
+				return (double)years * SecondsPerYear +
+					(double)days * SecondsPerDay +
+					(double)hours * SecondsPerHour +
+					(double)minutes * SecondsPerMinute +
+					seconds;
+			}
+
+			public string FormatAsSpan()
+			{
+				string format_1 = "{0:D1}y {1:D1}d {2:D2}h {3:D2}m {4:00.0}s";
+				string format_2 = "{0:D1}d {1:D2}h {2:D2}m {3:00.0}s";
+				string format_3 = "{0:D2}h {1:D2}m {2:00.0}s";
+				string format_4 = "{0:D2}m {1:00.0}s";
+				string format_5 = "{0:00.0}s";
+
+				if (this.years > 0)
+				{
+					return string.Format(format_1, this.years, this.days, this.hours, this.minutes, this.seconds);
+				}
+				else if (this.days > 0)
+				{
+					return string.Format(format_2, this.days, this.hours, this.minutes, this.seconds);
+				}
+				else if (this.hours > 0)
+				{
+					return string.Format(format_3, this.hours, this.minutes, this.seconds);
+				}
+				else if (this.minutes > 0)
+				{
+					return string.Format(format_4, this.minutes, this.seconds);
+				}
+				else
+				{
+					return string.Format(format_5, this.seconds);
+				}
+			}
+
+			public string FormatAsDate()
+			{
+				string format = "Y{0:D1}, D{1:D1} {2:D2}:{3:D2}:{4:00.0}s";
+
+				return string.Format(format, years, days, hours, minutes, seconds);
+			}
+
+			public UnpackedTime(int years, int days, int hours, int minutes, double seconds)
+			{
+				this.years = years;
+				this.days = days;
+				this.hours = hours;
+				this.minutes = minutes;
+				this.seconds = seconds;
+			}
+
+			public UnpackedTime() : this(0, 0, 0, 0, 0d) {}
 		}
 
 		public static string UppercaseFirst(string s)
