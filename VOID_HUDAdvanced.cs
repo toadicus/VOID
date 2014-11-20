@@ -182,8 +182,8 @@ namespace VOID
 				}
 
 				rightHUD.AppendFormat("Burn Time (Rem/Total): {0} / {1}\n",
-					VOID_Tools.ConvertInterval(VOID_Data.currentNodeBurnRemaining.Value),
-					VOID_Tools.ConvertInterval(VOID_Data.currentNodeBurnDuration.Value)
+					VOID_Tools.FormatInterval(VOID_Data.currentNodeBurnRemaining.Value),
+					VOID_Tools.FormatInterval(VOID_Data.currentNodeBurnDuration.Value)
 				);
 
 				if (VOID_Data.burnTimeDoneAtNode.Value != string.Empty)

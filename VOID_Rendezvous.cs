@@ -205,7 +205,7 @@ namespace VOID
 					{
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						GUILayout.Label("Period:");
-						GUILayout.Label(VOID_Tools.ConvertInterval(v.orbit.period), GUILayout.ExpandWidth(false));
+						GUILayout.Label(VOID_Tools.FormatInterval(v.orbit.period), GUILayout.ExpandWidth(false));
 						GUILayout.EndHorizontal();
 
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));

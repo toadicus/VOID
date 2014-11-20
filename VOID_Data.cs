@@ -844,7 +844,7 @@ namespace VOID
 						format = string.Intern("T + {0}");
 					}
 
-					return string.Format(format, VOID_Tools.ConvertInterval(interval));
+					return string.Format(format, VOID_Tools.FormatInterval(interval));
 				}
 			);
 
@@ -886,7 +886,7 @@ namespace VOID
 						format = string.Intern("T + {0}");
 					}
 
-					return string.Format(format, VOID_Tools.ConvertInterval(interval));
+					return string.Format(format, VOID_Tools.FormatInterval(interval));
 				}
 			);
 
@@ -1040,13 +1040,13 @@ namespace VOID
 		public static readonly VOID_StrValue timeToApo =
 			new VOID_StrValue(
 				"Time to Apoapsis",
-				new Func<string>(() => VOID_Tools.ConvertInterval(core.vessel.orbit.timeToAp))
+				new Func<string>(() => VOID_Tools.FormatInterval(core.vessel.orbit.timeToAp))
 			);
 
 		public static readonly VOID_StrValue timeToPeri =
 			new VOID_StrValue(
 				"Time to Periapsis",
-				new Func<string>(() => VOID_Tools.ConvertInterval(core.vessel.orbit.timeToPe))
+				new Func<string>(() => VOID_Tools.FormatInterval(core.vessel.orbit.timeToPe))
 			);
 
 		public static readonly VOID_DoubleValue orbitInclination =
@@ -1072,7 +1072,7 @@ namespace VOID
 		public static readonly VOID_StrValue orbitPeriod =
 			new VOID_StrValue(
 				"Period",
-				new Func<string>(() => VOID_Tools.ConvertInterval(core.vessel.orbit.period))
+				new Func<string>(() => VOID_Tools.FormatInterval(core.vessel.orbit.period))
 			);
 
 		public static readonly VOID_DoubleValue semiMajorAxis =

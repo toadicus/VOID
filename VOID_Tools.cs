@@ -373,7 +373,7 @@ namespace VOID
 		/// </summary>
 		/// <returns>Human readable interval</returns>
 		/// <param name="seconds"></param>
-		public static string ConvertInterval(double seconds)
+		public static string FormatInterval(double seconds)
 		{
 			return UnpackedTime.FromSeconds(seconds).FormatAsSpan();
 		}
