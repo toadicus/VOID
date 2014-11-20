@@ -54,6 +54,7 @@ namespace VOID
 
 		protected List<byte> csvBytes;
 
+		protected string _fileName;
 		protected FileStream _outputFile;
 
 		protected uint outstandingWrites;
@@ -97,15 +98,20 @@ namespace VOID
 		{
 			get
 			{
-				return KSP.IO.IOUtils.GetFilePathFor(
-					typeof(VOID_Core),
-					string.Format(
-						"{0}_{1}",
-						this.vessel.vesselName,
-						"data.csv"
-					),
-					null
-				);
+				if (this._fileName == null || this._fileName == string.Empty)
+				{
+					this._fileName = KSP.IO.IOUtils.GetFilePathFor(
+						typeof(VOID_Core),
+						string.Format(
+							"{0}_{1}",
+							this.vessel.vesselName,
+							"data.csv"
+						),
+						null
+					);
+				}
+
+				return this._fileName;
 			}
 		}
 
@@ -145,10 +151,13 @@ namespace VOID
 						byte[] byteOrderMark = utf8Encoding.GetPreamble();
 
 						logger.Append(" and writing preamble");
-						outputFile.Write(byteOrderMark, 0, byteOrderMark.Length);
+						this._outputFile.Write(byteOrderMark, 0, byteOrderMark.Length);
 					}
 
 					logger.Append('.');
+
+					logger.AppendFormat("  File is {0}opened asynchronously.", this._outputFile.IsAsync ? "" : "not ");
+
 					logger.Print();
 				}
 
@@ -211,7 +220,7 @@ namespace VOID
 			this.CloseFileIfOpen();
 
 			logger.Append(" Done.");
-			logger.Print();
+			logger.Print(false);
 		}
 
 		#endregion
@@ -412,13 +421,20 @@ namespace VOID
 
 		private void CloseFileIfOpen()
 		{
+			Tools.DebugLogger logger = Tools.DebugLogger.New(this);
+
+			logger.AppendFormat("Cleaning up file {0}...", this.fileName);
+
 			if (this.csvBytes.Count > 0)
 			{
+				logger.Append(" Writing remaining data...");
 				this.AsyncWriteData();
 			}
 
+			logger.Append(" Waiting for writes to finish.");
 			while (this.outstandingWrites > 0)
 			{
+				logger.Append('.');
 				System.Threading.Thread.Sleep(10);
 			}
 
@@ -426,8 +442,12 @@ namespace VOID
 			{
 				this._outputFile.Close();
 				this._outputFile = null;
+				logger.Append(" File closed.");
 			}
+
+			logger.Print(false);
 		}
+
 		#endregion
 
 		#region Constructors & Destructors
