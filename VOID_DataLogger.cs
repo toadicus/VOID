@@ -222,7 +222,7 @@ namespace VOID
 		{
 			base.LoadConfig();
 
-			this.logIntervalStr = this.logInterval.value.ToString("{0:0.0##}");
+			this.logIntervalStr = this.logInterval.value.ToString("#.0##");
 		}
 
 		public override void ModuleWindow(int _)
@@ -266,7 +266,7 @@ namespace VOID
 			if (float.TryParse(logIntervalStr, out newLogInterval))
 			{
 				logInterval.value = newLogInterval;
-				this.logIntervalStr = this.logInterval.value.ToString("{0:0.0##}");
+				this.logIntervalStr = this.logInterval.value.ToString("#.0##");
 			}
 
 			GUILayout.EndVertical();
