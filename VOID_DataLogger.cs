@@ -41,29 +41,33 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		protected bool stopwatch1_running;
+		#region Fields
 
 		protected bool _loggingActive;
-		protected bool first_write;
+		protected bool firstWrite;
 
-		protected double stopwatch1;
+		[AVOID_SaveValue("logInterval")]
+		protected VOID_SaveValue<float> logInterval;
+		protected string logIntervalStr;
 
-		protected string csv_log_interval_str;
+		protected float csvCollectTimer;
 
-		protected float csv_log_interval;
+		protected List<byte> csvBytes;
 
-		protected double csvCollectTimer;
-
-		protected System.Text.UTF8Encoding utf8Encoding;
 		protected FileStream _outputFile;
 
 		protected uint outstandingWrites;
 
-		protected List<string> csvList = new List<string>();
+		protected System.Text.UTF8Encoding _utf8Encoding;
+
+		#endregion
 
 		/*
 		 * Properties
 		 * */
+
+		#region Properties
+
 		// TODO: Add configurable or incremental file names.
 		protected bool loggingActive
 		{
@@ -77,27 +81,18 @@ namespace VOID
 				{
 					if (value)
 					{
-
+						this.csvCollectTimer = 0f;
 					}
 					else
 					{
-						if (this._outputFile != null)
-						{
-							Tools.DebugLogger logger = Tools.DebugLogger.New(this);
-
-							logger.Append("CSV logging disabled, ");
-
-							logger.Append("disposing file.");
-							logger.Print();
-							this.outputFile.Dispose();
-							this._outputFile = null;
-						}
+						this.CloseFileIfOpen();
 					}
 
 					this._loggingActive = value;
 				}
 			}
 		}
+
 		protected string fileName
 		{
 			get
@@ -126,17 +121,31 @@ namespace VOID
 					if (File.Exists(this.fileName))
 					{
 						logger.Append("append");
-						this._outputFile = new FileStream(this.fileName, FileMode.Append, FileAccess.Write, FileShare.Write, 512, true);
+						this._outputFile = new FileStream(
+							this.fileName,
+							FileMode.Append,
+							FileAccess.Write,
+							FileShare.Read,
+							512,
+							true
+						);
 					}
 					else
 					{
 						logger.Append("create");
-						this._outputFile = new FileStream(this.fileName, FileMode.Create, FileAccess.Write, FileShare.Write, 512, true);
+						this._outputFile = new FileStream(
+							this.fileName,
+							FileMode.Create,
+							FileAccess.Write,
+							FileShare.Read,
+							512,
+							true
+						);
 
-						byte[] bom = utf8Encoding.GetPreamble();
+						byte[] byteOrderMark = utf8Encoding.GetPreamble();
 
 						logger.Append(" and writing preamble");
-						outputFile.Write(bom, 0, bom.Length);
+						outputFile.Write(byteOrderMark, 0, byteOrderMark.Length);
 					}
 
 					logger.Append('.');
@@ -147,133 +156,47 @@ namespace VOID
 			}
 		}
 
+		public UTF8Encoding utf8Encoding
+		{
+			get
+			{
+				if (this._utf8Encoding == null)
+				{
+					this._utf8Encoding = new UTF8Encoding(true);
+				}
+
+				return this._utf8Encoding;
+			}
+		}
+
+		#endregion
+
 		/*
 		 * Methods
 		 * */
-		public VOID_DataLogger()
-		{
-			this._Name = "CSV Data Logger";
-
-			this.stopwatch1_running = false;
-
-			this.loggingActive = false;
-			this.first_write = true;
-
-			this.stopwatch1 = 0;
-			this.csv_log_interval_str = "0.5";
-
-			this.csvCollectTimer = 0;
-			this.outstandingWrites = 0;
-
-			this.WindowPos.x = Screen.width - 520;
-			this.WindowPos.y = 85;
-		}
-
-		public override void ModuleWindow(int _)
-		{
-			GUIStyle txt_white = new GUIStyle(GUI.skin.label);
-			txt_white.normal.textColor = txt_white.focused.textColor = Color.white;
-			txt_white.alignment = TextAnchor.UpperRight;
-			GUIStyle txt_green = new GUIStyle(GUI.skin.label);
-			txt_green.normal.textColor = txt_green.focused.textColor = Color.green;
-			txt_green.alignment = TextAnchor.UpperRight;
-			GUIStyle txt_yellow = new GUIStyle(GUI.skin.label);
-			txt_yellow.normal.textColor = txt_yellow.focused.textColor = Color.yellow;
-			txt_yellow.alignment = TextAnchor.UpperRight;
-
-			GUILayout.BeginVertical();
-
-			GUILayout.Label("System time: " + DateTime.Now.ToString("HH:mm:ss"));
-			GUILayout.Label(VOID_Tools.ConvertInterval(stopwatch1));
-
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			if (GUILayout.Button("Start"))
-			{
-				if (stopwatch1_running == false) stopwatch1_running = true;
-			}
-			if (GUILayout.Button("Stop"))
-			{
-				if (stopwatch1_running == true) stopwatch1_running = false;
-			}
-			if (GUILayout.Button("Reset"))
-			{
-				if (stopwatch1_running == true) stopwatch1_running = false;
-				stopwatch1 = 0;
-			}
-			GUILayout.EndHorizontal();
-
-			GUIStyle label_style = txt_white;
-			string log_label = "Inactive";
-			if (loggingActive && vessel.situation.ToString() == "PRELAUNCH")
-			{
-				log_label = "Awaiting launch";
-				label_style = txt_yellow;
-			}
-			if (loggingActive && vessel.situation.ToString() != "PRELAUNCH")
-			{
-				log_label = "Active";
-				label_style = txt_green;
-			}
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			this.loggingActive = GUILayout.Toggle(loggingActive, "Data logging: ", GUILayout.ExpandWidth(false));
-
-			GUILayout.Label(log_label, label_style, GUILayout.ExpandWidth(true));
-			GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-			GUILayout.Label("Interval: ", GUILayout.ExpandWidth(false));
-			csv_log_interval_str = GUILayout.TextField(csv_log_interval_str, GUILayout.ExpandWidth(true));
-			GUILayout.Label("s", GUILayout.ExpandWidth(false));
-			GUILayout.EndHorizontal();
-
-			float new_log_interval;
-			if (float.TryParse(csv_log_interval_str, out new_log_interval))
-			{
-				csv_log_interval = new_log_interval;
-			}
-
-			GUILayout.EndVertical();
-			GUI.DragWindow();
-		}
-
+		#region Monobehaviour Lifecycle
 		public void Update()
 		{
+			if (this.csvBytes != null && this.csvBytes.Count > 0)
+			{
+				// csvList is not empty, write it
+				this.AsyncWriteData();
+			}
+
 			// CSV Logging
 			// from ISA MapSat
 			if (loggingActive)
 			{
 				//data logging is on
 				//increment timers
-				csvCollectTimer += Time.deltaTime;
+				this.csvCollectTimer += Time.deltaTime;
 
-				if (csvCollectTimer >= csv_log_interval && vessel.situation != Vessel.Situations.PRELAUNCH)
+				if (this.csvCollectTimer >= this.logInterval)
 				{
 					//data logging is on, vessel is not prelaunch, and interval has passed
 					//write a line to the list
-					line_to_csvList();  //write to the csv
+					this.CollectLogData();
 				}
-
-				if (csvList.Count > 0)
-				{
-					// csvList is not empty and interval between writings to file has elapsed
-					//write it
-
-					// Tools.PostDebugMessage("")
-
-					this.AsyncWriteData();
-				}
-			}
-			else
-			{
-				//data logging is off
-				//reset any timers and clear anything from csvList
-				csvCollectTimer = 0f;
-				if (csvList.Count > 0) csvList.Clear();
-			}
-
-			if (stopwatch1_running)
-			{
-				stopwatch1 += Time.deltaTime;
 			}
 		}
 
@@ -285,79 +208,92 @@ namespace VOID
 
 			logger.Append("Destroying...");
 
-			if (this.csvList.Count > 0)
-			{
-				logger.Append(" Writing final data...");
-				this.AsyncWriteData();
-			}
-
-			while (this.outstandingWrites > 0)
-			{
-				System.Threading.Thread.Sleep(10);
-			}
-
-			if (this._outputFile != null)
-			{
-				logger.Append(" Closing File...");
-				this.outputFile.Close();
-			}
+			this.CloseFileIfOpen();
 
 			logger.Append(" Done.");
 			logger.Print();
 		}
 
-		~VOID_DataLogger()
+		#endregion
+
+		#region VOID_Module Overrides
+
+		public override void LoadConfig()
 		{
-			this.OnDestroy();
+			base.LoadConfig();
+
+			this.logIntervalStr = this.logInterval.value.ToString("{0:0.0##}");
 		}
 
-		protected void AsyncWriteCallback(IAsyncResult result)
+		public override void ModuleWindow(int _)
 		{
-			Tools.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
+			GUILayout.BeginVertical();
 
-			this.outputFile.EndWrite(result);
-			this.outstandingWrites--;
-		}
+			GUILayout.Label(
+				string.Format("System time: {0}", DateTime.Now.ToString("HH:mm:ss")),
+				GUILayout.ExpandWidth(true)
+			);
+			GUILayout.Label(
+				string.Format("Kerbin time: {0}", VOID_Tools.FormatDate(Planetarium.GetUniversalTime())),
+				GUILayout.ExpandWidth(true)
+			);
 
-		private void AsyncWriteData()
-		{
-			if (this.utf8Encoding == null)
+			GUIStyle activeLabelStyle = VOID_Styles.labelRed;
+			string activeLabelText = "Inactive";
+			if (loggingActive)
 			{
-				this.utf8Encoding = new System.Text.UTF8Encoding(true, true);
+				activeLabelText = "Active";
+				activeLabelStyle = VOID_Styles.labelGreen;
 			}
 
-			List<byte> bytes = new List<byte>();
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
-			foreach (string line in this.csvList)
+			this.loggingActive = GUILayout.Toggle(loggingActive, "Data logging: ", GUILayout.ExpandWidth(false));
+			GUILayout.Label(activeLabelText, activeLabelStyle, GUILayout.ExpandWidth(true));
+
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+			GUILayout.Label("Interval: ", GUILayout.ExpandWidth(false));
+
+			logIntervalStr = GUILayout.TextField(logIntervalStr, GUILayout.ExpandWidth(true));
+			GUILayout.Label("s", GUILayout.ExpandWidth(false));
+
+			GUILayout.EndHorizontal();
+
+			float newLogInterval;
+			if (float.TryParse(logIntervalStr, out newLogInterval))
 			{
-				byte[] lineBytes = utf8Encoding.GetBytes(line);
-				bytes.AddRange(lineBytes);
+				logInterval.value = newLogInterval;
 			}
 
-			WriteState state = new WriteState();
+			GUILayout.EndVertical();
 
-			state.bytes = bytes.ToArray();
-			state.stream = this.outputFile;
-
-			this.outstandingWrites++;
-			var writeCallback = new AsyncCallback(this.AsyncWriteCallback);
-
-			this.outputFile.BeginWrite(state.bytes, 0, state.bytes.Length, writeCallback, state);
-
-			this.csvList.Clear();
+			GUI.DragWindow();
 		}
 
-		private void line_to_csvList()
+		#endregion
+
+		#region Data Collection
+
+		private void CollectLogData()
 		{
+			if (this.csvBytes == null)
+			{
+				this.csvBytes = new List<byte>();
+			}
+
 			//called if logging is on and interval has passed
 			//writes one line to the csvList
 
 			StringBuilder line = new StringBuilder();
 
-			if (first_write)
+			if (firstWrite)
 			{
-				first_write = false;
+				firstWrite = false;
 				line.Append(
+					"\"Kerbin Universal Time (s)\"," +
 					"\"Mission Elapsed Time (s)\t\"," +
 					"\"Altitude ASL (m)\"," +
 					"\"Altitude above terrain (m)\"," +
@@ -376,10 +312,13 @@ namespace VOID
 				);
 			}
 
+			// Universal time
+			line.Append(Planetarium.GetUniversalTime().ToString("F2"));
+			line.Append(',');
+
 			//Mission time
 			line.Append(vessel.missionTime.ToString("F3"));
 			line.Append(',');
-
 
 			//Altitude ASL
 			line.Append(VOID_Data.orbitAltitude.Value.ToString("F3"));
@@ -430,7 +369,7 @@ namespace VOID
 			line.Append(',');
 
 			//atm density
-			line.Append(Tools.MuMech_ToSI(VOID_Data.atmDensity.Value * 1000d, 3));
+			line.Append(Tools.MuMech_ToSI(VOID_Data.atmDensity.Value, 3));
 			line.Append(',');
 
 			// Downrange Distance
@@ -438,16 +377,92 @@ namespace VOID
 
 			line.Append('\n');
 
-			csvList.Add(line.ToString());
+			csvBytes.AddRange(this.utf8Encoding.GetBytes(line.ToString()));
 
-			csvCollectTimer = 0f;
+			this.csvCollectTimer = 0f;
 		}
+
+		#endregion
+
+		#region File IO Methods
+
+		protected void AsyncWriteCallback(IAsyncResult result)
+		{
+			Tools.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
+
+			this.outputFile.EndWrite(result);
+			this.outstandingWrites--;
+		}
+
+		private void AsyncWriteData()
+		{
+			WriteState state = new WriteState();
+
+			state.bytes = this.csvBytes.ToArray();
+			state.stream = this.outputFile;
+
+			this.outstandingWrites++;
+			var writeCallback = new AsyncCallback(this.AsyncWriteCallback);
+
+			this.outputFile.BeginWrite(state.bytes, 0, state.bytes.Length, writeCallback, state);
+
+			this.csvBytes.Clear();
+		}
+
+		private void CloseFileIfOpen()
+		{
+			if (this.csvBytes.Count > 0)
+			{
+				this.AsyncWriteData();
+			}
+
+			while (this.outstandingWrites > 0)
+			{
+				System.Threading.Thread.Sleep(10);
+			}
+
+			if (this._outputFile != null)
+			{
+				this._outputFile.Close();
+				this._outputFile = null;
+			}
+		}
+		#endregion
+
+		#region Constructors & Destructors
+
+		public VOID_DataLogger()
+		{
+			this._Name = "CSV Data Logger";
+
+			this.loggingActive = false;
+			this.firstWrite = true;
+
+			this.logInterval = 0.5f;
+			this.csvCollectTimer = 0f;
+
+			this.outstandingWrites = 0;
+
+			this.WindowPos.x = Screen.width - 520f;
+			this.WindowPos.y = 85f;
+		}
+
+		~VOID_DataLogger()
+		{
+			this.OnDestroy();
+		}
+
+		#endregion
+
+		#region Subclasses
 
 		private class WriteState
 		{
 			public byte[] bytes;
 			public FileStream stream;
 		}
+
+		#endregion
 	}
 }
 
