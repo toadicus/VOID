@@ -425,7 +425,7 @@ namespace VOID
 
 			logger.AppendFormat("Cleaning up file {0}...", this.fileName);
 
-			if (this.csvBytes.Count > 0)
+			if (this.csvBytes != null && this.csvBytes.Count > 0)
 			{
 				logger.Append(" Writing remaining data...");
 				this.AsyncWriteData();
