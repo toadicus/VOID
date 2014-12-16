@@ -809,7 +809,7 @@ namespace VOID
 					SimManager.Gravity = this.vessel.mainBody.gravParameter / (radius * radius);
 				}
 
-				SimManager.minSimTime = new TimeSpan(0, 0, (int)(this.updatePeriod * 1000));
+				SimManager.minSimTime = new TimeSpan(0, 0, 0, 0, (int)(this.updatePeriod * 1000d));
 
 				SimManager.TryStartSimulation();
 			}
