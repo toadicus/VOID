@@ -26,7 +26,7 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using Engineer.VesselSimulator;
+using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
@@ -151,11 +151,11 @@ namespace VOID
 			float hudLeft;
 			StringBuilder hudString;
 
-			if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Parts)
+			if (EditorLogic.fetch.editorScreen == EditorScreen.Parts)
 			{
 				hudLeft = EditorPanels.Instance.partsPanelWidth + 10;
 			}
-			else if (EditorLogic.fetch.editorScreen == EditorLogic.EditorScreen.Actions)
+			else if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
 			{
 				hudLeft = EditorPanels.Instance.actionsPanelWidth + 10;
 			}

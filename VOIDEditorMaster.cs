@@ -40,7 +40,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-using Engineer.VesselSimulator;
+using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using ToadicusTools;

@@ -95,13 +95,13 @@ namespace VOID
 		#endregion
 
 		#region VESSEL_EXTENSIONS_SCIENCE
-		public static CBAttributeMap.MapAttribute GetBiome(this Vessel vessel)
+		public static CBAttributeMapSO.MapAttribute GetBiome(this Vessel vessel)
 		{
-			CBAttributeMap.MapAttribute mapAttribute;
+			CBAttributeMapSO.MapAttribute mapAttribute;
 
 			try
 			{
-				CBAttributeMap BiomeMap = vessel.mainBody.BiomeMap;
+				CBAttributeMapSO BiomeMap = vessel.mainBody.BiomeMap;
 
 				double lat = vessel.latitude * Math.PI / 180d;
 				double lon = vessel.longitude * Math.PI / 180d;
@@ -162,7 +162,7 @@ namespace VOID
 			}
 			catch (NullReferenceException)
 			{
-				mapAttribute = new CBAttributeMap.MapAttribute();
+				mapAttribute = new CBAttributeMapSO.MapAttribute();
 				mapAttribute.name = "N/A";
 			}
 

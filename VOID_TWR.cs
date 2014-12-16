@@ -27,7 +27,7 @@ namespace VOID
 				(TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate)
 			)
 			{
-				Engineer.VesselSimulator.SimManager.RequestSimulation();
+				KerbalEngineer.VesselSimulator.SimManager.RequestSimulation();
 			}
 
 			GUILayout.BeginVertical();

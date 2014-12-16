@@ -3,7 +3,7 @@
 // This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License. To view a
 // copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/
 
-using Engineer.VesselSimulator;
+using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
@@ -99,7 +99,7 @@ namespace VOID
 				(TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate)
 			)
 			{
-				Engineer.VesselSimulator.SimManager.RequestSimulation();
+				KerbalEngineer.VesselSimulator.SimManager.RequestSimulation();
 			}
 
 			if (!this.stylesApplied)

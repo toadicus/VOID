@@ -26,7 +26,7 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using Engineer.VesselSimulator;
+using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
@@ -115,7 +115,7 @@ namespace VOID
 
 			foreach (IVOID_EditorModule module in this.Modules)
 			{
-				if (EditorLogic.startPod == null)
+				if (EditorLogic.RootPart == null)
 				{
 					module.StopGUI();
 					continue;
@@ -130,7 +130,7 @@ namespace VOID
 				}
 			}
 
-			if (EditorLogic.startPod == null || !HighLogic.LoadedSceneIsEditor)
+			if (EditorLogic.RootPart == null || !HighLogic.LoadedSceneIsEditor)
 			{
 				this.StopGUI();
 				return;

@@ -253,7 +253,6 @@ namespace VOID
 			switch (HighLogic.LoadedScene)
 			{
 				case GameScenes.EDITOR:
-				case GameScenes.SPH:
 					if (cursorInWindow)
 					{
 						InputLockManager.SetControlLock(
