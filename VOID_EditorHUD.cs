@@ -37,41 +37,20 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_EditorHUD : VOID_Module, IVOID_EditorModule
+	public class VOID_EditorHUD : VOID_HUDModule, IVOID_EditorModule
 	{
 		/*
 		 * Fields
 		 * */
-		[AVOID_SaveValue("colorIndex")]
-		protected VOID_SaveValue<int> _colorIndex = 0;
+		[AVOID_SaveValue("ehudWindowPos")]
+		protected VOID_SaveValue<Rect> ehudWindowPos;
 
-		protected List<Color> textColors = new List<Color>();
-
-		protected GUIStyle labelStyle;
-
+		protected HUDWindow ehudWindow;
 		protected EditorVesselOverlays _vesselOverlays;
 
 		/*
 		 * Properties
 		 * */
-		public int ColorIndex
-		{
-			get
-			{
-				return this._colorIndex;
-			}
-			set
-			{
-				if (this._colorIndex >= this.textColors.Count - 1)
-				{
-					this._colorIndex = 0;
-					return;
-				}
-
-				this._colorIndex = value;
-			}
-		}
-
 		protected EditorVesselOverlays vesselOverlays
 		{
 			get
@@ -122,57 +101,26 @@ namespace VOID
 
 			this.toggleActive = true;
 
-			this.textColors.Add(Color.green);
-			this.textColors.Add(Color.black);
-			this.textColors.Add(Color.white);
-			this.textColors.Add(Color.red);
-			this.textColors.Add(Color.blue);
-			this.textColors.Add(Color.yellow);
-			this.textColors.Add(Color.gray);
-			this.textColors.Add(Color.cyan);
-			this.textColors.Add(Color.magenta);
-
-			this.labelStyle = new GUIStyle ();
-			// this.labelStyle.alignment = TextAnchor.UpperRight;
-			this.labelStyle.normal.textColor = this.textColors [this.ColorIndex];
+			this.ehudWindow = new HUDWindow(
+				this.ehudWindowFunc,
+				new Rect(EditorPanels.Instance.partsPanelWidth + 10f, 125f, 300f, 64f)
+			);
+			this.Windows.Add(this.ehudWindow);
+			this.ehudWindowPos = this.ehudWindow.WindowPos;
 
 			Tools.PostDebugMessage (this.GetType().Name + ": Constructed.");
 		}
 
-		public override void DrawGUI()
+		public void ehudWindowFunc(int id)
 		{
-			SimManager.RequestSimulation();
+			StringBuilder hudString = new StringBuilder();
 
 			if (this.core.LastStage == null)
 			{
 				return;
 			}
 
-			float hudLeft;
-			StringBuilder hudString;
-
-			if (EditorLogic.fetch.editorScreen == EditorScreen.Parts)
-			{
-				hudLeft = EditorPanels.Instance.partsPanelWidth + 10;
-			}
-			else if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
-			{
-				hudLeft = EditorPanels.Instance.actionsPanelWidth + 10;
-			}
-			else
-			{
-				return;
-			}
-
-			GUI.skin = this.core.Skin;
-
-			Rect hudPos = new Rect (hudLeft, 48, 300, 32);
-
-			hudString = new StringBuilder();
-
 			// GUI.skin = AssetBase.GetGUISkin("KSP window 2");
-
-			labelStyle.normal.textColor = textColors [ColorIndex];
 
 			hudString.Append("Total Mass: ");
 			hudString.Append(this.core.LastStage.totalMass.ToString("F3"));
@@ -212,18 +160,60 @@ namespace VOID
 					).ToString("F3"));
 			}
 
-			GUI.Label (
-				hudPos,
-				hudString.ToString(),
-				labelStyle);
+			GUILayout.Label(hudString.ToString(), VOID_Styles.labelHud, GUILayout.ExpandWidth(true));
+
+			if (!this.positionsLocked)
+			{
+				GUI.DragWindow();
+			}
+
+			GUI.BringWindowToBack(id);
 		}
 
-		public override void DrawConfigurables()
+		public override void DrawGUI()
 		{
-			if (GUILayout.Button ("Change HUD color", GUILayout.ExpandWidth (false)))
+			float hudLeft;
+
+			if (EditorLogic.fetch.editorScreen == EditorScreen.Parts)
 			{
-				++this.ColorIndex;
+				hudLeft = EditorPanels.Instance.partsPanelWidth + 10f;
+				hudLeft += EditorPartList.Instance.transformTopLeft.position.x -
+					EditorPartList.Instance.transformTopLeft.parent.parent.position.x -
+					72f;
 			}
+			else if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
+			{
+				hudLeft = EditorPanels.Instance.actionsPanelWidth + 10f;
+			}
+			else
+			{
+				return;
+			}
+
+			bool snapToEdge = Mathf.Abs(this.ehudWindowPos.value.xMin - hudLeft) < 15f;
+
+			Tools.PostDebugMessage(this,
+				"EditorPartList topLeft.parent.parent.position: {0}\n" +
+				"EditorPartList topLeft.parent.position: {1}\n" +
+				"EditorPartList topLeft.position: {2}\n" +
+				"snapToEdge: {3} (pos.Xmin: {4}; hudLeft: {5})",
+				EditorPartList.Instance.transformTopLeft.parent.parent.position,
+				EditorPartList.Instance.transformTopLeft.parent.position,
+				EditorPartList.Instance.transformTopLeft.position,
+				snapToEdge, this.ehudWindowPos.value.xMin, hudLeft
+			);
+
+			base.DrawGUI();
+
+			Rect hudPos = this.ehudWindow.WindowPos;
+
+			hudPos.xMin = hudLeft;
+			hudPos.width = this.ehudWindow.defaultWindowPos.width;
+
+			this.ehudWindowPos.value = hudPos;
+
+			this.ehudWindow.WindowPos = this.ehudWindowPos;
+
 		}
 	}
 }

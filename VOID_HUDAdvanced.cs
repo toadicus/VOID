@@ -37,37 +37,38 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_HUDAdvanced : VOID_Module, IVOID_Module
+	public class VOID_HUDAdvanced : VOID_HUDModule, IVOID_Module
 	{
 		/*
 		 * Fields
 		 * */
 		protected VOID_HUD primaryHUD;
 
-		protected Rect leftHUDdefaultPos;
-		protected Rect rightHUDdefaultPos;
+		protected HUDWindow leftHUD;
+		protected HUDWindow rightHUD;
 
 		[AVOID_SaveValue("leftHUDPos")]
 		protected VOID_SaveValue<Rect> leftHUDPos;
 		[AVOID_SaveValue("rightHUDPos")]
 		protected VOID_SaveValue<Rect> rightHUDPos;
 
-		[AVOID_SaveValue("positionsLocked")]
-		protected VOID_SaveValue<bool> positionsLocked;
-
 		/*
 		 * Properties
 		 * */
-		public int ColorIndex
+		public override int ColorIndex
 		{
 			get
 			{
-				if (this.primaryHUD == null)
+				if (this.primaryHUD != null)
 				{
-					return 0;
+					return this.primaryHUD.ColorIndex;
 				}
 
-				return this.primaryHUD.ColorIndex;
+				return base.ColorIndex;
+			}
+			set
+			{
+				base.ColorIndex = value;
 			}
 		}
 
@@ -80,19 +81,23 @@ namespace VOID
 
 			this.toggleActive = true;
 
-			this.leftHUDdefaultPos = new Rect(
+			this.leftHUD = new HUDWindow(this.leftHUDWindow, new Rect(
 				Screen.width * .5f - (float)GameSettings.UI_SIZE * .25f - 300f,
 				Screen.height - 200f,
-				300f, 90f
+				300f, 90f)
 			);
-			this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
+			this.Windows.Add(this.leftHUD);
 
-			this.rightHUDdefaultPos = new Rect(
+			this.leftHUDPos = this.leftHUD.WindowPos;
+
+			this.rightHUD = new HUDWindow(this.rightHUDWindow, new Rect(
 				Screen.width * .5f + (float)GameSettings.UI_SIZE * .25f,
 				Screen.height - 200f,
-				300f, 90f
+				300f, 90f)
 			);
-			this.rightHUDPos = new Rect(this.rightHUDdefaultPos);
+			this.Windows.Add(this.rightHUD);
+
+			this.rightHUDPos = this.rightHUD.WindowPos;
 
 			this.positionsLocked = true;
 
@@ -229,32 +234,11 @@ namespace VOID
 					}
 				}
 			}
-			else
-			{
-				if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
-				{
-					SimManager.RequestSimulation();
-				}
 
-				this.leftHUDPos.value = GUI.Window(
-					this.core.windowID,
-					this.leftHUDPos,
-					VOID_Tools.GetWindowHandler(this.leftHUDWindow),
-					GUIContent.none,
-					GUIStyle.none
-				);
+			base.DrawGUI();
 
-				if (VOID_Data.upcomingManeuverNodes > 0)
-				{
-					this.rightHUDPos.value = GUI.Window(
-						this.core.windowID,
-						this.rightHUDPos,
-						VOID_Tools.GetWindowHandler(this.rightHUDWindow),
-						GUIContent.none,
-						GUIStyle.none
-					);
-				}
-			}
+			this.leftHUDPos.value = this.leftHUD.WindowPos;
+			this.rightHUDPos.value = this.rightHUD.WindowPos;
 		}
 
 		public override void DrawConfigurables()

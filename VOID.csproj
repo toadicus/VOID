@@ -100,6 +100,7 @@
     <Compile Include="VOID_StageInfo.cs" />
     <Compile Include="VOID_Styles.cs" />
     <Compile Include="VOID_Data.cs" />
+    <Compile Include="VOID_HUDModule.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

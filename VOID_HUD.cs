@@ -36,47 +36,22 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_HUD : VOID_Module, IVOID_Module
+	public class VOID_HUD : VOID_HUDModule, IVOID_Module
 	{
 		/*
 		 * Fields
 		 * */
-		[AVOID_SaveValue("colorIndex")]
-		protected VOID_SaveValue<int> _colorIndex;
-
-		protected List<Color> textColors;
-
-		protected Rect leftHUDdefaultPos;
-		protected Rect rightHUDdefaultPos;
-
 		[AVOID_SaveValue("leftHUDPos")]
 		protected VOID_SaveValue<Rect> leftHUDPos;
 		[AVOID_SaveValue("rightHUDPos")]
 		protected VOID_SaveValue<Rect> rightHUDPos;
 
-		[AVOID_SaveValue("positionsLocked")]
-		protected VOID_SaveValue<bool> positionsLocked;
+		protected HUDWindow leftWindow;
+		protected HUDWindow rightWindow;
 
 		/*
 		 * Properties
 		 * */
-		public int ColorIndex
-		{
-			get
-			{
-				return this._colorIndex;
-			}
-			set
-			{
-				if (this._colorIndex >= this.textColors.Count - 1)
-				{
-					this._colorIndex = 0;
-					return;
-				}
-
-				this._colorIndex = value;
-			}
-		}
 
 		/* 
 		 * Methods
@@ -87,29 +62,25 @@ namespace VOID
 
 			this.toggleActive = true;
 
-			this._colorIndex = 0;
+			this.leftWindow = new HUDWindow(this.leftHUDWindow, new Rect(Screen.width * .375f - 300f, 0f, 300f, 90f));
+			this.Windows.Add(this.leftWindow);
 
-			this.textColors = new List<Color>();
+			this.leftHUDPos = this.leftWindow.WindowPos;
 
-			this.textColors.Add(Color.green);
-			this.textColors.Add(Color.black);
-			this.textColors.Add(Color.white);
-			this.textColors.Add(Color.red);
-			this.textColors.Add(Color.blue);
-			this.textColors.Add(Color.yellow);
-			this.textColors.Add(Color.gray);
-			this.textColors.Add(Color.cyan);
-			this.textColors.Add(Color.magenta);
+			this.rightWindow = new HUDWindow(this.rightHUDWindow, new Rect(Screen.width * .625f, 0f, 300f, 90f));
+			this.Windows.Add(this.rightWindow);
 
-			this.leftHUDdefaultPos = new Rect(Screen.width * .375f - 300f, 0f, 300f, 90f);
-			this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
-
-			this.rightHUDdefaultPos = new Rect(Screen.width * .625f, 0f, 300f, 90f);
-			this.rightHUDPos = new Rect(this.rightHUDdefaultPos);
-
-			this.positionsLocked = true;
+			this.rightHUDPos = this.rightWindow.WindowPos;
 
 			Tools.PostDebugMessage ("VOID_HUD: Constructed.");
+		}
+
+		public override void DrawGUI()
+		{
+			base.DrawGUI();
+
+			this.leftHUDPos.value = this.leftWindow.WindowPos;
+			this.rightHUDPos.value = this.rightWindow.WindowPos;
 		}
 
 		protected void leftHUDWindow(int id)
@@ -218,52 +189,6 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
-		}
-
-		public override void DrawGUI()
-		{
-			VOID_Styles.labelHud.normal.textColor = textColors [ColorIndex];
-
-			GUI.skin = this.core.Skin;
-
-			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
-			{
-				SimManager.RequestSimulation();
-			}
-
-			this.leftHUDPos.value = GUI.Window(
-				this.core.windowID,
-				this.leftHUDPos,
-				VOID_Tools.GetWindowHandler(this.leftHUDWindow),
-				GUIContent.none,
-				GUIStyle.none
-			);
-
-			this.rightHUDPos.value = GUI.Window(
-				this.core.windowID,
-				this.rightHUDPos,
-				VOID_Tools.GetWindowHandler(this.rightHUDWindow),
-				GUIContent.none,
-				GUIStyle.none
-			);
-		}
-
-		public override void DrawConfigurables()
-		{
-			if (GUILayout.Button (string.Intern("Change HUD color"), GUILayout.ExpandWidth (false)))
-			{
-				++this.ColorIndex;
-			}
-
-			if (GUILayout.Button(string.Intern("Reset HUD Positions"), GUILayout.ExpandWidth(false)))
-			{
-				this.leftHUDPos = new Rect(this.leftHUDdefaultPos);
-				this.rightHUDPos = new Rect(this.rightHUDdefaultPos);
-			}
-
-			this.positionsLocked = GUILayout.Toggle(this.positionsLocked,
-				string.Intern("Lock HUD Positions"),
-				GUILayout.ExpandWidth(false));
 		}
 	}
 }
