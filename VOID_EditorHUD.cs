@@ -48,6 +48,9 @@ namespace VOID
 		protected HUDWindow ehudWindow;
 		protected EditorVesselOverlays _vesselOverlays;
 
+		[AVOID_SaveValue("snapToLeft")]
+		protected VOID_SaveValue<bool> snapToLeft;
+
 		/*
 		 * Properties
 		 * */
@@ -100,6 +103,8 @@ namespace VOID
 			this._Name = "Heads-Up Display";
 
 			this.toggleActive = true;
+
+			this.snapToLeft.value = true;
 
 			this.ehudWindow = new HUDWindow(
 				this.ehudWindowFunc,
@@ -190,8 +195,6 @@ namespace VOID
 				return;
 			}
 
-			bool snapToEdge = Mathf.Abs(this.ehudWindowPos.value.xMin - hudLeft) < 15f;
-
 			Tools.PostDebugMessage(this,
 				"EditorPartList topLeft.parent.parent.position: {0}\n" +
 				"EditorPartList topLeft.parent.position: {1}\n" +
@@ -200,20 +203,29 @@ namespace VOID
 				EditorPartList.Instance.transformTopLeft.parent.parent.position,
 				EditorPartList.Instance.transformTopLeft.parent.position,
 				EditorPartList.Instance.transformTopLeft.position,
-				snapToEdge, this.ehudWindowPos.value.xMin, hudLeft
+				this.snapToLeft, this.ehudWindowPos.value.xMin, hudLeft
 			);
 
 			base.DrawGUI();
 
 			Rect hudPos = this.ehudWindow.WindowPos;
 
-			hudPos.xMin = hudLeft;
+			if (this.snapToLeft && this.positionsLocked)
+			{
+				hudPos.xMin = hudLeft;
+			}
+			else
+			{
+				hudPos.xMin = Mathf.Max(hudLeft, hudPos.xMin);
+			}
+
 			hudPos.width = this.ehudWindow.defaultWindowPos.width;
 
 			this.ehudWindowPos.value = hudPos;
 
 			this.ehudWindow.WindowPos = this.ehudWindowPos;
 
+			this.snapToLeft = Mathf.Abs(this.ehudWindowPos.value.xMin - hudLeft) < 15f;
 		}
 	}
 }
