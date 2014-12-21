@@ -47,11 +47,6 @@ namespace VOID
 		protected HUDWindow leftHUD;
 		protected HUDWindow rightHUD;
 
-		[AVOID_SaveValue("leftHUDPos")]
-		protected VOID_SaveValue<Rect> leftHUDPos;
-		[AVOID_SaveValue("rightHUDPos")]
-		protected VOID_SaveValue<Rect> rightHUDPos;
-
 		/*
 		 * Properties
 		 * */
@@ -81,23 +76,24 @@ namespace VOID
 
 			this.toggleActive = true;
 
-			this.leftHUD = new HUDWindow(this.leftHUDWindow, new Rect(
-				Screen.width * .5f - (float)GameSettings.UI_SIZE * .25f - 300f,
-				Screen.height - 200f,
-				300f, 90f)
+			this.leftHUD = new HUDWindow("leftHUD",
+				this.leftHUDWindow,
+				new Rect(
+					Screen.width * .5f - (float)GameSettings.UI_SIZE * .25f - 300f,
+					Screen.height - 200f,
+					300f, 90f)
 			);
 			this.Windows.Add(this.leftHUD);
 
-			this.leftHUDPos = this.leftHUD.WindowPos;
-
-			this.rightHUD = new HUDWindow(this.rightHUDWindow, new Rect(
-				Screen.width * .5f + (float)GameSettings.UI_SIZE * .25f,
-				Screen.height - 200f,
-				300f, 90f)
+			this.rightHUD = new HUDWindow(
+				"rightHUD",
+				this.rightHUDWindow,
+				new Rect(
+					Screen.width * .5f + (float)GameSettings.UI_SIZE * .25f,
+					Screen.height - 200f,
+					300f, 90f)
 			);
 			this.Windows.Add(this.rightHUD);
-
-			this.rightHUDPos = this.rightHUD.WindowPos;
 
 			this.positionsLocked = true;
 
@@ -236,13 +232,18 @@ namespace VOID
 			}
 
 			base.DrawGUI();
-
-			this.leftHUDPos.value = this.leftHUD.WindowPos;
-			this.rightHUDPos.value = this.rightHUD.WindowPos;
 		}
 
 		public override void DrawConfigurables()
 		{
+			if (GUILayout.Button(string.Intern("Reset Advanced HUD Positions"), GUILayout.ExpandWidth(false)))
+			{
+				foreach (HUDWindow window in this.Windows)
+				{
+					window.WindowPos = new Rect(window.defaultWindowPos);
+				}
+			}
+
 			this.positionsLocked = GUILayout.Toggle(this.positionsLocked,
 				string.Intern("Lock Advanced HUD Positions"),
 				GUILayout.ExpandWidth(false));

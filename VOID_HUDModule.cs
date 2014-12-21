@@ -135,11 +135,40 @@ namespace VOID
 				string.Intern("Lock HUD Positions"),
 				GUILayout.ExpandWidth(false));
 		}
+
+		public override void LoadConfig()
+		{
+			base.LoadConfig();
+
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core>();
+			config.load();
+
+			foreach (HUDWindow window in this.Windows)
+			{
+				string saveName = string.Format("{0}_{1}", this.GetType().Name, window.WindowName);
+				Rect loadedPos = config.GetValue(saveName, window.defaultWindowPos);
+
+				window.WindowPos = loadedPos;
+			}
+		}
+
+		public override void _SaveToConfig(KSP.IO.PluginConfiguration config)
+		{
+			base._SaveToConfig(config);
+
+			foreach (HUDWindow window in this.Windows)
+			{
+				string saveName = string.Format("{0}_{1}", this.GetType().Name, window.WindowName);
+				config.SetValue(saveName, window.WindowPos);
+			}
+		}
 	}
 
 	public class HUDWindow
 	{
 		public readonly Rect defaultWindowPos;
+
+		private Rect _windowPos;
 
 		public Action<int> WindowFunction
 		{
@@ -149,14 +178,35 @@ namespace VOID
 
 		public Rect WindowPos
 		{
+			get
+			{
+				return this._windowPos;
+			}
+			set
+			{
+				if (value != this._windowPos)
+				{
+					this._windowPos = value;
+
+					if (VOID_Data.core != null)
+					{
+						VOID_Data.core.configDirty = true;
+					}
+				}
+			}
+		}
+
+		public string WindowName
+		{
 			get;
-			set;
+			private set;
 		}
 
 		private HUDWindow() {}
 
-		public HUDWindow(Action<int> windowFunc, Rect defaultPos)
+		public HUDWindow(string name, Action<int> windowFunc, Rect defaultPos)
 		{
+			this.WindowName = name;
 			this.WindowFunction = windowFunc;
 			this.defaultWindowPos = defaultPos;
 			this.WindowPos = new Rect(this.defaultWindowPos);

@@ -41,13 +41,8 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		[AVOID_SaveValue("leftHUDPos")]
-		protected VOID_SaveValue<Rect> leftHUDPos;
-		[AVOID_SaveValue("rightHUDPos")]
-		protected VOID_SaveValue<Rect> rightHUDPos;
-
-		protected HUDWindow leftWindow;
-		protected HUDWindow rightWindow;
+		protected HUDWindow leftHUD;
+		protected HUDWindow rightHUD;
 
 		/*
 		 * Properties
@@ -62,25 +57,13 @@ namespace VOID
 
 			this.toggleActive = true;
 
-			this.leftWindow = new HUDWindow(this.leftHUDWindow, new Rect(Screen.width * .375f - 300f, 0f, 300f, 90f));
-			this.Windows.Add(this.leftWindow);
+			this.leftHUD = new HUDWindow("leftHUD", this.leftHUDWindow, new Rect(Screen.width * .375f - 300f, 0f, 300f, 90f));
+			this.Windows.Add(this.leftHUD);
 
-			this.leftHUDPos = this.leftWindow.WindowPos;
-
-			this.rightWindow = new HUDWindow(this.rightHUDWindow, new Rect(Screen.width * .625f, 0f, 300f, 90f));
-			this.Windows.Add(this.rightWindow);
-
-			this.rightHUDPos = this.rightWindow.WindowPos;
+			this.rightHUD = new HUDWindow("rightHUD", this.rightHUDWindow, new Rect(Screen.width * .625f, 0f, 300f, 90f));
+			this.Windows.Add(this.rightHUD);
 
 			Tools.PostDebugMessage ("VOID_HUD: Constructed.");
-		}
-
-		public override void DrawGUI()
-		{
-			base.DrawGUI();
-
-			this.leftHUDPos.value = this.leftWindow.WindowPos;
-			this.rightHUDPos.value = this.rightWindow.WindowPos;
 		}
 
 		protected void leftHUDWindow(int id)

@@ -42,9 +42,6 @@ namespace VOID
 		/*
 		 * Fields
 		 * */
-		[AVOID_SaveValue("ehudWindowPos")]
-		protected VOID_SaveValue<Rect> ehudWindowPos;
-
 		protected HUDWindow ehudWindow;
 		protected EditorVesselOverlays _vesselOverlays;
 
@@ -107,11 +104,11 @@ namespace VOID
 			this.snapToLeft.value = true;
 
 			this.ehudWindow = new HUDWindow(
+				"editorHUD",
 				this.ehudWindowFunc,
 				new Rect(EditorPanels.Instance.partsPanelWidth + 10f, 125f, 300f, 64f)
 			);
 			this.Windows.Add(this.ehudWindow);
-			this.ehudWindowPos = this.ehudWindow.WindowPos;
 
 			Tools.PostDebugMessage (this.GetType().Name + ": Constructed.");
 		}
@@ -126,6 +123,8 @@ namespace VOID
 			}
 
 			// GUI.skin = AssetBase.GetGUISkin("KSP window 2");
+
+			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
 			hudString.Append("Total Mass: ");
 			hudString.Append(this.core.LastStage.totalMass.ToString("F3"));
@@ -203,7 +202,7 @@ namespace VOID
 				EditorPartList.Instance.transformTopLeft.parent.parent.position,
 				EditorPartList.Instance.transformTopLeft.parent.position,
 				EditorPartList.Instance.transformTopLeft.position,
-				this.snapToLeft, this.ehudWindowPos.value.xMin, hudLeft
+				this.snapToLeft, this.ehudWindow.WindowPos.xMin, hudLeft
 			);
 
 			base.DrawGUI();
@@ -221,11 +220,9 @@ namespace VOID
 
 			hudPos.width = this.ehudWindow.defaultWindowPos.width;
 
-			this.ehudWindowPos.value = hudPos;
+			this.ehudWindow.WindowPos = hudPos;
 
-			this.ehudWindow.WindowPos = this.ehudWindowPos;
-
-			this.snapToLeft = Mathf.Abs(this.ehudWindowPos.value.xMin - hudLeft) < 15f;
+			this.snapToLeft = Mathf.Abs(this.ehudWindow.WindowPos.xMin - hudLeft) < 15f;
 		}
 	}
 }
