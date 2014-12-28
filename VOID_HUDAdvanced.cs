@@ -149,7 +149,12 @@ namespace VOID
 				leftHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
-			GUILayout.Label(leftHUD.ToString(), VOID_Styles.labelHud, GUILayout.ExpandWidth(true));
+			GUILayout.Label(
+				leftHUD.ToString(),
+				VOID_Styles.labelHud,
+				GUILayout.ExpandWidth(true),
+				GUILayout.ExpandHeight(true)
+			);
 
 			if (!this.positionsLocked)
 			{
@@ -208,7 +213,12 @@ namespace VOID
 				rightHUD.Append(string.Intern("-- POWER LOST --"));
 			}
 
-			GUILayout.Label(rightHUD.ToString(), VOID_Styles.labelHud, GUILayout.ExpandWidth(true));
+			GUILayout.Label(
+				rightHUD.ToString(),
+				VOID_Styles.labelHud,
+				GUILayout.ExpandWidth(true),
+				GUILayout.ExpandHeight(true)
+			);
 
 			if (!this.positionsLocked)
 			{

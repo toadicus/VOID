@@ -122,8 +122,6 @@ namespace VOID
 				return;
 			}
 
-			// GUI.skin = AssetBase.GetGUISkin("KSP window 2");
-
 			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
 			hudString.Append("Total Mass: ");
@@ -152,8 +150,16 @@ namespace VOID
 			hudString.Append("Bottom Stage T/W Ratio: ");
 			hudString.Append(this.core.LastStage.thrustToWeight.ToString("F3"));
 
+			Tools.PostDebugMessage(this,
+				"CoMmarker.gameObject.activeInHierarchy: {0};" +
+				"CoTmarker.gameObject.activeInHierarchy: {1}",
+				this.CoMmarker.gameObject.activeInHierarchy,
+				this.CoTmarker.gameObject.activeInHierarchy
+			);
+
 			if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
 			{
+				Tools.PostDebugMessage(this, "CoM and CoT markers are active, doing thrust offset.");
 				hudString.Append('\n');
 
 				hudString.Append("Thrust Offset: ");
@@ -163,8 +169,19 @@ namespace VOID
 						this.CoMmarker.posMarkerObject.transform.position - this.CoTmarker.posMarkerObject.transform.position
 					).ToString("F3"));
 			}
+			#if DEBUG
+			else
+			{
+				Tools.PostDebugMessage(this, "CoM and CoT markers are not active, thrust offset skipped.");
+			}
+			#endif
 
-			GUILayout.Label(hudString.ToString(), VOID_Styles.labelHud, GUILayout.ExpandWidth(true));
+			GUILayout.Label(
+				hudString.ToString(),
+				VOID_Styles.labelHud,
+				GUILayout.ExpandWidth(true),
+				GUILayout.ExpandHeight(true)
+			);
 
 			if (!this.positionsLocked)
 			{

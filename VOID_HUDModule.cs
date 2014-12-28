@@ -106,7 +106,7 @@ namespace VOID
 
 			foreach (HUDWindow window in this.Windows)
 			{
-				window.WindowPos = GUI.Window(
+				window.WindowPos = GUILayout.Window(
 					this.core.windowID,
 					window.WindowPos,
 					VOID_Tools.GetWindowHandler(window.WindowFunction),
