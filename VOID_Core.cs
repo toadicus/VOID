@@ -1139,7 +1139,7 @@ namespace VOID
 
 			this.vesselSimActive = true;
 
-			this.UseToolbarManager = false;
+			this.UseToolbarManager = ToolbarManager.ToolbarAvailable;
 
 			this.LoadConfig();
 
