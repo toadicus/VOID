@@ -241,6 +241,15 @@ namespace VOID
 				}
 			}
 
+			if (VOID_Data.upcomingManeuverNodes < 1 && this.Windows.Contains(this.rightHUD))
+			{
+				this.Windows.Remove(this.rightHUD);
+			}
+			else if (VOID_Data.upcomingManeuverNodes > 0 && !this.Windows.Contains(this.rightHUD))
+			{
+				this.Windows.Add(this.rightHUD);
+			}
+
 			base.DrawGUI();
 		}
 
