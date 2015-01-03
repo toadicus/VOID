@@ -132,4 +132,7 @@
       <Name>VesselSimulator</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="GameData\VOID\Textures\ATM_VOID.cfg" />
+  </ItemGroup>
 </Project>
