@@ -1116,10 +1116,10 @@ namespace VOID
 			this._skinName = this.defaultSkin;
 			this._skinIdx = int.MinValue;
 
-			this.VOIDIconOnInactivePath = "VOID/Textures/void_icon_light_glow";
-			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_dark_glow";
-			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_light";
-			this.VOIDIconOffActivePath = "VOID/Textures/void_icon_dark";
+			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_light_glow";
+			this.VOIDIconOnInactivePath = "VOID/Textures/void_icon_dark_glow";
+			this.VOIDIconOffActivePath = "VOID/Textures/void_icon_light";
+			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_dark";
 
 			this.saveTimer = 0f;
 			this.updateTimer = 0f;
