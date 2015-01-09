@@ -44,8 +44,6 @@ namespace VOID
 		protected VOID_SaveValue<bool> _Active = false;
 		private GameScenes[] validScenes;
 
-		protected string _Name;
-
 		protected float lastUpdate = 0;
 
 		/*
@@ -75,13 +73,23 @@ namespace VOID
 		{
 			get
 			{
-				if (RenderingManager.fetch == null)
+				if (
+					RenderingManager.fetch == null ||
+					RenderingManager.fetch.postDrawQueue == null ||
+					RenderingManager.fetch.postDrawQueue.Length < 4
+				)
 				{
 					return false;
 				}
 				else
 				{
-					return RenderingManager.fetch.postDrawQueue.Contains(this.DrawGUI);
+					Delegate callback = RenderingManager.fetch.postDrawQueue[3];
+					if (callback == null)
+					{
+						return false;
+					}
+
+					return callback.GetInvocationList().Contains((Callback)this.DrawGUI);
 				}
 			}
 		}
@@ -128,10 +136,8 @@ namespace VOID
 
 		public virtual string Name
 		{
-			get
-			{
-				return this._Name;
-			}
+			get;
+			protected set;
 		}
 
 		public virtual Vessel vessel
@@ -199,7 +205,7 @@ namespace VOID
 				bool convertBack = false;
 				if (fieldValue is IVOID_SaveValue)
 				{
-					fieldValue = (fieldValue as IVOID_SaveValue).AsType;
+					fieldValue = (fieldValue as IVOID_SaveValue).value;
 					convertBack = true;
 				}
 
@@ -242,7 +248,7 @@ namespace VOID
 
 				if (fieldValue is IVOID_SaveValue)
 				{
-					fieldValue = (fieldValue as IVOID_SaveValue).AsType;
+					fieldValue = (fieldValue as IVOID_SaveValue).value;
 				}
 
 				config.SetValue(fieldName, fieldValue);

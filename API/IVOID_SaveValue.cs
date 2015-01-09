@@ -1,8 +1,8 @@
-// VOID
+﻿// VOID
 //
-// VOID_VesselInfo.cs
+// IVOID_SaveValue.cs
 //
-// Copyright © 2014, toadicus
+// Copyright © 2015, toadicus
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -25,68 +25,15 @@
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-using KerbalEngineer.VesselSimulator;
-using KerbalEngineer.Extensions;
-using KSP;
 using System;
-using System.Collections.Generic;
-using ToadicusTools;
-using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_VesselInfo : VOID_WindowModule
+	public interface IVOID_SaveValue
 	{
-		public VOID_VesselInfo() : base()
-		{
-			this.Name = "Vessel Information";
-
-			this.WindowPos.x = Screen.width - 260;
-			this.WindowPos.y = 450;
-		}
-
-		public override void ModuleWindow(int _)
-		{
-			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
-			{
-				SimManager.RequestSimulation();
-			}
-
-			GUILayout.BeginVertical();
-
-			GUILayout.Label(
-				vessel.vesselName,
-				VOID_Styles.labelCenterBold,
-				GUILayout.ExpandWidth(true));
-
-			VOID_Data.geeForce.DoGUIHorizontal ("F2");
-
-			VOID_Data.partCount.DoGUIHorizontal ();
-
-			VOID_Data.totalMass.DoGUIHorizontal ("F3");
-
-			VOID_Data.stageResourceMass.DoGUIHorizontal("F2");
-
-			VOID_Data.resourceMass.DoGUIHorizontal("F2");
-
-			VOID_Data.stageDeltaV.DoGUIHorizontal (3, false);
-
-			VOID_Data.totalDeltaV.DoGUIHorizontal (3, false);
-
-			VOID_Data.mainThrottle.DoGUIHorizontal ("F0");
-
-			VOID_Data.currmaxThrust.DoGUIHorizontal ();
-
-			VOID_Data.currmaxThrustWeight.DoGUIHorizontal ();
-
-			VOID_Data.surfaceThrustWeight.DoGUIHorizontal ("F2");
-
-			VOID_Data.intakeAirStatus.DoGUIHorizontal();
-
-			GUILayout.EndVertical();
-
-			GUI.DragWindow();
-		}
+		Type type { get; }
+		object value { get; }
+		void SetValue(object v);
 	}
 }
+

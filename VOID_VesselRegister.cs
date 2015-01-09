@@ -60,7 +60,7 @@ namespace VOID
 
 		public VOID_VesselRegister() : base()
 		{
-			this._Name = "Vessel Register";
+			this.Name = "Vessel Register";
 
 			this.WindowPos.x = 845;
 			this.WindowPos.y = 275;

@@ -17,13 +17,13 @@ namespace VOID
 	{
 		public VOID_TWR() : base()
 		{
-			this._Name = "IP Thrust-to-Weight Ratios";
+			this.Name = "IP Thrust-to-Weight Ratios";
 		}
 
 		public override void ModuleWindow(int _)
 		{
 			if (
-				HighLogic.LoadedSceneIsEditor ||
+				!HighLogic.LoadedSceneIsFlight ||
 				(TimeWarp.WarpMode == TimeWarp.Modes.LOW) ||
 				(TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate)
 			)

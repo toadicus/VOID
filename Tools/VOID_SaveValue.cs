@@ -1,8 +1,8 @@
-﻿// VOID
+// VOID
 //
-// IVOID_Core.cs
+// VOID_SaveValue.cs
 //
-// Copyright © 2015, toadicus
+// Copyright © 2014, toadicus
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -26,49 +26,100 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
+using ToadicusTools;
 using UnityEngine;
 
 namespace VOID
 {
-	public abstract class VOIDCore : VOID_Module, IVOID_Module
+	public struct VOID_SaveValue<T> : IVOID_SaveValue
 	{
-		public const double Constant_G = 6.674e-11;
+		private T _value;
+		private Type _type;
 
-		public abstract int windowID { get; }
-		public abstract bool configDirty { get; set; }
-		public abstract bool powerAvailable	{ get; protected set; }
-
-		public abstract List<IVOID_Module> Modules { get; }
-
-		public abstract float updateTimer { get; protected set; }
-		public abstract double updatePeriod { get; }
-
-		public abstract GUISkin Skin { get; }
-
-		public abstract CelestialBody HomeBody { get; }
-		public abstract List<CelestialBody> allBodies { get; }
-		public abstract List<CelestialBody> sortedBodyList { get; protected set; }
-
-		public abstract List<VesselType> allVesselTypes { get; }
-
-		public abstract Stage LastStage { get; protected set; }
-		public abstract Stage[] Stages { get; protected set; }
-
-		public virtual event VOIDEventHandler onApplicationQuit;
-
-		public virtual void OnApplicationQuit()
+		private VOIDCore Core
 		{
-			if (this.onApplicationQuit != null)
+			get
 			{
-				this.onApplicationQuit(this);
+				return VOID_Data.Core;
 			}
 		}
-	}
 
-	public delegate void VOIDEventHandler(object sender);
+		object IVOID_SaveValue.value
+		{
+			get
+			{
+				return this.value;
+			}
+		}
+
+		public T value
+		{
+			get
+			{
+				return this._value;
+			}
+			set
+			{
+				if (this.Core != null && !System.Object.Equals(this._value, value))
+				{
+					Tools.PostDebugMessage (string.Format (
+						"VOID: Dirtying config for type {0} in method {1}." +
+						"\n\t Old Value: {2}, New Value: {3}" +
+						"\n\t Object.Equals(New, Old): {4}",
+						this._type,
+						new System.Diagnostics.StackTrace().GetFrame(1).GetMethod(),
+						this._value,
+						value,
+						System.Object.Equals(this._value, value)
+					));
+					this.Core.configDirty = true;
+				}
+				this._value = value;
+			}
+		}
+
+		public Type type
+		{
+			get
+			{
+				if (this._type == null && this._value != null)
+				{
+					this._type = this._value.GetType ();
+				}
+				return this._type;
+			}
+			set
+			{
+				this._type = value;
+			}
+		}
+
+		public void SetValue(object v)
+		{
+			this.value = (T)v;
+		}
+
+		public static implicit operator T(VOID_SaveValue<T> v)
+		{
+			return (T)v.value;
+		}
+
+		public static implicit operator VOID_SaveValue<T>(T v)
+		{
+			VOID_SaveValue<T> r = new VOID_SaveValue<T>();
+			r.type = v.GetType();
+			r.value = v;
+
+			return r;
+		}
+
+		public override string ToString()
+		{
+			return this.value.ToString();
+		}
+	}
 }
 

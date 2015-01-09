@@ -1,8 +1,8 @@
-// VOID
+﻿// VOID
 //
-// VOID_VesselInfo.cs
+// IVOID_Core.cs
 //
-// Copyright © 2014, toadicus
+// Copyright © 2015, toadicus
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -27,7 +27,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using KerbalEngineer.VesselSimulator;
-using KerbalEngineer.Extensions;
 using KSP;
 using System;
 using System.Collections.Generic;
@@ -36,57 +35,47 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_VesselInfo : VOID_WindowModule
+	public abstract class VOIDCore : VOID_Module, IVOID_Module
 	{
-		public VOID_VesselInfo() : base()
-		{
-			this.Name = "Vessel Information";
+		public const double Constant_G = 6.674e-11;
 
-			this.WindowPos.x = Screen.width - 260;
-			this.WindowPos.y = 450;
-		}
+		public abstract int windowID { get; }
+		public abstract bool configDirty { get; set; }
+		public abstract bool powerAvailable	{ get; protected set; }
 
-		public override void ModuleWindow(int _)
+		public abstract List<IVOID_Module> Modules { get; }
+
+		public abstract float updateTimer { get; protected set; }
+		public abstract double updatePeriod { get; }
+
+		public virtual float saveTimer { get; protected set; }
+
+		public abstract GUISkin Skin { get; }
+
+		public abstract CelestialBody HomeBody { get; }
+		public abstract List<CelestialBody> allBodies { get; }
+		public abstract List<CelestialBody> sortedBodyList { get; protected set; }
+
+		public abstract List<VesselType> allVesselTypes { get; }
+
+		public abstract Stage LastStage { get; protected set; }
+		public abstract Stage[] Stages { get; protected set; }
+
+		public virtual event VOIDEventHandler onApplicationQuit;
+
+		public virtual void OnGUI() {}
+
+		public virtual void OnApplicationQuit()
 		{
-			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
+			if (this.onApplicationQuit != null)
 			{
-				SimManager.RequestSimulation();
+				this.onApplicationQuit(this);
 			}
-
-			GUILayout.BeginVertical();
-
-			GUILayout.Label(
-				vessel.vesselName,
-				VOID_Styles.labelCenterBold,
-				GUILayout.ExpandWidth(true));
-
-			VOID_Data.geeForce.DoGUIHorizontal ("F2");
-
-			VOID_Data.partCount.DoGUIHorizontal ();
-
-			VOID_Data.totalMass.DoGUIHorizontal ("F3");
-
-			VOID_Data.stageResourceMass.DoGUIHorizontal("F2");
-
-			VOID_Data.resourceMass.DoGUIHorizontal("F2");
-
-			VOID_Data.stageDeltaV.DoGUIHorizontal (3, false);
-
-			VOID_Data.totalDeltaV.DoGUIHorizontal (3, false);
-
-			VOID_Data.mainThrottle.DoGUIHorizontal ("F0");
-
-			VOID_Data.currmaxThrust.DoGUIHorizontal ();
-
-			VOID_Data.currmaxThrustWeight.DoGUIHorizontal ();
-
-			VOID_Data.surfaceThrustWeight.DoGUIHorizontal ("F2");
-
-			VOID_Data.intakeAirStatus.DoGUIHorizontal();
-
-			GUILayout.EndVertical();
-
-			GUI.DragWindow();
 		}
+
+		public abstract void SaveConfig();
 	}
+
+	public delegate void VOIDEventHandler(object sender);
 }
+

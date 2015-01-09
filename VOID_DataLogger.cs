@@ -454,7 +454,7 @@ namespace VOID
 
 		public VOID_DataLogger()
 		{
-			this._Name = "CSV Data Logger";
+			this.Name = "CSV Data Logger";
 
 			this.loggingActive = false;
 			this.firstWrite = true;

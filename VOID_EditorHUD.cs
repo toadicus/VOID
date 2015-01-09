@@ -98,7 +98,7 @@ namespace VOID
 		 * */
 		public VOID_EditorHUD() : base()
 		{
-			this._Name = "Heads-Up Display";
+			this.Name = "Heads-Up Display";
 
 			this.toggleActive = true;
 

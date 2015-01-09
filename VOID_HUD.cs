@@ -53,7 +53,7 @@ namespace VOID
 		 * */
 		public VOID_HUD() : base()
 		{
-			this._Name = "Heads-Up Display";
+			this.Name = "Heads-Up Display";
 
 			this.toggleActive = true;
 

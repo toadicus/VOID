@@ -104,7 +104,6 @@ namespace VOID
 		// Vessel Type Housekeeping
 		protected List<VesselType> _allVesselTypes = new List<VesselType>();
 		protected bool vesselTypesLoaded = false;
-		public float saveTimer = 0;
 
 		protected string defaultSkin = "KSP window 2";
 
@@ -438,15 +437,21 @@ namespace VOID
 			}
 		}
 
-		public virtual void OnGUI()
-		{
-		}
-
 		public virtual void Update()
 		{
 			this.LoadBeforeUpdate();
 
-			if (this.vessel != null && this.vesselSimActive)
+			if (
+				this.vesselSimActive &&
+				(
+					this.vessel != null ||
+					(
+						HighLogic.LoadedSceneIsEditor &&
+						EditorLogic.RootPart != null &&
+						EditorLogic.SortedShipList.Count > 0
+					)
+				)
+			)
 			{
 				Tools.PostDebugMessage(this, "Updating SimManager.");
 				this.UpdateSimManager();
@@ -459,14 +464,52 @@ namespace VOID
 
 			foreach (IVOID_Module module in this.Modules)
 			{
-				if (!module.guiRunning && module.toggleActive)
+				Tools.PostDebugMessage(
+					this,
+					"\n\tmodule.Name={0}" +
+					"\n\tmodule.guiRunning={1}" +
+					"\n\tmodule.toggleActive={2}" +
+					"\n\tmodule.inValidScene={3}" +
+					"\n\tthis.togglePower={4}" +
+					"\n\tthis.factoryReset={5}" +
+					"\n\tHighLogic.LoadedSceneIsEditor={6}" +
+					"\n\t(EditorLogic.RootPart != null && EditorLogic.SortedShipList.Count > 0)={7}" +
+					"\n\t(EditorLogic.RootPart == null || EditorLogic.SortedShipList.Count == 0)={8}",
+					module.Name,
+					module.guiRunning,
+					module.toggleActive,
+					module.inValidScene,
+					this.togglePower,
+					this.factoryReset,
+					HighLogic.LoadedSceneIsEditor,
+					(EditorLogic.RootPart != null && EditorLogic.SortedShipList.Count > 0),
+					(EditorLogic.RootPart == null || EditorLogic.SortedShipList.Count == 0)
+				);
+				if (
+					!module.guiRunning &&
+					module.toggleActive &&
+					module.inValidScene &&
+					(
+						!HighLogic.LoadedSceneIsEditor ||
+						(EditorLogic.RootPart != null && EditorLogic.SortedShipList.Count > 0)
+					)
+				)
 				{
 					module.StartGUI();
 				}
-				if (module.guiRunning && !module.toggleActive ||
-				    !this.togglePower ||
-					!module.inValidScene ||
-				    this.factoryReset)
+				if (
+					module.guiRunning &&
+					(
+						!module.toggleActive ||
+					    !this.togglePower ||
+						!module.inValidScene ||
+					    this.factoryReset ||
+						(
+							HighLogic.LoadedSceneIsEditor &&
+							(EditorLogic.RootPart == null || EditorLogic.SortedShipList.Count == 0)
+						)
+					)
+				)
 				{
 					module.StopGUI();
 				}
@@ -547,7 +590,7 @@ namespace VOID
 		{
 			GUILayout.BeginVertical();
 
-			if (this.powerAvailable || HighLogic.LoadedSceneIsEditor)
+			if (this.powerAvailable || !HighLogic.LoadedSceneIsFlight)
 			{
 				if (!HighLogic.LoadedSceneIsEditor)
 				{
@@ -561,7 +604,7 @@ namespace VOID
 					}
 				}
 
-				if (togglePower || HighLogic.LoadedSceneIsEditor)
+				if (togglePower || !HighLogic.LoadedSceneIsFlight)
 				{
 					foreach (IVOID_Module module in this.Modules)
 					{
@@ -593,11 +636,6 @@ namespace VOID
 		public override void DrawConfigurables()
 		{
 			GUIContent _content;
-
-			if (HighLogic.LoadedSceneIsFlight)
-			{
-				this.consumeResource.value = GUILayout.Toggle(this.consumeResource, "Consume Resources");
-			}
 
 			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
 
@@ -1018,7 +1056,7 @@ namespace VOID
 			}
 		}
 
-		protected void CheckAndSave()
+		protected virtual void CheckAndSave()
 		{
 			this.saveTimer += Time.deltaTime;
 
@@ -1050,7 +1088,7 @@ namespace VOID
 			}
 		}
 
-		public void SaveConfig()
+		public override void SaveConfig()
 		{
 			var config = KSP.IO.PluginConfiguration.CreateForType<T>();
 			config.load();
@@ -1069,7 +1107,7 @@ namespace VOID
 
 		public VOIDCore_Generic()
 		{
-			this._Name = "VOID Core";
+			this.Name = "VOID Core";
 
 			System.Version version = this.GetType().Assembly.GetName().Version;
 
@@ -1086,6 +1124,9 @@ namespace VOID
 			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_dark_glow";
 			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_light";
 			this.VOIDIconOffActivePath = "VOID/Textures/void_icon_dark";
+
+			this.saveTimer = 0f;
+			this.updateTimer = 0f;
 
 			this.vesselSimActive = true;
 

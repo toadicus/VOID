@@ -41,7 +41,7 @@ namespace VOID
 
 		public VOID_Transfer() : base()
 		{
-			this._Name = "Transfer Angle Information";
+			this.Name = "Transfer Angle Information";
 
 			this.WindowPos.x = 475;
 			this.WindowPos.y = 85;

@@ -38,57 +38,9 @@ namespace VOID
 {
 	public class VOIDCore_Editor : VOIDCore_Generic<VOIDCore_Editor>
 	{
-		protected override ApplicationLauncher.AppScenes appIconVisibleScenes
-		{
-			get
-			{
-				return ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH;
-			}
-		}
-
 		public VOIDCore_Editor() : base()
 		{
-			this._Name = "VOID Editor Core";
-		}
-
-		public override void Update()
-		{
-			this.LoadBeforeUpdate();
-
-			foreach (IVOID_Module module in this.Modules)
-			{
-				if (EditorLogic.RootPart == null)
-				{
-					module.StopGUI();
-					continue;
-				}
-				if (HighLogic.LoadedSceneIsEditor && module.toggleActive && EditorLogic.SortedShipList.Any())
-				{
-					module.StartGUI();
-				}
-				if (!HighLogic.LoadedSceneIsEditor || !module.toggleActive || !EditorLogic.SortedShipList.Any())
-				{
-					module.StopGUI();
-				}
-			}
-
-			if (EditorLogic.RootPart == null || !HighLogic.LoadedSceneIsEditor)
-			{
-				this.StopGUI();
-				return;
-			}
-			else if (!this.guiRunning && HighLogic.LoadedSceneIsEditor)
-			{
-				this.StartGUI();
-			}
-
-			if (EditorLogic.SortedShipList.Count > 0 && this.vesselSimActive)
-			{
-				Tools.PostDebugMessage(this, "Updating SimManager.");
-				this.UpdateSimManager();
-			}
-
-			this.CheckAndSave ();
+			this.Name = "VOID Core: Editor";
 		}
 
 		public override void FixedUpdate() {}

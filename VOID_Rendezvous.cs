@@ -47,7 +47,7 @@ namespace VOID
 
 		public VOID_Rendezvous()
 		{
-			this._Name = "Rendezvous Information";
+			this.Name = "Rendezvous Information";
 
 			this.WindowPos.x = 845;
 			this.WindowPos.y = 85;

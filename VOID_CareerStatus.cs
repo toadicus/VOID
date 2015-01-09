@@ -143,42 +143,58 @@ namespace VOID
 		{
 			get
 			{
-				return (
-					this.currentFunds == double.NaN ||
-					this.currentScience == float.NaN ||
-					this.currentReputation == float.NaN
+				Tools.PostDebugMessage(
+					this,
+					"Checking init state:" +
+					"\n\tcurrentFunds={0}" +
+					"\n\tcurrentScience={1}" +
+					"\n\tcurrentReputation={2}",
+					this.currentFunds,
+					this.currentScience,
+					this.currentReputation
+				);
+
+				return !(
+					double.IsNaN(this.currentFunds) ||
+					float.IsNaN(this.currentScience) ||
+					float.IsNaN(this.currentReputation)
 				);
 			}
 		}
 
-		public override void ModuleWindow(int _)
+		public override void DrawGUI()
 		{
-			if (!this.currenciesInitialized)
+			if (Event.current.type != EventType.Layout && !this.currenciesInitialized)
 			{
 				this.initCurrencies();
 			}
 
+			base.DrawGUI();
+		}
+
+		public override void ModuleWindow(int _)
+		{
 			GUILayout.BeginVertical();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(VOID_Data.fundingStatus.Label);
 			GUILayout.FlexibleSpace();
 			this.fundsContent.text = VOID_Data.fundingStatus.Value;
-			GUILayout.Label(this.fundsContent, GUILayout.ExpandWidth(false));
+			GUILayout.Label(this.fundsContent, GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(VOID_Data.reputationStatus.Label);
 			GUILayout.FlexibleSpace();
 			this.repContent.text = VOID_Data.reputationStatus.Value;
-			GUILayout.Label(this.repContent, GUILayout.ExpandWidth(false));
+			GUILayout.Label(this.repContent, GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(VOID_Data.scienceStatus.Label);
 			GUILayout.FlexibleSpace();
 			this.scienceContent.text = VOID_Data.scienceStatus.Value;
-			GUILayout.Label(this.scienceContent, GUILayout.ExpandWidth(false));
+			GUILayout.Label(this.scienceContent, GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
@@ -207,6 +223,17 @@ namespace VOID
 
 		private void initCurrencies()
 		{
+			Tools.PostDebugMessage(
+				this,
+				"Initializing currencies." +
+				"\n\tFunding.Instance={0}" +
+				"ResearchAndDevelopment.Instance={1}" +
+				"Reputation.Instance={2}",
+				Funding.Instance == null ? "NULL" : Funding.Instance.ToString(),
+				ResearchAndDevelopment.Instance == null ? "NULL" : ResearchAndDevelopment.Instance.ToString(),
+				Reputation.Instance == null ? "NULL" : Reputation.Instance.ToString()
+			);
+
 			this.currentFunds = Funding.Instance != null ? Funding.Instance.Funds : double.NaN;
 			this.currentReputation = Reputation.Instance != null ? Reputation.Instance.reputation : float.NaN;
 			this.currentScience = ResearchAndDevelopment.Instance != null ?
@@ -224,7 +251,7 @@ namespace VOID
 		{
 			VOID_CareerStatus.Instance = this;
 
-			this._Name = "Career Status";
+			this.Name = "Career Status";
 
 			GameEvents.OnFundsChanged.Add(this.onFundsChange);
 			GameEvents.OnReputationChanged.Add(this.onRepChange);
@@ -249,7 +276,9 @@ namespace VOID
 				this.scienceContent.image = this.scienceIcon;
 			}
 
-			this.initCurrencies();
+			this.currentFunds = double.NaN;
+			this.currentScience = float.NaN;
+			this.currentReputation = float.NaN;
 		}
 
 		~VOID_CareerStatus()

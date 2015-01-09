@@ -31,30 +31,12 @@ namespace VOID
 {
 	public class VOIDCore_SpaceCentre : VOIDCore_Generic<VOIDCore_SpaceCentre>
 	{
-		#region Static Members
-		protected new static bool _initialized = false;
-		public new static bool Initialized
+		public VOIDCore_SpaceCentre() : base()
 		{
-			get 
-			{
-				return _initialized;
-			}
+			base.Name = "VOID Core: SpaceCentre";
 		}
 
-		protected new static VOIDCore_SpaceCentre _instance;
-		public new static VOIDCore_SpaceCentre Instance
-		{
-			get
-			{
-				if (_instance == null)
-				{
-					_instance = new VOIDCore_SpaceCentre();
-					_initialized = true;
-				}
-				return _instance;
-			}
-		}
-		#endregion
+		public override void FixedUpdate() {}
 	}
 }
 

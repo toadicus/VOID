@@ -25,10 +25,29 @@
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+using KSP;
 using System;
+using UnityEngine;
 
 namespace VOID
 {
-	public class VOIDCore_Flight : VOIDCore_Generic<VOIDCore_Flight> {}
+	public class VOIDCore_Flight : VOIDCore_Generic<VOIDCore_Flight>
+	{
+		public VOIDCore_Flight()
+		{
+			base.Name = "VOID Core: Flight";
+		}
+
+		public override void DrawConfigurables()
+		{
+			if (HighLogic.LoadedSceneIsFlight)
+			{
+				this.consumeResource.value = GUILayout.Toggle(this.consumeResource, "Consume Resources");
+			}
+
+			base.DrawConfigurables();
+		}
+	}
 }
 

@@ -32,17 +32,6 @@ using UnityEngine;
 
 namespace VOID
 {
-	public interface IVOID_DataValue
-	{
-		string Label { get; }
-		string Units { get; }
-		object Value { get; }
-
-		void Refresh();
-		string ValueUnitString();
-		void DoGUIHorizontal();
-	}
-
 	public class VOID_DataValue<T> : IVOID_DataValue
 	{
 		/*
@@ -73,7 +62,7 @@ namespace VOID
 		{
 			get
 			{
-				return (object)this.Value;
+				return this.Value;
 			}
 		}
 
@@ -82,7 +71,6 @@ namespace VOID
 			get
 			{
 				if (
-					HighLogic.LoadedSceneIsEditor ||
 					(VOID_Data.Core.updateTimer - this.lastUpdate > VOID_Data.Core.updatePeriod) ||
 					(this.lastUpdate > VOID_Data.Core.updateTimer)
 				)

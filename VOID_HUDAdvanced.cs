@@ -72,7 +72,7 @@ namespace VOID
 		 * */
 		public VOID_HUDAdvanced() : base()
 		{
-			this._Name = "Advanced Heads-Up Display";
+			this.Name = "Advanced Heads-Up Display";
 
 			this.toggleActive = true;
 

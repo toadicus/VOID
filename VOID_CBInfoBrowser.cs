@@ -56,7 +56,7 @@ namespace VOID
 
 		public VOID_CBInfoBrowser()
 		{
-			this._Name = "Celestial Body Information Browser";
+			this.Name = "Celestial Body Information Browser";
 
 			this.WindowPos.x = 10;
 			this.WindowPos.y = 85;

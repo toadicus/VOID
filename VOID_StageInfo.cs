@@ -39,7 +39,7 @@ namespace VOID
 
 		public VOID_StageInfo() : base()
 		{
-			this._Name = "Stage Information";
+			this.Name = "Stage Information";
 			this.defWidth = 200f;
 			this.bodyIdx = 4;
 
@@ -95,7 +95,7 @@ namespace VOID
 		public override void ModuleWindow(int _)
 		{
 			if (
-				HighLogic.LoadedSceneIsEditor ||
+				!HighLogic.LoadedSceneIsFlight ||
 				(TimeWarp.WarpMode == TimeWarp.Modes.LOW) ||
 				(TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate)
 			)
