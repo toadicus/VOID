@@ -13,6 +13,7 @@ using UnityEngine;
 
 namespace VOID
 {
+	[VOID_Scenes(GameScenes.EDITOR, GameScenes.FLIGHT)]
 	public class VOID_StageInfo : VOID_WindowModule
 	{
 		private Table stageTable;
@@ -211,7 +212,5 @@ namespace VOID
 			}
 		}
 	}
-
-	public class VOID_StageInfoEditor : VOID_StageInfo, IVOID_EditorModule {}
 }
 

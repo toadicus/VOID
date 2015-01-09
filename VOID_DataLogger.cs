@@ -101,7 +101,7 @@ namespace VOID
 				if (this._fileName == null || this._fileName == string.Empty)
 				{
 					this._fileName = KSP.IO.IOUtils.GetFilePathFor(
-						typeof(VOID_Core),
+						typeof(VOIDCore),
 						string.Format(
 							"{0}_{1}",
 							this.vessel.vesselName,

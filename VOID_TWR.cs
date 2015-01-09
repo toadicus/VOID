@@ -12,6 +12,7 @@ using UnityEngine;
 
 namespace VOID
 {
+	[VOID_Scenes(GameScenes.EDITOR, GameScenes.FLIGHT)]
 	public class VOID_TWR : VOID_WindowModule
 	{
 		public VOID_TWR() : base()
@@ -62,7 +63,5 @@ namespace VOID
 			GUI.DragWindow();
 		}
 	}
-
-	public class VOID_EditorTWR : VOID_TWR, IVOID_EditorModule {}
 }
 

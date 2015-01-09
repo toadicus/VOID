@@ -34,6 +34,7 @@ using UnityEngine;
 
 namespace VOID
 {
+	[VOID_Scenes(GameScenes.FLIGHT, GameScenes.EDITOR, GameScenes.SPACECENTER)]
 	public class VOID_CareerStatus : VOID_WindowModule
 	{
 		public static VOID_CareerStatus Instance
@@ -67,36 +68,23 @@ namespace VOID
 		private GUIContent repContent;
 		private GUIContent scienceContent;
 
+		#pragma warning disable 0414
 		private Texture2D fundsIconGreen;
 		private Texture2D fundsIconRed;
 		private Texture2D reputationIconGreen;
 		private Texture2D reputationIconRed;
 		private Texture2D scienceIcon;
+		#pragma warning restore 0414
 
 		public override bool toggleActive
 		{
 			get
 			{
-				switch (HighLogic.CurrentGame.Mode)
-				{
-					case Game.Modes.CAREER:
-					case Game.Modes.SCIENCE_SANDBOX:
-						return base.toggleActive;
-					default:
-						return false;
-				}
+				return base.toggleActive && this.inValidGame;
 			}
 			set
 			{
-				switch (HighLogic.CurrentGame.Mode)
-				{
-					case Game.Modes.CAREER:
-					case Game.Modes.SCIENCE_SANDBOX:
-						base.toggleActive = value;
-						break;
-					default:
-						return;
-				}
+				base.toggleActive = this.inValidGame && value;
 			}
 		}
 
@@ -136,8 +124,40 @@ namespace VOID
 			private set;
 		}
 
+		private bool inValidGame
+		{
+			get
+			{
+				switch (HighLogic.CurrentGame.Mode)
+				{
+					case Game.Modes.CAREER:
+					case Game.Modes.SCIENCE_SANDBOX:
+						return true;
+					default:
+						return false;
+				}
+			}
+		}
+
+		private bool currenciesInitialized
+		{
+			get
+			{
+				return (
+					this.currentFunds == double.NaN ||
+					this.currentScience == float.NaN ||
+					this.currentReputation == float.NaN
+				);
+			}
+		}
+
 		public override void ModuleWindow(int _)
 		{
+			if (!this.currenciesInitialized)
+			{
+				this.initCurrencies();
+			}
+
 			GUILayout.BeginVertical();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -185,6 +205,14 @@ namespace VOID
 			this.currentScience = newValue;
 		}
 
+		private void initCurrencies()
+		{
+			this.currentFunds = Funding.Instance != null ? Funding.Instance.Funds : double.NaN;
+			this.currentReputation = Reputation.Instance != null ? Reputation.Instance.reputation : float.NaN;
+			this.currentScience = ResearchAndDevelopment.Instance != null ?
+				ResearchAndDevelopment.Instance.Science : float.NaN;
+		}
+
 		/*
 		 *  MissionRecoveryDialog::fundsIconGreen.name: UiElements_05
          *  MissionRecoveryDialog::fundsIconRed.name: UiElements_06
@@ -221,10 +249,7 @@ namespace VOID
 				this.scienceContent.image = this.scienceIcon;
 			}
 
-			this.currentFunds = Funding.Instance != null ? Funding.Instance.Funds : double.NaN;
-			this.currentReputation = Reputation.Instance != null ? Reputation.Instance.reputation : float.NaN;
-			this.currentScience = ResearchAndDevelopment.Instance != null ?
-				ResearchAndDevelopment.Instance.Science : float.NaN;
+			this.initCurrencies();
 		}
 
 		~VOID_CareerStatus()

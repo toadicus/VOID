@@ -368,7 +368,7 @@ namespace VOID
 
 			GUILayout.Label(num_art_sats.ToString(), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-			double g_ASL = (VOID_Core.Constant_G * body.Mass) / (body.Radius * body.Radius);
+			double g_ASL = (VOIDCore.Constant_G * body.Mass) / (body.Radius * body.Radius);
 
 			GUILayout.Label(Tools.MuMech_ToSI(g_ASL) + "m/s²", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 

@@ -47,82 +47,15 @@ using ToadicusTools;
 
 namespace VOID
 {
-	[KSPAddon(KSPAddon.Startup.Flight, false)]
-	public class VOIDFlightMaster : MonoBehaviour
+	[KSPAddon(KSPAddon.Startup.SpaceCentre, false)]
+	public class VOIDMaster_SpaceCentre : VOIDMaster<VOIDCore_SpaceCentre>
 	{
-		protected VOID_Core Core;
-
-		public void Awake()
+		public override void Awake()
 		{
-			Tools.PostDebugMessage ("VOIDFlightMaster: Waking up.");
-			this.Core = (VOID_Core)VOID_Core.Instance;
-			this.Core.ResetGUI ();
-			Tools.PostDebugMessage ("VOIDFlightMaster: Awake.");
+				this.LogDebug("Waking up.");
+				this.Core = VOIDCore_SpaceCentre.Instance;
+				this.Core.ResetGUI ();
+				this.LogDebug("Awake.");
 		}
-
-		public void Update()
-		{
-			if (!HighLogic.LoadedSceneIsFlight && this.Core != null)
-			{
-				this.Core.SaveConfig ();
-				this.Core = null;
-				VOID_Core.Reset();
-				return;
-			}
-
-			if (this.Core == null)
-			{
-				this.Awake();
-			}
-
-			this.Core.Update ();
-
-			if (this.Core.factoryReset)
-			{
-				KSP.IO.File.Delete<VOID_Core>("config.xml");
-				this.Core = null;
-				VOID_Core.Reset();
-			}
-		}
-
-		public void FixedUpdate()
-		{
-			if (this.Core == null || !HighLogic.LoadedSceneIsFlight)
-			{
-				return;
-			}
-
-			this.Core.FixedUpdate ();
-		}
-
-		public void OnGUI()
-		{
-			if (this.Core == null)
-			{
-				return;
-			}
-
-			this.Core.OnGUI();
-		}
-
-		public void OnDestroy()
-		{
-			if (this.Core == null)
-			{
-				return;
-			}
-
-			this.Core.OnDestroy();
-		}
-
-		public void OnApplicationQuit()
-		{
-			if (this.Core == null)
-			{
-				return;
-			}
-
-			this.Core.OnApplicationQuit();
-		}
-    }
+	}
 }

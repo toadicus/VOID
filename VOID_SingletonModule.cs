@@ -1,8 +1,8 @@
-// VOID
+﻿// VOID
 //
-// IVOID_Module.cs
+// VOID_SingletonModule.cs
 //
-// Copyright © 2014, toadicus
+// Copyright © 2015, toadicus
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -25,33 +25,42 @@
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 using System;
 
 namespace VOID
 {
-	public interface IVOID_Module
+	public abstract class VOID_SingletonModule<T> : VOIDCore, IVOID_Module
+		where T : VOID_Module, new()
 	{
-		string Name { get; }
-		bool toggleActive { get; set; }
-		bool guiRunning { get; }
-		bool inValidScene { get; }
+		#region Singleton Members
+		/*
+		 * Static Members
+		 * */
+		protected static bool _initialized = false;
 
-		void DrawGUI();
-		void StartGUI();
-		void StopGUI();
+		public static bool Initialized
+		{
+			get
+			{
+				return _initialized;
+			}
+		}
 
-		void DrawConfigurables();
+		protected static T _instance;
 
-		void LoadConfig();
-
-		void _SaveToConfig(KSP.IO.PluginConfiguration config);
-	}
-
-	public interface IVOID_BehaviorModule : IVOID_Module
-	{
-		void Update();
-		void FixedUpdate();
-		void OnDestroy();
+		public static T Instance
+		{
+			get
+			{
+				if (_instance == null)
+				{
+					_instance = new T();
+					_initialized = true;
+				}
+				return _instance;
+			}
+		}
+		#endregion
 	}
 }
+

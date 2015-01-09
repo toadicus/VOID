@@ -1,8 +1,8 @@
-// VOID
+﻿// VOID
 //
-// IVOID_Module.cs
+// VOID_ScenesAttribute.cs
 //
-// Copyright © 2014, toadicus
+// Copyright © 2015, toadicus
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -25,33 +25,23 @@
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 using System;
 
 namespace VOID
 {
-	public interface IVOID_Module
+	[AttributeUsage(AttributeTargets.Class)]
+	public class VOID_ScenesAttribute : Attribute
 	{
-		string Name { get; }
-		bool toggleActive { get; set; }
-		bool guiRunning { get; }
-		bool inValidScene { get; }
+		public GameScenes[] ValidScenes
+		{
+			get;
+			private set;
+		}
 
-		void DrawGUI();
-		void StartGUI();
-		void StopGUI();
-
-		void DrawConfigurables();
-
-		void LoadConfig();
-
-		void _SaveToConfig(KSP.IO.PluginConfiguration config);
-	}
-
-	public interface IVOID_BehaviorModule : IVOID_Module
-	{
-		void Update();
-		void FixedUpdate();
-		void OnDestroy();
+		public VOID_ScenesAttribute(params GameScenes[] validScenes)
+		{
+			this.ValidScenes = validScenes;
+		}
 	}
 }
+

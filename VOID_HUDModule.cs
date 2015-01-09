@@ -118,6 +118,8 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
+			base.DrawConfigurables();
+
 			if (GUILayout.Button (string.Intern("Change HUD color"), GUILayout.ExpandWidth (false)))
 			{
 				++this.ColorIndex;
@@ -140,7 +142,7 @@ namespace VOID
 		{
 			base.LoadConfig();
 
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core>();
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_HUDModule>();
 			config.load();
 
 			foreach (HUDWindow window in this.Windows)
@@ -188,9 +190,9 @@ namespace VOID
 				{
 					this._windowPos = value;
 
-					if (VOID_Data.core != null)
+					if (VOID_Data.Core != null)
 					{
-						VOID_Data.core.configDirty = true;
+						VOID_Data.Core.configDirty = true;
 					}
 				}
 			}

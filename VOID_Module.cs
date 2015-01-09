@@ -42,7 +42,7 @@ namespace VOID
 		 * */
 		[AVOID_SaveValue("Active")]
 		protected VOID_SaveValue<bool> _Active = false;
-		protected bool _Running = false;
+		private GameScenes[] validScenes;
 
 		protected string _Name;
 
@@ -51,16 +51,11 @@ namespace VOID
 		/*
 		 * Properties
 		 * */
-		protected virtual VOID_Core core
+		protected virtual VOIDCore core
 		{
 			get
 			{
-				if (HighLogic.LoadedSceneIsEditor)
-				{
-					return VOID_EditorCore.Instance as VOID_Core;
-				}
-
-				return VOID_Core.Instance;
+				return VOID_Data.Core;
 			}
 		}
 
@@ -80,7 +75,54 @@ namespace VOID
 		{
 			get
 			{
-				return this._Running;
+				if (RenderingManager.fetch == null)
+				{
+					return false;
+				}
+				else
+				{
+					return RenderingManager.fetch.postDrawQueue.Contains(this.DrawGUI);
+				}
+			}
+		}
+
+		public virtual bool inValidScene
+		{
+			get
+			{
+				if (this.validScenes == null)
+				{
+					Tools.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
+					foreach (var attr in this.GetType().GetCustomAttributes(false))
+					{
+						if (attr is VOID_ScenesAttribute)
+						{
+							VOID_ScenesAttribute addonAttr = (VOID_ScenesAttribute)attr;
+
+							this.validScenes = addonAttr.ValidScenes;
+
+							Tools.PostDebugMessage("Found VOID_ScenesAttribute; validScenes set.");
+
+							break;
+						}
+					}
+
+					if (this.validScenes == null)
+					{
+						this.validScenes = new GameScenes[] { GameScenes.FLIGHT };
+						Tools.PostDebugMessage("No VOID_ScenesAttribute found; validScenes defaulted to flight.");
+					}
+				}
+
+				Tools.PostDebugMessage(
+					this,
+					"Checking if scene is valid: LoadedScene={0}, validScenes={1}, inValidScene={2}",
+					Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
+					string.Join(", ", this.validScenes.Select(s => Enum.GetName(typeof(GameScenes), s)).ToArray()),
+					this.validScenes.Contains(HighLogic.LoadedScene)
+				);
+
+				return this.validScenes.Contains(HighLogic.LoadedScene);
 			}
 		}
 
@@ -112,7 +154,6 @@ namespace VOID
 
 			Tools.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
 			RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
-			this._Running = true;
 		}
 
 		public void StopGUI()
@@ -123,7 +164,6 @@ namespace VOID
 			}
 			Tools.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
 			RenderingManager.RemoveFromPostDrawQueue (3, this.DrawGUI);
-			this._Running = false;
 		}
 
 		public abstract void DrawGUI();
@@ -132,7 +172,7 @@ namespace VOID
 
 		public virtual void LoadConfig()
 		{
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core> ();
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Module> ();
 			config.load ();
 
 			foreach (var field in this.GetType().GetFields(

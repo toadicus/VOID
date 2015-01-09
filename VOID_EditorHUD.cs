@@ -37,7 +37,8 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_EditorHUD : VOID_HUDModule, IVOID_EditorModule
+	[VOID_Scenes(GameScenes.EDITOR)]
+	public class VOID_EditorHUD : VOID_HUDModule
 	{
 		/*
 		 * Fields

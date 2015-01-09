@@ -36,45 +36,8 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_EditorCore : VOID_Core
+	public class VOIDCore_Editor : VOIDCore_Generic<VOIDCore_Editor>
 	{
-		/*
-		 * Static Members
-		 * */
-		protected new static bool _initialized = false;
-		public new static bool Initialized
-		{
-			get 
-			{
-				return _initialized;
-			}
-		}
-
-		protected new static VOID_EditorCore _instance;
-		public new static VOID_EditorCore Instance
-		{
-			get
-			{
-				if (_instance == null)
-				{
-					_instance = new VOID_EditorCore();
-					_initialized = true;
-				}
-				return _instance;
-			}
-		}
-
-		public new static void Reset()
-		{
-			if (_initialized)
-			{
-				_instance.StopGUI();
-				_instance.Dispose();
-				_instance = null;
-				_initialized = false;
-			}
-		}
-
 		protected override ApplicationLauncher.AppScenes appIconVisibleScenes
 		{
 			get
@@ -83,37 +46,16 @@ namespace VOID
 			}
 		}
 
-		public VOID_EditorCore() : base()
+		public VOIDCore_Editor() : base()
 		{
 			this._Name = "VOID Editor Core";
-		}
-
-		public override void OnGUI() {}
-
-		public override void DrawGUI()
-		{
-			if (!this._modulesLoaded)
-			{
-				this.LoadModulesOfType<IVOID_EditorModule>();
-			}
-
-			Rect _iconPos = Tools.DockToWindow (this.VOIDIconPos, this.mainWindowPos);
-
-			_iconPos = Tools.ClampRectToEditorPad (_iconPos);
-
-			if (_iconPos != this.VOIDIconPos)
-			{
-				this.VOIDIconPos = _iconPos;
-			}
-
-			base.DrawGUI();
 		}
 
 		public override void Update()
 		{
 			this.LoadBeforeUpdate();
 
-			foreach (IVOID_EditorModule module in this.Modules)
+			foreach (IVOID_Module module in this.Modules)
 			{
 				if (EditorLogic.RootPart == null)
 				{

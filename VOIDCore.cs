@@ -1,8 +1,8 @@
-// VOID
+﻿// VOID
 //
-// IVOID_Module.cs
+// IVOID_Core.cs
 //
-// Copyright © 2014, toadicus
+// Copyright © 2015, toadicus
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -26,32 +26,49 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+using KerbalEngineer.VesselSimulator;
+using KSP;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace VOID
 {
-	public interface IVOID_Module
+	public abstract class VOIDCore : VOID_Module, IVOID_Module
 	{
-		string Name { get; }
-		bool toggleActive { get; set; }
-		bool guiRunning { get; }
-		bool inValidScene { get; }
+		public const double Constant_G = 6.674e-11;
 
-		void DrawGUI();
-		void StartGUI();
-		void StopGUI();
+		public abstract int windowID { get; }
+		public abstract bool configDirty { get; set; }
+		public abstract bool powerAvailable	{ get; protected set; }
 
-		void DrawConfigurables();
+		public abstract List<IVOID_Module> Modules { get; }
 
-		void LoadConfig();
+		public abstract float updateTimer { get; protected set; }
+		public abstract double updatePeriod { get; }
 
-		void _SaveToConfig(KSP.IO.PluginConfiguration config);
+		public abstract GUISkin Skin { get; }
+
+		public abstract CelestialBody HomeBody { get; }
+		public abstract List<CelestialBody> allBodies { get; }
+		public abstract List<CelestialBody> sortedBodyList { get; protected set; }
+
+		public abstract List<VesselType> allVesselTypes { get; }
+
+		public abstract Stage LastStage { get; protected set; }
+		public abstract Stage[] Stages { get; protected set; }
+
+		public virtual event VOIDEventHandler onApplicationQuit;
+
+		public virtual void OnApplicationQuit()
+		{
+			if (this.onApplicationQuit != null)
+			{
+				this.onApplicationQuit(this);
+			}
+		}
 	}
 
-	public interface IVOID_BehaviorModule : IVOID_Module
-	{
-		void Update();
-		void FixedUpdate();
-		void OnDestroy();
-	}
+	public delegate void VOIDEventHandler(object sender);
 }
+

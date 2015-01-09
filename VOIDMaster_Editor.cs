@@ -1,6 +1,6 @@
-// VOID
+﻿// VOID
 //
-// IVOID_Module.cs
+// VOIDEditorMaster.cs
 //
 // Copyright © 2014, toadicus
 // All rights reserved.
@@ -25,33 +25,38 @@
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Much, much credit to Younata, Adammada, Nivvydaskrl and to all the authors
+//  behind MechJeb, RemoteTech Relay Network, ISA MapSat, and Protractor for some
+//  invaluable functions and making your nicely written code available to learn from.
+//
+///////////////////////////////////////////////////////////////////////////////
+//
+//  This software uses VesselSimulator and Engineer.Extensions from Engineer Redux.
+//  Engineer Redux (c) 2013 cybutek
+//  Used by permission.
+//
+///////////////////////////////////////////////////////////////////////////////
 
+using KerbalEngineer.VesselSimulator;
+using KSP;
 using System;
+using ToadicusTools;
+using UnityEngine;
 
 namespace VOID
 {
-	public interface IVOID_Module
+	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
+	public class VOIDMaster_Editor : VOIDMaster<VOIDCore_Editor>
 	{
-		string Name { get; }
-		bool toggleActive { get; set; }
-		bool guiRunning { get; }
-		bool inValidScene { get; }
-
-		void DrawGUI();
-		void StartGUI();
-		void StopGUI();
-
-		void DrawConfigurables();
-
-		void LoadConfig();
-
-		void _SaveToConfig(KSP.IO.PluginConfiguration config);
-	}
-
-	public interface IVOID_BehaviorModule : IVOID_Module
-	{
-		void Update();
-		void FixedUpdate();
-		void OnDestroy();
+		public override void Awake()
+		{
+			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
+			this.Core = VOIDCore_Editor.Instance;
+			this.Core.ResetGUI ();
+			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
+		}
 	}
 }

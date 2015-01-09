@@ -1,8 +1,8 @@
-// VOID
+﻿// VOID
 //
-// IVOID_Module.cs
+// VOIDCore_SpaceCentre.cs
 //
-// Copyright © 2014, toadicus
+// Copyright © 2015, toadicus
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -25,33 +25,36 @@
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 using System;
 
 namespace VOID
 {
-	public interface IVOID_Module
+	public class VOIDCore_SpaceCentre : VOIDCore_Generic<VOIDCore_SpaceCentre>
 	{
-		string Name { get; }
-		bool toggleActive { get; set; }
-		bool guiRunning { get; }
-		bool inValidScene { get; }
+		#region Static Members
+		protected new static bool _initialized = false;
+		public new static bool Initialized
+		{
+			get 
+			{
+				return _initialized;
+			}
+		}
 
-		void DrawGUI();
-		void StartGUI();
-		void StopGUI();
-
-		void DrawConfigurables();
-
-		void LoadConfig();
-
-		void _SaveToConfig(KSP.IO.PluginConfiguration config);
-	}
-
-	public interface IVOID_BehaviorModule : IVOID_Module
-	{
-		void Update();
-		void FixedUpdate();
-		void OnDestroy();
+		protected new static VOIDCore_SpaceCentre _instance;
+		public new static VOIDCore_SpaceCentre Instance
+		{
+			get
+			{
+				if (_instance == null)
+				{
+					_instance = new VOIDCore_SpaceCentre();
+					_initialized = true;
+				}
+				return _instance;
+			}
+		}
+		#endregion
 	}
 }
+

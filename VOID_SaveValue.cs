@@ -39,25 +39,11 @@ namespace VOID
 		private T _value;
 		private Type _type;
 
-		private VOID_Core Core
+		private VOIDCore Core
 		{
 			get
 			{
-				if (HighLogic.LoadedSceneIsEditor)
-				{
-					if (VOID_EditorCore.Initialized)
-					{
-						return VOID_EditorCore.Instance;
-					}
-				}
-				else if (HighLogic.LoadedSceneIsFlight)
-				{
-					if (VOID_Core.Initialized)
-					{
-						return VOID_Core.Instance;
-					}
-				}
-				return null;
+				return VOID_Data.Core;
 			}
 		}
 

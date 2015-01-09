@@ -37,48 +37,9 @@ using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_Core : VOID_Module, IVOID_Module
+	public abstract class VOIDCore_Generic<T> : VOID_SingletonModule<T>, IVOID_Module, IDisposable
+		where T : VOID_Module, new()
 	{
-		#region Singleton Members
-		/*
-		 * Static Members
-		 * */
-		protected static bool _initialized = false;
-
-		public static bool Initialized
-		{
-			get
-			{
-				return _initialized;
-			}
-		}
-
-		protected static VOID_Core _instance;
-
-		public static VOID_Core Instance
-		{
-			get
-			{
-				if (_instance == null)
-				{
-					_instance = new VOID_Core();
-					_initialized = true;
-				}
-				return _instance;
-			}
-		}
-
-		public static void Reset()
-		{
-			_instance.StopGUI();
-			_instance.Dispose();
-			_instance = null;
-			_initialized = false;
-		}
-		#endregion
-
-		public static readonly double Constant_G = 6.674e-11;
-
 		/*
 		 * Fields
 		 * */
@@ -103,16 +64,12 @@ namespace VOID
 		[AVOID_SaveValue("configWindowMinimized")]
 
 		protected VOID_SaveValue<bool> configWindowMinimized = true;
-		[AVOID_SaveValue("VOIDIconPos")]
-		protected VOID_SaveValue<Rect> VOIDIconPos = new Rect(Screen.width / 2 - 200, Screen.height - 32, 32f, 32f);
 
 		protected Texture2D VOIDIconTexture;
 		protected string VOIDIconOnActivePath;
 		protected string VOIDIconOnInactivePath;
 		protected string VOIDIconOffActivePath;
 		protected string VOIDIconOffInactivePath;
-
-		protected bool VOIDIconLocked = true;
 
 		protected GUIStyle iconStyle;
 
@@ -125,7 +82,8 @@ namespace VOID
 
 		[AVOID_SaveValue("togglePower")]
 		public VOID_SaveValue<bool> togglePower = true;
-		public bool powerAvailable = true;
+
+		public override bool powerAvailable { get; protected set; }
 
 		[AVOID_SaveValue("consumeResource")]
 		protected VOID_SaveValue<bool> consumeResource = false;
@@ -138,7 +96,6 @@ namespace VOID
 
 		[AVOID_SaveValue("updatePeriod")]
 		protected VOID_SaveValue<double> _updatePeriod = 1001f / 15000f;
-		protected float _updateTimer = 0f;
 		protected string stringFrequency;
 
 		[AVOID_SaveValue("vesselSimActive")]
@@ -171,7 +128,7 @@ namespace VOID
 			};
 		protected bool skinsLoaded = false;
 
-		public bool configDirty;
+		public override bool configDirty { get; set; }
 
 		[AVOID_SaveValue("UseBlizzyToolbar")]
 		protected VOID_SaveValue<bool> _UseToolbarManager;
@@ -182,9 +139,8 @@ namespace VOID
 		/*
 		 * Events
 		 * */
-		public delegate void VOIDEventHandler(object sender);
-		public event VOIDEventHandler onApplicationQuit;
 
+		// event VOIDEventHandler onApplicationQuit;
 		/*
 		 * Properties
 		 * */
@@ -196,7 +152,7 @@ namespace VOID
 			}
 		}
 
-		public List<IVOID_Module> Modules
+		public override List<IVOID_Module> Modules
 		{
 			get
 			{
@@ -204,7 +160,7 @@ namespace VOID
 			}
 		}
 
-		public GUISkin Skin
+		public override GUISkin Skin
 		{
 			get
 			{
@@ -223,7 +179,7 @@ namespace VOID
 			}
 		}
 
-		public int windowID
+		public override int windowID
 		{
 			get
 			{
@@ -235,7 +191,7 @@ namespace VOID
 			}
 		}
 
-		public List<CelestialBody> allBodies
+		public override List<CelestialBody> allBodies
 		{
 			get
 			{
@@ -243,13 +199,13 @@ namespace VOID
 			}
 		}
 
-		public List<CelestialBody> sortedBodyList
+		public override List<CelestialBody> sortedBodyList
 		{
 			get;
-			private set;
+			protected set;
 		}
 
-		public CelestialBody HomeBody
+		public override CelestialBody HomeBody
 		{
 			get
 			{
@@ -265,7 +221,7 @@ namespace VOID
 			}
 		}
 
-		public List<VesselType> allVesselTypes
+		public override List<VesselType> allVesselTypes
 		{
 			get
 			{
@@ -273,15 +229,13 @@ namespace VOID
 			}
 		}
 
-		public float updateTimer
+		public override float updateTimer
 		{
-			get
-			{
-				return this._updateTimer;
-			}
+			get;
+			protected set;
 		}
 
-		public double updatePeriod
+		public override double updatePeriod
 		{
 			get
 			{
@@ -289,13 +243,13 @@ namespace VOID
 			}
 		}
 
-		public Stage[] Stages
+		public override Stage[] Stages
 		{
 			get;
 			protected set;
 		}
 
-		public Stage LastStage
+		public override Stage LastStage
 		{
 			get;
 			protected set;
@@ -370,7 +324,7 @@ namespace VOID
 		{
 			get
 			{
-				return ApplicationLauncher.AppScenes.FLIGHT;
+				return HighLogic.LoadedScene.ToAppScenes();
 			}
 		}
 
@@ -486,56 +440,6 @@ namespace VOID
 
 		public virtual void OnGUI()
 		{
-			if (Event.current.type == EventType.Repaint)
-			{
-				return;
-			}
-
-			/*
-			Tools.PostDebugMessage(string.Format(
-				"Event.current.type: {0}" +
-				"\nthis.VOIDIconLocked: {1}" +
-				"\nEvent.current.mousePosition: {2}" +
-				"\nVOIDIconPos: ({3}, {4}),({5}, {6})",
-				Event.current.type,
-				this.VOIDIconLocked,
-				Event.current.mousePosition,
-				this.VOIDIconPos.value.xMin,
-				this.VOIDIconPos.value.yMin,
-				this.VOIDIconPos.value.xMax,
-				this.VOIDIconPos.value.yMax
-				));
-				*/
-
-			if (!this.VOIDIconLocked &&
-			    VOIDIconPos.value.Contains(Event.current.mousePosition)
-			    && Event.current.type == EventType.mouseDrag)
-			{
-				Tools.PostDebugMessage(string.Format(
-					"Event.current.type: {0}" +
-					"\ndelta.x: {1}; delta.y: {2}",
-					Event.current.type,
-					Event.current.delta.x,
-					Event.current.delta.y
-				));
-
-				Rect tmp = new Rect(VOIDIconPos);
-
-				tmp.x = Event.current.mousePosition.x - tmp.width / 2;
-				tmp.y = Event.current.mousePosition.y - tmp.height / 2;
-
-				if (tmp.x > Screen.width - tmp.width)
-				{
-					tmp.x = Screen.width - tmp.width;
-				}
-
-				if (tmp.y > Screen.height - tmp.height)
-				{
-					tmp.y = Screen.height - tmp.height;
-				}
-
-				VOIDIconPos = tmp;
-			}
 		}
 
 		public virtual void Update()
@@ -553,11 +457,6 @@ namespace VOID
 				this.StartGUI();
 			}
 
-			if (!HighLogic.LoadedSceneIsFlight && this.guiRunning)
-			{
-				this.StopGUI();
-			}
-
 			foreach (IVOID_Module module in this.Modules)
 			{
 				if (!module.guiRunning && module.toggleActive)
@@ -566,7 +465,7 @@ namespace VOID
 				}
 				if (module.guiRunning && !module.toggleActive ||
 				    !this.togglePower ||
-				    !HighLogic.LoadedSceneIsFlight ||
+					!module.inValidScene ||
 				    this.factoryReset)
 				{
 					module.StopGUI();
@@ -579,7 +478,7 @@ namespace VOID
 			}
 
 			this.CheckAndSave();
-			this._updateTimer += Time.deltaTime;
+			this.updateTimer += Time.deltaTime;
 		}
 
 		public virtual void FixedUpdate()
@@ -629,11 +528,6 @@ namespace VOID
 					((IVOID_BehaviorModule)module).OnDestroy();
 				}
 			}
-		}
-
-		public void OnApplicationQuit()
-		{
-			this.onApplicationQuit(this);
 		}
 
 		public void ResetGUI()
@@ -703,8 +597,6 @@ namespace VOID
 			if (HighLogic.LoadedSceneIsFlight)
 			{
 				this.consumeResource.value = GUILayout.Toggle(this.consumeResource, "Consume Resources");
-
-				this.VOIDIconLocked = GUILayout.Toggle(this.VOIDIconLocked, "Lock Icon Position");
 			}
 
 			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
@@ -821,10 +713,10 @@ namespace VOID
 			#endif
 		}
 
-		protected void LoadModulesOfType<T>()
+		protected void LoadModulesOfType<U>()
 		{
-			StringBuilder sb = new StringBuilder("Loading modules...");
-			sb.AppendLine();
+			Tools.DebugLogger sb = Tools.DebugLogger.New(this);
+			sb.AppendLine("Loading modules...");
 
 			foreach (AssemblyLoader.LoadedAssembly assy in AssemblyLoader.loadedAssemblies)
 			{
@@ -833,16 +725,50 @@ namespace VOID
 					if (
 						loadedType.IsInterface ||
 						loadedType.IsAbstract ||
-						!typeof(T).IsAssignableFrom(loadedType) ||
-						this.GetType().IsAssignableFrom(loadedType)
+						!typeof(U).IsAssignableFrom(loadedType) ||
+						typeof(VOIDCore).IsAssignableFrom(loadedType)
 					)
 					{
 						continue;
 					}
 
-					// HACK: This stops editor modules from loading in flight.  It is a dirty hack and should be fixed.
-					if (!HighLogic.LoadedSceneIsEditor && typeof(IVOID_EditorModule).IsAssignableFrom(loadedType))
+					sb.AppendFormat("Checking IVOID_Module type {0}...", loadedType.Name);
+
+					GameScenes[] validScenes = null;
+
+					foreach (var attr in loadedType.GetCustomAttributes(true))
 					{
+						if (attr is VOID_ScenesAttribute)
+						{
+							validScenes = ((VOID_ScenesAttribute)attr).ValidScenes;
+
+							sb.Append("VOID_ScenesAttribute found;");
+
+							break;
+						}
+					}
+
+					if (validScenes == null)
+					{
+						validScenes = new GameScenes[] { GameScenes.FLIGHT };
+
+
+						sb.Append("VOID_ScenesAttribute not found;");
+
+					}
+
+					sb.AppendFormat(
+						" validScenes set to {0}.",
+						string.Join(
+							", ",
+							validScenes.Select(s => Enum.GetName(typeof(GameScenes), s)).ToArray()
+						)
+					);
+
+					if (!validScenes.Contains(HighLogic.LoadedScene))
+					{
+						sb.AppendFormat("  {0} not found in validScenes, skipping.",
+							Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene));
 						continue;
 					}
 
@@ -855,8 +781,7 @@ namespace VOID
 					}
 					catch (Exception ex)
 					{
-						sb.AppendFormat("Failed, caught {0}", ex.GetType().Name);
-						sb.AppendLine();
+						sb.AppendFormat("Failed, caught {0}\n", ex.GetType().Name);
 
 						#if DEBUG
 						Debug.LogException(ex);
@@ -867,8 +792,9 @@ namespace VOID
 
 			this._modulesLoaded = true;
 
-			sb.AppendFormat("Loaded {0} modules.", this.Modules.Count);
-			sb.AppendLine();
+			sb.AppendFormat("Loaded {0} modules.\n", this.Modules.Count);
+
+			sb.Print();
 		}
 
 		protected void LoadModule(Type T)
@@ -883,7 +809,29 @@ namespace VOID
 				));
 				return;
 			}
-			IVOID_Module module = Activator.CreateInstance(T) as IVOID_Module;
+
+			var InstanceProperty = T.GetProperty(
+				"Instance",
+				System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public
+			);
+
+			object modInstance = null;
+			IVOID_Module module;
+
+			if (InstanceProperty != null)
+			{
+				modInstance = InstanceProperty.GetValue(null, null);
+			}
+
+			if (modInstance != null)
+			{
+				module = modInstance as IVOID_Module;
+			}
+			else
+			{
+				module = Activator.CreateInstance(T) as IVOID_Module;
+			}
+
 			module.LoadConfig();
 			this._modules.Add(module);
 
@@ -1104,7 +1052,7 @@ namespace VOID
 
 		public void SaveConfig()
 		{
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Core>();
+			var config = KSP.IO.PluginConfiguration.CreateForType<T>();
 			config.load();
 
 			this._SaveToConfig(config);
@@ -1119,13 +1067,15 @@ namespace VOID
 			this.configDirty = false;
 		}
 
-		protected VOID_Core()
+		public VOIDCore_Generic()
 		{
 			this._Name = "VOID Core";
 
 			System.Version version = this.GetType().Assembly.GetName().Version;
 
 			this.VoidVersion = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.MajorRevision);
+
+			this.powerAvailable = true;
 
 			this.toggleActive = true;
 
@@ -1148,6 +1098,8 @@ namespace VOID
 
 		public virtual void Dispose()
 		{
+			this.StopGUI();
+
 			if (this.AppLauncherButton != null)
 			{
 				ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
@@ -1158,6 +1110,9 @@ namespace VOID
 				this.ToolbarButton.Destroy();
 				this.ToolbarButton = null;
 			}
+
+			_instance = null;
+			_initialized = false;
 		}
 
 		protected enum IconState

@@ -255,6 +255,8 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
+			base.DrawConfigurables();
+
 			if (GUILayout.Button(string.Intern("Reset Advanced HUD Positions"), GUILayout.ExpandWidth(false)))
 			{
 				foreach (HUDWindow window in this.Windows)

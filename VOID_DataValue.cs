@@ -83,8 +83,8 @@ namespace VOID
 			{
 				if (
 					HighLogic.LoadedSceneIsEditor ||
-					(VOID_Core.Instance.updateTimer - this.lastUpdate > VOID_Core.Instance.updatePeriod) ||
-					(this.lastUpdate > VOID_Core.Instance.updateTimer)
+					(VOID_Data.Core.updateTimer - this.lastUpdate > VOID_Data.Core.updatePeriod) ||
+					(this.lastUpdate > VOID_Data.Core.updateTimer)
 				)
 				{
 					this.Refresh();
@@ -109,7 +109,7 @@ namespace VOID
 		public void Refresh()
 		{
 			this.cache = this.ValueFunc.Invoke ();
-			this.lastUpdate = VOID_Core.Instance.updateTimer;
+			this.lastUpdate = VOID_Data.Core.updateTimer;
 		}
 
 		public T GetFreshValue()

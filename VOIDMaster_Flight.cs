@@ -1,6 +1,6 @@
 ﻿// VOID
 //
-// VOIDEditorMaster.cs
+// VOIDFlightMaster.cs
 //
 // Copyright © 2014, toadicus
 // All rights reserved.
@@ -40,90 +40,22 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-using KerbalEngineer.VesselSimulator;
-using KSP;
 using System;
-using ToadicusTools;
 using UnityEngine;
+using KerbalEngineer.VesselSimulator;
+using ToadicusTools;
 
 namespace VOID
 {
-	[KSPAddon(KSPAddon.Startup.EditorAny, false)]
-	public class VOIDEditorMaster : MonoBehaviour
+	[KSPAddon(KSPAddon.Startup.Flight, false)]
+	public class VOIDMaster_Flight : VOIDMaster<VOIDCore_Flight>
 	{
-		protected VOID_EditorCore Core;
-
-		public void Awake()
+		public override void Awake()
 		{
-			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
-			this.Core = VOID_EditorCore.Instance;
-			this.Core.ResetGUI ();
-			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
-		}
-
-		public void Update()
-		{
-			if (!HighLogic.LoadedSceneIsEditor && this.Core != null)
-			{
-				this.Core.SaveConfig ();
-				this.Core = null;
-				VOID_EditorCore.Reset();
-				return;
-			}
-
-			if (this.Core == null)
-			{
-				this.Awake();
-			}
-
-			this.Core.Update ();
-
-			if (this.Core.factoryReset)
-			{
-				KSP.IO.File.Delete<VOID_EditorCore>("config.xml");
-				this.Core = null;
-				VOID_EditorCore.Reset();
-			}
-		}
-
-		public void FixedUpdate()
-		{
-			if (this.Core == null || !HighLogic.LoadedSceneIsEditor)
-			{
-				return;
-			}
-
-			this.Core.FixedUpdate ();
-		}
-
-		public void OnGUI()
-		{
-			if (this.Core == null)
-			{
-				return;
-			}
-
-			this.Core.OnGUI();
-		}
-
-		public void OnDestroy()
-		{
-			if (this.Core == null)
-			{
-				return;
-			}
-
-			this.Core.OnDestroy();
-		}
-
-		public void OnApplicationQuit()
-		{
-			if (this.Core == null)
-			{
-				return;
-			}
-
-			this.Core.OnApplicationQuit();
+				this.LogDebug("Waking up.");
+				this.Core = VOIDCore_Flight.Instance;
+				this.Core.ResetGUI ();
+				this.LogDebug("Awake.");
 		}
 	}
 }
