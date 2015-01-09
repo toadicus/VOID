@@ -46,8 +46,6 @@ namespace VOID
 		protected string VoidName = "VOID";
 		protected string VoidVersion;
 
-		protected bool _factoryReset = false;
-
 		[AVOID_SaveValue("configValue")]
 		protected VOID_SaveValue<int> configVersion = 1;
 
@@ -145,10 +143,8 @@ namespace VOID
 		 * */
 		public bool factoryReset
 		{
-			get
-			{
-				return this._factoryReset;
-			}
+			get;
+			protected set;
 		}
 
 		public override List<IVOID_Module> Modules
@@ -713,7 +709,7 @@ namespace VOID
 				mod.DrawConfigurables();
 			}
 
-			this._factoryReset = GUILayout.Toggle(this._factoryReset, "Factory Reset");
+			this.factoryReset = GUILayout.Toggle(this.factoryReset, "Factory Reset");
 		}
 
 		protected void UpdateSimManager()
@@ -1135,6 +1131,8 @@ namespace VOID
 			this.LoadConfig();
 
 			this.SetIconTexture(this.powerState | this.activeState);
+
+			this.factoryReset = false;
 		}
 
 		public virtual void Dispose()
