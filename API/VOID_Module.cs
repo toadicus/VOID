@@ -94,7 +94,7 @@ namespace VOID
 			}
 		}
 
-		public virtual bool inValidScene
+		public virtual GameScenes[] ValidScenes
 		{
 			get
 			{
@@ -122,15 +122,24 @@ namespace VOID
 					}
 				}
 
+				return this.validScenes;
+			}
+		}
+
+		public virtual bool inValidScene
+		{
+			get
+			{
+
 				Tools.PostDebugMessage(
 					this,
-					"Checking if scene is valid: LoadedScene={0}, validScenes={1}, inValidScene={2}",
+					"Checking if scene is valid: LoadedScene={0}, ValidScenes={1}, inValidScene={2}",
 					Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
-					string.Join(", ", this.validScenes.Select(s => Enum.GetName(typeof(GameScenes), s)).ToArray()),
-					this.validScenes.Contains(HighLogic.LoadedScene)
+					string.Join(", ", this.ValidScenes.Select(s => Enum.GetName(typeof(GameScenes), s)).ToArray()),
+					this.ValidScenes.Contains(HighLogic.LoadedScene)
 				);
 
-				return this.validScenes.Contains(HighLogic.LoadedScene);
+				return this.ValidScenes.Contains(HighLogic.LoadedScene);
 			}
 		}
 
@@ -181,13 +190,33 @@ namespace VOID
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Module> ();
 			config.load ();
 
-			foreach (var field in this.GetType().GetFields(
+			if (this is VOIDCore)
+			{
+				int configVersion = config.GetValue("VOID_Core_configValue", 2);
+
+				if (configVersion < VOIDCore.CONFIG_VERSION)
+				{
+					((VOIDCore)this).configNeedsUpdate = true;
+				}
+			}
+
+			foreach (var field in this.GetType().GetMembers(
 				BindingFlags.NonPublic |
 				BindingFlags.Public |
 				BindingFlags.Instance |
 				BindingFlags.FlattenHierarchy
-				))
+			))
 			{
+				if (!(field is FieldInfo || field is PropertyInfo))
+				{
+					continue;
+				}
+
+				if (field is PropertyInfo && (field as PropertyInfo).GetIndexParameters().Length > 0)
+				{
+					continue;
+				}
+
 				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
 				if (attrs.Length == 0) {
@@ -196,11 +225,48 @@ namespace VOID
 
 				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
-				string fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
+				string fieldName = string.Empty;
+
+				if (this is VOIDCore || this.core.configNeedsUpdate)
+				{
+					string typeName = this.GetType().Name;;
+
+					if (this is VOIDCore && ((VOIDCore)this).configNeedsUpdate)
+					{
+						if (this is VOIDCore_Flight)
+						{
+							typeName = "VOID_Core";
+						}
+						else if (this is VOIDCore_Editor)
+						{
+							typeName = "VOID_EditorCore";
+						}
+					}
+
+					fieldName = string.Format("{0}_{1}", typeName, attr.Name);
+				}
+				else
+				{
+					fieldName = string.Format(
+						"{0}_{1}_{2}",
+						this.GetType().Name,
+						Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
+						attr.Name
+					);
+				}
 
 				Tools.PostDebugMessage(string.Format("{0}: Loading field {1}.", this.GetType().Name, fieldName));
 
-				object fieldValue = field.GetValue(this);
+				object fieldValue;
+
+				if (field is FieldInfo)
+				{
+					fieldValue = (field as FieldInfo).GetValue(this);
+				}
+				else
+				{
+					fieldValue = (field as PropertyInfo).GetValue(this, null);
+				}
 
 				bool convertBack = false;
 				if (fieldValue is IVOID_SaveValue)
@@ -219,7 +285,14 @@ namespace VOID
 					fieldValue = convertValue;
 				}
 
-				field.SetValue (this, fieldValue);
+				if (field is FieldInfo)
+				{
+					(field as FieldInfo).SetValue(this, fieldValue);
+				}
+				else
+				{
+					(field as PropertyInfo).SetValue(this, fieldValue, null);
+				}
 
 				Tools.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
 			}
@@ -227,7 +300,7 @@ namespace VOID
 
 		public virtual void _SaveToConfig(KSP.IO.PluginConfiguration config)
 		{
-			foreach (var field in this.GetType().GetFields(
+			foreach (var field in this.GetType().GetMembers(
 				BindingFlags.Instance |
 				BindingFlags.NonPublic |
 				BindingFlags.Public |
@@ -242,9 +315,32 @@ namespace VOID
 
 				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
-				string fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
+				string fieldName;
 
-				object fieldValue = field.GetValue(this);
+				if (this is VOIDCore)
+				{
+					fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
+				}
+				else
+				{
+					fieldName = string.Format(
+						"{0}_{1}_{2}",
+						this.GetType().Name,
+						Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
+						attr.Name
+					);
+				}
+
+				object fieldValue;
+
+				if (field is FieldInfo)
+				{
+					fieldValue = (field as FieldInfo).GetValue(this);
+				}
+				else
+				{
+					fieldValue = (field as PropertyInfo).GetValue(this, null);
+				}
 
 				if (fieldValue is IVOID_SaveValue)
 				{

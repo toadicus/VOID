@@ -29,22 +29,18 @@ using System;
 
 namespace VOID
 {
-	[AttributeUsage(AttributeTargets.Field)]
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	public class AVOID_SaveValue : Attribute
 	{
-		protected string _name;
-
 		public string Name
 		{
-			get
-			{
-				return this._name;
-			}
+			get;
+			private set;
 		}
 
 		public AVOID_SaveValue(string fieldName)
 		{
-			this._name = fieldName;
+			this.Name = fieldName;
 		}
 	}
 }

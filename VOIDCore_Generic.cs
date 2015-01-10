@@ -1,6 +1,6 @@
 // VOID
 //
-// VOID_Core.cs
+// VOIDCore_Generic.cs
 //
 // Copyright © 2014, toadicus
 // All rights reserved.
@@ -47,7 +47,7 @@ namespace VOID
 		protected string VoidVersion;
 
 		[AVOID_SaveValue("configValue")]
-		protected VOID_SaveValue<int> configVersion = 1;
+		protected VOID_SaveValue<int> _configVersion = VOIDCore.CONFIG_VERSION;
 
 		protected List<IVOID_Module> _modules = new List<IVOID_Module>();
 		protected bool _modulesLoaded = false;
@@ -127,20 +127,21 @@ namespace VOID
 
 		public override bool configDirty { get; set; }
 
-		[AVOID_SaveValue("UseBlizzyToolbar")]
-		protected VOID_SaveValue<bool> _UseToolbarManager;
 		internal IButton ToolbarButton;
 
 		internal ApplicationLauncherButton AppLauncherButton;
 
 		/*
-		 * Events
-		 * */
-
-		// event VOIDEventHandler onApplicationQuit;
-		/*
 		 * Properties
 		 * */
+		public override int configVersion
+		{
+			get
+			{
+				return this._configVersion;
+			}
+		}
+
 		public bool factoryReset
 		{
 			get;
@@ -230,6 +231,7 @@ namespace VOID
 			protected set;
 		}
 
+
 		public override double updatePeriod
 		{
 			get
@@ -286,11 +288,11 @@ namespace VOID
 		{
 			get
 			{
-				return _UseToolbarManager & ToolbarManager.ToolbarAvailable;
+				return useToolbarManager & ToolbarManager.ToolbarAvailable;
 			}
 			set
 			{
-				if (this._UseToolbarManager == value)
+				if (useToolbarManager == value)
 				{
 					return;
 				}
@@ -311,7 +313,7 @@ namespace VOID
 					this.InitializeToolbarButton();
 				}
 
-				_UseToolbarManager.value = value;
+				useToolbarManager = value;
 			}
 		}
 
@@ -567,6 +569,8 @@ namespace VOID
 					((IVOID_BehaviorModule)module).OnDestroy();
 				}
 			}
+
+			this.Dispose();
 		}
 
 		public void ResetGUI()
@@ -978,7 +982,7 @@ namespace VOID
 			this.ToolbarButton.Text = this.VoidName;
 			this.SetIconTexture(this.powerState | this.activeState);
 
-			this.ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.EDITOR, GameScenes.FLIGHT);
+			this.ToolbarButton.Visible = true;
 
 			this.ToolbarButton.OnClick += 
 				(e) =>
@@ -1086,7 +1090,13 @@ namespace VOID
 
 		public override void SaveConfig()
 		{
+			if (this.configNeedsUpdate && this is VOIDCore_Flight)
+			{
+				KSP.IO.File.Delete<T>("config.xml");
+			}
+
 			var config = KSP.IO.PluginConfiguration.CreateForType<T>();
+
 			config.load();
 
 			this._SaveToConfig(config);
@@ -1130,6 +1140,8 @@ namespace VOID
 
 			this.LoadConfig();
 
+			this._configVersion = VOIDCore.CONFIG_VERSION;
+			
 			this.SetIconTexture(this.powerState | this.activeState);
 
 			this.factoryReset = false;

@@ -38,6 +38,12 @@ namespace VOID
 	public abstract class VOIDCore : VOID_Module, IVOID_Module
 	{
 		public const double Constant_G = 6.674e-11;
+		public const int CONFIG_VERSION = 2;
+
+		public static bool useToolbarManager;
+
+		public abstract int configVersion { get; }
+		public virtual bool configNeedsUpdate { get; set; }
 
 		public abstract int windowID { get; }
 		public abstract bool configDirty { get; set; }
@@ -73,7 +79,23 @@ namespace VOID
 			}
 		}
 
+		public override void LoadConfig()
+		{
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOIDCore>(null);
+
+			useToolbarManager = config.GetValue("UseToolbarManager", useToolbarManager);
+
+			base.LoadConfig();
+		}
+
 		public abstract void SaveConfig();
+
+		public override void _SaveToConfig(KSP.IO.PluginConfiguration config)
+		{
+			config.SetValue("UseToolbarManager", useToolbarManager);
+
+			base._SaveToConfig(config);
+		}
 	}
 
 	public delegate void VOIDEventHandler(object sender);
