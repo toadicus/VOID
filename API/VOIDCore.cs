@@ -67,17 +67,10 @@ namespace VOID
 		public abstract Stage LastStage { get; protected set; }
 		public abstract Stage[] Stages { get; protected set; }
 
-		public virtual event VOIDEventHandler onApplicationQuit;
+		public abstract event VOIDEventHandler onApplicationQuit;
+		public abstract event VOIDEventHandler onSkinChanged;
 
 		public virtual void OnGUI() {}
-
-		public virtual void OnApplicationQuit()
-		{
-			if (this.onApplicationQuit != null)
-			{
-				this.onApplicationQuit(this);
-			}
-		}
 
 		public override void LoadConfig()
 		{

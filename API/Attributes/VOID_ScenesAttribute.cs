@@ -30,17 +30,17 @@ using System;
 namespace VOID
 {
 	[AttributeUsage(AttributeTargets.Class)]
-	public class VOID_ScenesAttribute : Attribute
+	public class VOID_GameModesAttribute : Attribute
 	{
-		public GameScenes[] ValidScenes
+		public Game.Modes[] ValidModes
 		{
 			get;
 			private set;
 		}
 
-		public VOID_ScenesAttribute(params GameScenes[] validScenes)
+		public VOID_GameModesAttribute(params Game.Modes[] validModes)
 		{
-			this.ValidScenes = validScenes;
+			this.ValidModes = validModes;
 		}
 	}
 }

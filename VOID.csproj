@@ -111,6 +111,7 @@
     <Compile Include="API\Attributes\VOID_ScenesAttribute.cs" />
     <Compile Include="API\Attributes\AVOID_SaveValue.cs" />
     <Compile Include="API\VOIDMaster.cs" />
+    <Compile Include="API\Attributes\VOID_GameModesAttribute.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

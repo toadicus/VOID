@@ -32,6 +32,7 @@ using UnityEngine;
 
 namespace VOID
 {
+	[VOID_Scenes(GameScenes.FLIGHT)]
 	public class VOIDCore_Flight : VOIDCore_Generic<VOIDCore_Flight>
 	{
 		public VOIDCore_Flight()

@@ -1,6 +1,6 @@
 ﻿// VOID
 //
-// VOIDCore_SpaceCentre.cs
+// VOID_ScenesAttribute.cs
 //
 // Copyright © 2015, toadicus
 // All rights reserved.
@@ -29,15 +29,19 @@ using System;
 
 namespace VOID
 {
-	[VOID_Scenes(GameScenes.SPACECENTER)]
-	public class VOIDCore_SpaceCentre : VOIDCore_Generic<VOIDCore_SpaceCentre>
+	[AttributeUsage(AttributeTargets.Class)]
+	public class VOID_ScenesAttribute : Attribute
 	{
-		public VOIDCore_SpaceCentre() : base()
+		public GameScenes[] ValidScenes
 		{
-			base.Name = "VOID Core: SpaceCentre";
+			get;
+			private set;
 		}
 
-		public override void FixedUpdate() {}
+		public VOID_ScenesAttribute(params GameScenes[] validScenes)
+		{
+			this.ValidScenes = validScenes;
+		}
 	}
 }
 

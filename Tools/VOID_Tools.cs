@@ -34,7 +34,7 @@ using UnityEngine;
 
 namespace VOID
 {
-	public static partial class VOID_Tools
+	public static class VOID_Tools
 	{
 		#region CelestialBody Utilities
 		public static bool hasAncestor(this CelestialBody bodyA, CelestialBody bodyB)

@@ -35,6 +35,7 @@ using UnityEngine;
 namespace VOID
 {
 	[VOID_Scenes(GameScenes.FLIGHT, GameScenes.EDITOR, GameScenes.SPACECENTER)]
+	[VOID_GameModes(Game.Modes.CAREER, Game.Modes.SCIENCE_SANDBOX)]
 	public class VOID_CareerStatus : VOID_WindowModule
 	{
 		public static VOID_CareerStatus Instance
@@ -43,20 +44,25 @@ namespace VOID
 			private set;
 		}
 
-		public static string formatDelta(double delta)
+		public static string formatDelta(double delta, string numberFormat)
 		{
 			if (delta > 0)
 			{
-				return string.Format("<color='green'>{0:#,#.##}↑</color>", delta);
+				return string.Format("<color='lime'>{0}↑</color>", delta.ToString(numberFormat, Tools.mySIFormatter));
 			}
 			else if (delta < 0)
 			{
-				return string.Format("<color='red'>{0:#,#.##}↓</color>", delta);
+				return string.Format("<color='red'>{0}↓</color>", delta.ToString(numberFormat, Tools.mySIFormatter));
 			}
 			else
 			{
-				return string.Intern("0");
+				return "0";
 			}
+		}
+
+		public static string formatDelta(double delta)
+		{
+			return formatDelta(delta, "#,##0.##");
 		}
 
 		public static string formatDelta(float delta)
@@ -75,18 +81,6 @@ namespace VOID
 		private Texture2D reputationIconRed;
 		private Texture2D scienceIcon;
 		#pragma warning restore 0414
-
-		public override bool toggleActive
-		{
-			get
-			{
-				return base.toggleActive && this.inValidGame;
-			}
-			set
-			{
-				base.toggleActive = this.inValidGame && value;
-			}
-		}
 
 		public double lastFundsChange
 		{
@@ -122,21 +116,6 @@ namespace VOID
 		{
 			get;
 			private set;
-		}
-
-		private bool inValidGame
-		{
-			get
-			{
-				switch (HighLogic.CurrentGame.Mode)
-				{
-					case Game.Modes.CAREER:
-					case Game.Modes.SCIENCE_SANDBOX:
-						return true;
-					default:
-						return false;
-				}
-			}
 		}
 
 		private bool currenciesInitialized
@@ -221,6 +200,11 @@ namespace VOID
 			this.currentScience = newValue;
 		}
 
+		private void onGameStateLoad(ConfigNode node)
+		{
+			this.initCurrencies();
+		}
+
 		private void initCurrencies()
 		{
 			Tools.PostDebugMessage(
@@ -256,6 +240,7 @@ namespace VOID
 			GameEvents.OnFundsChanged.Add(this.onFundsChange);
 			GameEvents.OnReputationChanged.Add(this.onRepChange);
 			GameEvents.OnScienceChanged.Add(this.onScienceChange);
+			GameEvents.onGameStateLoad.Add(this.onGameStateLoad);
 
 			bool texturesLoaded;
 
@@ -286,6 +271,7 @@ namespace VOID
 			GameEvents.OnFundsChanged.Remove(this.onFundsChange);
 			GameEvents.OnReputationChanged.Remove(this.onRepChange);
 			GameEvents.OnScienceChanged.Remove(this.onScienceChange);
+			GameEvents.onGameStateLoad.Remove(this.onGameStateLoad);
 
 			VOID_CareerStatus.Instance = null;
 		}

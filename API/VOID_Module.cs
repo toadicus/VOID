@@ -43,6 +43,7 @@ namespace VOID
 		[AVOID_SaveValue("Active")]
 		protected VOID_SaveValue<bool> _Active = false;
 		private GameScenes[] validScenes;
+		private Game.Modes[] validModes;
 
 		protected float lastUpdate = 0;
 
@@ -57,15 +58,26 @@ namespace VOID
 			}
 		}
 
+		protected virtual bool timeToUpdate
+		{
+			get
+			{
+				return (
+					(this.core.updateTimer - this.lastUpdate) > this.core.updatePeriod ||
+					this.lastUpdate > this.core.updateTimer
+				);
+			}
+		}
+
 		public virtual bool toggleActive
 		{
 			get
 			{
-				return this._Active;
+				return this._Active && this.inValidGame && this.inValidScene;
 			}
 			set
 			{
-				this._Active.value = value;
+				this._Active = value && this.inValidGame && this.inValidScene;
 			}
 		}
 
@@ -140,6 +152,63 @@ namespace VOID
 				);
 
 				return this.ValidScenes.Contains(HighLogic.LoadedScene);
+			}
+		}
+
+		public virtual Game.Modes[] ValidModes
+		{
+			get
+			{
+				if (this.validModes == null)
+				{
+					Tools.PostDebugMessage(this, "validModes is null when checking inValidGame; fetching attribute.");
+					foreach (var attr in this.GetType().GetCustomAttributes(false))
+					{
+						if (attr is VOID_GameModesAttribute)
+						{
+							VOID_GameModesAttribute addonAttr = (VOID_GameModesAttribute)attr;
+
+							this.validModes = addonAttr.ValidModes;
+
+							Tools.PostDebugMessage("Found VOID_GameModesAttribute; validScenes set.");
+
+							break;
+						}
+					}
+
+					if (this.validModes == null)
+					{
+						this.validModes = new Game.Modes[]
+						{
+							Game.Modes.CAREER,
+							Game.Modes.SANDBOX,
+							Game.Modes.SCENARIO,
+							Game.Modes.SCENARIO_NON_RESUMABLE,
+							Game.Modes.SCIENCE_SANDBOX
+						};
+
+						Tools.PostDebugMessage("No VOID_GameModesAttribute found; validScenes defaulted to flight.");
+					}
+				}
+
+				return this.validModes;
+			}
+		}
+
+		public virtual bool inValidGame
+		{
+			get
+			{
+
+				Tools.PostDebugMessage(
+					this,
+					"Checking if mode is valid: CurrentGame.Mode={0}, ValidModes={1}, inValidGame={2}",
+					Enum.GetName(typeof(Game.Modes), HighLogic.CurrentGame.Mode),
+					string.Join(", ", this.ValidModes.Select(m => Enum.GetName(typeof(Game.Modes), m)).ToArray()),
+					this.ValidModes.Contains(HighLogic.CurrentGame.Mode)
+				);
+
+				return this.ValidModes.Contains(HighLogic.CurrentGame.Mode);
 			}
 		}
 
@@ -387,7 +456,9 @@ namespace VOID
 				VOID_Tools.GetWindowHandler(this.ModuleWindow),
 				this.Name,
 				GUILayout.Width(this.defWidth),
-				GUILayout.Height(this.defHeight)
+				GUILayout.Height(this.defHeight),
+				GUILayout.ExpandWidth(true),
+				GUILayout.ExpandHeight(true)
 			);
 
 			bool cursorInWindow = _Pos.Contains(Mouse.screenPos);

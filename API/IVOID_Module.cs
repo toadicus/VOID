@@ -36,6 +36,7 @@ namespace VOID
 		bool toggleActive { get; set; }
 		bool guiRunning { get; }
 		bool inValidScene { get; }
+		bool inValidGame { get; }
 
 		void DrawGUI();
 		void StartGUI();

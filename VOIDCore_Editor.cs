@@ -36,6 +36,7 @@ using UnityEngine;
 
 namespace VOID
 {
+	[VOID_Scenes(GameScenes.EDITOR)]
 	public class VOIDCore_Editor : VOIDCore_Generic<VOIDCore_Editor>
 	{
 		public VOIDCore_Editor() : base()

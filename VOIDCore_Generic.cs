@@ -326,6 +326,12 @@ namespace VOID
 		}
 
 		/*
+		 * Events
+		 * */
+		public override event VOIDEventHandler onApplicationQuit;
+		public override event VOIDEventHandler onSkinChanged;
+
+		/*
 		 * Methods
 		 * */
 		public override void DrawGUI()
@@ -571,6 +577,16 @@ namespace VOID
 			}
 
 			this.Dispose();
+		}
+
+		public virtual void OnApplicationQuit()
+		{
+			if (this.onApplicationQuit != null)
+			{
+				this.onApplicationQuit(this);
+			}
+
+			this.OnDestroy();
 		}
 
 		public void ResetGUI()
@@ -941,6 +957,11 @@ namespace VOID
 		protected void LoadGUIStyles()
 		{
 			VOID_Styles.OnSkinChanged();
+
+			if (this.onSkinChanged != null)
+			{
+				this.onSkinChanged(this);
+			}
 
 			this.GUIStylesLoaded = true;
 		}
