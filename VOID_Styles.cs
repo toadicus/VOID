@@ -121,6 +121,8 @@ namespace VOID
 
 		static VOID_Styles()
 		{
+			OnSkinChanged();
+
 			Ready = false;
 		}
 	}
