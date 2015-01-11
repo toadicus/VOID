@@ -422,7 +422,10 @@ namespace VOID
 				case GameScenes.SPACECENTER:
 					if (cursorInWindow)
 					{
-						InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, this.inputLockName);
+						InputLockManager.SetControlLock(
+							ControlTypes.KSC_FACILITIES | ControlTypes.CAMERACONTROLS,
+							this.inputLockName
+						);
 					}
 					else if (InputLockManager.GetControlLock(this.inputLockName) != ControlTypes.None)
 					{
