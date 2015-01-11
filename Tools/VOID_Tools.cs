@@ -516,9 +516,9 @@ namespace VOID
 
 			public string FormatAsDate()
 			{
-				string format = "Y{0:D1}, D{1:D1} {2:D2}:{3:D2}:{4:00.0}s";
+				string format = "Y{0:#0}, D{1:#0} {2:00}:{3:00}:{4:00.0}s";
 
-				return string.Format(format, years, days, hours, minutes, seconds);
+				return string.Format(format, years + 1, days, hours, minutes, seconds);
 			}
 
 			public UnpackedTime(int years, int days, int hours, int minutes, double seconds)
