@@ -393,8 +393,10 @@ namespace VOID
 					_mainWindowPos,
 					VOID_Tools.GetWindowHandler(this.VOIDMainWindow),
 					string.Join(" ", new string[] { this.VoidName, this.VoidVersion }),
-					GUILayout.Width(250),
-					GUILayout.Height(50)
+					GUILayout.Width(250f),
+					GUILayout.Height(50f),
+					GUILayout.ExpandWidth(true),
+					GUILayout.ExpandHeight(true)
 				);
 
 				if (HighLogic.LoadedSceneIsEditor)
@@ -603,7 +605,17 @@ namespace VOID
 				{
 					foreach (IVOID_Module module in this.Modules)
 					{
-						module.toggleActive = GUILayout.Toggle(module.toggleActive, module.Name);
+						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+						module.toggleActive = GUILayout.Toggle(
+							module.toggleActive,
+							GUIContent.none,
+							GUILayout.ExpandWidth(false)
+						);
+
+						GUILayout.Label(module.Name, GUILayout.ExpandWidth(true));
+
+						GUILayout.EndHorizontal();
 					}
 				}
 			}
@@ -612,7 +624,17 @@ namespace VOID
 				GUILayout.Label("-- POWER LOST --", VOID_Styles.labelRed);
 			}
 
-			this.configWindowMinimized.value = !GUILayout.Toggle(!this.configWindowMinimized, "Configuration");
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+			this.configWindowMinimized.value = !GUILayout.Toggle(
+				!this.configWindowMinimized,
+				GUIContent.none,
+				GUILayout.ExpandWidth(false)
+			);
+
+			GUILayout.Label("Configuration", GUILayout.ExpandWidth(true));
+
+			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
