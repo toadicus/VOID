@@ -468,27 +468,6 @@ namespace VOID
 
 			foreach (IVOID_Module module in this.Modules)
 			{
-				Tools.PostDebugMessage(
-					this,
-					"\n\tmodule.Name={0}" +
-					"\n\tmodule.guiRunning={1}" +
-					"\n\tmodule.toggleActive={2}" +
-					"\n\tmodule.inValidScene={3}" +
-					"\n\tthis.togglePower={4}" +
-					"\n\tthis.factoryReset={5}" +
-					"\n\tHighLogic.LoadedSceneIsEditor={6}" +
-					"\n\t(EditorLogic.RootPart != null && EditorLogic.SortedShipList.Count > 0)={7}" +
-					"\n\t(EditorLogic.RootPart == null || EditorLogic.SortedShipList.Count == 0)={8}",
-					module.Name,
-					module.guiRunning,
-					module.toggleActive,
-					module.inValidScene,
-					this.togglePower,
-					this.factoryReset,
-					HighLogic.LoadedSceneIsEditor,
-					(EditorLogic.RootPart != null && EditorLogic.SortedShipList.Count > 0),
-					(EditorLogic.RootPart == null || EditorLogic.SortedShipList.Count == 0)
-				);
 				if (
 					!module.guiRunning &&
 					module.toggleActive &&
