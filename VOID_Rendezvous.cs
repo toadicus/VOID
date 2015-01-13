@@ -126,7 +126,7 @@ namespace VOID
 				}
 			}
 
-			untoggleRegisterInfo.value = GUILayout.Toggle(untoggleRegisterInfo, "Hide Vessel Register Info");
+			untoggleRegisterInfo.value = GUITools.Toggle(untoggleRegisterInfo, "Hide Vessel Register Info");
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(" ", GUILayout.ExpandWidth(true));
@@ -199,7 +199,7 @@ namespace VOID
 					GUILayout.Label(LSL.ToString("F3") + "°", VOID_Styles.labelRight);
 					GUILayout.EndHorizontal();
 
-					toggleExtendedOrbital.value = GUILayout.Toggle(toggleExtendedOrbital, "Extended info");
+					toggleExtendedOrbital.value = GUITools.Toggle(toggleExtendedOrbital, "Extended info");
 
 					if (toggleExtendedOrbital)
 					{

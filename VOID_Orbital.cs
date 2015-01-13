@@ -79,7 +79,7 @@ namespace VOID
 			this.precisionValues [idx]= (ushort)VOID_Data.gravityAccel.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.toggleExtended.value = GUILayout.Toggle(this.toggleExtended, "Extended info");
+			this.toggleExtended.value = GUITools.Toggle(this.toggleExtended, "Extended info");
 
 			if (this.toggleExtended)
             {

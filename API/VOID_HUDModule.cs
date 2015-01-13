@@ -133,9 +133,7 @@ namespace VOID
 				}
 			}
 
-			this.positionsLocked = GUILayout.Toggle(this.positionsLocked,
-				string.Intern("Lock HUD Positions"),
-				GUILayout.ExpandWidth(false));
+			this.positionsLocked = GUITools.Toggle(this.positionsLocked, "Lock HUD Positions");
 		}
 
 		public override void LoadConfig()

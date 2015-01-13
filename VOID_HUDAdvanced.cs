@@ -265,9 +265,7 @@ namespace VOID
 				}
 			}
 
-			this.positionsLocked = GUILayout.Toggle(this.positionsLocked,
-				string.Intern("Lock Advanced HUD Positions"),
-				GUILayout.ExpandWidth(false));
+			this.positionsLocked = GUITools.Toggle(this.positionsLocked, string.Intern("Lock Advanced HUD Positions"));
 		}
 	}
 }

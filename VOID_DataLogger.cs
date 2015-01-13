@@ -255,12 +255,12 @@ namespace VOID
 				activeLabelStyle = VOID_Styles.labelGreen;
 			}
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-
-			this.loggingActive = GUILayout.Toggle(loggingActive, "Data logging: ", GUILayout.ExpandWidth(false));
-			GUILayout.Label(activeLabelText, activeLabelStyle, GUILayout.ExpandWidth(true));
-
-			GUILayout.EndHorizontal();
+			this.loggingActive = GUITools.Toggle(
+				loggingActive,
+				string.Format("Data logging: {0}", activeLabelText),
+				null,
+				activeLabelStyle
+			);
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 

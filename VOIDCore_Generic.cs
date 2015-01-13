@@ -605,17 +605,7 @@ namespace VOID
 				{
 					foreach (IVOID_Module module in this.Modules)
 					{
-						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-
-						module.toggleActive = GUILayout.Toggle(
-							module.toggleActive,
-							GUIContent.none,
-							GUILayout.ExpandWidth(false)
-						);
-
-						GUILayout.Label(module.Name, GUILayout.ExpandWidth(true));
-
-						GUILayout.EndHorizontal();
+						module.toggleActive = GUITools.Toggle(module.toggleActive, module.Name);
 					}
 				}
 			}
@@ -624,17 +614,7 @@ namespace VOID
 				GUILayout.Label("-- POWER LOST --", VOID_Styles.labelRed);
 			}
 
-			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-
-			this.configWindowMinimized.value = !GUILayout.Toggle(
-				!this.configWindowMinimized,
-				GUIContent.none,
-				GUILayout.ExpandWidth(false)
-			);
-
-			GUILayout.Label("Configuration", GUILayout.ExpandWidth(true));
-
-			GUILayout.EndHorizontal();
+			this.configWindowMinimized.value = !GUITools.Toggle(!this.configWindowMinimized, "Configuration");
 
 			GUILayout.EndVertical();
 			GUI.DragWindow();
@@ -654,9 +634,9 @@ namespace VOID
 		{
 			GUIContent _content;
 
-			this.UseToolbarManager = GUILayout.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
+			this.UseToolbarManager = GUITools.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
 
-			this.vesselSimActive.value = GUILayout.Toggle(this.vesselSimActive.value,
+			this.vesselSimActive.value = GUITools.Toggle(this.vesselSimActive.value,
 				"Enable Engineering Calculations");
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -730,7 +710,7 @@ namespace VOID
 				mod.DrawConfigurables();
 			}
 
-			this.factoryReset = GUILayout.Toggle(this.factoryReset, "Factory Reset");
+			this.factoryReset = GUITools.Toggle(this.factoryReset, "Factory Reset");
 		}
 
 		protected void UpdateSimManager()
