@@ -118,6 +118,7 @@ namespace VOID
 				"SSUITextAreaDefault",
 				"ExperimentsDialogSkin",
 				"ExpRecoveryDialogSkin",
+				"KSP window 1",
 				"KSP window 5",
 				"KSP window 6",
 				"PartTooltipSkin",
