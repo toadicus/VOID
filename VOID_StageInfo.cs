@@ -40,7 +40,7 @@ namespace VOID
 		public VOID_StageInfo() : base()
 		{
 			this.Name = "Stage Information";
-			this.defWidth = 200f;
+			this.defWidth = 20f;
 			this.bodyIdx = 4;
 
 			this.stylesApplied = false;
@@ -50,34 +50,34 @@ namespace VOID
 
 			this.stageTable = new Table();
 
-			this.stageNumberCol = new Table.Column<int>("Stage", 40f);
+			this.stageNumberCol = new Table.Column<int>("Stage", 20f);
 			this.stageTable.Add(this.stageNumberCol);
 
-			this.stageDeltaVCol = new Table.Column<double>("DeltaV [m/s]", 60f);
+			this.stageDeltaVCol = new Table.Column<double>("DeltaV [m/s]", 20f);
 			this.stageDeltaVCol.Format = "S2";
 			this.stageTable.Add(this.stageDeltaVCol);
 
-			this.stageTotalDVCol = new Table.Column<double>("Total ΔV [m/s]", 60f);
+			this.stageTotalDVCol = new Table.Column<double>("Total ΔV [m/s]", 20f);
 			this.stageTotalDVCol.Format = "S2";
 			this.stageTable.Add(this.stageTotalDVCol);
 
-			this.stageInvertDVCol = new Table.Column<double>("Invert ΔV [m/s]", 60f);
+			this.stageInvertDVCol = new Table.Column<double>("Invert ΔV [m/s]", 20f);
 			this.stageInvertDVCol.Format = "S2";
 			this.stageTable.Add(this.stageInvertDVCol);
 
-			this.stageMassCol = new Table.Column<double>("Mass [Mg]", 60f);
+			this.stageMassCol = new Table.Column<double>("Mass [Mg]", 20f);
 			this.stageMassCol.Format = "#.#";
 			this.stageTable.Add(this.stageMassCol);
 
-			this.stageTotalMassCol = new Table.Column<double>("Total [Mg]", 60f);
+			this.stageTotalMassCol = new Table.Column<double>("Total [Mg]", 20f);
 			this.stageTotalMassCol.Format = "#.#";
 			this.stageTable.Add(this.stageTotalMassCol);
 
-			this.stageThrustCol = new Table.Column<double>("Thrust [N]", 60f);
+			this.stageThrustCol = new Table.Column<double>("Thrust [N]", 20f);
 			this.stageThrustCol.Format = "S2";
 			this.stageTable.Add(this.stageThrustCol);
 
-			this.stageTWRCol = new Table.Column<double>("T/W Ratio", 60f);
+			this.stageTWRCol = new Table.Column<double>("T/W Ratio", 20f);
 			this.stageTWRCol.Format = "#.#";
 			this.stageTable.Add(this.stageTWRCol);
 		}
@@ -153,7 +153,12 @@ namespace VOID
 					this.bodyIdx--;
 				}
 
-				this.showBodyList = GUILayout.Toggle(this.showBodyList, (this.selectedBody ?? core.HomeBody).bodyName, GUI.skin.button);
+				this.showBodyList = GUILayout.Toggle(
+					this.showBodyList,
+					(this.selectedBody ?? core.HomeBody).bodyName,
+					GUI.skin.button
+				);
+
 				Rect bodyButtonPos = GUILayoutUtility.GetLastRect();
 
 				if (Event.current.type == EventType.Repaint)
