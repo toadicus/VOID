@@ -283,7 +283,7 @@ namespace VOID
 						return double.NaN;
 					}
 
-					return Core.LastStage.resourceMass;
+					return Core.LastStage.totalResourceMass;
 				},
 				"tons"
 			);
