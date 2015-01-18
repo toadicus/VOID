@@ -46,6 +46,9 @@ namespace VOID
 		protected bool _loggingActive;
 		protected bool firstWrite;
 
+		[AVOID_SaveValue("waitForLaunch")]
+		protected VOID_SaveValue<bool> waitForLaunch;
+
 		[AVOID_SaveValue("logInterval")]
 		protected VOID_SaveValue<float> logInterval;
 		protected string logIntervalStr;
@@ -194,7 +197,7 @@ namespace VOID
 
 			// CSV Logging
 			// from ISA MapSat
-			if (loggingActive)
+			if (loggingActive && (!waitForLaunch || this.vessel.situation != Vessel.Situations.PRELAUNCH))
 			{
 				//data logging is on
 				//increment timers
@@ -260,6 +263,11 @@ namespace VOID
 				string.Format("Data logging: {0}", activeLabelText),
 				null,
 				activeLabelStyle
+			);
+
+			this.waitForLaunch.value = GUITools.Toggle(
+				this.waitForLaunch,
+				"Wait for launch"
 			);
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -458,6 +466,8 @@ namespace VOID
 
 			this.loggingActive = false;
 			this.firstWrite = true;
+
+			this.waitForLaunch = true;
 
 			this.logInterval = 0.5f;
 			this.csvCollectTimer = 0f;
