@@ -48,11 +48,11 @@ namespace VOID
 		{
 			if (delta > 0)
 			{
-				return string.Format("<color='lime'>{0}↑</color>", delta.ToString(numberFormat, Tools.mySIFormatter));
+				return string.Format("<color='lime'>{0}↑</color>", delta.ToString(numberFormat, Tools.SIFormatter));
 			}
 			else if (delta < 0)
 			{
-				return string.Format("<color='red'>{0}↓</color>", delta.ToString(numberFormat, Tools.mySIFormatter));
+				return string.Format("<color='red'>{0}↓</color>", delta.ToString(numberFormat, Tools.SIFormatter));
 			}
 			else
 			{

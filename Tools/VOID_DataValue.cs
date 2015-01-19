@@ -145,9 +145,11 @@ namespace VOID
 		}
 	}
 
-	public abstract class VOID_NumValue<T> : VOID_DataValue<T>
+	public abstract class VOID_NumValue<T> : VOID_DataValue<T>, IFormattable
 		where T : IFormattable, IConvertible, IComparable
 	{
+		public static IFormatProvider formatProvider = Tools.SIFormatter;
+
 		public static implicit operator Double(VOID_NumValue<T> v)
 		{
 			return v.ToDouble();
@@ -158,17 +160,14 @@ namespace VOID
 			return v.ToInt32();
 		}
 
-
 		public static implicit operator Single(VOID_NumValue<T> v)
 		{
 			return v.ToSingle();
 		}
 
-		protected IFormatProvider formatProvider;
-
 		public VOID_NumValue(string Label, Func<T> ValueFunc, string Units = "") : base(Label, ValueFunc, Units)
 		{
-			this.formatProvider = System.Globalization.CultureInfo.CurrentUICulture;
+
 		}
 
 		public virtual double ToDouble(IFormatProvider provider)
@@ -178,7 +177,7 @@ namespace VOID
 
 		public virtual double ToDouble()
 		{
-			return this.ToDouble(this.formatProvider);
+			return this.ToDouble(formatProvider);
 		}
 
 		public virtual int ToInt32(IFormatProvider provider)
@@ -188,7 +187,7 @@ namespace VOID
 
 		public virtual int ToInt32()
 		{
-			return this.ToInt32(this.formatProvider);
+			return this.ToInt32(formatProvider);
 		}
 
 		public virtual float ToSingle(IFormatProvider provider)
@@ -198,15 +197,19 @@ namespace VOID
 
 		public virtual float ToSingle()
 		{
-			return this.ToSingle(this.formatProvider);
+			return this.ToSingle(formatProvider);
 		}
 
-		public virtual string ToString(string Format)
+		public virtual string ToString(string format)
+		{
+			return this.ToString(format, formatProvider);
+		}
+
+		public virtual string ToString(string format, IFormatProvider provider)
 		{
 			return string.Format (
-				"{0}: {1}{2}",
-				this.Label,
-				this.Value.ToString(Format, this.formatProvider),
+				"{0}{1}",
+				this.Value.ToString(format, provider),
 				this.Units
 			);
 		}
@@ -222,7 +225,7 @@ namespace VOID
 
 		public virtual string ValueUnitString(string format)
 		{
-			return this.Value.ToString(format, this.formatProvider) + this.Units;
+			return this.Value.ToString(format, formatProvider) + this.Units;
 		}
 		
 		public virtual string ValueUnitString(int digits) {
