@@ -98,6 +98,10 @@ namespace VOID
 
 				VOID_Data.longitudeAscNode.DoGUIHorizontal("F3");
 
+				VOID_Data.timeToAscendingNode.DoGUIHorizontal();
+
+				VOID_Data.timeToDescendingNode.DoGUIHorizontal();
+
 				VOID_Data.argumentPeriapsis.DoGUIHorizontal("F3");
 
 				VOID_Data.localSiderealLongitude.DoGUIHorizontal("F3");

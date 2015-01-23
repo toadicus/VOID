@@ -1150,6 +1150,50 @@ namespace VOID
 				"°"
 			);
 
+		public static readonly VOID_StrValue timeToAscendingNode =
+			new VOID_StrValue(
+				"Time to Ascending Node",
+				delegate()
+				{
+					double trueAnomalyAscNode = 360d - argumentPeriapsis;
+					double dTAscNode = Core.vessel.orbit.GetDTforTrueAnomaly(
+						trueAnomalyAscNode * Mathf.Deg2Rad,
+						Core.vessel.orbit.period
+					);
+
+					dTAscNode %= Core.vessel.orbit.period;
+
+					if (dTAscNode < 0d)
+					{
+						dTAscNode += Core.vessel.orbit.period;
+					}
+
+					return VOID_Tools.FormatInterval(dTAscNode);
+				}
+			);
+
+		public static readonly VOID_StrValue timeToDescendingNode =
+			new VOID_StrValue(
+				"Time to Descending Node",
+				delegate()
+				{
+					double trueAnomalyAscNode = 180d - argumentPeriapsis;
+					double dTDescNode = Core.vessel.orbit.GetDTforTrueAnomaly(
+						trueAnomalyAscNode * Mathf.Deg2Rad,
+						Core.vessel.orbit.period
+					);
+
+					dTDescNode %= Core.vessel.orbit.period;
+
+					if (dTDescNode < 0d)
+					{
+						dTDescNode += Core.vessel.orbit.period;
+					}
+
+					return VOID_Tools.FormatInterval(dTDescNode);
+				}
+			);
+
 		public static readonly VOID_DoubleValue localSiderealLongitude =
 			new VOID_DoubleValue(
 				"Local Sidereal Longitude",
