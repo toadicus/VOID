@@ -1215,7 +1215,17 @@ namespace VOID
 		public static readonly VOID_StrValue currBiome =
 			new VOID_StrValue(
 				"Biome",
-				new Func<string>(() => VOID_Tools.GetBiome(Core.vessel).name)
+				delegate()
+				{
+					if (Core.vessel.landedAt == string.Empty)
+					{
+						return VOID_Tools.GetBiome(Core.vessel).name;
+					}
+					else
+					{
+						return Core.vessel.landedAt;
+					}
+				}
 			);
 
 		#endregion
