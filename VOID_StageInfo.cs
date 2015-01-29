@@ -26,11 +26,14 @@ namespace VOID
 		private Table.Column<double> stageTotalMassCol;
 		private Table.Column<double> stageThrustCol;
 		private Table.Column<double> stageTWRCol;
+		private Table.Column<string> stageTimeCol;
 
 		private bool stylesApplied;
-		private bool showBodyList;
 
+		private bool showBodyList;
 		private Rect bodyListPos;
+
+		private bool showColumnSelection;
 
 		private CelestialBody selectedBody;
 		[AVOID_SaveValue("bodyIdx")]
@@ -45,6 +48,7 @@ namespace VOID
 
 			this.stylesApplied = false;
 			this.showBodyList = false;
+			this.showColumnSelection = false;
 
 			this.bodyListPos = new Rect();
 
@@ -80,6 +84,9 @@ namespace VOID
 			this.stageTWRCol = new Table.Column<double>("T/W Ratio", 20f);
 			this.stageTWRCol.Format = "#.#";
 			this.stageTable.Add(this.stageTWRCol);
+
+			this.stageTimeCol = new Table.Column<string>("Burn Time", 20f);
+			this.stageTable.Add(this.stageTimeCol);
 		}
 
 		public override void DrawGUI()
@@ -140,6 +147,8 @@ namespace VOID
 
 				this.stageThrustCol.Add(stage.thrust * 1000f);
 				this.stageTWRCol.Add(stage.thrustToWeight / (this.selectedBody ?? core.HomeBody).GeeASL);
+
+				this.stageTimeCol.Add(VOID_Tools.FormatInterval(stage.time));
 			}
 
 			this.stageTable.Render();
@@ -202,6 +211,15 @@ namespace VOID
 			GUILayout.EndHorizontal();
 
 			GUI.DragWindow();
+		}
+
+		public override void DrawConfigurables()
+		{
+			this.showColumnSelection = GUILayout.Toggle(
+				this.showColumnSelection,
+				"Select StageInfo Columns",
+				GUI.skin.button
+			);
 		}
 
 		private void BodyPickerWindow(int _)
