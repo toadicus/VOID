@@ -142,15 +142,6 @@ namespace VOID
 		{
 			get
 			{
-
-				Tools.PostDebugMessage(
-					this,
-					"Checking if scene is valid: LoadedScene={0}, ValidScenes={1}, inValidScene={2}",
-					Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
-					string.Join(", ", this.ValidScenes.Select(s => Enum.GetName(typeof(GameScenes), s)).ToArray()),
-					this.ValidScenes.Contains(HighLogic.LoadedScene)
-				);
-
 				return this.ValidScenes.Contains(HighLogic.LoadedScene);
 			}
 		}
@@ -199,15 +190,6 @@ namespace VOID
 		{
 			get
 			{
-
-				Tools.PostDebugMessage(
-					this,
-					"Checking if mode is valid: CurrentGame.Mode={0}, ValidModes={1}, inValidGame={2}",
-					Enum.GetName(typeof(Game.Modes), HighLogic.CurrentGame.Mode),
-					string.Join(", ", this.ValidModes.Select(m => Enum.GetName(typeof(Game.Modes), m)).ToArray()),
-					this.ValidModes.Contains(HighLogic.CurrentGame.Mode)
-				);
-
 				return this.ValidModes.Contains(HighLogic.CurrentGame.Mode);
 			}
 		}
@@ -432,6 +414,8 @@ namespace VOID
 
 		protected string inputLockName;
 
+		private GUIContent closeButton;
+
 		public VOID_WindowModule() : base()
 		{
 			this.defWidth = 250f;
@@ -453,7 +437,7 @@ namespace VOID
 			_Pos = GUILayout.Window(
 				this.core.windowID,
 				_Pos,
-				VOID_Tools.GetWindowHandler(this.ModuleWindow),
+				VOID_Tools.GetWindowHandler(this.DecoratedWindow),
 				this.Name,
 				GUILayout.Width(this.defWidth),
 				GUILayout.Height(this.defHeight),
@@ -518,6 +502,35 @@ namespace VOID
 			{
 				this.WindowPos = _Pos;
 				this.core.configDirty = true;
+			}
+		}
+
+		private void DecoratedWindow(int id)
+		{
+			this.ModuleWindow(id);
+
+			if (this.closeButton == null)
+			{
+				this.closeButton = new GUIContent("X");
+			}
+
+			Rect closeRect = GUILayoutUtility.GetRect(
+				this.closeButton,
+				this.core.Skin.button,
+				GUILayout.ExpandWidth(false)
+			);
+
+			closeRect.x = this.WindowPos.width - closeRect.width - this.core.Skin.button.margin.right;
+			closeRect.y = this.core.Skin.button.margin.top;
+
+			GUI.Button(closeRect, closeButton, this.core.Skin.button);
+
+			if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
+			{
+				if (closeRect.Contains(Event.current.mousePosition))
+				{
+					this.toggleActive = false;
+				}
 			}
 		}
 	}
