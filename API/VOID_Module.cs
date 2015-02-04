@@ -407,6 +407,10 @@ namespace VOID
 
 	public abstract class VOID_WindowModule : VOID_Module
 	{
+		protected static GUIContent closeButton;
+
+		protected static Dictionary<int, Action<int>> DecoratedWindows;
+
 		[AVOID_SaveValue("WindowPos")]
 		protected Rect WindowPos;
 		protected float defWidth;
@@ -414,7 +418,17 @@ namespace VOID
 
 		protected string inputLockName;
 
-		private GUIContent closeButton;
+		protected virtual Action<int> DecoratedWindow
+		{
+			get
+			{
+				return VOID_WindowModule.DecorateWindow(
+					this.ModuleWindow,
+					this.WindowPos,
+					(bool active) => { this.toggleActive = active; }
+				);
+			}
+		}
 
 		public VOID_WindowModule() : base()
 		{
@@ -505,31 +519,61 @@ namespace VOID
 			}
 		}
 
-		private void DecoratedWindow(int id)
+		public static Action<int> DecorateWindow(Action<int> func, Rect windowRect, Callback<bool> callBack)
 		{
-			this.ModuleWindow(id);
-
-			if (this.closeButton == null)
+			if (DecoratedWindows == null)
 			{
-				this.closeButton = new GUIContent("X");
+				DecoratedWindows = new Dictionary<int, Action<int>>();
 			}
 
-			Rect closeRect = GUILayoutUtility.GetRect(
-				this.closeButton,
-				this.core.Skin.button,
-				GUILayout.ExpandWidth(false)
-			);
+			int hashCode = func.GetHashCode();
 
-			closeRect.x = this.WindowPos.width - closeRect.width - this.core.Skin.button.margin.right;
-			closeRect.y = this.core.Skin.button.margin.top;
-
-			GUI.Button(closeRect, closeButton, this.core.Skin.button);
-
-			if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
+			if (!DecoratedWindows.ContainsKey(hashCode))
 			{
-				if (closeRect.Contains(Event.current.mousePosition))
+				DecoratedWindows[hashCode] = delegate(int id)
 				{
-					this.toggleActive = false;
+					func(id);
+
+					if (closeButton == null)
+					{
+						closeButton = new GUIContent("X");
+					}
+
+					Rect closeRect = GUILayoutUtility.GetRect(
+						closeButton,
+						VOID_Data.Core.Skin.button,
+						GUILayout.ExpandWidth(false)
+					);
+
+					closeRect.x = windowRect.width - closeRect.width - VOID_Data.Core.Skin.button.margin.right;
+					closeRect.y = VOID_Data.Core.Skin.button.margin.top;
+
+					GUI.Button(closeRect, closeButton, VOID_Data.Core.Skin.button);
+
+					if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
+					{
+						if (closeRect.Contains(Event.current.mousePosition))
+						{
+							callBack(false);
+						}
+					}
+				};
+			}
+
+			return DecoratedWindows[hashCode];
+		}
+
+		public static void UncacheWindow(Action<int> func)
+		{
+			if (DecoratedWindows != null)
+			{
+				int hashCode = func.GetHashCode();
+
+				if (DecoratedWindows.ContainsKey(hashCode))
+				{
+					VOID_Tools.UncacheWindow(DecoratedWindows[hashCode]);
+
+					DecoratedWindows.Remove(hashCode);
 				}
 			}
 		}

@@ -365,6 +365,19 @@ namespace VOID
 			return functionCache[hashCode];
 		}
 
+		public static void UncacheWindow(Action<int> func)
+		{
+			if (functionCache != null)
+			{
+				int hashCode = func.GetHashCode();
+
+				if (functionCache.ContainsKey(hashCode))
+				{
+					functionCache.Remove(hashCode);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Formats the interval given in seconds as a human-friendly
 		/// time period in [[[[years, ]days, ]hours, ]minutes, and ]seconds.

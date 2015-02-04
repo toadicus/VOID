@@ -392,7 +392,12 @@ namespace VOID
 				_mainWindowPos = GUILayout.Window(
 					this.windowID,
 					_mainWindowPos,
-					VOID_Tools.GetWindowHandler(this.VOIDMainWindow),
+					VOID_Tools.GetWindowHandler(
+						VOID_WindowModule.DecorateWindow(
+							this.VOIDMainWindow,
+							_mainWindowPos,
+							(bool active) => { this.mainGuiMinimized = !active; }
+						)),
 					string.Join(" ", new string[] { this.VoidName, this.VoidVersion }),
 					GUILayout.Width(250f),
 					GUILayout.Height(50f),
@@ -422,7 +427,11 @@ namespace VOID
 				_configWindowPos = GUILayout.Window(
 					this.windowID,
 					_configWindowPos,
-					VOID_Tools.GetWindowHandler(this.VOIDConfigWindow),
+					VOID_Tools.GetWindowHandler(VOID_WindowModule.DecorateWindow(
+						this.VOIDConfigWindow,
+						_configWindowPos,
+						(bool active) => { this.configWindowMinimized = !active; }
+					)),
 					string.Join(" ", new string[] { this.VoidName, "Configuration" }),
 					GUILayout.Width(250),
 					GUILayout.Height(50)
