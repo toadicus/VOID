@@ -519,7 +519,7 @@ namespace VOID
 			}
 		}
 
-		public static Action<int> DecorateWindow(Action<int> func, Rect windowRect, Callback<bool> callBack)
+		public static Action<int> DecorateWindow(Action<int> func, Rect windowRect, Callback<bool> callBack, bool useCache)
 		{
 			if (DecoratedWindows == null)
 			{
@@ -528,7 +528,7 @@ namespace VOID
 
 			int hashCode = func.GetHashCode();
 
-			if (!DecoratedWindows.ContainsKey(hashCode))
+			if (!useCache || !DecoratedWindows.ContainsKey(hashCode))
 			{
 				DecoratedWindows[hashCode] = delegate(int id)
 				{
@@ -561,6 +561,11 @@ namespace VOID
 			}
 
 			return DecoratedWindows[hashCode];
+		}
+
+		public static Action<int> DecorateWindow(Action<int> func, Rect windowRect, Callback<bool> callBack)
+		{
+			return DecorateWindow(func, windowRect, callBack, true);
 		}
 
 		public static void UncacheWindow(Action<int> func)
