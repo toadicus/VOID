@@ -50,7 +50,7 @@ namespace VOID
 			this.WindowPos.y = 250f;
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			int idx = 0;
 
@@ -108,7 +108,8 @@ namespace VOID
             }
 
             GUILayout.EndVertical();
-            GUI.DragWindow();
+            
+			base.ModuleWindow(id);
 		}
 
 		public override void LoadConfig ()

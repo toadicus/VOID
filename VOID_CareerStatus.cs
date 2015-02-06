@@ -151,7 +151,7 @@ namespace VOID
 			base.DrawGUI();
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			GUILayout.BeginVertical();
 
@@ -178,7 +178,7 @@ namespace VOID
 
 			GUILayout.EndVertical();
 
-			GUI.DragWindow();
+			base.ModuleWindow(id);
 		}
 
 		// TODO: Update event handlers to do something useful with the new "reasons" parameter.

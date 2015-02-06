@@ -35,12 +35,10 @@ using UnityEngine;
 
 namespace VOID
 {
-	public abstract class VOIDCore : VOID_Module, IVOID_Module
+	public abstract class VOIDCore : VOID_WindowModule, IVOID_Module
 	{
 		public const double Constant_G = 6.674e-11;
 		public const int CONFIG_VERSION = 2;
-
-		public static bool useToolbarManager;
 
 		public abstract int configVersion { get; }
 		public virtual bool configNeedsUpdate { get; set; }
@@ -76,8 +74,6 @@ namespace VOID
 		{
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOIDCore>(null);
 
-			useToolbarManager = config.GetValue("UseToolbarManager", useToolbarManager);
-
 			base.LoadConfig();
 		}
 
@@ -85,8 +81,6 @@ namespace VOID
 
 		public override void _SaveToConfig(KSP.IO.PluginConfiguration config)
 		{
-			config.SetValue("UseToolbarManager", useToolbarManager);
-
 			base._SaveToConfig(config);
 		}
 	}

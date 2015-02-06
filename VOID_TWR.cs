@@ -20,7 +20,7 @@ namespace VOID
 			this.Name = "IP Thrust-to-Weight Ratios";
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			if (
 				!HighLogic.LoadedSceneIsFlight ||
@@ -60,7 +60,7 @@ namespace VOID
 
 			GUILayout.EndVertical();
 
-			GUI.DragWindow();
+			base.ModuleWindow(id);
 		}
 	}
 }

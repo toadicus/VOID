@@ -119,6 +119,7 @@ namespace VOID
 				"ExperimentsDialogSkin",
 				"ExpRecoveryDialogSkin",
 				"KSP window 1",
+				"KSP window 3",
 				"KSP window 5",
 				"KSP window 6",
 				"PartTooltipSkin",
@@ -285,6 +286,8 @@ namespace VOID
 			}
 		}
 
+		private bool useToolbarManager;
+
 		protected bool UseToolbarManager
 		{
 			get
@@ -384,6 +387,8 @@ namespace VOID
 				this.InitializeToolbarButton();
 			}
 
+			base.DrawGUI();
+/*
 			if (!this.mainGuiMinimized)
 			{
 
@@ -450,7 +455,7 @@ namespace VOID
 				{
 					this.configWindowPos = _configWindowPos;
 				}
-			}
+			}*/
 		}
 
 		public virtual void Update()
@@ -593,7 +598,7 @@ namespace VOID
 			this.StartGUI();
 		}
 
-		public void VOIDMainWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			GUILayout.BeginVertical();
 
@@ -627,7 +632,8 @@ namespace VOID
 			this.configWindowMinimized.value = !GUITools.Toggle(!this.configWindowMinimized, "Configuration");
 
 			GUILayout.EndVertical();
-			GUI.DragWindow();
+
+			base.ModuleWindow(id);
 		}
 
 		public void VOIDConfigWindow(int _)
@@ -1167,6 +1173,8 @@ namespace VOID
 		public virtual void Dispose()
 		{
 			this.StopGUI();
+
+			this.onSkinChanged(this);
 
 			if (this.AppLauncherButton != null)
 			{

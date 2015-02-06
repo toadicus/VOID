@@ -114,7 +114,7 @@ namespace VOID
 			}
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			if (this.selectedBody == null)
 			{
@@ -261,7 +261,7 @@ namespace VOID
 
 			GUILayout.EndHorizontal();
 
-			GUI.DragWindow();
+			base.ModuleWindow(id);
 		}
 
 		public override void DrawConfigurables()

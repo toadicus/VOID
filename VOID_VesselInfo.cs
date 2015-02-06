@@ -46,7 +46,7 @@ namespace VOID
 			this.WindowPos.y = 450;
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			if ((TimeWarp.WarpMode == TimeWarp.Modes.LOW) || (TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate))
 			{
@@ -86,7 +86,7 @@ namespace VOID
 
 			GUILayout.EndVertical();
 
-			GUI.DragWindow();
+			base.ModuleWindow(id);
 		}
 	}
 }

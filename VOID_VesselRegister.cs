@@ -67,7 +67,7 @@ namespace VOID
 			this.defHeight = 375;
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			if (!this.core.allVesselTypes.Any())
 			{
@@ -157,7 +157,7 @@ namespace VOID
 
 			GUILayout.EndVertical();
 
-			GUI.DragWindow();
+			base.ModuleWindow(id);
 		}
 	}
 }

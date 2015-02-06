@@ -48,7 +48,7 @@ namespace VOID
 			this.defWidth = 315;
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			GUILayout.BeginVertical();
 
@@ -140,7 +140,8 @@ namespace VOID
 				}
 			}
 			GUILayout.EndVertical();
-			GUI.DragWindow();
+
+			base.ModuleWindow(id);
 		}
 
 		private void tad_targeting(CelestialBody body)

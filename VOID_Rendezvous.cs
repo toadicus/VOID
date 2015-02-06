@@ -53,7 +53,7 @@ namespace VOID
 			this.WindowPos.y = 85;
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			Vessel rendezvessel = new Vessel();
 			CelestialBody rendezbody = new CelestialBody();
@@ -134,7 +134,8 @@ namespace VOID
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
-			GUI.DragWindow();
+
+			base.ModuleWindow(id);
 		}
 
 		private void display_rendezvous_info(Vessel v, CelestialBody cb)

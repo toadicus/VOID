@@ -407,40 +407,58 @@ namespace VOID
 
 	public abstract class VOID_WindowModule : VOID_Module
 	{
-		protected static GUIContent closeButton;
-
-		protected static Dictionary<int, Action<int>> DecoratedWindows;
-
 		[AVOID_SaveValue("WindowPos")]
 		protected Rect WindowPos;
 		protected float defWidth;
 		protected float defHeight;
 
-		protected string inputLockName;
+		protected bool decorateWindow;
 
-		protected virtual Action<int> DecoratedWindow
-		{
-			get
-			{
-				return VOID_WindowModule.DecorateWindow(
-					this.ModuleWindow,
-					this.WindowPos,
-					(bool active) => { this.toggleActive = active; }
-				);
-			}
-		}
+		protected string inputLockName;
 
 		public VOID_WindowModule() : base()
 		{
 			this.defWidth = 250f;
 			this.defHeight = 50f;
 
+			this.decorateWindow = true;
+
 			this.inputLockName = string.Concat(this.Name, "_edlock");
 
 			this.WindowPos = new Rect(Screen.width / 2, Screen.height / 2, this.defWidth, this.defHeight);
 		}
 
-		public abstract void ModuleWindow(int _);
+		public virtual void ModuleWindow(int id)
+		{
+			GUIStyle buttonStyle = this.core.Skin.button;
+			RectOffset padding = buttonStyle.padding;
+			RectOffset border = buttonStyle.border;
+
+			Rect closeRect = new Rect(
+				0f,
+				0f,
+				border.left + border.right,
+				border.top + border.bottom
+			);
+
+			closeRect.width = Mathf.Max(closeRect.width, 16f);
+			closeRect.height = Mathf.Max(closeRect.height, 16f);
+
+			closeRect.x = this.WindowPos.width - closeRect.width - 2f;
+			closeRect.y = 2f;
+
+			GUI.Button(closeRect, GUIContent.none, buttonStyle);
+
+			if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
+			{
+				if (closeRect.Contains(Event.current.mousePosition))
+				{
+					this.toggleActive = false;
+				}
+			}
+
+			GUI.DragWindow();
+		}
 
 		public override void DrawGUI()
 		{
@@ -451,12 +469,10 @@ namespace VOID
 			_Pos = GUILayout.Window(
 				this.core.windowID,
 				_Pos,
-				VOID_Tools.GetWindowHandler(this.DecoratedWindow),
+				VOID_Tools.GetWindowHandler(this.ModuleWindow),
 				this.Name,
 				GUILayout.Width(this.defWidth),
-				GUILayout.Height(this.defHeight),
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
+				GUILayout.Height(this.defHeight)
 			);
 
 			bool cursorInWindow = _Pos.Contains(Mouse.screenPos);
@@ -516,70 +532,6 @@ namespace VOID
 			{
 				this.WindowPos = _Pos;
 				this.core.configDirty = true;
-			}
-		}
-
-		public static Action<int> DecorateWindow(Action<int> func, Rect windowRect, Callback<bool> callBack, bool useCache)
-		{
-			if (DecoratedWindows == null)
-			{
-				DecoratedWindows = new Dictionary<int, Action<int>>();
-			}
-
-			int hashCode = func.GetHashCode();
-
-			if (!useCache || !DecoratedWindows.ContainsKey(hashCode))
-			{
-				DecoratedWindows[hashCode] = delegate(int id)
-				{
-					func(id);
-
-					if (closeButton == null)
-					{
-						closeButton = new GUIContent("X");
-					}
-
-					Rect closeRect = GUILayoutUtility.GetRect(
-						closeButton,
-						VOID_Data.Core.Skin.button,
-						GUILayout.ExpandWidth(false)
-					);
-
-					closeRect.x = windowRect.width - closeRect.width - VOID_Data.Core.Skin.button.margin.right;
-					closeRect.y = VOID_Data.Core.Skin.button.margin.top;
-
-					GUI.Button(closeRect, closeButton, VOID_Data.Core.Skin.button);
-
-					if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
-					{
-						if (closeRect.Contains(Event.current.mousePosition))
-						{
-							callBack(false);
-						}
-					}
-				};
-			}
-
-			return DecoratedWindows[hashCode];
-		}
-
-		public static Action<int> DecorateWindow(Action<int> func, Rect windowRect, Callback<bool> callBack)
-		{
-			return DecorateWindow(func, windowRect, callBack, true);
-		}
-
-		public static void UncacheWindow(Action<int> func)
-		{
-			if (DecoratedWindows != null)
-			{
-				int hashCode = func.GetHashCode();
-
-				if (DecoratedWindows.ContainsKey(hashCode))
-				{
-					VOID_Tools.UncacheWindow(DecoratedWindows[hashCode]);
-
-					DecoratedWindows.Remove(hashCode);
-				}
 			}
 		}
 	}

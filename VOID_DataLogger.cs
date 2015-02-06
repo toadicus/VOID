@@ -237,7 +237,7 @@ namespace VOID
 			this.logIntervalStr = this.logInterval.value.ToString("#.0##");
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			GUILayout.BeginVertical();
 
@@ -288,7 +288,7 @@ namespace VOID
 
 			GUILayout.EndVertical();
 
-			GUI.DragWindow();
+			base.ModuleWindow(id);
 		}
 
 		#endregion

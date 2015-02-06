@@ -62,7 +62,7 @@ namespace VOID
 			this.WindowPos.y = 85;
 		}
 
-		public override void ModuleWindow(int _)
+		public override void ModuleWindow(int id)
 		{
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
@@ -277,7 +277,7 @@ namespace VOID
 				GUILayout.EndHorizontal();
 			}
 
-			GUI.DragWindow();
+			base.ModuleWindow(id);
 		}
 
 		private void body_OP_show_orbital_info(CelestialBody body)
