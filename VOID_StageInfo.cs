@@ -40,6 +40,12 @@ namespace VOID
 		private VOID_SaveValue<int> bodyIdx;
 		private int lastIdx;
 
+		private bool showAdvanced;
+
+		[AVOID_SaveValue("UseSealLevel")]
+		private VOID_SaveValue<bool> useSeaLevel;
+		private GUIContent seaLevelToggle;
+
 		public VOID_StageInfo() : base()
 		{
 			this.Name = "Stage Information";
@@ -87,6 +93,15 @@ namespace VOID
 
 			this.stageTimeCol = new Table.Column<string>("Burn Time", 20f);
 			this.stageTable.Add(this.stageTimeCol);
+
+			this.showAdvanced = false;
+
+			this.useSeaLevel = false;
+
+			seaLevelToggle = new GUIContent(
+				"Use Sea Level",
+				"Use 'sea' level atmospheric conditions on bodies with atmospheres."
+			);
 		}
 
 		public override void DrawGUI()
@@ -101,6 +116,11 @@ namespace VOID
 
 		public override void ModuleWindow(int _)
 		{
+			if (this.selectedBody == null)
+			{
+				this.selectedBody = core.HomeBody;
+			}
+
 			if (
 				!HighLogic.LoadedSceneIsFlight ||
 				(TimeWarp.WarpMode == TimeWarp.Modes.LOW) ||
@@ -127,6 +147,15 @@ namespace VOID
 				GUILayout.EndVertical();
 
 				return;
+			}
+
+			if (HighLogic.LoadedSceneIsEditor && this.selectedBody.atmosphere && this.useSeaLevel)
+			{
+				SimManager.Atmosphere = this.selectedBody.atmosphereMultiplier * 101.325d;
+			}
+			else
+			{
+				SimManager.Atmosphere = 0d;
 			}
 
 			foreach (Stage stage in core.Stages)
@@ -194,6 +223,28 @@ namespace VOID
 					this.lastIdx = this.bodyIdx;
 					this.selectedBody = core.sortedBodyList[this.bodyIdx];
 				}
+
+				if (HighLogic.LoadedSceneIsEditor)
+				{
+					if (
+						GUILayout.Button(
+							this.showAdvanced ? "▲" : "▼",
+							GUILayout.ExpandWidth(false)
+						)
+					)
+					{
+						this.showAdvanced = !this.showAdvanced;
+					}
+				}
+
+				GUILayout.EndHorizontal();
+			}
+
+			if (this.showAdvanced && HighLogic.LoadedSceneIsEditor)
+			{
+				GUILayout.BeginHorizontal();
+
+				this.useSeaLevel.value = GUITools.Toggle(this.useSeaLevel, this.seaLevelToggle, false);
 
 				GUILayout.EndHorizontal();
 			}
