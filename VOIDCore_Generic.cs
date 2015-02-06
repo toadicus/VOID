@@ -727,15 +727,6 @@ namespace VOID
 		{
 			if (SimManager.ResultsReady())
 			{
-				Tools.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
-
-				this.Stages = SimManager.Stages;
-
-				if (this.Stages != null)
-				{
-					this.LastStage = this.Stages.Last();
-				}
-
 				if (HighLogic.LoadedSceneIsEditor)
 				{
 					SimManager.Gravity = VOID_Data.KerbinGee;
@@ -756,6 +747,18 @@ namespace VOID
 				Tools.PostDebugMessage(this, "VesselSimulator results not ready.");
 			}
 			#endif
+		}
+
+		protected void GetSimManagerResults()
+		{
+			Tools.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
+
+			this.Stages = SimManager.Stages;
+
+			if (this.Stages != null)
+			{
+				this.LastStage = this.Stages.Last();
+			}
 		}
 
 		protected void LoadModulesOfType<U>()
@@ -1147,6 +1150,8 @@ namespace VOID
 			this.updateTimer = 0f;
 
 			this.vesselSimActive = true;
+			SimManager.Atmosphere = 0d;
+			SimManager.OnReady += this.GetSimManagerResults;
 
 			this.UseToolbarManager = ToolbarManager.ToolbarAvailable;
 
