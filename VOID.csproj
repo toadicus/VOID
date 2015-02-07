@@ -113,6 +113,7 @@
     <Compile Include="API\Attributes\VOID_GameModesAttribute.cs" />
     <Compile Include="VOID_ConfigWindow.cs" />
     <Compile Include="Tools\VOID_Localization.cs" />
+    <Compile Include="Tools\VOID_StageExtensions.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

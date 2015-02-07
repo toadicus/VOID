@@ -38,6 +38,7 @@ namespace VOID
 	public static class VOID_Data
 	{
 		private static Dictionary<int, IVOID_DataValue> dataValues = new Dictionary<int, IVOID_DataValue>();
+
 		public static Dictionary<int, IVOID_DataValue> DataValues
 		{
 			get
@@ -380,19 +381,7 @@ namespace VOID
 						return double.NaN;
 					}
 
-					double stageIsp = Core.LastStage.isp;
-					double stageThrust = stageNominalThrust;
-
-					Tools.PostDebugMessage(typeof(VOID_Data), "calculating stageMassFlow from:\n" +
-						"\tstageIsp: {0}\n" +
-						"\tstageThrust: {1}\n" +
-						"\tKerbinGee: {2}\n",
-						stageIsp,
-						stageThrust,
-						KerbinGee
-					);
-
-					return stageThrust / (stageIsp * KerbinGee);
+					return Core.LastStage.MassFlow();
 				},
 				"Mg/s"
 			);
@@ -407,14 +396,7 @@ namespace VOID
 						return double.NaN;
 					}
 
-					if (Core.LastStage.actualThrust == 0d)
-					{
-						return Core.LastStage.thrust;
-					}
-					else
-					{
-						return Core.LastStage.actualThrust;
-					}
+					return Core.LastStage.NominalThrust();
 				},
 				"kN"
 			);
@@ -481,7 +463,7 @@ namespace VOID
 					double maxThrust = Core.LastStage.thrust;
 					double mass = Core.LastStage.totalMass;
 					double gravity = (VOIDCore.Constant_G * Core.Vessel.mainBody.Mass) /
-					               (Core.Vessel.mainBody.Radius * Core.Vessel.mainBody.Radius);
+					                 (Core.Vessel.mainBody.Radius * Core.Vessel.mainBody.Radius);
 					double weight = mass * gravity;
 
 					return maxThrust / weight;
@@ -564,13 +546,13 @@ namespace VOID
 					thrustDir = vesselTransform.InverseTransformDirection(thrustDir);
 
 					Vector3d thrustOffset = VectorTools.PointDistanceToLine(
-						                      thrustPos, thrustDir.normalized, Core.Vessel.findLocalCenterOfMass());
+						                        thrustPos, thrustDir.normalized, Core.Vessel.findLocalCenterOfMass());
 
 					Tools.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
-						"\tthrustPos: {0}\n" +
-						"\tthrustDir: {1}\n" +
-						"\tthrustOffset: {2}\n" +
-						"\tvessel.CoM: {3}",
+					"\tthrustPos: {0}\n" +
+					"\tthrustDir: {1}\n" +
+					"\tthrustOffset: {2}\n" +
+					"\tvessel.CoM: {3}",
 						thrustPos,
 						thrustDir.normalized,
 						thrustOffset,
@@ -610,9 +592,9 @@ namespace VOID
 								propellantList = engineModule.propellants;
 							}
 							else if (part.tryGetFirstModuleOfType<ModuleEnginesFX>(out enginesFXModule))
-								{
-									propellantList = enginesFXModule.propellants;
-								}
+							{
+								propellantList = enginesFXModule.propellants;
+							}
 
 							if (propellantList != null)
 							{
@@ -701,8 +683,8 @@ namespace VOID
 				{
 
 					if (Core.Vessel == null ||
-					  Planetarium.fetch == null ||
-					  Core.Vessel.mainBody != Planetarium.fetch.Home)
+					    Planetarium.fetch == null ||
+					    Core.Vessel.mainBody != Planetarium.fetch.Home)
 					{
 						return double.NaN;
 					}
@@ -955,14 +937,12 @@ namespace VOID
 				"Total Burn Time",
 				delegate()
 				{
-					if (Core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
+					if (currManeuverDeltaV.Value == double.NaN)
 					{
 						return double.NaN;
 					}
 
-					double stageThrust = stageNominalThrust;
-
-					return burnTime(currManeuverDeltaV.Value, totalMass, stageMassFlow, stageThrust);
+					return realVesselBurnTime(currManeuverDeltaV.Value);
 				},
 				"s"
 			);
@@ -972,14 +952,12 @@ namespace VOID
 				"Burn Time Remaining",
 				delegate()
 				{
-					if (Core.LastStage == null || currManeuverDVRemaining == double.NaN)
+					if (currManeuverDVRemaining.Value == double.NaN)
 					{
 						return double.NaN;
 					}
 
-					double stageThrust = stageNominalThrust;
-
-					return burnTime(currManeuverDVRemaining, totalMass, stageMassFlow, stageThrust);
+					return realVesselBurnTime(currManeuverDVRemaining.Value);
 				},
 				"s"
 			);
@@ -989,14 +967,12 @@ namespace VOID
 				"Half Burn Time",
 				delegate()
 				{
-					if (Core.LastStage == null || currManeuverDeltaV.Value == double.NaN)
+					if (currManeuverDeltaV.Value == double.NaN)
 					{
 						return double.NaN;
 					}
 
-					double stageThrust = stageNominalThrust;
-
-					return burnTime(currManeuverDeltaV.Value / 2d, totalMass, stageMassFlow, stageThrust);
+					return realVesselBurnTime(currManeuverDeltaV.Value / 2d);
 				},
 				"s"
 			);
@@ -1088,7 +1064,7 @@ namespace VOID
 				delegate()
 				{
 					double orbitRadius = Core.Vessel.mainBody.Radius +
-					                   Core.Vessel.mainBody.GetAltitude(Core.Vessel.findWorldCenterOfMass());
+					                     Core.Vessel.mainBody.GetAltitude(Core.Vessel.findWorldCenterOfMass());
 					return (VOIDCore.Constant_G * Core.Vessel.mainBody.Mass) /
 					(orbitRadius * orbitRadius);
 				},
@@ -1157,9 +1133,9 @@ namespace VOID
 				{
 					double trueAnomalyAscNode = 360d - argumentPeriapsis;
 					double dTAscNode = Core.Vessel.orbit.GetDTforTrueAnomaly(
-						trueAnomalyAscNode * Mathf.Deg2Rad,
-						Core.Vessel.orbit.period
-					);
+						                   trueAnomalyAscNode * Mathf.Deg2Rad,
+						                   Core.Vessel.orbit.period
+					                   );
 
 					dTAscNode %= Core.Vessel.orbit.period;
 
@@ -1179,9 +1155,9 @@ namespace VOID
 				{
 					double trueAnomalyAscNode = 180d - argumentPeriapsis;
 					double dTDescNode = Core.Vessel.orbit.GetDTforTrueAnomaly(
-						trueAnomalyAscNode * Mathf.Deg2Rad,
-						Core.Vessel.orbit.period
-					);
+						                    trueAnomalyAscNode * Mathf.Deg2Rad,
+						                    Core.Vessel.orbit.period
+					                    );
 
 					dTDescNode %= Core.Vessel.orbit.period;
 
@@ -1198,7 +1174,7 @@ namespace VOID
 			new VOID_DoubleValue(
 				"Local Sidereal Longitude",
 				new Func<double>(() => VOID_Tools.FixDegreeDomain(
-						Core.Vessel.longitude + Core.Vessel.orbit.referenceBody.rotationAngle)),
+					Core.Vessel.longitude + Core.Vessel.orbit.referenceBody.rotationAngle)),
 				"°"
 			);
 
@@ -1244,16 +1220,53 @@ namespace VOID
 		private static double burnTime(double deltaV, double initialMass, double massFlow, double thrust)
 		{
 			Tools.PostDebugMessage(typeof(VOID_Data), "calculating burnTime from:\n" +
-				"\tdeltaV: {0}\n" +
-				"\tinitialMass: {1}\n" +
-				"\tmassFlow: {2}\n" +
-				"\tthrust: {3}\n",
+			"\tdeltaV: {0}\n" +
+			"\tinitialMass: {1}\n" +
+			"\tmassFlow: {2}\n" +
+			"\tthrust: {3}\n",
 				deltaV,
 				initialMass,
 				massFlow,
 				thrust
 			);
 			return initialMass / massFlow * (1d - Math.Exp(-deltaV * massFlow / thrust));
+		}
+
+		private static double dVfromBurnTime(double time, double initialMass, double massFlow, double thrust)
+		{
+			return -thrust / massFlow * Math.Log(1d - time * massFlow / initialMass);
+		}
+
+		private static double realVesselBurnTime(double deltaV)
+		{
+			if (Core.Stages == null || Core.Stages.Length < 1)
+			{
+				return double.NaN;
+			}
+
+			double burntime = 0d;
+			double dVRemaining = deltaV;
+
+			int stageIdx = Core.Stages.Length - 1;
+
+			while (dVRemaining > double.Epsilon)
+			{
+				if (stageIdx < 1)
+				{
+					return double.PositiveInfinity;
+				}
+
+				Stage stage = Core.Stages[stageIdx];
+
+				double stageDVUsed = Math.Min(stage.deltaV, dVRemaining);
+
+				burntime += burnTime(stageDVUsed, stage.totalMass, stage.MassFlow(), stage.NominalThrust());
+				dVRemaining -= stageDVUsed;
+
+				stageIdx--;
+			}
+
+			return burntime;
 		}
 	}
 }

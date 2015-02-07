@@ -316,6 +316,7 @@ namespace VOID
 		}
 		#endregion
 
+		#region WINDOW_UTILS
 		private static Dictionary<int, GUI.WindowFunction> functionCache;
 		public static UnityEngine.GUI.WindowFunction GetWindowHandler(Action<int> func)
 		{
@@ -377,7 +378,9 @@ namespace VOID
 				}
 			}
 		}
+		#endregion
 
+		#region TIME_UTILS
 		/// <summary>
 		/// Formats the interval given in seconds as a human-friendly
 		/// time period in [[[[years, ]days, ]hours, ]minutes, and ]seconds.
@@ -545,6 +548,7 @@ namespace VOID
 
 			public UnpackedTime() : this(0, 0, 0, 0, 0d) {}
 		}
+		#endregion
 
 		public static string UppercaseFirst(string s)
 		{
