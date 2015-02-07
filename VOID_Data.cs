@@ -1251,17 +1251,20 @@ namespace VOID
 
 			while (dVRemaining > double.Epsilon)
 			{
-				if (stageIdx < 1)
+				if (stageIdx < 0)
 				{
 					return double.PositiveInfinity;
 				}
 
 				Stage stage = Core.Stages[stageIdx];
 
-				double stageDVUsed = Math.Min(stage.deltaV, dVRemaining);
+				if (stage.deltaV > 0)
+				{
+					double stageDVUsed = Math.Min(stage.deltaV, dVRemaining);
 
-				burntime += burnTime(stageDVUsed, stage.totalMass, stage.MassFlow(), stage.NominalThrust());
-				dVRemaining -= stageDVUsed;
+					burntime += burnTime(stageDVUsed, stage.totalMass, stage.MassFlow(), stage.NominalThrust());
+					dVRemaining -= stageDVUsed;
+				}
 
 				stageIdx--;
 			}
