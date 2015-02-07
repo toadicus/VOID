@@ -36,10 +36,10 @@ namespace VOID
 	public class VOID_Orbital : VOID_WindowModule
 	{
 		[AVOID_SaveValue("toggleExtended")]
-		protected VOID_SaveValue<bool> toggleExtended = false;
+		protected VOID_SaveValue<bool> toggleExtended;
 
 		[AVOID_SaveValue("precisionValues")]
-		protected long _precisionValues = 230584300921369395;
+		protected long _precisionValues;
 		protected IntCollection precisionValues;
 
 		public VOID_Orbital()
@@ -48,6 +48,10 @@ namespace VOID
 
 			this.WindowPos.x = Screen.width - 520f;
 			this.WindowPos.y = 250f;
+
+			this.toggleExtended = (VOID_SaveValue<bool>)false;
+
+			this._precisionValues = 230584300921369395;
 		}
 
 		public override void ModuleWindow(int id)

@@ -36,11 +36,6 @@ namespace VOID
 	[VOID_Scenes(GameScenes.FLIGHT)]
 	public class VOIDCore_Flight : VOIDCore_Generic<VOIDCore_Flight>
 	{
-		public VOIDCore_Flight()
-		{
-			base.Name = "VOID Core: Flight";
-		}
-
 		public override void DrawConfigurables()
 		{
 			if (HighLogic.LoadedSceneIsFlight)

@@ -95,7 +95,7 @@ namespace VOID
 			);
 			this.Windows.Add(this.rightHUD);
 
-			this.positionsLocked = true;
+			this.positionsLocked.value = true;
 
 			Tools.PostDebugMessage (this, "Constructed.");
 		}
@@ -265,7 +265,7 @@ namespace VOID
 				}
 			}
 
-			this.positionsLocked = GUITools.Toggle(this.positionsLocked, string.Intern("Lock Advanced HUD Positions"));
+			this.positionsLocked.value = GUITools.Toggle(this.positionsLocked, string.Intern("Lock Advanced HUD Positions"));
 		}
 	}
 }

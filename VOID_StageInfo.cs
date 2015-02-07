@@ -50,7 +50,7 @@ namespace VOID
 		{
 			this.Name = "Stage Information";
 			this.defWidth = 20f;
-			this.bodyIdx = 4;
+			this.bodyIdx = (VOID_SaveValue<int>)4;
 
 			this.stylesApplied = false;
 			this.showBodyList = false;
@@ -96,7 +96,7 @@ namespace VOID
 
 			this.showAdvanced = false;
 
-			this.useSeaLevel = false;
+			this.useSeaLevel = (VOID_SaveValue<bool>)false;
 
 			seaLevelToggle = new GUIContent(
 				"Use Sea Level",
@@ -188,7 +188,7 @@ namespace VOID
 
 				if (GUILayout.Button("◄"))
 				{
-					this.bodyIdx--;
+					this.bodyIdx.value--;
 				}
 
 				this.showBodyList = GUILayout.Toggle(
@@ -208,14 +208,14 @@ namespace VOID
 
 				if (GUILayout.Button("►"))
 				{
-					this.bodyIdx++;
+					this.bodyIdx.value++;
 				}
 
-				this.bodyIdx %= core.sortedBodyList.Count;
+				this.bodyIdx.value %= core.sortedBodyList.Count;
 
 				if (this.bodyIdx < 0)
 				{
-					this.bodyIdx += core.sortedBodyList.Count;
+					this.bodyIdx.value += core.sortedBodyList.Count;
 				}
 
 				if (this.lastIdx != this.bodyIdx)
@@ -280,7 +280,7 @@ namespace VOID
 				if (GUILayout.Button(body.bodyName, VOID_Styles.labelDefault))
 				{
 					Debug.Log("Picked new body focus: " + body.bodyName);
-					this.bodyIdx = core.sortedBodyList.IndexOf(body);
+					this.bodyIdx.value = core.sortedBodyList.IndexOf(body);
 					this.showBodyList = false;
 				}
 			}

@@ -32,11 +32,6 @@ namespace VOID
 	[VOID_Scenes(GameScenes.SPACECENTER)]
 	public class VOIDCore_SpaceCentre : VOIDCore_Generic<VOIDCore_SpaceCentre>
 	{
-		public VOIDCore_SpaceCentre() : base()
-		{
-			base.Name = "VOID Core: SpaceCentre";
-		}
-
 		public override void FixedUpdate() {}
 	}
 }

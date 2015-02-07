@@ -36,7 +36,7 @@ namespace VOID
 	public class VOID_SurfAtmo : VOID_WindowModule
 	{
 		[AVOID_SaveValue("precisionValues")]
-		protected long _precisionValues = 230584300921369395;
+		protected VOID_SaveValue<long> _precisionValues;
 		protected IntCollection precisionValues;
 
 		public VOID_SurfAtmo()
@@ -45,6 +45,8 @@ namespace VOID
 
 			this.WindowPos.x = Screen.width - 260f;
 			this.WindowPos.y = 85;
+
+			this._precisionValues = (VOID_SaveValue<long>)230584300921369395;
 		}
 
 		public override void ModuleWindow(int id)
@@ -104,7 +106,7 @@ namespace VOID
 
 		public override void _SaveToConfig (KSP.IO.PluginConfiguration config)
 		{
-			this._precisionValues = this.precisionValues.collection;
+			this._precisionValues.value = this.precisionValues.collection;
 
 			base._SaveToConfig (config);
 		}

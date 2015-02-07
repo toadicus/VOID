@@ -467,10 +467,10 @@ namespace VOID
 			this.loggingActive = false;
 			this.firstWrite = true;
 
-			this.waitForLaunch = true;
+			this.waitForLaunch = (VOID_SaveValue<bool>)true;
 
-			this.logInterval = 0.5f;
-			this.csvCollectTimer = 0f;
+			this.logInterval = (VOID_SaveValue<float>)0.5f;
+			this.csvCollectTimer = (VOID_SaveValue<float>)0f;
 
 			this.outstandingWrites = 0;
 

@@ -72,8 +72,6 @@ namespace VOID
 
 		public override void LoadConfig()
 		{
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOIDCore>(null);
-
 			base.LoadConfig();
 		}
 

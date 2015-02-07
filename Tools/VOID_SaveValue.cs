@@ -66,11 +66,12 @@ namespace VOID
 				if (this.Core != null && !System.Object.Equals(this._value, value))
 				{
 					Tools.PostDebugMessage (string.Format (
-						"VOID: Dirtying config for type {0} in method {1}." +
+						"VOID: Dirtying config for type {0}." +
 						"\n\t Old Value: {2}, New Value: {3}" +
-						"\n\t Object.Equals(New, Old): {4}",
+						"\n\t Object.Equals(New, Old): {4}\n" +
+						"{1}",
 						this._type,
-						new System.Diagnostics.StackTrace().GetFrame(1).GetMethod(),
+						new System.Diagnostics.StackTrace().ToString(),
 						this._value,
 						value,
 						System.Object.Equals(this._value, value)
@@ -107,7 +108,7 @@ namespace VOID
 			return (T)v.value;
 		}
 
-		public static implicit operator VOID_SaveValue<T>(T v)
+		public static explicit operator VOID_SaveValue<T>(T v)
 		{
 			VOID_SaveValue<T> r = new VOID_SaveValue<T>();
 			r.type = v.GetType();

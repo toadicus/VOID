@@ -37,22 +37,22 @@ namespace VOID
 	public class VOID_CBInfoBrowser : VOID_WindowModule
 	{
 		[AVOID_SaveValue("selectedBodyIdx1")]
-		protected VOID_SaveValue<int> selectedBodyIdx1 = 1;
+		protected VOID_SaveValue<int> selectedBodyIdx1;
 
 		[AVOID_SaveValue("selectedBodyIdx2")]
-		protected VOID_SaveValue<int> selectedBodyIdx2 = 2;
+		protected VOID_SaveValue<int> selectedBodyIdx2;
 
 		protected CelestialBody selectedBody1;
 		protected CelestialBody selectedBody2;
 
 		[AVOID_SaveValue("toggleOrbital")]
-		protected VOID_SaveValue<bool> toggleOrbital = false;
+		protected VOID_SaveValue<bool> toggleOrbital;
 
 		[AVOID_SaveValue("togglePhysical")]
-		protected VOID_SaveValue<bool> togglePhysical = false;
+		protected VOID_SaveValue<bool> togglePhysical;
 
 		[AVOID_SaveValue("toggleScience")]
-		protected VOID_SaveValue<bool> toggleScience = false;
+		protected VOID_SaveValue<bool> toggleScience;
 
 		public VOID_CBInfoBrowser()
 		{
@@ -60,6 +60,13 @@ namespace VOID
 
 			this.WindowPos.x = 10;
 			this.WindowPos.y = 85;
+
+			this.selectedBodyIdx1 = (VOID_SaveValue<int>)1;
+			this.selectedBodyIdx2 = (VOID_SaveValue<int>)2;
+
+			this.toggleOrbital = (VOID_SaveValue<bool>)false;
+			this.togglePhysical = (VOID_SaveValue<bool>)false;
+			this.toggleScience = (VOID_SaveValue<bool>)false;
 		}
 
 		public override void ModuleWindow(int id)
@@ -81,14 +88,20 @@ namespace VOID
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<", GUILayout.ExpandWidth(false)))
 			{
-				selectedBodyIdx1--;
-				if (selectedBodyIdx1 < 0) selectedBodyIdx1 = this.core.allBodies.Count - 1;
+				selectedBodyIdx1.value--;
+				if (selectedBodyIdx1 < 0)
+				{
+					selectedBodyIdx1.value = this.core.allBodies.Count - 1;
+				}
 			}
 			GUILayout.Label(this.core.allBodies[selectedBodyIdx1].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
-				selectedBodyIdx1++;
-				if (selectedBodyIdx1 > this.core.allBodies.Count - 1) selectedBodyIdx1 = 0;
+				selectedBodyIdx1.value++;
+				if (selectedBodyIdx1 > this.core.allBodies.Count - 1)
+				{
+					selectedBodyIdx1.value = 0;
+				}
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.EndVertical();
@@ -97,14 +110,20 @@ namespace VOID
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<", GUILayout.ExpandWidth(false)))
 			{
-				selectedBodyIdx2--;
-				if (selectedBodyIdx2 < 0) selectedBodyIdx2 = this.core.allBodies.Count - 1;
+				selectedBodyIdx2.value--;
+				if (selectedBodyIdx2 < 0)
+				{
+					selectedBodyIdx2.value = this.core.allBodies.Count - 1;
+				}
 			}
 			GUILayout.Label(this.core.allBodies[selectedBodyIdx2].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
-				selectedBodyIdx2++;
-				if (selectedBodyIdx2 > this.core.allBodies.Count - 1) selectedBodyIdx2 = 0;
+				selectedBodyIdx2.value++;
+				if (selectedBodyIdx2 > this.core.allBodies.Count - 1)
+				{
+					selectedBodyIdx2.value = 0;
+				}
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.EndVertical();

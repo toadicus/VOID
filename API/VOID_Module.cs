@@ -41,7 +41,7 @@ namespace VOID
 		 * Fields
 		 * */
 		[AVOID_SaveValue("Active")]
-		protected VOID_SaveValue<bool> _Active = false;
+		protected VOID_SaveValue<bool> _Active = (VOID_SaveValue<bool>)false;
 		private GameScenes[] validScenes;
 		private Game.Modes[] validModes;
 
@@ -77,7 +77,7 @@ namespace VOID
 			}
 			set
 			{
-				this._Active = value && this.inValidGame && this.inValidScene;
+				this._Active.value = value && this.inValidGame && this.inValidScene;
 			}
 		}
 
@@ -211,7 +211,7 @@ namespace VOID
 		/*
 		 * Methods
 		 * */
-		public void StartGUI()
+		public virtual void StartGUI()
 		{
 			if (!this.toggleActive || this.guiRunning)
 			{
@@ -222,7 +222,7 @@ namespace VOID
 			RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
 		}
 
-		public void StopGUI()
+		public virtual void StopGUI()
 		{
 			if (!this.guiRunning)
 			{

@@ -112,7 +112,7 @@
     <Compile Include="API\Attributes\AVOID_SaveValue.cs" />
     <Compile Include="API\VOIDMaster.cs" />
     <Compile Include="API\Attributes\VOID_GameModesAttribute.cs" />
-    <Compile Include="VOID_ConfigModule.cs" />
+    <Compile Include="VOID_ConfigWindow.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -37,16 +37,16 @@ namespace VOID
 	public class VOID_VesselRegister : VOID_WindowModule
 	{
 		[AVOID_SaveValue("selectedBodyIdx")]
-		protected VOID_SaveValue<int> selectedBodyIdx = 0;
+		protected VOID_SaveValue<int> selectedBodyIdx;
 		protected CelestialBody seletedBody;
 
 		[AVOID_SaveValue("selectedVesselTypeIdx")]
-		protected VOID_SaveValue<int> selectedVesselTypeIdx = 0;
+		protected VOID_SaveValue<int> selectedVesselTypeIdx;
 		protected VesselType selectedVesselType;
 
-		protected string vesselSituation = "Orbiting";
+		protected string vesselSituation;
 
-		protected Vector2 selectorScrollPos = new Vector2();
+		protected Vector2 selectorScrollPos;
 
 		protected Vessel _selectedVessel;
 
@@ -65,6 +65,13 @@ namespace VOID
 			this.WindowPos.x = 845;
 			this.WindowPos.y = 275;
 			this.defHeight = 375;
+
+			this.selectedBodyIdx = (VOID_SaveValue<int>)0;
+			this.selectedVesselTypeIdx = (VOID_SaveValue<int>)0;
+
+			this.vesselSituation = "Orbiting";
+
+			this.selectorScrollPos = new Vector2();
 		}
 
 		public override void ModuleWindow(int id)
@@ -79,14 +86,20 @@ namespace VOID
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<"))
 			{
-				selectedBodyIdx--;
-				if (selectedBodyIdx < 0) selectedBodyIdx = this.core.allBodies.Count - 1;
+				selectedBodyIdx.value--;
+				if (selectedBodyIdx < 0)
+				{
+					selectedBodyIdx.value = this.core.allBodies.Count - 1;
+				}
 			}
 			GUILayout.Label(this.core.allBodies[selectedBodyIdx].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
-				selectedBodyIdx++;
-				if (selectedBodyIdx > this.core.allBodies.Count - 1) selectedBodyIdx = 0;
+				selectedBodyIdx.value++;
+				if (selectedBodyIdx > this.core.allBodies.Count - 1)
+				{
+					selectedBodyIdx.value = 0;
+				}
 			}
 			GUILayout.EndHorizontal();
 
@@ -95,14 +108,20 @@ namespace VOID
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<"))
 			{
-				selectedVesselTypeIdx--;
-				if (selectedVesselTypeIdx < 0) selectedVesselTypeIdx = this.core.allVesselTypes.Count - 1;
+				selectedVesselTypeIdx.value--;
+				if (selectedVesselTypeIdx < 0)
+				{
+					selectedVesselTypeIdx.value = this.core.allVesselTypes.Count - 1;
+				}
 			}
 			GUILayout.Label(this.core.allVesselTypes[selectedVesselTypeIdx].ToString(), VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
-				selectedVesselTypeIdx++;
-				if (selectedVesselTypeIdx > this.core.allVesselTypes.Count - 1) selectedVesselTypeIdx = 0;
+				selectedVesselTypeIdx.value++;
+				if (selectedVesselTypeIdx > this.core.allVesselTypes.Count - 1)
+				{
+					selectedVesselTypeIdx.value = 0;
+				}
 			}
 			GUILayout.EndHorizontal();
 

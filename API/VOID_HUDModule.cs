@@ -56,11 +56,11 @@ namespace VOID
 			{
 				if (this._colorIndex >= this.textColors.Count - 1)
 				{
-					this._colorIndex = 0;
+					this._colorIndex.value = 0;
 					return;
 				}
 
-				this._colorIndex = value;
+				this._colorIndex.value = value;
 			}
 		}
 
@@ -72,7 +72,7 @@ namespace VOID
 
 		public VOID_HUDModule() : base()
 		{
-			this._colorIndex = 0;
+			this._colorIndex = (VOID_SaveValue<int>)0;
 
 			this.textColors = new List<Color>();
 
@@ -86,7 +86,7 @@ namespace VOID
 			this.textColors.Add(Color.cyan);
 			this.textColors.Add(Color.magenta);
 
-			this.positionsLocked = true;
+			this.positionsLocked = (VOID_SaveValue<bool>)true;
 
 			this.Windows = new List<HUDWindow>();
 		}
@@ -133,7 +133,7 @@ namespace VOID
 				}
 			}
 
-			this.positionsLocked = GUITools.Toggle(this.positionsLocked, "Lock HUD Positions");
+			this.positionsLocked.value = GUITools.Toggle(this.positionsLocked, "Lock HUD Positions");
 		}
 
 		public override void LoadConfig()

@@ -240,7 +240,7 @@ namespace VOID
 
 			this.ehudWindow.WindowPos = hudPos;
 
-			this.snapToLeft = Mathf.Abs(this.ehudWindow.WindowPos.xMin - hudLeft) < 15f;
+			this.snapToLeft.value = Mathf.Abs(this.ehudWindow.WindowPos.xMin - hudLeft) < 15f;
 		}
 	}
 }

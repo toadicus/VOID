@@ -233,7 +233,10 @@ namespace VOID
 		 * */
 		public VOID_CareerStatus() : base()
 		{
-			VOID_CareerStatus.Instance = this;
+			if (this.inValidGame && this.inValidScene)
+			{
+				VOID_CareerStatus.Instance = this;
+			}
 
 			this.Name = "Career Status";
 

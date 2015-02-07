@@ -38,10 +38,10 @@ namespace VOID
 	public class VOID_Rendezvous : VOID_WindowModule
 	{
 		[AVOID_SaveValue("untoggleRegisterInfo")]
-		protected VOID_SaveValue<bool> untoggleRegisterInfo = false;
+		protected VOID_SaveValue<bool> untoggleRegisterInfo;
 
 		[AVOID_SaveValue("toggleExtendedOrbital")]
-		protected VOID_SaveValue<bool> toggleExtendedOrbital = false;
+		protected VOID_SaveValue<bool> toggleExtendedOrbital;
 
 		protected VOID_VesselRegister RegisterModule;
 
@@ -51,6 +51,9 @@ namespace VOID
 
 			this.WindowPos.x = 845;
 			this.WindowPos.y = 85;
+
+			this.untoggleRegisterInfo = (VOID_SaveValue<bool>)false;
+			this.toggleExtendedOrbital = (VOID_SaveValue<bool>)false;
 		}
 
 		public override void ModuleWindow(int id)

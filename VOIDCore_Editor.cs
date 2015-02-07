@@ -39,11 +39,6 @@ namespace VOID
 	[VOID_Scenes(GameScenes.EDITOR)]
 	public class VOIDCore_Editor : VOIDCore_Generic<VOIDCore_Editor>
 	{
-		public VOIDCore_Editor() : base()
-		{
-			this.Name = "VOID Core: Editor";
-		}
-
 		public override void FixedUpdate() {}
 	}
 }

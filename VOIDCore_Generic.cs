@@ -47,21 +47,10 @@ namespace VOID
 		protected string VoidVersion;
 
 		[AVOID_SaveValue("configValue")]
-		protected VOID_SaveValue<int> _configVersion = VOIDCore.CONFIG_VERSION;
+		protected VOID_SaveValue<int> _configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
 
 		protected List<IVOID_Module> _modules = new List<IVOID_Module>();
 		protected bool _modulesLoaded = false;
-
-		[AVOID_SaveValue("mainWindowPos")]
-		protected VOID_SaveValue<Rect> mainWindowPos = new Rect(475, 575, 10f, 10f);
-		[AVOID_SaveValue("mainGuiMinimized")]
-		protected VOID_SaveValue<bool> mainGuiMinimized = false;
-
-		[AVOID_SaveValue("configWindowPos")]
-		protected VOID_SaveValue<Rect> configWindowPos = new Rect(825, 625, 10f, 10f);
-		[AVOID_SaveValue("configWindowMinimized")]
-
-		protected VOID_SaveValue<bool> configWindowMinimized = true;
 
 		protected Texture2D VOIDIconTexture;
 		protected string VOIDIconOnActivePath;
@@ -79,21 +68,21 @@ namespace VOID
 		protected CelestialBody _homeBody;
 
 		[AVOID_SaveValue("togglePower")]
-		public VOID_SaveValue<bool> togglePower = true;
+		public VOID_SaveValue<bool> togglePower = (VOID_SaveValue<bool>)true;
 
 		public override bool powerAvailable { get; protected set; }
 
 		[AVOID_SaveValue("consumeResource")]
-		protected VOID_SaveValue<bool> consumeResource = false;
+		protected VOID_SaveValue<bool> consumeResource = (VOID_SaveValue<bool>)false;
 
 		[AVOID_SaveValue("resourceName")]
-		protected VOID_SaveValue<string> resourceName = "ElectricCharge";
+		protected VOID_SaveValue<string> resourceName = (VOID_SaveValue<string>)"ElectricCharge";
 
 		[AVOID_SaveValue("resourceRate")]
-		protected VOID_SaveValue<float> resourceRate = 0.2f;
+		protected VOID_SaveValue<float> resourceRate = (VOID_SaveValue<float>)0.2f;
 
 		[AVOID_SaveValue("updatePeriod")]
-		protected VOID_SaveValue<double> _updatePeriod = 1001f / 15000f;
+		protected VOID_SaveValue<double> _updatePeriod = (VOID_SaveValue<double>)(1001f / 15000f);
 		protected string stringFrequency;
 
 		[AVOID_SaveValue("vesselSimActive")]
@@ -274,7 +263,7 @@ namespace VOID
 		{
 			get
 			{
-				if (this.mainGuiMinimized)
+				if (this.toggleActive)
 				{
 					return IconState.Inactive;
 				}
@@ -387,75 +376,10 @@ namespace VOID
 				this.InitializeToolbarButton();
 			}
 
-			base.DrawGUI();
-/*
-			if (!this.mainGuiMinimized)
+			if (this.toggleActive)
 			{
-
-				Rect _mainWindowPos = this.mainWindowPos;
-
-				_mainWindowPos = GUILayout.Window(
-					this.windowID,
-					_mainWindowPos,
-					VOID_Tools.GetWindowHandler(
-						VOID_WindowModule.DecorateWindow(
-							this.VOIDMainWindow,
-							_mainWindowPos,
-							(bool active) => { this.mainGuiMinimized = !active; }
-						)),
-					string.Join(" ", new string[] { this.VoidName, this.VoidVersion }),
-					GUILayout.Width(250f),
-					GUILayout.Height(50f),
-					GUILayout.ExpandWidth(true),
-					GUILayout.ExpandHeight(true)
-				);
-
-				if (HighLogic.LoadedSceneIsEditor)
-				{
-					_mainWindowPos = Tools.ClampRectToEditorPad(_mainWindowPos);
-				}
-				else
-				{
-					_mainWindowPos = Tools.ClampRectToScreen(_mainWindowPos);
-				}
-
-				if (_mainWindowPos != this.mainWindowPos)
-				{
-					this.mainWindowPos = _mainWindowPos;
-				}
+				base.DrawGUI();
 			}
-
-			if (!this.configWindowMinimized && !this.mainGuiMinimized)
-			{
-				Rect _configWindowPos = this.configWindowPos;
-
-				_configWindowPos = GUILayout.Window(
-					this.windowID,
-					_configWindowPos,
-					VOID_Tools.GetWindowHandler(VOID_WindowModule.DecorateWindow(
-						this.VOIDConfigWindow,
-						_configWindowPos,
-						(bool active) => { this.configWindowMinimized = !active; }
-					)),
-					string.Join(" ", new string[] { this.VoidName, "Configuration" }),
-					GUILayout.Width(250),
-					GUILayout.Height(50)
-				);
-
-				if (HighLogic.LoadedSceneIsEditor)
-				{
-					_configWindowPos = Tools.ClampRectToEditorPad(_configWindowPos);
-				}
-				else
-				{
-					_configWindowPos = Tools.ClampRectToScreen(_configWindowPos);
-				}
-
-				if (_configWindowPos != this.configWindowPos)
-				{
-					this.configWindowPos = _configWindowPos;
-				}
-			}*/
 		}
 
 		public virtual void Update()
@@ -585,6 +509,14 @@ namespace VOID
 			this.OnDestroy();
 		}
 
+		public override void StartGUI()
+		{
+			if (!this.guiRunning)
+			{
+				RenderingManager.AddToPostDrawQueue(3, this.DrawGUI);
+			}
+		}
+
 		public void ResetGUI()
 		{
 			this.StopGUI();
@@ -620,6 +552,11 @@ namespace VOID
 				{
 					foreach (IVOID_Module module in this.Modules)
 					{
+						if (module is VOID_ConfigWindow)
+						{
+							continue;
+						}
+
 						module.toggleActive = GUITools.Toggle(module.toggleActive, module.Name);
 					}
 				}
@@ -629,21 +566,14 @@ namespace VOID
 				GUILayout.Label("-- POWER LOST --", VOID_Styles.labelRed);
 			}
 
-			this.configWindowMinimized.value = !GUITools.Toggle(!this.configWindowMinimized, "Configuration");
+			VOID_ConfigWindow.Instance.toggleActive = GUITools.Toggle(
+				VOID_ConfigWindow.Instance.toggleActive,
+				"Configuration"
+			);
 
 			GUILayout.EndVertical();
 
 			base.ModuleWindow(id);
-		}
-
-		public void VOIDConfigWindow(int _)
-		{
-			GUILayout.BeginVertical();
-
-			this.DrawConfigurables();
-
-			GUILayout.EndVertical();
-			GUI.DragWindow();
 		}
 
 		public override void DrawConfigurables()
@@ -717,7 +647,7 @@ namespace VOID
 			{
 				double updateFreq = 1f / this.updatePeriod;
 				double.TryParse(stringFrequency, out updateFreq);
-				this._updatePeriod = 1 / updateFreq;
+				this._updatePeriod.value = 1 / updateFreq;
 			}
 			GUILayout.EndHorizontal();
 
@@ -788,46 +718,6 @@ namespace VOID
 
 					sb.AppendFormat("Checking IVOID_Module type {0}...", loadedType.Name);
 
-					GameScenes[] validScenes = null;
-
-					foreach (var attr in loadedType.GetCustomAttributes(true))
-					{
-						if (attr is VOID_ScenesAttribute)
-						{
-							validScenes = ((VOID_ScenesAttribute)attr).ValidScenes;
-
-							sb.Append("VOID_ScenesAttribute found;");
-
-							break;
-						}
-					}
-
-					if (validScenes == null)
-					{
-						validScenes = new GameScenes[] { GameScenes.FLIGHT };
-
-
-						sb.Append("VOID_ScenesAttribute not found;");
-
-					}
-
-					sb.AppendFormat(
-						" validScenes set to {0}.",
-						string.Join(
-							", ",
-							validScenes.Select(s => Enum.GetName(typeof(GameScenes), s)).ToArray()
-						)
-					);
-
-					if (!validScenes.Contains(HighLogic.LoadedScene))
-					{
-						sb.AppendFormat("  {0} not found in validScenes, skipping.",
-							Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene));
-						continue;
-					}
-
-					sb.AppendFormat("Loading IVOID_Module type {0}...", loadedType.Name);
-
 					try
 					{
 						this.LoadModule(loadedType);
@@ -886,14 +776,17 @@ namespace VOID
 				module = Activator.CreateInstance(T) as IVOID_Module;
 			}
 
-			module.LoadConfig();
-			this._modules.Add(module);
+			if (module.inValidGame && module.inValidScene)
+			{
+				module.LoadConfig();
+				this._modules.Add(module);
 
-			Tools.PostDebugMessage(string.Format(
-				"{0}: loaded module {1}.",
-				this.GetType().Name,
-				T.Name
-			));
+				Tools.PostDebugMessage(string.Format(
+						"{0}: loaded module {1}.",
+						this.GetType().Name,
+						T.Name
+					));
+			}
 		}
 
 		protected void LoadSkins()
@@ -1037,7 +930,7 @@ namespace VOID
 
 		protected void ToggleMainWindow()
 		{
-			this.mainGuiMinimized = !this.mainGuiMinimized;
+			this.toggleActive = !this.toggleActive;
 			this.SetIconTexture(this.powerState | this.activeState);
 		}
 
@@ -1134,17 +1027,17 @@ namespace VOID
 
 		public VOIDCore_Generic()
 		{
-			this.Name = "VOID Core";
-
 			System.Version version = this.GetType().Assembly.GetName().Version;
 
 			this.VoidVersion = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.MajorRevision);
+
+			this.Name = string.Format("VOID {0}", this.VoidVersion.ToString());
 
 			this.powerAvailable = true;
 
 			this.toggleActive = true;
 
-			this._skinName = this.defaultSkin;
+			this._skinName = (VOID_SaveValue<string>)this.defaultSkin;
 			this._skinIdx = int.MinValue;
 
 			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_light_glow";
@@ -1155,7 +1048,7 @@ namespace VOID
 			this.saveTimer = 0f;
 			this.updateTimer = 0f;
 
-			this.vesselSimActive = true;
+			this.vesselSimActive = (VOID_SaveValue<bool>)true;
 			SimManager.Atmosphere = 0d;
 			SimManager.OnReady += this.GetSimManagerResults;
 
@@ -1163,7 +1056,7 @@ namespace VOID
 
 			this.LoadConfig();
 
-			this._configVersion = VOIDCore.CONFIG_VERSION;
+			this._configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
 			
 			this.SetIconTexture(this.powerState | this.activeState);
 
