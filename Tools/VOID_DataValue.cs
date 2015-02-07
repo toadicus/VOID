@@ -71,8 +71,8 @@ namespace VOID
 			get
 			{
 				if (
-					(VOID_Data.Core.updateTimer - this.lastUpdate > VOID_Data.Core.updatePeriod) ||
-					(this.lastUpdate > VOID_Data.Core.updateTimer)
+					(VOID_Data.Core.UpdateTimer - this.lastUpdate > VOID_Data.Core.UpdatePeriod) ||
+					(this.lastUpdate > VOID_Data.Core.UpdateTimer)
 				)
 				{
 					this.Refresh();
@@ -97,7 +97,7 @@ namespace VOID
 		public void Refresh()
 		{
 			this.cache = this.ValueFunc.Invoke ();
-			this.lastUpdate = VOID_Data.Core.updateTimer;
+			this.lastUpdate = VOID_Data.Core.UpdateTimer;
 		}
 
 		public T GetFreshValue()

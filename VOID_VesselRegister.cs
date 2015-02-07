@@ -76,7 +76,7 @@ namespace VOID
 
 		public override void ModuleWindow(int id)
 		{
-			if (!this.core.allVesselTypes.Any())
+			if (!this.core.AllVesselTypes.Any())
 			{
 				return;
 			}
@@ -89,21 +89,21 @@ namespace VOID
 				selectedBodyIdx.value--;
 				if (selectedBodyIdx < 0)
 				{
-					selectedBodyIdx.value = this.core.allBodies.Count - 1;
+					selectedBodyIdx.value = this.core.AllBodies.Count - 1;
 				}
 			}
-			GUILayout.Label(this.core.allBodies[selectedBodyIdx].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.AllBodies[selectedBodyIdx].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
 				selectedBodyIdx.value++;
-				if (selectedBodyIdx > this.core.allBodies.Count - 1)
+				if (selectedBodyIdx > this.core.AllBodies.Count - 1)
 				{
 					selectedBodyIdx.value = 0;
 				}
 			}
 			GUILayout.EndHorizontal();
 
-			seletedBody = this.core.allBodies[selectedBodyIdx];
+			seletedBody = this.core.AllBodies[selectedBodyIdx];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<"))
@@ -111,21 +111,21 @@ namespace VOID
 				selectedVesselTypeIdx.value--;
 				if (selectedVesselTypeIdx < 0)
 				{
-					selectedVesselTypeIdx.value = this.core.allVesselTypes.Count - 1;
+					selectedVesselTypeIdx.value = this.core.AllVesselTypes.Length - 1;
 				}
 			}
-			GUILayout.Label(this.core.allVesselTypes[selectedVesselTypeIdx].ToString(), VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.AllVesselTypes[selectedVesselTypeIdx].ToString(), VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
 				selectedVesselTypeIdx.value++;
-				if (selectedVesselTypeIdx > this.core.allVesselTypes.Count - 1)
+				if (selectedVesselTypeIdx > this.core.AllVesselTypes.Length - 1)
 				{
 					selectedVesselTypeIdx.value = 0;
 				}
 			}
 			GUILayout.EndHorizontal();
 
-			selectedVesselType = this.core.allVesselTypes[selectedVesselTypeIdx];
+			selectedVesselType = this.core.AllVesselTypes[selectedVesselTypeIdx];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("Landed", GUILayout.ExpandWidth(true))) vesselSituation = "Landed";

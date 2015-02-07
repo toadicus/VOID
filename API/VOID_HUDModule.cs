@@ -107,7 +107,7 @@ namespace VOID
 			foreach (HUDWindow window in this.Windows)
 			{
 				window.WindowPos = GUILayout.Window(
-					this.core.windowID,
+					this.core.WindowID,
 					window.WindowPos,
 					VOID_Tools.GetWindowHandler(window.WindowFunction),
 					GUIContent.none,
@@ -152,9 +152,9 @@ namespace VOID
 			}
 		}
 
-		public override void _SaveToConfig(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config)
 		{
-			base._SaveToConfig(config);
+			base.Save(config);
 
 			foreach (HUDWindow window in this.Windows)
 			{

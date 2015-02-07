@@ -75,7 +75,7 @@ namespace VOID
 
 			this.Core.Update ();
 
-			if (this.Core.factoryReset)
+			if (this.Core.FactoryReset)
 			{
 				this.LogDebug("Factory reset is true; deleting config and disposing!");
 

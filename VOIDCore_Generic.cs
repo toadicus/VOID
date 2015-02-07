@@ -47,10 +47,10 @@ namespace VOID
 		protected string VoidVersion;
 
 		[AVOID_SaveValue("configValue")]
-		protected VOID_SaveValue<int> _configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
+		protected VOID_SaveValue<int> configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
 
-		protected List<IVOID_Module> _modules = new List<IVOID_Module>();
-		protected bool _modulesLoaded = false;
+		protected List<IVOID_Module> modules = new List<IVOID_Module>();
+		protected bool modulesLoaded = false;
 
 		protected Texture2D VOIDIconTexture;
 		protected string VOIDIconOnActivePath;
@@ -58,14 +58,16 @@ namespace VOID
 		protected string VOIDIconOffActivePath;
 		protected string VOIDIconOffInactivePath;
 
+		private bool _useToolbarManager;
+
 		protected GUIStyle iconStyle;
 
 		protected int windowBaseID = -96518722;
-		protected int _windowID = 0;
+		protected int windowID = 0;
 
 		protected bool GUIStylesLoaded = false;
 
-		protected CelestialBody _homeBody;
+		protected CelestialBody homeBody;
 
 		[AVOID_SaveValue("togglePower")]
 		public VOID_SaveValue<bool> togglePower = (VOID_SaveValue<bool>)true;
@@ -82,21 +84,20 @@ namespace VOID
 		protected VOID_SaveValue<float> resourceRate = (VOID_SaveValue<float>)0.2f;
 
 		[AVOID_SaveValue("updatePeriod")]
-		protected VOID_SaveValue<double> _updatePeriod = (VOID_SaveValue<double>)(1001f / 15000f);
+		protected VOID_SaveValue<double> updatePeriod = (VOID_SaveValue<double>)(1001f / 15000f);
 		protected string stringFrequency;
 
 		[AVOID_SaveValue("vesselSimActive")]
 		protected VOID_SaveValue<bool> vesselSimActive;
 
 		// Vessel Type Housekeeping
-		protected List<VesselType> _allVesselTypes = new List<VesselType>();
 		protected bool vesselTypesLoaded = false;
 
 		protected string defaultSkin = "KSP window 2";
 
 		[AVOID_SaveValue("defaultSkin")]
-		protected VOID_SaveValue<string> _skinName;
-		protected int _skinIdx;
+		protected VOID_SaveValue<string> skinName;
+		protected int skinIdx;
 
 		protected Dictionary<string, GUISkin> validSkins;
 		protected string[] skinNames;
@@ -125,25 +126,56 @@ namespace VOID
 		/*
 		 * Properties
 		 * */
-		public override int configVersion
+
+		public override IList<CelestialBody> AllBodies
 		{
 			get
 			{
-				return this._configVersion;
+				return FlightGlobals.Bodies.AsReadOnly();
 			}
 		}
 
-		public bool factoryReset
+		public override VesselType[] AllVesselTypes
 		{
 			get;
 			protected set;
 		}
 
-		public override List<IVOID_Module> Modules
+		public override int ConfigVersion
 		{
 			get
 			{
-				return this._modules;
+				return this.configVersion;
+			}
+		}
+
+		public bool FactoryReset
+		{
+			get;
+			protected set;
+		}
+
+		public override CelestialBody HomeBody
+		{
+			get
+			{
+				if (this.homeBody == null)
+				{
+					if (Planetarium.fetch != null)
+					{
+						this.homeBody = Planetarium.fetch.Home;
+					}
+				}
+
+				return this.homeBody;
+			}
+		}
+
+		public override IList<IVOID_Module> Modules
+		{
+			get
+			{
+				return this.modules.AsReadOnly();
 			}
 		}
 
@@ -155,7 +187,7 @@ namespace VOID
 				{
 					try
 					{
-						return this.validSkins[this._skinName];
+						return this.validSkins[this.skinName];
 					}
 					catch
 					{
@@ -166,68 +198,35 @@ namespace VOID
 			}
 		}
 
-		public override int windowID
-		{
-			get
-			{
-				if (this._windowID == 0)
-				{
-					this._windowID = this.windowBaseID;
-				}
-				return this._windowID++;
-			}
-		}
-
-		public override List<CelestialBody> allBodies
-		{
-			get
-			{
-				return FlightGlobals.Bodies;
-			}
-		}
-
-		public override List<CelestialBody> sortedBodyList
+		public override List<CelestialBody> SortedBodyList
 		{
 			get;
 			protected set;
 		}
 
-		public override CelestialBody HomeBody
+		public override double UpdatePeriod
 		{
 			get
 			{
-				if (this._homeBody == null)
-				{
-					if (Planetarium.fetch != null)
-					{
-						this._homeBody = Planetarium.fetch.Home;
-					}
-				}
-
-				return this._homeBody;
+				return this.updatePeriod;
 			}
 		}
 
-		public override List<VesselType> allVesselTypes
-		{
-			get
-			{
-				return this._allVesselTypes;
-			}
-		}
-
-		public override float updateTimer
+		public override float UpdateTimer
 		{
 			get;
 			protected set;
 		}
 
-
-		public override double updatePeriod
+		public override int WindowID
 		{
 			get
 			{
-				return this._updatePeriod;
+				if (this.windowID == 0)
+				{
+					this.windowID = this.windowBaseID;
+				}
+				return this.windowID++;
 			}
 		}
 
@@ -241,22 +240,6 @@ namespace VOID
 		{
 			get;
 			protected set;
-		}
-
-		protected IconState powerState
-		{
-			get
-			{
-				if (this.togglePower && this.powerAvailable)
-				{
-					return IconState.PowerOn;
-				}
-				else
-				{
-					return IconState.PowerOff;
-				}
-
-			}
 		}
 
 		protected IconState activeState
@@ -275,17 +258,39 @@ namespace VOID
 			}
 		}
 
-		private bool useToolbarManager;
-
-		protected bool UseToolbarManager
+		protected IconState powerState
 		{
 			get
 			{
-				return useToolbarManager & ToolbarManager.ToolbarAvailable;
+				if (this.togglePower && this.powerAvailable)
+				{
+					return IconState.PowerOn;
+				}
+				else
+				{
+					return IconState.PowerOff;
+				}
+
+			}
+		}
+
+		protected virtual ApplicationLauncher.AppScenes appIconVisibleScenes
+		{
+			get
+			{
+				return HighLogic.LoadedScene.ToAppScenes();
+			}
+		}
+
+		protected bool useToolbarManager
+		{
+			get
+			{
+				return _useToolbarManager & ToolbarManager.ToolbarAvailable;
 			}
 			set
 			{
-				if (useToolbarManager == value)
+				if (_useToolbarManager == value)
 				{
 					return;
 				}
@@ -306,15 +311,7 @@ namespace VOID
 					this.InitializeToolbarButton();
 				}
 
-				useToolbarManager = value;
-			}
-		}
-
-		protected virtual ApplicationLauncher.AppScenes appIconVisibleScenes
-		{
-			get
-			{
-				return HighLogic.LoadedScene.ToAppScenes();
+				_useToolbarManager = value;
 			}
 		}
 
@@ -329,9 +326,9 @@ namespace VOID
 		 * */
 		public override void DrawGUI()
 		{
-			this._windowID = this.windowBaseID;
+			this.windowID = this.windowBaseID;
 
-			if (!this._modulesLoaded)
+			if (!this.modulesLoaded)
 			{
 				this.LoadModulesOfType<IVOID_Module>();
 			}
@@ -351,10 +348,10 @@ namespace VOID
 					this,
 					"ToolbarAvailable: {0}, UseToobarManager: {1}",
 					ToolbarManager.ToolbarAvailable,
-					this.UseToolbarManager);
+					this.useToolbarManager);
 			}
 
-			if (!this.UseToolbarManager)
+			if (!this.useToolbarManager)
 			{
 				if (this.AppLauncherButton == null)
 				{
@@ -407,7 +404,7 @@ namespace VOID
 				this.StartGUI();
 			}
 
-			foreach (IVOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.modules)
 			{
 				if (
 					!module.guiRunning &&
@@ -427,7 +424,7 @@ namespace VOID
 						!module.toggleActive ||
 					    !this.togglePower ||
 						!module.inValidScene ||
-					    this.factoryReset ||
+					    this.FactoryReset ||
 						(
 							HighLogic.LoadedSceneIsEditor &&
 							(EditorLogic.RootPart == null || EditorLogic.SortedShipList.Count == 0)
@@ -445,7 +442,7 @@ namespace VOID
 			}
 
 			this.CheckAndSave();
-			this.updateTimer += Time.deltaTime;
+			this.UpdateTimer += Time.deltaTime;
 		}
 
 		public virtual void FixedUpdate()
@@ -477,7 +474,7 @@ namespace VOID
 				}
 			}
 
-			foreach (IVOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.modules)
 			{
 				if (module is IVOID_BehaviorModule)
 				{
@@ -488,7 +485,7 @@ namespace VOID
 
 		public void OnDestroy()
 		{
-			foreach (IVOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.modules)
 			{
 				if (module is IVOID_BehaviorModule)
 				{
@@ -521,7 +518,7 @@ namespace VOID
 		{
 			this.StopGUI();
 
-			foreach (IVOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.modules)
 			{
 				module.StopGUI();
 				module.StartGUI();
@@ -550,7 +547,7 @@ namespace VOID
 
 				if (togglePower || !HighLogic.LoadedSceneIsFlight)
 				{
-					foreach (IVOID_Module module in this.Modules)
+					foreach (IVOID_Module module in this.modules)
 					{
 						if (module is VOID_ConfigWindow)
 						{
@@ -580,7 +577,7 @@ namespace VOID
 		{
 			GUIContent _content;
 
-			this.UseToolbarManager = GUITools.Toggle(this.UseToolbarManager, "Use Blizzy's Toolbar If Available");
+			this.useToolbarManager = GUITools.Toggle(this.useToolbarManager, "Use Blizzy's Toolbar If Available");
 
 			this.vesselSimActive.value = GUITools.Toggle(this.vesselSimActive.value,
 				"Enable Engineering Calculations");
@@ -595,11 +592,11 @@ namespace VOID
 			_content.tooltip = "Select previous skin";
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
-				this._skinIdx--;
+				this.skinIdx--;
 				Tools.PostDebugMessage(string.Format(
-					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
-					this._skinName,
+					this.skinName,
 					this.validSkins.Count
 				));
 			}
@@ -612,24 +609,24 @@ namespace VOID
 			_content.tooltip = "Select next skin";
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
-				this._skinIdx++;
+				this.skinIdx++;
 				Tools.PostDebugMessage(string.Format(
-					"{0}: new this._skinIdx = {1} :: skin_list.Count = {2}",
+					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
-					this._skinName,
+					this.skinName,
 					this.validSkins.Count
 				));
 			}
 
-			this._skinIdx %= this.skinNames.Length;
-			if (this._skinIdx < 0)
+			this.skinIdx %= this.skinNames.Length;
+			if (this.skinIdx < 0)
 			{
-				this._skinIdx += this.skinNames.Length;
+				this.skinIdx += this.skinNames.Length;
 			}
 
-			if (this._skinName != skinNames[this._skinIdx])
+			if (this.skinName != skinNames[this.skinIdx])
 			{
-				this._skinName.value = skinNames[this._skinIdx];
+				this.skinName.value = skinNames[this.skinIdx];
 				this.GUIStylesLoaded = false;
 			}
 
@@ -639,24 +636,24 @@ namespace VOID
 			GUILayout.Label("Update Rate (Hz):");
 			if (this.stringFrequency == null)
 			{
-				this.stringFrequency = (1f / this.updatePeriod).ToString();
+				this.stringFrequency = (1f / this.UpdatePeriod).ToString();
 			}
 			this.stringFrequency = GUILayout.TextField(this.stringFrequency.ToString(), 5, GUILayout.ExpandWidth(true));
 
 			if (GUILayout.Button("Apply"))
 			{
-				double updateFreq = 1f / this.updatePeriod;
+				double updateFreq = 1f / this.UpdatePeriod;
 				double.TryParse(stringFrequency, out updateFreq);
-				this._updatePeriod.value = 1 / updateFreq;
+				this.updatePeriod.value = 1 / updateFreq;
 			}
 			GUILayout.EndHorizontal();
 
-			foreach (IVOID_Module mod in this.Modules)
+			foreach (IVOID_Module mod in this.modules)
 			{
 				mod.DrawConfigurables();
 			}
 
-			this.factoryReset = GUITools.Toggle(this.factoryReset, "Factory Reset");
+			this.FactoryReset = GUITools.Toggle(this.FactoryReset, "Factory Reset");
 		}
 
 		protected void UpdateSimManager()
@@ -673,7 +670,7 @@ namespace VOID
 					SimManager.Gravity = this.vessel.mainBody.gravParameter / (radius * radius);
 				}
 
-				SimManager.minSimTime = new TimeSpan(0, 0, 0, 0, (int)(this.updatePeriod * 1000d));
+				SimManager.minSimTime = new TimeSpan(0, 0, 0, 0, (int)(this.UpdatePeriod * 1000d));
 
 				SimManager.TryStartSimulation();
 			}
@@ -734,7 +731,7 @@ namespace VOID
 				}
 			}
 
-			this._modulesLoaded = true;
+			this.modulesLoaded = true;
 
 			sb.AppendFormat("Loaded {0} modules.\n", this.Modules.Count);
 
@@ -743,7 +740,7 @@ namespace VOID
 
 		protected void LoadModule(Type T)
 		{
-			var existingModules = this._modules.Where(mod => mod.GetType().Name == T.Name);
+			var existingModules = this.modules.Where(mod => mod.GetType().Name == T.Name);
 			if (existingModules.Any())
 			{
 				Tools.PostDebugMessage(string.Format(
@@ -779,7 +776,7 @@ namespace VOID
 			if (module.inValidGame && module.inValidScene)
 			{
 				module.LoadConfig();
-				this._modules.Add(module);
+				this.modules.Add(module);
 
 				Tools.PostDebugMessage(string.Format(
 						"{0}: loaded module {1}.",
@@ -819,29 +816,29 @@ namespace VOID
 
 			for (int i = 0; i < this.skinNames.Length; i++)
 			{
-				if (this.skinNames[i] == this._skinName)
+				if (this.skinNames[i] == this.skinName)
 				{
-					this._skinIdx = i;
+					this.skinIdx = i;
 				}
 				if (this.skinNames[i] == this.defaultSkin)
 				{
 					defaultIdx = i;
 				}
-				if (this._skinIdx != int.MinValue && defaultIdx != int.MinValue)
+				if (this.skinIdx != int.MinValue && defaultIdx != int.MinValue)
 				{
 					break;
 				}
 			}
 
-			if (this._skinIdx == int.MinValue)
+			if (this.skinIdx == int.MinValue)
 			{
-				this._skinIdx = defaultIdx;
+				this.skinIdx = defaultIdx;
 			}
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: _skinIdx = {1}.",
 				this.GetType().Name,
-				this._skinName.ToString()
+				this.skinName.ToString()
 			));
 
 			this.skinsLoaded = true;
@@ -861,7 +858,7 @@ namespace VOID
 
 		protected void LoadVesselTypes()
 		{
-			this._allVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToList();
+			this.AllVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToArray();
 			this.vesselTypesLoaded = true;
 		}
 
@@ -872,13 +869,13 @@ namespace VOID
 				this.LoadVesselTypes();
 			}
 
-			if (this.sortedBodyList == null && FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
+			if (this.SortedBodyList == null && FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
 			{
-				this.sortedBodyList = new List<CelestialBody>(FlightGlobals.Bodies);
-				this.sortedBodyList.Sort(new CBListComparer());
-				this.sortedBodyList.Reverse();
+				this.SortedBodyList = new List<CelestialBody>(FlightGlobals.Bodies);
+				this.SortedBodyList.Sort(new CBListComparer());
+				this.SortedBodyList.Reverse();
 
-				Debug.Log(string.Format("sortedBodyList: {0}", string.Join("\n\t", this.sortedBodyList.Select(b => b.bodyName).ToArray())));
+				Debug.Log(string.Format("sortedBodyList: {0}", string.Join("\n\t", this.SortedBodyList.Select(b => b.bodyName).ToArray())));
 			}
 
 		}
@@ -996,7 +993,7 @@ namespace VOID
 		{
 			base.LoadConfig();
 
-			foreach (IVOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.modules)
 			{
 				module.LoadConfig();
 			}
@@ -1013,11 +1010,11 @@ namespace VOID
 
 			config.load();
 
-			this._SaveToConfig(config);
+			this.Save(config);
 
-			foreach (IVOID_Module module in this.Modules)
+			foreach (IVOID_Module module in this.modules)
 			{
-				module._SaveToConfig(config);
+				module.Save(config);
 			}
 
 			config.save();
@@ -1037,8 +1034,8 @@ namespace VOID
 
 			this.toggleActive = true;
 
-			this._skinName = (VOID_SaveValue<string>)this.defaultSkin;
-			this._skinIdx = int.MinValue;
+			this.skinName = (VOID_SaveValue<string>)this.defaultSkin;
+			this.skinIdx = int.MinValue;
 
 			this.VOIDIconOnActivePath = "VOID/Textures/void_icon_light_glow";
 			this.VOIDIconOnInactivePath = "VOID/Textures/void_icon_dark_glow";
@@ -1046,21 +1043,21 @@ namespace VOID
 			this.VOIDIconOffInactivePath = "VOID/Textures/void_icon_dark";
 
 			this.saveTimer = 0f;
-			this.updateTimer = 0f;
+			this.UpdateTimer = 0f;
 
 			this.vesselSimActive = (VOID_SaveValue<bool>)true;
 			SimManager.Atmosphere = 0d;
 			SimManager.OnReady += this.GetSimManagerResults;
 
-			this.UseToolbarManager = ToolbarManager.ToolbarAvailable;
+			this.useToolbarManager = ToolbarManager.ToolbarAvailable;
 
 			this.LoadConfig();
 
-			this._configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
+			this.configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
 			
 			this.SetIconTexture(this.powerState | this.activeState);
 
-			this.factoryReset = false;
+			this.FactoryReset = false;
 		}
 
 		public virtual void Dispose()
@@ -1093,4 +1090,3 @@ namespace VOID
 		}
 	}
 }
-

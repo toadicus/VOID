@@ -63,8 +63,8 @@ namespace VOID
 			get
 			{
 				return (
-					(this.core.updateTimer - this.lastUpdate) > this.core.updatePeriod ||
-					this.lastUpdate > this.core.updateTimer
+					(this.core.UpdateTimer - this.lastUpdate) > this.core.UpdatePeriod ||
+					this.lastUpdate > this.core.UpdateTimer
 				);
 			}
 		}
@@ -349,7 +349,7 @@ namespace VOID
 			}
 		}
 
-		public virtual void _SaveToConfig(KSP.IO.PluginConfiguration config)
+		public virtual void Save(KSP.IO.PluginConfiguration config)
 		{
 			foreach (var field in this.GetType().GetMembers(
 				BindingFlags.Instance |
@@ -467,7 +467,7 @@ namespace VOID
 			Rect _Pos = this.WindowPos;
 
 			_Pos = GUILayout.Window(
-				this.core.windowID,
+				this.core.WindowID,
 				_Pos,
 				VOID_Tools.GetWindowHandler(this.ModuleWindow),
 				this.Name,

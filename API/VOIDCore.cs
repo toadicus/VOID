@@ -40,28 +40,27 @@ namespace VOID
 		public const double Constant_G = 6.674e-11;
 		public const int CONFIG_VERSION = 2;
 
-		public abstract int configVersion { get; }
+		public abstract int ConfigVersion { get; }
 		public virtual bool configNeedsUpdate { get; set; }
 
-		public abstract int windowID { get; }
+		public abstract int WindowID { get; }
 		public abstract bool configDirty { get; set; }
 		public abstract bool powerAvailable	{ get; protected set; }
 
-		public abstract List<IVOID_Module> Modules { get; }
+		public abstract IList<IVOID_Module> Modules { get; }
 
-		public abstract float updateTimer { get; protected set; }
-		public abstract double updatePeriod { get; }
+		public abstract float UpdateTimer { get; protected set; }
+		public abstract double UpdatePeriod { get; }
 
 		public virtual float saveTimer { get; protected set; }
 
 		public abstract GUISkin Skin { get; }
 
 		public abstract CelestialBody HomeBody { get; }
-		public abstract List<CelestialBody> allBodies { get; }
-		public abstract List<CelestialBody> sortedBodyList { get; protected set; }
+		public abstract IList<CelestialBody> AllBodies { get; }
+		public abstract List<CelestialBody> SortedBodyList { get; protected set; }
 
-		public abstract List<VesselType> allVesselTypes { get; }
-
+		public abstract VesselType[] AllVesselTypes { get; protected set; }
 		public abstract Stage LastStage { get; protected set; }
 		public abstract Stage[] Stages { get; protected set; }
 
@@ -77,9 +76,9 @@ namespace VOID
 
 		public abstract void SaveConfig();
 
-		public override void _SaveToConfig(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config)
 		{
-			base._SaveToConfig(config);
+			base.Save(config);
 		}
 	}
 

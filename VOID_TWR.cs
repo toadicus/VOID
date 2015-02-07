@@ -33,7 +33,7 @@ namespace VOID
 
 			GUILayout.BeginVertical();
 
-			if (core.sortedBodyList == null)
+			if (core.SortedBodyList == null)
 			{
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
@@ -43,7 +43,7 @@ namespace VOID
 			}
 			else
 			{
-				foreach (CelestialBody body in core.sortedBodyList)
+				foreach (CelestialBody body in core.SortedBodyList)
 				{
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 

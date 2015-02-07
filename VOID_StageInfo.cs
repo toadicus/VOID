@@ -110,7 +110,7 @@ namespace VOID
 
 			if (this.showBodyList)
 			{
-				GUILayout.Window(core.windowID, this.bodyListPos, this.BodyPickerWindow, string.Empty);
+				GUILayout.Window(core.WindowID, this.bodyListPos, this.BodyPickerWindow, string.Empty);
 			}
 		}
 
@@ -182,7 +182,7 @@ namespace VOID
 
 			this.stageTable.Render();
 
-			if (core.sortedBodyList != null)
+			if (core.SortedBodyList != null)
 			{
 				GUILayout.BeginHorizontal();
 
@@ -211,17 +211,17 @@ namespace VOID
 					this.bodyIdx.value++;
 				}
 
-				this.bodyIdx.value %= core.sortedBodyList.Count;
+				this.bodyIdx.value %= core.SortedBodyList.Count;
 
 				if (this.bodyIdx < 0)
 				{
-					this.bodyIdx.value += core.sortedBodyList.Count;
+					this.bodyIdx.value += core.SortedBodyList.Count;
 				}
 
 				if (this.lastIdx != this.bodyIdx)
 				{
 					this.lastIdx = this.bodyIdx;
-					this.selectedBody = core.sortedBodyList[this.bodyIdx];
+					this.selectedBody = core.SortedBodyList[this.bodyIdx];
 				}
 
 				if (HighLogic.LoadedSceneIsEditor)
@@ -275,12 +275,12 @@ namespace VOID
 
 		private void BodyPickerWindow(int _)
 		{
-			foreach (CelestialBody body in core.sortedBodyList)
+			foreach (CelestialBody body in core.SortedBodyList)
 			{
 				if (GUILayout.Button(body.bodyName, VOID_Styles.labelDefault))
 				{
 					Debug.Log("Picked new body focus: " + body.bodyName);
-					this.bodyIdx.value = core.sortedBodyList.IndexOf(body);
+					this.bodyIdx.value = core.SortedBodyList.IndexOf(body);
 					this.showBodyList = false;
 				}
 			}

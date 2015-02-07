@@ -82,8 +82,8 @@ namespace VOID
 
 			GUILayout.BeginVertical(GUILayout.Width(150));
 
-			selectedBody1 = this.core.allBodies[selectedBodyIdx1];
-			selectedBody2 = this.core.allBodies[selectedBodyIdx2];
+			selectedBody1 = this.core.AllBodies[selectedBodyIdx1];
+			selectedBody2 = this.core.AllBodies[selectedBodyIdx2];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<", GUILayout.ExpandWidth(false)))
@@ -91,14 +91,14 @@ namespace VOID
 				selectedBodyIdx1.value--;
 				if (selectedBodyIdx1 < 0)
 				{
-					selectedBodyIdx1.value = this.core.allBodies.Count - 1;
+					selectedBodyIdx1.value = this.core.AllBodies.Count - 1;
 				}
 			}
-			GUILayout.Label(this.core.allBodies[selectedBodyIdx1].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.AllBodies[selectedBodyIdx1].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx1.value++;
-				if (selectedBodyIdx1 > this.core.allBodies.Count - 1)
+				if (selectedBodyIdx1 > this.core.AllBodies.Count - 1)
 				{
 					selectedBodyIdx1.value = 0;
 				}
@@ -113,14 +113,14 @@ namespace VOID
 				selectedBodyIdx2.value--;
 				if (selectedBodyIdx2 < 0)
 				{
-					selectedBodyIdx2.value = this.core.allBodies.Count - 1;
+					selectedBodyIdx2.value = this.core.AllBodies.Count - 1;
 				}
 			}
-			GUILayout.Label(this.core.allBodies[selectedBodyIdx2].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.AllBodies[selectedBodyIdx2].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx2.value++;
-				if (selectedBodyIdx2 > this.core.allBodies.Count - 1)
+				if (selectedBodyIdx2 > this.core.AllBodies.Count - 1)
 				{
 					selectedBodyIdx2.value = 0;
 				}
