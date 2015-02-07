@@ -41,47 +41,30 @@ namespace VOID
 		 * Fields
 		 * */
 		[AVOID_SaveValue("Active")]
-		protected VOID_SaveValue<bool> _Active = (VOID_SaveValue<bool>)false;
-		private GameScenes[] validScenes;
-		private Game.Modes[] validModes;
+		protected VOID_SaveValue<bool> active = (VOID_SaveValue<bool>)false;
 
 		protected float lastUpdate = 0;
+
+		private GameScenes[] validScenes;
+		private Game.Modes[] validModes;
 
 		/*
 		 * Properties
 		 * */
-		protected virtual VOIDCore core
-		{
-			get
-			{
-				return VOID_Data.Core;
-			}
-		}
 
-		protected virtual bool timeToUpdate
+		public virtual bool Active
 		{
 			get
 			{
-				return (
-					(this.core.UpdateTimer - this.lastUpdate) > this.core.UpdatePeriod ||
-					this.lastUpdate > this.core.UpdateTimer
-				);
-			}
-		}
-
-		public virtual bool toggleActive
-		{
-			get
-			{
-				return this._Active && this.inValidGame && this.inValidScene;
+				return this.active && this.InValidGame && this.InValidScene;
 			}
 			set
 			{
-				this._Active.value = value && this.inValidGame && this.inValidScene;
+				this.active.value = value && this.InValidGame && this.InValidScene;
 			}
 		}
 
-		public virtual bool guiRunning
+		public virtual bool GUIRunning
 		{
 			get
 			{
@@ -106,44 +89,26 @@ namespace VOID
 			}
 		}
 
-		public virtual GameScenes[] ValidScenes
+		public virtual bool InValidGame
 		{
 			get
 			{
-				if (this.validScenes == null)
-				{
-					Tools.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
-					foreach (var attr in this.GetType().GetCustomAttributes(false))
-					{
-						if (attr is VOID_ScenesAttribute)
-						{
-							VOID_ScenesAttribute addonAttr = (VOID_ScenesAttribute)attr;
-
-							this.validScenes = addonAttr.ValidScenes;
-
-							Tools.PostDebugMessage("Found VOID_ScenesAttribute; validScenes set.");
-
-							break;
-						}
-					}
-
-					if (this.validScenes == null)
-					{
-						this.validScenes = new GameScenes[] { GameScenes.FLIGHT };
-						Tools.PostDebugMessage("No VOID_ScenesAttribute found; validScenes defaulted to flight.");
-					}
-				}
-
-				return this.validScenes;
+				return this.ValidModes.Contains(HighLogic.CurrentGame.Mode);
 			}
 		}
 
-		public virtual bool inValidScene
+		public virtual bool InValidScene
 		{
 			get
 			{
 				return this.ValidScenes.Contains(HighLogic.LoadedScene);
 			}
+		}
+
+		public virtual string Name
+		{
+			get;
+			protected set;
 		}
 
 		public virtual Game.Modes[] ValidModes
@@ -186,25 +151,62 @@ namespace VOID
 			}
 		}
 
-		public virtual bool inValidGame
+		public virtual GameScenes[] ValidScenes
 		{
 			get
 			{
-				return this.ValidModes.Contains(HighLogic.CurrentGame.Mode);
+				if (this.validScenes == null)
+				{
+					Tools.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
+					foreach (var attr in this.GetType().GetCustomAttributes(false))
+					{
+						if (attr is VOID_ScenesAttribute)
+						{
+							VOID_ScenesAttribute addonAttr = (VOID_ScenesAttribute)attr;
+
+							this.validScenes = addonAttr.ValidScenes;
+
+							Tools.PostDebugMessage("Found VOID_ScenesAttribute; validScenes set.");
+
+							break;
+						}
+					}
+
+					if (this.validScenes == null)
+					{
+						this.validScenes = new GameScenes[] { GameScenes.FLIGHT };
+						Tools.PostDebugMessage("No VOID_ScenesAttribute found; validScenes defaulted to flight.");
+					}
+				}
+
+				return this.validScenes;
 			}
 		}
 
-		public virtual string Name
-		{
-			get;
-			protected set;
-		}
-
-		public virtual Vessel vessel
+		public virtual Vessel Vessel
 		{
 			get
 			{
 				return FlightGlobals.ActiveVessel;
+			}
+		}
+
+		protected virtual VOIDCore core
+		{
+			get
+			{
+				return VOID_Data.Core;
+			}
+		}
+
+		protected virtual bool timeToUpdate
+		{
+			get
+			{
+				return (
+					(this.core.UpdateTimer - this.lastUpdate) > this.core.UpdatePeriod ||
+					this.lastUpdate > this.core.UpdateTimer
+				);
 			}
 		}
 
@@ -213,7 +215,7 @@ namespace VOID
 		 * */
 		public virtual void StartGUI()
 		{
-			if (!this.toggleActive || this.guiRunning)
+			if (!this.Active || this.GUIRunning)
 			{
 				return;
 			}
@@ -224,7 +226,7 @@ namespace VOID
 
 		public virtual void StopGUI()
 		{
-			if (!this.guiRunning)
+			if (!this.GUIRunning)
 			{
 				return;
 			}
@@ -453,7 +455,7 @@ namespace VOID
 			{
 				if (closeRect.Contains(Event.current.mousePosition))
 				{
-					this.toggleActive = false;
+					this.Active = false;
 				}
 			}
 

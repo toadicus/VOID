@@ -100,7 +100,7 @@ namespace VOID
 		{
 			this.Name = "Heads-Up Display";
 
-			this.toggleActive = true;
+			this.Active = true;
 
 			this.snapToLeft.value = true;
 

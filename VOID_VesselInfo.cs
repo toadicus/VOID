@@ -56,7 +56,7 @@ namespace VOID
 			GUILayout.BeginVertical();
 
 			GUILayout.Label(
-				vessel.vesselName,
+				Vessel.vesselName,
 				VOID_Styles.labelCenterBold,
 				GUILayout.ExpandWidth(true));
 

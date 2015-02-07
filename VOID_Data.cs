@@ -115,28 +115,28 @@ namespace VOID
 		public static readonly VOID_DoubleValue atmDensity =
 			new VOID_DoubleValue(
 				"Atmosphere Density",
-				new Func<double>(() => Core.vessel.atmDensity * 1000f),
+				new Func<double>(() => Core.Vessel.atmDensity * 1000f),
 				"g/m³"
 			);
 
 		public static readonly VOID_FloatValue atmLimit =
 			new VOID_FloatValue(
 				"Atmosphere Limit",
-				new Func<float>(() => Core.vessel.mainBody.maxAtmosphereAltitude),
+				new Func<float>(() => Core.Vessel.mainBody.maxAtmosphereAltitude),
 				"m"
 			);
 
 		public static readonly VOID_DoubleValue atmPressure =
 			new VOID_DoubleValue(
 				"Pressure",
-				new Func<double>(() => Core.vessel.staticPressure),
+				new Func<double>(() => Core.Vessel.staticPressure),
 				"atm"
 			);
 
 		public static readonly VOID_FloatValue temperature =
 			new VOID_FloatValue(
 				"Temperature",
-				new Func<float>(() => Core.vessel.flightIntegrator.getExternalTemperature()),
+				new Func<float>(() => Core.Vessel.flightIntegrator.getExternalTemperature()),
 				"°C"
 			);
 
@@ -149,7 +149,7 @@ namespace VOID
 				"Heading",
 				delegate()
 				{
-					double heading = Core.vessel.getSurfaceHeading();
+					double heading = Core.Vessel.getSurfaceHeading();
 					string cardinal = VOID_Tools.get_heading_text(heading);
 
 					return string.Format(
@@ -163,7 +163,7 @@ namespace VOID
 		public static readonly VOID_DoubleValue vesselPitch =
 			new VOID_DoubleValue(
 				"Pitch",
-				() => Core.vessel.getSurfacePitch(),
+				() => Core.Vessel.getSurfacePitch(),
 				"°"
 			);
 
@@ -229,7 +229,7 @@ namespace VOID
 		public static readonly VOID_FloatValue mainThrottle =
 			new VOID_FloatValue(
 				"Throttle",
-				new Func<float>(() => Core.vessel.ctrlState.mainThrottle * 100f),
+				new Func<float>(() => Core.Vessel.ctrlState.mainThrottle * 100f),
 				"%"
 			);
 
@@ -240,7 +240,7 @@ namespace VOID
 		public static readonly VOID_IntValue partCount =
 			new VOID_IntValue(
 				"Parts",
-				new Func<int>(() => Core.vessel.Parts.Count),
+				new Func<int>(() => Core.Vessel.Parts.Count),
 				""
 			);
 
@@ -480,8 +480,8 @@ namespace VOID
 
 					double maxThrust = Core.LastStage.thrust;
 					double mass = Core.LastStage.totalMass;
-					double gravity = (VOIDCore.Constant_G * Core.vessel.mainBody.Mass) /
-					               (Core.vessel.mainBody.Radius * Core.vessel.mainBody.Radius);
+					double gravity = (VOIDCore.Constant_G * Core.Vessel.mainBody.Mass) /
+					               (Core.Vessel.mainBody.Radius * Core.Vessel.mainBody.Radius);
 					double weight = mass * gravity;
 
 					return maxThrust / weight;
@@ -494,12 +494,12 @@ namespace VOID
 				"Thrust Offset",
 				delegate()
 				{
-					if (Core.vessel == null)
+					if (Core.Vessel == null)
 					{
 						return Vector3d.zero;
 					}
 
-					List<PartModule> engineModules = Core.vessel.getModulesOfType<PartModule>();
+					List<PartModule> engineModules = Core.Vessel.getModulesOfType<PartModule>();
 
 					Vector3d thrustPos = Vector3d.zero;
 					Vector3d thrustDir = Vector3d.zero;
@@ -558,13 +558,13 @@ namespace VOID
 						thrustDir /= thrust;
 					}
 
-					Transform vesselTransform = Core.vessel.transform;
+					Transform vesselTransform = Core.Vessel.transform;
 
 					thrustPos = vesselTransform.InverseTransformPoint(thrustPos);
 					thrustDir = vesselTransform.InverseTransformDirection(thrustDir);
 
 					Vector3d thrustOffset = VectorTools.PointDistanceToLine(
-						                      thrustPos, thrustDir.normalized, Core.vessel.findLocalCenterOfMass());
+						                      thrustPos, thrustDir.normalized, Core.Vessel.findLocalCenterOfMass());
 
 					Tools.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
 						"\tthrustPos: {0}\n" +
@@ -574,7 +574,7 @@ namespace VOID
 						thrustPos,
 						thrustDir.normalized,
 						thrustOffset,
-						Core.vessel.findWorldCenterOfMass()
+						Core.Vessel.findWorldCenterOfMass()
 					);
 
 					return thrustOffset;
@@ -597,7 +597,7 @@ namespace VOID
 					currentAmount = 0d;
 					currentRequirement = 0d;
 
-					foreach (Part part in Core.vessel.Parts)
+					foreach (Part part in Core.Vessel.Parts)
 					{
 						if (part.enabled)
 						{
@@ -656,9 +656,9 @@ namespace VOID
 				"Crew Onboard",
 				delegate()
 				{
-					if (Core.vessel != null)
+					if (Core.Vessel != null)
 					{
-						return Core.vessel.GetCrewCount();
+						return Core.Vessel.GetCrewCount();
 					}
 					else
 					{
@@ -673,9 +673,9 @@ namespace VOID
 				"Crew Capacity",
 				delegate()
 				{
-					if (Core.vessel != null)
+					if (Core.Vessel != null)
 					{
-						return Core.vessel.GetCrewCapacity();
+						return Core.Vessel.GetCrewCapacity();
 					}
 					else
 					{
@@ -700,15 +700,15 @@ namespace VOID
 				delegate()
 				{
 
-					if (Core.vessel == null ||
+					if (Core.Vessel == null ||
 					  Planetarium.fetch == null ||
-					  Core.vessel.mainBody != Planetarium.fetch.Home)
+					  Core.Vessel.mainBody != Planetarium.fetch.Home)
 					{
 						return double.NaN;
 					}
 
-					double vesselLongitude = Core.vessel.longitude * Math.PI / 180d;
-					double vesselLatitude = Core.vessel.latitude * Math.PI / 180d;
+					double vesselLongitude = Core.Vessel.longitude * Math.PI / 180d;
+					double vesselLatitude = Core.Vessel.latitude * Math.PI / 180d;
 
 					double diffLon = vesselLongitude - kscLongitude;
 					double diffLat = vesselLatitude - kscLatitude;
@@ -725,7 +725,7 @@ namespace VOID
 
 					double arc = 2d * Math.Atan2(Math.Sqrt(haversine), Math.Sqrt(1d - haversine));
 
-					return Core.vessel.mainBody.Radius * arc;
+					return Core.Vessel.mainBody.Radius * arc;
 				},
 				"m"
 			);
@@ -733,13 +733,13 @@ namespace VOID
 		public static readonly VOID_StrValue surfLatitude =
 			new VOID_StrValue(
 				"Latitude",
-				new Func<string>(() => VOID_Tools.GetLatitudeString(Core.vessel))
+				new Func<string>(() => VOID_Tools.GetLatitudeString(Core.Vessel))
 			);
 
 		public static readonly VOID_StrValue surfLongitude =
 			new VOID_StrValue(
 				"Longitude",
-				new Func<string>(() => VOID_Tools.GetLongitudeString(Core.vessel))
+				new Func<string>(() => VOID_Tools.GetLongitudeString(Core.Vessel))
 			);
 
 		public static readonly VOID_DoubleValue trueAltitude =
@@ -747,11 +747,11 @@ namespace VOID
 				"Altitude (true)",
 				delegate()
 				{
-					double alt_true = Core.vessel.orbit.altitude - Core.vessel.terrainAltitude;
+					double alt_true = Core.Vessel.orbit.altitude - Core.Vessel.terrainAltitude;
 					// HACK: This assumes that on worlds with oceans, all water is fixed at 0 m,
 					// and water covers the whole surface at 0 m.
-					if (Core.vessel.terrainAltitude < 0 && Core.vessel.mainBody.ocean)
-						alt_true = Core.vessel.orbit.altitude;
+					if (Core.Vessel.terrainAltitude < 0 && Core.Vessel.mainBody.ocean)
+						alt_true = Core.Vessel.orbit.altitude;
 					return alt_true;
 				},
 				"m"
@@ -764,28 +764,28 @@ namespace VOID
 		public static readonly VOID_DoubleValue geeForce =
 			new VOID_DoubleValue(
 				"G-force",
-				new Func<double>(() => Core.vessel.geeForce),
+				new Func<double>(() => Core.Vessel.geeForce),
 				"gees"
 			);
 
 		public static readonly VOID_DoubleValue horzVelocity =
 			new VOID_DoubleValue(
 				"Horizontal speed",
-				new Func<double>(() => Core.vessel.horizontalSrfSpeed),
+				new Func<double>(() => Core.Vessel.horizontalSrfSpeed),
 				"m/s"
 			);
 
 		public static readonly VOID_DoubleValue surfVelocity =
 			new VOID_DoubleValue(
 				"Surface velocity",
-				new Func<double>(() => Core.vessel.srf_velocity.magnitude),
+				new Func<double>(() => Core.Vessel.srf_velocity.magnitude),
 				"m/s"
 			);
 
 		public static readonly VOID_DoubleValue vertVelocity =
 			new VOID_DoubleValue(
 				"Vertical speed",
-				new Func<double>(() => Core.vessel.verticalSpeed),
+				new Func<double>(() => Core.Vessel.verticalSpeed),
 				"m/s"
 			);
 
@@ -801,9 +801,9 @@ namespace VOID
 				"Angular Velocity",
 				delegate()
 				{
-					if (Core.vessel != null)
+					if (Core.Vessel != null)
 					{
-						return Core.vessel.angularVelocity.magnitude;
+						return Core.Vessel.angularVelocity.magnitude;
 					}
 					else
 					{
@@ -821,14 +821,14 @@ namespace VOID
 		{
 			get
 			{
-				if (Core.vessel == null ||
-				    Core.vessel.patchedConicSolver == null ||
-				    Core.vessel.patchedConicSolver.maneuverNodes == null)
+				if (Core.Vessel == null ||
+				    Core.Vessel.patchedConicSolver == null ||
+				    Core.Vessel.patchedConicSolver.maneuverNodes == null)
 				{
 					return 0;
 				}
 
-				return Core.vessel.patchedConicSolver.maneuverNodes.Count;
+				return Core.Vessel.patchedConicSolver.maneuverNodes.Count;
 			}
 		}
 
@@ -842,7 +842,7 @@ namespace VOID
 						return "N/A";
 					}
 
-					ManeuverNode node = Core.vessel.patchedConicSolver.maneuverNodes[0];
+					ManeuverNode node = Core.Vessel.patchedConicSolver.maneuverNodes[0];
 
 					if ((node.UT - Planetarium.GetUniversalTime()) < 0)
 					{
@@ -884,7 +884,7 @@ namespace VOID
 						return "N/A";
 					}
 
-					ManeuverNode node = Core.vessel.patchedConicSolver.maneuverNodes[0];
+					ManeuverNode node = Core.Vessel.patchedConicSolver.maneuverNodes[0];
 
 					if ((node.UT - Planetarium.GetUniversalTime()) < 0)
 					{
@@ -923,7 +923,7 @@ namespace VOID
 				{
 					if (upcomingManeuverNodes > 0)
 					{
-						return Core.vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude;
+						return Core.Vessel.patchedConicSolver.maneuverNodes[0].DeltaV.magnitude;
 					}
 					else
 					{
@@ -940,7 +940,7 @@ namespace VOID
 				{
 					if (upcomingManeuverNodes > 0)
 					{
-						return Core.vessel.patchedConicSolver.maneuverNodes[0].GetBurnVector(Core.vessel.orbit).magnitude;
+						return Core.Vessel.patchedConicSolver.maneuverNodes[0].GetBurnVector(Core.Vessel.orbit).magnitude;
 					}
 					else
 					{
@@ -1008,7 +1008,7 @@ namespace VOID
 				{
 					if (upcomingManeuverNodes > 1)
 					{
-						return Core.vessel.patchedConicSolver.maneuverNodes[1].DeltaV.magnitude;
+						return Core.Vessel.patchedConicSolver.maneuverNodes[1].DeltaV.magnitude;
 					}
 					else
 					{
@@ -1027,58 +1027,58 @@ namespace VOID
 				VOID_Localization.void_primary,
 				delegate()
 				{
-					if (Core.vessel == null)
+					if (Core.Vessel == null)
 					{
 						return string.Empty;
 					}
-					return Core.vessel.mainBody.name;
+					return Core.Vessel.mainBody.name;
 				}
 			);
 
 		public static readonly VOID_DoubleValue orbitAltitude =
 			new VOID_DoubleValue(
 				"Altitude (ASL)",
-				new Func<double>(() => Core.vessel.orbit.altitude),
+				new Func<double>(() => Core.Vessel.orbit.altitude),
 				"m"
 			);
 
 		public static readonly VOID_DoubleValue orbitVelocity =
 			new VOID_DoubleValue(
 				VOID_Localization.void_velocity,
-				new Func<double>(() => Core.vessel.orbit.vel.magnitude),
+				new Func<double>(() => Core.Vessel.orbit.vel.magnitude),
 				"m/s"
 			);
 
 		public static readonly VOID_DoubleValue orbitApoAlt =
 			new VOID_DoubleValue(
 				VOID_Localization.void_apoapsis,
-				new Func<double>(() => Core.vessel.orbit.ApA),
+				new Func<double>(() => Core.Vessel.orbit.ApA),
 				"m"
 			);
 
 		public static readonly VOID_DoubleValue oribtPeriAlt =
 			new VOID_DoubleValue(
 				VOID_Localization.void_periapsis,
-				new Func<double>(() => Core.vessel.orbit.PeA),
+				new Func<double>(() => Core.Vessel.orbit.PeA),
 				"m"
 			);
 
 		public static readonly VOID_StrValue timeToApo =
 			new VOID_StrValue(
 				"Time to Apoapsis",
-				new Func<string>(() => VOID_Tools.FormatInterval(Core.vessel.orbit.timeToAp))
+				new Func<string>(() => VOID_Tools.FormatInterval(Core.Vessel.orbit.timeToAp))
 			);
 
 		public static readonly VOID_StrValue timeToPeri =
 			new VOID_StrValue(
 				"Time to Periapsis",
-				new Func<string>(() => VOID_Tools.FormatInterval(Core.vessel.orbit.timeToPe))
+				new Func<string>(() => VOID_Tools.FormatInterval(Core.Vessel.orbit.timeToPe))
 			);
 
 		public static readonly VOID_DoubleValue orbitInclination =
 			new VOID_DoubleValue(
 				"Inclination",
-				new Func<double>(() => Core.vessel.orbit.inclination),
+				new Func<double>(() => Core.Vessel.orbit.inclination),
 				"°"
 			);
 
@@ -1087,9 +1087,9 @@ namespace VOID
 				"Gravity",
 				delegate()
 				{
-					double orbitRadius = Core.vessel.mainBody.Radius +
-					                   Core.vessel.mainBody.GetAltitude(Core.vessel.findWorldCenterOfMass());
-					return (VOIDCore.Constant_G * Core.vessel.mainBody.Mass) /
+					double orbitRadius = Core.Vessel.mainBody.Radius +
+					                   Core.Vessel.mainBody.GetAltitude(Core.Vessel.findWorldCenterOfMass());
+					return (VOIDCore.Constant_G * Core.Vessel.mainBody.Mass) /
 					(orbitRadius * orbitRadius);
 				},
 				"m/s²"
@@ -1098,55 +1098,55 @@ namespace VOID
 		public static readonly VOID_StrValue orbitPeriod =
 			new VOID_StrValue(
 				"Period",
-				new Func<string>(() => VOID_Tools.FormatInterval(Core.vessel.orbit.period))
+				new Func<string>(() => VOID_Tools.FormatInterval(Core.Vessel.orbit.period))
 			);
 
 		public static readonly VOID_DoubleValue semiMajorAxis =
 			new VOID_DoubleValue(
 				"Semi-Major Axis",
-				new Func<double>(() => Core.vessel.orbit.semiMajorAxis),
+				new Func<double>(() => Core.Vessel.orbit.semiMajorAxis),
 				"m"
 			);
 
 		public static readonly VOID_DoubleValue eccentricity =
 			new VOID_DoubleValue(
 				"Eccentricity",
-				new Func<double>(() => Core.vessel.orbit.eccentricity),
+				new Func<double>(() => Core.Vessel.orbit.eccentricity),
 				""
 			);
 
 		public static readonly VOID_DoubleValue meanAnomaly =
 			new VOID_DoubleValue(
 				"Mean Anomaly",
-				new Func<double>(() => Core.vessel.orbit.meanAnomaly * 180d / Math.PI),
+				new Func<double>(() => Core.Vessel.orbit.meanAnomaly * 180d / Math.PI),
 				"°"
 			);
 
 		public static readonly VOID_DoubleValue trueAnomaly = 
 			new VOID_DoubleValue(
 				"True Anomaly",
-				new Func<double>(() => Core.vessel.orbit.trueAnomaly),
+				new Func<double>(() => Core.Vessel.orbit.trueAnomaly),
 				"°"
 			);
 
 		public static readonly VOID_DoubleValue eccAnomaly =
 			new VOID_DoubleValue(
 				"Eccentric Anomaly",
-				new Func<double>(() => Core.vessel.orbit.eccentricAnomaly * 180d / Math.PI),
+				new Func<double>(() => Core.Vessel.orbit.eccentricAnomaly * 180d / Math.PI),
 				"°"
 			);
 
 		public static readonly VOID_DoubleValue longitudeAscNode =
 			new VOID_DoubleValue(
 				"Long. Ascending Node",
-				new Func<double>(() => Core.vessel.orbit.LAN),
+				new Func<double>(() => Core.Vessel.orbit.LAN),
 				"°"
 			);
 
 		public static readonly VOID_DoubleValue argumentPeriapsis =
 			new VOID_DoubleValue(
 				"Argument of Periapsis",
-				new Func<double>(() => Core.vessel.orbit.argumentOfPeriapsis),
+				new Func<double>(() => Core.Vessel.orbit.argumentOfPeriapsis),
 				"°"
 			);
 
@@ -1156,16 +1156,16 @@ namespace VOID
 				delegate()
 				{
 					double trueAnomalyAscNode = 360d - argumentPeriapsis;
-					double dTAscNode = Core.vessel.orbit.GetDTforTrueAnomaly(
+					double dTAscNode = Core.Vessel.orbit.GetDTforTrueAnomaly(
 						trueAnomalyAscNode * Mathf.Deg2Rad,
-						Core.vessel.orbit.period
+						Core.Vessel.orbit.period
 					);
 
-					dTAscNode %= Core.vessel.orbit.period;
+					dTAscNode %= Core.Vessel.orbit.period;
 
 					if (dTAscNode < 0d)
 					{
-						dTAscNode += Core.vessel.orbit.period;
+						dTAscNode += Core.Vessel.orbit.period;
 					}
 
 					return VOID_Tools.FormatInterval(dTAscNode);
@@ -1178,16 +1178,16 @@ namespace VOID
 				delegate()
 				{
 					double trueAnomalyAscNode = 180d - argumentPeriapsis;
-					double dTDescNode = Core.vessel.orbit.GetDTforTrueAnomaly(
+					double dTDescNode = Core.Vessel.orbit.GetDTforTrueAnomaly(
 						trueAnomalyAscNode * Mathf.Deg2Rad,
-						Core.vessel.orbit.period
+						Core.Vessel.orbit.period
 					);
 
-					dTDescNode %= Core.vessel.orbit.period;
+					dTDescNode %= Core.Vessel.orbit.period;
 
 					if (dTDescNode < 0d)
 					{
-						dTDescNode += Core.vessel.orbit.period;
+						dTDescNode += Core.Vessel.orbit.period;
 					}
 
 					return VOID_Tools.FormatInterval(dTDescNode);
@@ -1198,7 +1198,7 @@ namespace VOID
 			new VOID_DoubleValue(
 				"Local Sidereal Longitude",
 				new Func<double>(() => VOID_Tools.FixDegreeDomain(
-						Core.vessel.longitude + Core.vessel.orbit.referenceBody.rotationAngle)),
+						Core.Vessel.longitude + Core.Vessel.orbit.referenceBody.rotationAngle)),
 				"°"
 			);
 
@@ -1209,7 +1209,7 @@ namespace VOID
 		public static readonly VOID_StrValue expSituation =
 			new VOID_StrValue(
 				"Situation",
-				new Func<string>(() => Core.vessel.GetExperimentSituation().HumanString())
+				new Func<string>(() => Core.Vessel.GetExperimentSituation().HumanString())
 			);
 
 		public static readonly VOID_StrValue currBiome =
@@ -1217,13 +1217,13 @@ namespace VOID
 				"Biome",
 				delegate()
 				{
-					if (Core.vessel.landedAt == string.Empty)
+					if (Core.Vessel.landedAt == string.Empty)
 					{
-						return VOID_Tools.GetBiome(Core.vessel).name;
+						return VOID_Tools.GetBiome(Core.Vessel).name;
 					}
 					else
 					{
-						return Core.vessel.landedAt;
+						return Core.Vessel.landedAt;
 					}
 				}
 			);
@@ -1235,7 +1235,7 @@ namespace VOID
 		public static readonly VOID_DoubleValue terrainElevation =
 			new VOID_DoubleValue(
 				"Terrain elevation",
-				new Func<double>(() => Core.vessel.terrainAltitude),
+				new Func<double>(() => Core.Vessel.terrainAltitude),
 				"m"
 			);
 

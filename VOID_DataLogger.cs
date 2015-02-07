@@ -107,7 +107,7 @@ namespace VOID
 						typeof(VOIDCore),
 						string.Format(
 							"{0}_{1}",
-							this.vessel.vesselName,
+							this.Vessel.vesselName,
 							"data.csv"
 						),
 						null
@@ -197,7 +197,7 @@ namespace VOID
 
 			// CSV Logging
 			// from ISA MapSat
-			if (loggingActive && (!waitForLaunch || this.vessel.situation != Vessel.Situations.PRELAUNCH))
+			if (loggingActive && (!waitForLaunch || this.Vessel.situation != Vessel.Situations.PRELAUNCH))
 			{
 				//data logging is on
 				//increment timers
@@ -335,7 +335,7 @@ namespace VOID
 			line.Append(',');
 
 			//Mission time
-			line.Append(vessel.missionTime.ToString("F3"));
+			line.Append(Vessel.missionTime.ToString("F3"));
 			line.Append(',');
 
 			//Altitude ASL

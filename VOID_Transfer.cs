@@ -52,9 +52,9 @@ namespace VOID
 		{
 			GUILayout.BeginVertical();
 
-			if (vessel.mainBody.name == "Sun")  //Vessel is orbiting the Sun
+			if (Vessel.mainBody.name == "Sun")  //Vessel is orbiting the Sun
 			{
-			    foreach (CelestialBody body in vessel.mainBody.orbitingBodies)
+			    foreach (CelestialBody body in Vessel.mainBody.orbitingBodies)
 			    {
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					if (GUILayout.Button(body.bodyName))
@@ -68,16 +68,16 @@ namespace VOID
 
 					if (selectedBodies.Contains(body))
 					{
-						VOID_Tools.display_transfer_angles_SUN2PLANET(body, vessel);  //show phase angles for each selected body
+						VOID_Tools.display_transfer_angles_SUN2PLANET(body, Vessel);  //show phase angles for each selected body
 						tad_targeting(body);    //display Set/Unset Target button for each selected body
 					}
 			    }
 			}
-			else if (vessel.mainBody.referenceBody.name == "Sun")	//Vessel is orbiting a planet
+			else if (Vessel.mainBody.referenceBody.name == "Sun")	//Vessel is orbiting a planet
 			{
-			    foreach (CelestialBody body in vessel.mainBody.referenceBody.orbitingBodies)
+			    foreach (CelestialBody body in Vessel.mainBody.referenceBody.orbitingBodies)
 			    {
-			        if (body.name != vessel.mainBody.name)	// show other planets
+			        if (body.name != Vessel.mainBody.name)	// show other planets
 			        {
 			            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			            if (GUILayout.Button(body.bodyName))
@@ -91,12 +91,12 @@ namespace VOID
 
 			            if (selectedBodies.Contains(body))
 			            {
-			                VOID_Tools.display_transfer_angles_PLANET2PLANET(body, vessel);
+			                VOID_Tools.display_transfer_angles_PLANET2PLANET(body, Vessel);
 			                tad_targeting(body);    //display Set/Unset Target button
 			            }
 			        }
 			    }
-			    foreach (CelestialBody body in vessel.mainBody.orbitingBodies)	// show moons
+			    foreach (CelestialBody body in Vessel.mainBody.orbitingBodies)	// show moons
 			    {
 			        GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			        if (GUILayout.Button(body.bodyName))
@@ -110,16 +110,16 @@ namespace VOID
 
 			        if (selectedBodies.Contains(body))
 			        {
-			            VOID_Tools.display_transfer_angles_PLANET2MOON(body, vessel);
+			            VOID_Tools.display_transfer_angles_PLANET2MOON(body, Vessel);
 			            tad_targeting(body);    //display Set/Unset Target button
 			        }
 			    }
 			}
-			else if (vessel.mainBody.referenceBody.referenceBody.name == "Sun")	// Vessel is orbiting a moon
+			else if (Vessel.mainBody.referenceBody.referenceBody.name == "Sun")	// Vessel is orbiting a moon
 			{
-			    foreach (CelestialBody body in vessel.mainBody.referenceBody.orbitingBodies)
+			    foreach (CelestialBody body in Vessel.mainBody.referenceBody.orbitingBodies)
 			    {
-					if (body.name != vessel.mainBody.name)	// show other moons
+					if (body.name != Vessel.mainBody.name)	// show other moons
 					{
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						if (GUILayout.Button(body.bodyName))
@@ -133,7 +133,7 @@ namespace VOID
 
 						if (selectedBodies.Contains(body))
 						{
-							VOID_Tools.display_transfer_angles_MOON2MOON(body, vessel);
+							VOID_Tools.display_transfer_angles_MOON2MOON(body, Vessel);
 							tad_targeting(body);    //display Set/Unset Target button
 						}
 					}

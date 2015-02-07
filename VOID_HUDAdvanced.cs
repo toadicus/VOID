@@ -74,7 +74,7 @@ namespace VOID
 		{
 			this.Name = "Advanced Heads-Up Display";
 
-			this.toggleActive = true;
+			this.Active = true;
 
 			this.leftHUD = new HUDWindow("leftHUD",
 				this.leftHUDWindow,

@@ -143,7 +143,7 @@ namespace VOID
 
 			foreach (Vessel v in FlightGlobals.Vessels)
 			{
-				if (v != vessel && v.vesselType == selectedVesselType && v.mainBody == seletedBody)
+				if (v != Vessel && v.vesselType == selectedVesselType && v.mainBody == seletedBody)
 				{
 					if ((vesselSituation == "Landed" &&
 					     (v.situation == Vessel.Situations.LANDED ||
@@ -161,7 +161,7 @@ namespace VOID
 							if (_selectedVessel != v)
 							{
 								_selectedVessel = v; //set clicked vessel as selected_vessel
-								this.toggleActive = true;    //turn bool on to open the window if closed
+								this.Active = true;    //turn bool on to open the window if closed
 							}
 							else
 							{

@@ -77,7 +77,7 @@ namespace VOID
 				if (FlightGlobals.fetch.vesselTargetMode == VesselTargetModes.Direction)
 				{
 					//a Body is selected
-					rendezbody = vessel.patchedConicSolver.targetBody;
+					rendezbody = Vessel.patchedConicSolver.targetBody;
 					display_rendezvous_info(null, rendezbody);
 				}
 				else if (FlightGlobals.fetch.vesselTargetMode == VesselTargetModes.DirectionAndVelocity)
@@ -133,7 +133,7 @@ namespace VOID
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(" ", GUILayout.ExpandWidth(true));
-			if (GUILayout.Button("Close", GUILayout.ExpandWidth(false))) this.toggleActive = false;
+			if (GUILayout.Button("Close", GUILayout.ExpandWidth(false))) this.Active = false;
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
@@ -173,11 +173,11 @@ namespace VOID
 					GUILayout.Label(v.orbit.inclination.ToString("F3") + "°", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
-					if (vessel.mainBody == v.mainBody)
+					if (Vessel.mainBody == v.mainBody)
 					{
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						GUILayout.Label("Relative inclination:");
-						GUILayout.Label(Vector3d.Angle(vessel.orbit.GetOrbitNormal(), v.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
+						GUILayout.Label(Vector3d.Angle(Vessel.orbit.GetOrbitNormal(), v.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
 						GUILayout.EndHorizontal();
 					}
 					//if (debugging) Debug.Log("[CHATR] v -> v relative incl OK");
@@ -189,12 +189,12 @@ namespace VOID
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Relative velocity:");
-					GUILayout.Label(Tools.MuMech_ToSI(v.orbit.vel.magnitude - vessel.orbit.vel.magnitude) + "m/s", GUILayout.ExpandWidth(false));
+					GUILayout.Label(Tools.MuMech_ToSI(v.orbit.vel.magnitude - Vessel.orbit.vel.magnitude) + "m/s", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Distance:");
-					GUILayout.Label(Tools.MuMech_ToSI((vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude) + "m", GUILayout.ExpandWidth(false));
+					GUILayout.Label(Tools.MuMech_ToSI((Vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude) + "m", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					// Toadicus edit: added local sidereal longitude.
@@ -254,17 +254,17 @@ namespace VOID
 				{
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Latitude:");
-					GUILayout.Label(VOID_Tools.GetLatitudeString(vessel), GUILayout.ExpandWidth(false));
+					GUILayout.Label(VOID_Tools.GetLatitudeString(Vessel), GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Longitude:");
-					GUILayout.Label(VOID_Tools.GetLongitudeString(vessel), GUILayout.ExpandWidth(false));
+					GUILayout.Label(VOID_Tools.GetLongitudeString(Vessel), GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Distance:");
-					GUILayout.Label(Tools.MuMech_ToSI((vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude) + "m", GUILayout.ExpandWidth(false));
+					GUILayout.Label(Tools.MuMech_ToSI((Vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude) + "m", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 				}
 			}
@@ -285,47 +285,47 @@ namespace VOID
 				GUILayout.EndHorizontal();
 				//if (debugging) Debug.Log("[VOID] Inclination OK");
 
-				if (cb.referenceBody == vessel.mainBody)
+				if (cb.referenceBody == Vessel.mainBody)
 				{
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Relative inclination:");
-					GUILayout.Label(Vector3d.Angle(vessel.orbit.GetOrbitNormal(), cb.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
+					GUILayout.Label(Vector3d.Angle(Vessel.orbit.GetOrbitNormal(), cb.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 					//if (debugging) Debug.Log("[VOID] cb Relative inclination OK");
 				}
 
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 				GUILayout.Label("Distance:");
-				GUILayout.Label(Tools.MuMech_ToSI((vessel.mainBody.position - cb.position).magnitude) + "m", GUILayout.ExpandWidth(false));
+				GUILayout.Label(Tools.MuMech_ToSI((Vessel.mainBody.position - cb.position).magnitude) + "m", GUILayout.ExpandWidth(false));
 				GUILayout.EndHorizontal();
 
 				//if (debugging) Debug.Log("[VOID] Distance OK");
 
 				//SUN2PLANET:
-				if (vessel.mainBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody)
+				if (Vessel.mainBody.bodyName == "Sun" && cb.referenceBody == Vessel.mainBody)
 				{
-					VOID_Tools.display_transfer_angles_SUN2PLANET(cb, vessel);
+					VOID_Tools.display_transfer_angles_SUN2PLANET(cb, Vessel);
 					//if (debugging) Debug.Log("[VOID] SUN2PLANET OK");
 				}
 
 				//PLANET2PLANET
-				else if (vessel.mainBody.referenceBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody.referenceBody)
+				else if (Vessel.mainBody.referenceBody.bodyName == "Sun" && cb.referenceBody == Vessel.mainBody.referenceBody)
 				{
-					VOID_Tools.display_transfer_angles_PLANET2PLANET(cb, vessel);
+					VOID_Tools.display_transfer_angles_PLANET2PLANET(cb, Vessel);
 					//if (debugging) Debug.Log("[VOID] PLANET2PLANET OK");
 				}
 
 				//PLANET2MOON
-				else if (vessel.mainBody.referenceBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody)
+				else if (Vessel.mainBody.referenceBody.bodyName == "Sun" && cb.referenceBody == Vessel.mainBody)
 				{
-					VOID_Tools.display_transfer_angles_PLANET2MOON(cb, vessel);
+					VOID_Tools.display_transfer_angles_PLANET2MOON(cb, Vessel);
 					//if (debugging) Debug.Log("[VOID] PLANET2MOON OK");
 				}
 
 				//MOON2MOON
-				else if (vessel.mainBody.referenceBody.referenceBody.bodyName == "Sun" && cb.referenceBody == vessel.mainBody.referenceBody)
+				else if (Vessel.mainBody.referenceBody.referenceBody.bodyName == "Sun" && cb.referenceBody == Vessel.mainBody.referenceBody)
 				{
-					VOID_Tools.display_transfer_angles_MOON2MOON(cb, vessel);
+					VOID_Tools.display_transfer_angles_MOON2MOON(cb, Vessel);
 					//if (debugging) Debug.Log("[VOID] MOON2MOON OK");
 				}
 

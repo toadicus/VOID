@@ -246,7 +246,7 @@ namespace VOID
 		{
 			get
 			{
-				if (this.toggleActive)
+				if (this.Active)
 				{
 					return IconState.Inactive;
 				}
@@ -373,7 +373,7 @@ namespace VOID
 				this.InitializeToolbarButton();
 			}
 
-			if (this.toggleActive)
+			if (this.Active)
 			{
 				base.DrawGUI();
 			}
@@ -386,7 +386,7 @@ namespace VOID
 			if (
 				this.vesselSimActive &&
 				(
-					this.vessel != null ||
+					this.Vessel != null ||
 					(
 						HighLogic.LoadedSceneIsEditor &&
 						EditorLogic.RootPart != null &&
@@ -399,7 +399,7 @@ namespace VOID
 				this.UpdateSimManager();
 			}
 
-			if (!this.guiRunning)
+			if (!this.GUIRunning)
 			{
 				this.StartGUI();
 			}
@@ -407,9 +407,9 @@ namespace VOID
 			foreach (IVOID_Module module in this.modules)
 			{
 				if (
-					!module.guiRunning &&
-					module.toggleActive &&
-					module.inValidScene &&
+					!module.GUIRunning &&
+					module.Active &&
+					module.InValidScene &&
 					(
 						!HighLogic.LoadedSceneIsEditor ||
 						(EditorLogic.RootPart != null && EditorLogic.SortedShipList.Count > 0)
@@ -419,11 +419,11 @@ namespace VOID
 					module.StartGUI();
 				}
 				if (
-					module.guiRunning &&
+					module.GUIRunning &&
 					(
-						!module.toggleActive ||
+						!module.Active ||
 					    !this.togglePower ||
-						!module.inValidScene ||
+						!module.InValidScene ||
 					    this.FactoryReset ||
 						(
 							HighLogic.LoadedSceneIsEditor &&
@@ -450,10 +450,10 @@ namespace VOID
 			bool newPowerState = this.powerAvailable;
 
 			if (this.togglePower && this.consumeResource &&
-			    this.vessel.vesselType != VesselType.EVA &&
+			    this.Vessel.vesselType != VesselType.EVA &&
 			    TimeWarp.deltaTime != 0)
 			{
-				float powerReceived = this.vessel.rootPart.RequestResource(
+				float powerReceived = this.Vessel.rootPart.RequestResource(
 					this.resourceName,
 					this.resourceRate * TimeWarp.fixedDeltaTime
 				);
@@ -508,7 +508,7 @@ namespace VOID
 
 		public override void StartGUI()
 		{
-			if (!this.guiRunning)
+			if (!this.GUIRunning)
 			{
 				RenderingManager.AddToPostDrawQueue(3, this.DrawGUI);
 			}
@@ -554,7 +554,7 @@ namespace VOID
 							continue;
 						}
 
-						module.toggleActive = GUITools.Toggle(module.toggleActive, module.Name);
+						module.Active = GUITools.Toggle(module.Active, module.Name);
 					}
 				}
 			}
@@ -563,8 +563,8 @@ namespace VOID
 				GUILayout.Label("-- POWER LOST --", VOID_Styles.labelRed);
 			}
 
-			VOID_ConfigWindow.Instance.toggleActive = GUITools.Toggle(
-				VOID_ConfigWindow.Instance.toggleActive,
+			VOID_ConfigWindow.Instance.Active = GUITools.Toggle(
+				VOID_ConfigWindow.Instance.Active,
 				"Configuration"
 			);
 
@@ -666,8 +666,8 @@ namespace VOID
 				}
 				else
 				{
-					double radius = this.vessel.Radius();
-					SimManager.Gravity = this.vessel.mainBody.gravParameter / (radius * radius);
+					double radius = this.Vessel.Radius();
+					SimManager.Gravity = this.Vessel.mainBody.gravParameter / (radius * radius);
 				}
 
 				SimManager.minSimTime = new TimeSpan(0, 0, 0, 0, (int)(this.UpdatePeriod * 1000d));
@@ -773,7 +773,7 @@ namespace VOID
 				module = Activator.CreateInstance(T) as IVOID_Module;
 			}
 
-			if (module.inValidGame && module.inValidScene)
+			if (module.InValidGame && module.InValidScene)
 			{
 				module.LoadConfig();
 				this.modules.Add(module);
@@ -927,7 +927,7 @@ namespace VOID
 
 		protected void ToggleMainWindow()
 		{
-			this.toggleActive = !this.toggleActive;
+			this.Active = !this.Active;
 			this.SetIconTexture(this.powerState | this.activeState);
 		}
 
@@ -1032,7 +1032,7 @@ namespace VOID
 
 			this.powerAvailable = true;
 
-			this.toggleActive = true;
+			this.Active = true;
 
 			this.skinName = (VOID_SaveValue<string>)this.defaultSkin;
 			this.skinIdx = int.MinValue;

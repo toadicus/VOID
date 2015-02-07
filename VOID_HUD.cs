@@ -55,7 +55,7 @@ namespace VOID
 		{
 			this.Name = "Heads-Up Display";
 
-			this.toggleActive = true;
+			this.Active = true;
 
 			this.leftHUD = new HUDWindow("leftHUD", this.leftHUDWindow, new Rect(Screen.width * .375f - 300f, 0f, 300f, 90f));
 			this.Windows.Add(this.leftHUD);
@@ -150,12 +150,12 @@ namespace VOID
 				);
 
 				if (
-					this.core.vessel.mainBody == this.core.HomeBody &&
+					this.core.Vessel.mainBody == this.core.HomeBody &&
 					(
-						this.core.vessel.situation == Vessel.Situations.FLYING ||
-						this.core.vessel.situation == Vessel.Situations.SUB_ORBITAL ||
-						this.core.vessel.situation == Vessel.Situations.LANDED ||
-						this.core.vessel.situation == Vessel.Situations.SPLASHED
+						this.core.Vessel.situation == Vessel.Situations.FLYING ||
+						this.core.Vessel.situation == Vessel.Situations.SUB_ORBITAL ||
+						this.core.Vessel.situation == Vessel.Situations.LANDED ||
+						this.core.Vessel.situation == Vessel.Situations.SPLASHED
 					)
 				)
 				{

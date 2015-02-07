@@ -41,7 +41,7 @@ namespace VOID
 			private set;
 		}
 
-		public override bool inValidScene
+		public override bool InValidScene
 		{
 			get
 			{
@@ -49,7 +49,7 @@ namespace VOID
 			}
 		}
 
-		public override bool inValidGame
+		public override bool InValidGame
 		{
 			get
 			{

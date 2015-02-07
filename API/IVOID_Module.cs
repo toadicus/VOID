@@ -33,10 +33,10 @@ namespace VOID
 	public interface IVOID_Module
 	{
 		string Name { get; }
-		bool toggleActive { get; set; }
-		bool guiRunning { get; }
-		bool inValidScene { get; }
-		bool inValidGame { get; }
+		bool Active { get; set; }
+		bool GUIRunning { get; }
+		bool InValidScene { get; }
+		bool InValidGame { get; }
 
 		void DrawGUI();
 		void StartGUI();
