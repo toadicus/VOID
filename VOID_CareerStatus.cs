@@ -36,14 +36,8 @@ namespace VOID
 {
 	[VOID_Scenes(GameScenes.FLIGHT, GameScenes.EDITOR, GameScenes.SPACECENTER)]
 	[VOID_GameModes(Game.Modes.CAREER, Game.Modes.SCIENCE_SANDBOX)]
-	public class VOID_CareerStatus : VOID_WindowModule
+	public class VOID_CareerStatus : VOID_SingletonWindow<VOID_CareerStatus>
 	{
-		public static VOID_CareerStatus Instance
-		{
-			get;
-			private set;
-		}
-
 		public static string formatDelta(double delta, string numberFormat)
 		{
 			if (delta > 0)
@@ -233,11 +227,6 @@ namespace VOID
 		 * */
 		public VOID_CareerStatus() : base()
 		{
-			if (this.InValidGame && this.InValidScene)
-			{
-				VOID_CareerStatus.Instance = this;
-			}
-
 			this.Name = "Career Status";
 
 			GameEvents.OnFundsChanged.Add(this.onFundsChange);
@@ -269,14 +258,19 @@ namespace VOID
 			this.currentReputation = float.NaN;
 		}
 
-		~VOID_CareerStatus()
+		public override void Dispose()
 		{
 			GameEvents.OnFundsChanged.Remove(this.onFundsChange);
 			GameEvents.OnReputationChanged.Remove(this.onRepChange);
 			GameEvents.OnScienceChanged.Remove(this.onScienceChange);
 			GameEvents.onGameStateLoad.Remove(this.onGameStateLoad);
 
-			VOID_CareerStatus.Instance = null;
+			base.Dispose();
+		}
+
+		~VOID_CareerStatus()
+		{
+			this.Dispose();
 		}
 	}
 }

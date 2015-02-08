@@ -1,6 +1,6 @@
 ﻿// VOID
 //
-// VOID_ConfigModule.cs
+// VOID_SingletonModule.cs
 //
 // Copyright © 2015, toadicus
 // All rights reserved.
@@ -25,51 +25,48 @@
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-using KSP;
 using System;
-using ToadicusTools;
-using UnityEngine;
 
 namespace VOID
 {
-	public class VOID_ConfigWindow : VOID_SingletonWindow<VOID_ConfigWindow>
+	public abstract class VOID_SingletonWindow<T> : VOID_WindowModule, IVOID_Module, IDisposable
+		where T : VOID_WindowModule, new()
 	{
-		public override bool InValidScene
+		#region Singleton Members
+		/*
+		 * Static Members
+		 * */
+		protected static bool _initialized = false;
+
+		public static bool Initialized
 		{
 			get
 			{
-				return true;
+				return _initialized;
 			}
 		}
 
-		public override bool InValidGame
+		protected static T _instance;
+
+		public static T Instance
 		{
 			get
 			{
-				return true;
+				if (_instance == null)
+				{
+					_instance = new T();
+					_initialized = true;
+				}
+				return _instance;
 			}
 		}
 
-		public VOID_ConfigWindow() : base()
+		public virtual void Dispose()
 		{
-			this.Name = "VOID Configuration";
+			_instance = null;
+			_initialized = false;
 		}
-
-		public override void ModuleWindow(int id)
-		{
-			GUILayout.BeginVertical();
-
-			this.core.DrawConfigurables();
-
-			GUILayout.EndVertical();
-
-			base.ModuleWindow(id);
-		}
-
-		~VOID_ConfigWindow()
-		{
-			this.Dispose();
-		}
+		#endregion
 	}
 }
+

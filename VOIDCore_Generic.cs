@@ -37,7 +37,7 @@ using UnityEngine;
 
 namespace VOID
 {
-	public abstract class VOIDCore_Generic<T> : VOID_SingletonModule<T>, IVOID_Module, IDisposable
+	public abstract class VOIDCore_Generic<T> : VOID_SingletonCore<T>, IVOID_Module, IDisposable
 		where T : VOID_Module, new()
 	{
 		/*
@@ -753,7 +753,9 @@ namespace VOID
 
 			var InstanceProperty = T.GetProperty(
 				"Instance",
-				System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public
+				System.Reflection.BindingFlags.Static |
+				System.Reflection.BindingFlags.Public |
+				System.Reflection.BindingFlags.FlattenHierarchy
 			);
 
 			object modInstance = null;
@@ -783,6 +785,13 @@ namespace VOID
 						this.GetType().Name,
 						T.Name
 					));
+			}
+			else
+			{
+				if (module is IDisposable)
+				{
+					(module as IDisposable).Dispose();
+				}
 			}
 		}
 
@@ -1054,13 +1063,11 @@ namespace VOID
 			this.LoadConfig();
 
 			this.configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
-			
-			this.SetIconTexture(this.powerState | this.activeState);
 
 			this.FactoryReset = false;
 		}
 
-		public virtual void Dispose()
+		public override void Dispose()
 		{
 			this.StopGUI();
 

@@ -29,7 +29,7 @@ using System;
 
 namespace VOID
 {
-	public abstract class VOID_SingletonModule<T> : VOIDCore, IVOID_Module
+	public abstract class VOID_SingletonCore<T> : VOIDCore, IVOID_Module, IDisposable
 		where T : VOID_Module, new()
 	{
 		#region Singleton Members
@@ -60,6 +60,8 @@ namespace VOID
 				return _instance;
 			}
 		}
+
+		public abstract void Dispose();
 		#endregion
 	}
 }

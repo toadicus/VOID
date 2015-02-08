@@ -106,7 +106,6 @@
     <Compile Include="Tools\VOID_DataValue.cs" />
     <Compile Include="Tools\VOID_SaveValue.cs" />
     <Compile Include="API\VOID_HUDModule.cs" />
-    <Compile Include="API\VOID_SingletonModule.cs" />
     <Compile Include="API\Attributes\VOID_ScenesAttribute.cs" />
     <Compile Include="API\Attributes\AVOID_SaveValue.cs" />
     <Compile Include="API\VOIDMaster.cs" />
@@ -114,6 +113,8 @@
     <Compile Include="VOID_ConfigWindow.cs" />
     <Compile Include="Tools\VOID_Localization.cs" />
     <Compile Include="Tools\VOID_StageExtensions.cs" />
+    <Compile Include="API\VOID_SingletonCore.cs" />
+    <Compile Include="API\VOID_SingletonWindow.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
