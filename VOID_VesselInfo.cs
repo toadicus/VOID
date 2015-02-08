@@ -66,9 +66,9 @@ namespace VOID
 
 			VOID_Data.totalMass.DoGUIHorizontal ("F3");
 
-			VOID_Data.stageResourceMass.DoGUIHorizontal("F2");
+			VOID_Data.stageResourceMass.DoGUIHorizontal("F3");
 
-			VOID_Data.resourceMass.DoGUIHorizontal("F2");
+			VOID_Data.resourceMass.DoGUIHorizontal("F3");
 
 			VOID_Data.stageDeltaV.DoGUIHorizontal (3, false);
 
