@@ -41,7 +41,7 @@ namespace VOID
 
 		public VOID_SurfAtmo()
 		{
-			this.Name = "Surface & Atmospheric Information";
+			this.Name = "Surface & Atmospheric Info";
 
 			this.WindowPos.x = Screen.width - 260f;
 			this.WindowPos.y = 85;
