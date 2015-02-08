@@ -456,6 +456,7 @@ namespace VOID
 				if (closeRect.Contains(Event.current.mousePosition))
 				{
 					this.Active = false;
+					this.removeUILock();
 				}
 			}
 
@@ -479,46 +480,13 @@ namespace VOID
 
 			bool cursorInWindow = _Pos.Contains(Mouse.screenPos);
 
-			switch (HighLogic.LoadedScene)
+			if (cursorInWindow)
 			{
-				case GameScenes.EDITOR:
-					if (cursorInWindow)
-					{
-						InputLockManager.SetControlLock(
-							ControlTypes.EDITOR_ICON_HOVER | ControlTypes.EDITOR_ICON_PICK |
-							ControlTypes.EDITOR_PAD_PICK_COPY | ControlTypes.EDITOR_PAD_PICK_COPY,
-							this.inputLockName
-						);
-						EditorLogic.fetch.Lock(false, false, false, this.inputLockName);
-					}
-					else
-					{
-						EditorLogic.fetch.Unlock(this.inputLockName);
-					}
-					break;
-				case GameScenes.FLIGHT:
-					if (cursorInWindow)
-					{
-						InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, this.inputLockName);
-					}
-					else if (InputLockManager.GetControlLock(this.inputLockName) != ControlTypes.None)
-					{
-						InputLockManager.RemoveControlLock(this.inputLockName);
-					}
-					break;
-				case GameScenes.SPACECENTER:
-					if (cursorInWindow)
-					{
-						InputLockManager.SetControlLock(
-							ControlTypes.KSC_FACILITIES | ControlTypes.CAMERACONTROLS,
-							this.inputLockName
-						);
-					}
-					else if (InputLockManager.GetControlLock(this.inputLockName) != ControlTypes.None)
-					{
-						InputLockManager.RemoveControlLock(this.inputLockName);
-					}
-					break;
+				this.setUILock();
+			}
+			else
+			{
+				this.removeUILock();
 			}
 
 			if (HighLogic.LoadedSceneIsEditor)
@@ -534,6 +502,46 @@ namespace VOID
 			{
 				this.WindowPos = _Pos;
 				this.core.configDirty = true;
+			}
+		}
+
+		protected void setUILock()
+		{
+			switch (HighLogic.LoadedScene)
+			{
+				case GameScenes.EDITOR:
+					InputLockManager.SetControlLock(
+						ControlTypes.EDITOR_ICON_HOVER | ControlTypes.EDITOR_ICON_PICK |
+						ControlTypes.EDITOR_PAD_PICK_COPY | ControlTypes.EDITOR_PAD_PICK_COPY,
+						this.inputLockName
+					);
+					EditorLogic.fetch.Lock(false, false, false, this.inputLockName);
+					break;
+				case GameScenes.FLIGHT:
+					InputLockManager.SetControlLock(ControlTypes.CAMERACONTROLS, this.inputLockName);
+					break;
+				case GameScenes.SPACECENTER:
+					InputLockManager.SetControlLock(
+						ControlTypes.KSC_FACILITIES | ControlTypes.CAMERACONTROLS,
+						this.inputLockName
+					);
+					break;
+			}
+		}
+
+		protected void removeUILock()
+		{
+			switch (HighLogic.LoadedScene)
+			{
+				case GameScenes.EDITOR:
+					EditorLogic.fetch.Unlock(this.inputLockName);
+					break;
+				case GameScenes.FLIGHT:
+					InputLockManager.RemoveControlLock(this.inputLockName);
+					break;
+				case GameScenes.SPACECENTER:
+					InputLockManager.RemoveControlLock(this.inputLockName);
+					break;
 			}
 		}
 	}
