@@ -692,22 +692,25 @@ namespace VOID
 					double vesselLongitude = Core.Vessel.longitude * Math.PI / 180d;
 					double vesselLatitude = Core.Vessel.latitude * Math.PI / 180d;
 
-					double diffLon = vesselLongitude - kscLongitude;
-					double diffLat = vesselLatitude - kscLatitude;
+					double diffLon = Math.Abs(vesselLongitude - kscLongitude);
 
-					double sinHalfDiffLat = Math.Sin(diffLat / 2d);
-					double sinHalfDiffLon = Math.Sin(diffLon / 2d);
+					double cosVesselLatitude = Math.Cos(vesselLatitude);
+					double sinDiffLon = Math.Sin(diffLon);
 
-					double cosVesselLon = Math.Cos(vesselLongitude);
-					double cosKSCLon = Math.Cos(kscLongitude);
+					double term1 = cosVesselLatitude * sinDiffLon;
 
-					double haversine =
-						sinHalfDiffLat * sinHalfDiffLat +
-						cosVesselLon * cosKSCLon * sinHalfDiffLon * sinHalfDiffLon;
+					double cosKSCLatitude = Math.Cos(kscLatitude);
+					double sinVesselLatitude = Math.Sin(vesselLatitude);
+					double sinKSCLatitude = Math.Sin(kscLatitude);
+					double cosDiffLon = Math.Cos(diffLon);
 
-					double arc = 2d * Math.Atan2(Math.Sqrt(haversine), Math.Sqrt(1d - haversine));
+					double term2 = cosKSCLatitude * sinVesselLatitude - sinKSCLatitude * cosVesselLatitude * cosDiffLon;
 
-					return Core.Vessel.mainBody.Radius * arc;
+					double term3 = sinKSCLatitude * sinVesselLatitude + cosKSCLatitude * cosVesselLatitude * cosDiffLon;
+
+					double arc = Math.Atan2(Math.Sqrt(term1 * term1 + term2 * term2), term3);
+
+					return arc * Core.Vessel.mainBody.Radius;
 				},
 				"m"
 			);
