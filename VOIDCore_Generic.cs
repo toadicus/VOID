@@ -119,14 +119,29 @@ namespace VOID
 
 		public override bool configDirty { get; set; }
 
-		internal IButton ToolbarButton;
-
-		internal ApplicationLauncherButton AppLauncherButton;
+		protected IButton ToolbarButton;
+		protected ApplicationLauncherButton AppLauncherButton;
+		protected IconState iconState;
 
 		/*
 		 * Properties
 		 * */
+		public override bool Active
+		{
+			get
+			{
+				return base.Active;
+			}
+			set
+			{
+				if (value != base.Active)
+				{
+					this.SetIconTexture(this.powerState | this.activeState);
+				}
 
+				base.Active = value;
+			}
+		}
 		public override IList<CelestialBody> AllBodies
 		{
 			get
@@ -373,6 +388,8 @@ namespace VOID
 				this.InitializeToolbarButton();
 			}
 
+			this.SetIconTexture();
+
 			if (this.Active)
 			{
 				base.DrawGUI();
@@ -470,7 +487,6 @@ namespace VOID
 				if (this.powerAvailable != newPowerState)
 				{
 					this.powerAvailable = newPowerState;
-					this.SetIconTexture(this.powerState | this.activeState);
 				}
 			}
 
@@ -541,7 +557,6 @@ namespace VOID
 					if (GUILayout.Button("Power " + str))
 					{
 						togglePower.value = !togglePower;
-						this.SetIconTexture(this.powerState | this.activeState);
 					}
 				}
 
@@ -937,7 +952,19 @@ namespace VOID
 		protected void ToggleMainWindow()
 		{
 			this.Active = !this.Active;
-			this.SetIconTexture(this.powerState | this.activeState);
+		}
+
+		protected void SetIconTexture()
+		{
+			if (
+				this.iconState != (this.powerState | this.activeState) ||
+				(this.VOIDIconTexture == null && this.AppLauncherButton != null)
+			)
+			{
+				this.iconState = this.powerState | this.activeState;
+
+				this.SetIconTexture(this.iconState);
+			}
 		}
 
 		protected void SetIconTexture(IconState state)
@@ -963,15 +990,20 @@ namespace VOID
 
 		protected void SetIconTexture(string texturePath)
 		{
+			if (texturePath == null)
+			{
+				return;
+			}
+
 			if (this.ToolbarButton != null)
 			{
 				this.ToolbarButton.TexturePath = texturePath;
 			}
 
-			this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath.Replace("icon", "appIcon"), false);
-
 			if (this.AppLauncherButton != null)
 			{
+				this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath.Replace("icon", "appIcon"), false);
+
 				this.AppLauncherButton.SetTexture(VOIDIconTexture);
 			}
 		}
