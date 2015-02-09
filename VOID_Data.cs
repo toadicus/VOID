@@ -269,7 +269,7 @@ namespace VOID
 						return double.NaN;
 					}
 
-					return Core.LastStage.totalMass - Core.LastStage.totalBaseMass;
+					return Core.LastStage.totalResourceMass;
 				},
 				"tons"
 			);
@@ -284,7 +284,7 @@ namespace VOID
 						return double.NaN;
 					}
 
-					return Core.LastStage.mass - Core.LastStage.baseMass;
+					return Core.LastStage.resourceMass;
 				},
 				"tons"
 			);
