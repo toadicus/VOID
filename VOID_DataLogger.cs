@@ -317,6 +317,8 @@ namespace VOID
 					"\"Altitude above terrain (m)\"," +
 					"\"Surface Latitude (°)\"," +
 					"\"Surface Longitude (°)\"," +
+					"\"Apoapsis Altitude (m)\"" +
+					"\"Periapsis Altitude (m)\"" +
 					"\"Orbital Velocity (m/s)\"," +
 					"\"Surface Velocity (m/s)\"," +
 					"\"Vertical Speed (m/s)\"," +
@@ -360,6 +362,14 @@ namespace VOID
 
 			//Orbital velocity
 			line.Append(VOID_Data.orbitVelocity.Value.ToString("F3"));
+			line.Append(',');
+
+			// Apoapsis Altitude
+			line.Append(VOID_Data.orbitApoAlt.Value.ToString("G3"));
+			line.Append(',');
+
+			// Periapsis Altitude
+			line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G3"));
 			line.Append(',');
 
 			//surface velocity
