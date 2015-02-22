@@ -229,7 +229,7 @@ namespace VOID
 		}
 		
 		public virtual string ValueUnitString(int digits) {
-			return Tools.MuMech_ToSI(this, digits) + this.Units;
+			return string.Format("{0}{1}", SIFormatProvider.ToSI(this, digits), Units);
 		}
 
 		public virtual string ValueUnitString(int digits, int MinMagnitude, int MaxMagnitude)
@@ -264,26 +264,12 @@ namespace VOID
 
 		public virtual int DoGUIHorizontalPrec(int digits)
 		{
-			double magnitude;
-			double magLimit;
-
-			magnitude = Math.Log10(Math.Abs((double)this));
-
-			magLimit = Math.Max(Math.Abs(magnitude), 3d) + 3d;
-			magLimit = Math.Round(Math.Ceiling(magLimit / 3f)) * 3d;
-
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(this.Label + "ⁱ:", GUILayout.ExpandWidth(true));
 			GUILayout.FlexibleSpace();
 
-			if (magnitude >= 0)
-			{
-				GUILayout.Label(this.ValueUnitString(3, int.MinValue, (int)magnitude - digits), GUILayout.ExpandWidth(false));
-			}
-			else
-			{
-				GUILayout.Label(this.ValueUnitString(3, (int)magnitude + digits, int.MaxValue), GUILayout.ExpandWidth(false));
-			}
+			GUILayout.Label(this.ValueUnitString(digits), GUILayout.ExpandWidth(false));
+
 			GUILayout.EndHorizontal();
 
 			if (Event.current.type == EventType.mouseUp)
@@ -291,33 +277,28 @@ namespace VOID
 				Rect lastRect = GUILayoutUtility.GetLastRect();
 				if (lastRect.Contains(Event.current.mousePosition))
 				{
-					Tools.PostDebugMessage(string.Format("{0}: Changing digits from {1} within magLimit {2}.",
+					Tools.PostDebugMessage(string.Format("{0}: Changing digits from {1}",
 						this.GetType().Name,
-						digits,
-						magLimit));
+						digits
+					));
 
 					if (Event.current.button == 0)
 					{
-						digits = (digits + 3) % (int)magLimit;
+						digits = (digits + 3) % 9;
 					}
 					else if (Event.current.button == 1)
 					{
-						digits = (digits - 3) % (int)magLimit;
+						digits = (digits - 3) % 9;
 					}
 
 					if (digits < 0)
 					{
-						digits += (int)magLimit;
+						digits += 9;
 					}
 
-					Tools.PostDebugMessage(string.Format("{0}: Changed digits to {1}." +
-						"\n\tNew minMagnitude: {2}, maxMagnitude: {3}" +
-						"\n\tMagnitude: {4}",
+					Tools.PostDebugMessage(string.Format("{0}: Changed digits to {1}.",
 						this.GetType().Name,
-						digits,
-						magnitude >= 0 ? int.MinValue : (int)magnitude - 4 + digits,
-						magnitude >= 0 ? (int)magnitude - digits : int.MaxValue,
-						magnitude
+						digits
 					));
 				}
 			}

@@ -39,7 +39,7 @@ namespace VOID
 		protected VOID_SaveValue<bool> toggleExtended;
 
 		[AVOID_SaveValue("precisionValues")]
-		protected long _precisionValues;
+		protected VOID_SaveValue<long> _precisionValues;
 		protected IntCollection precisionValues;
 
 		public VOID_Orbital()
@@ -51,7 +51,7 @@ namespace VOID
 
 			this.toggleExtended = (VOID_SaveValue<bool>)false;
 
-			this._precisionValues = 230584300921369395;
+			this._precisionValues = (VOID_SaveValue<long>)384307168202282325;
 		}
 
 		public override void ModuleWindow(int id)
@@ -125,7 +125,7 @@ namespace VOID
 
 		public override void Save (KSP.IO.PluginConfiguration config)
 		{
-			this._precisionValues = this.precisionValues.collection;
+			this._precisionValues.value = this.precisionValues.collection;
 
 			base.Save (config);
 		}

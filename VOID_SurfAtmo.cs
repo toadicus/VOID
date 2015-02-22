@@ -46,7 +46,7 @@ namespace VOID
 			this.WindowPos.x = Screen.width - 260f;
 			this.WindowPos.y = 85;
 
-			this._precisionValues = (VOID_SaveValue<long>)230584300921369395;
+			this._precisionValues = (VOID_SaveValue<long>)384307168202282325;
 		}
 
 		public override void ModuleWindow(int id)
