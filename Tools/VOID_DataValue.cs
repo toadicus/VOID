@@ -264,6 +264,11 @@ namespace VOID
 
 		public virtual int DoGUIHorizontalPrec(int digits)
 		{
+			if (digits < 0 || digits > 8)
+			{
+				digits = 5;
+			}
+
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(this.Label + "ⁱ:", GUILayout.ExpandWidth(true));
 			GUILayout.FlexibleSpace();
