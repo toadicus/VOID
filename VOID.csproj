@@ -115,6 +115,11 @@
     <Compile Include="Tools\VOID_StageExtensions.cs" />
     <Compile Include="API\VOID_SingletonCore.cs" />
     <Compile Include="API\VOID_SingletonWindow.cs" />
+    <Compile Include="Scripting\Exceptions.cs" />
+    <Compile Include="Scripting\ScriptParser.cs" />
+    <Compile Include="Scripting\ScriptScanner.cs" />
+    <Compile Include="Scripting\Token.cs" />
+    <Compile Include="Scripting\VOID_ScriptedPanel.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -153,5 +158,6 @@
     <Folder Include="API\" />
     <Folder Include="Tools\" />
     <Folder Include="API\Attributes\" />
+    <Folder Include="Scripting\" />
   </ItemGroup>
 </Project>
