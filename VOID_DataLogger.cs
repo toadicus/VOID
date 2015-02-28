@@ -441,7 +441,7 @@ namespace VOID
 		{
 			Tools.DebugLogger logger = Tools.DebugLogger.New(this);
 
-			logger.AppendFormat("Cleaning up file {0}...", this.fileName);
+			logger.AppendFormat("Cleaning up file...");
 
 			if (this.csvBytes != null && this.csvBytes.Count > 0)
 			{
