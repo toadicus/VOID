@@ -29,6 +29,11 @@ using System;
 
 namespace VOID_ScriptedPanels
 {
+	public class VOIDScriptParserException : Exception
+	{
+		public VOIDScriptParserException(string msg) : base(msg) {}
+	}
+
 	public class VOIDScriptSyntaxException : Exception
 	{
 		public VOIDScriptSyntaxException(string msg) : base(msg) {}

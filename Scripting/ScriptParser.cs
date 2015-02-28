@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using ToadicusTools;
 using VOID;
 
 namespace VOID_ScriptedPanels
@@ -40,6 +41,8 @@ namespace VOID_ScriptedPanels
 		private ScriptScanner scanner;
 
 		private List<Token> Tokens;
+
+		private Expression formatter;
 
 		private Token CurrentToken
 		{
@@ -62,6 +65,7 @@ namespace VOID_ScriptedPanels
 		{
 			this.scanner = new ScriptScanner(input);
 			this.Tokens = new List<Token>();
+			this.formatter = Expression.Constant(Tools.SIFormatter);
 		}
 
 		public LambdaExpression Parse()
@@ -80,7 +84,7 @@ namespace VOID_ScriptedPanels
 
 		private Expression ParseString()
 		{
-			Expression left = ParseAdditive();
+			Expression left = ParseFormat();
 
 			while (
 				this.CurrentToken.Type == Token.TokenType.String ||
@@ -90,16 +94,67 @@ namespace VOID_ScriptedPanels
 			{
 				this.CurrentToken = this.scanner.GetNextToken();
 
-				Expression right = this.ParseAdditive();
+				Expression right = this.ParseFormat();
 
-				right = Expression.Call(right, "ToString", new Type[] {});
+				if (left.Type != typeof(string))
+				{
+					left = Expression.Call(left, "ToString", new Type[] { });
+				}
+
+				if (right.Type != typeof(string))
+				{
+					right = Expression.Call(right, "ToString", new Type[] { });
+				}
 
 				left = Expression.Call(
 					null,
-					typeof(String).GetMethod("Concat", new Type[] { typeof(String), typeof(String) }
-					),
+					typeof(String).GetMethod("Concat", new Type[] { typeof(String), typeof(String) }),
 					left, right
 				);
+			}
+
+			return left;
+		}
+
+		// TODO: FIX THIS
+		private Expression ParseFormat()
+		{
+			Expression left = this.ParseAdditive();
+
+			if (this.CurrentToken.Type == Token.TokenType.FormatOperator)
+			{
+				this.CurrentToken = this.scanner.GetNextToken();
+
+				if (this.CurrentToken.Type != Token.TokenType.FormatString)
+				{
+					throw new VOIDScriptParserException(string.Format(
+						"Found unexpected {0} '{1}' after FormatOperator.  FormatString must follow FormatOperator.",
+						Enum.GetName(typeof(Token.TokenType), this.CurrentToken.Type),
+						this.CurrentToken.Value
+					));
+				}
+
+				Expression right = Expression.Constant(string.Concat("{0:", this.CurrentToken.Value, "}"));
+
+				left = Expression.Convert(left, typeof(object));
+
+				left = Expression.NewArrayInit(typeof(object), left);
+
+				var formatMethod = typeof(string).GetMethod("Format", new Type[] {
+					typeof(IFormatProvider),
+					typeof(string),
+					typeof(object[])
+				});
+
+				left = Expression.Call(
+					null,
+					formatMethod,
+					formatter,
+					right,
+					left
+				);
+
+				this.CurrentToken = this.scanner.GetNextToken();
 			}
 
 			return left;
@@ -169,9 +224,6 @@ namespace VOID_ScriptedPanels
 
 		private Expression FindConstant()
 		{
-			MemberInfo[] members;
-			MemberInfo member = null;
-
 			switch (this.CurrentToken.Type)
 			{
 				case Token.TokenType.NumValue:
@@ -179,31 +231,38 @@ namespace VOID_ScriptedPanels
 					return Expression.Constant(this.CurrentToken.Value);
 				case Token.TokenType.EndOfLine:
 					return Expression.Constant(string.Empty);
-					// TODO: Change DataVar to do whole guihorizontal.
 				case Token.TokenType.DataVar:
 				case Token.TokenType.ValueVar:
-					members = typeof(VOID_Data).GetMember((string)this.CurrentToken.Value);
+					MemberInfo[] members = typeof(VOID_Data).GetMember((string)this.CurrentToken.Value);
+					MemberInfo member = null;
 
-					if (members != null && members.Length > 0)
+					if (members.Length > 0)
 					{
 						member = members[0];
 					}
 
+					if (
+						member == null ||
+						(!(member is System.Reflection.FieldInfo) && !(member is System.Reflection.PropertyInfo)))
+					{
+						throw new Exception(string.Format(
+								"VOID_Data does not contain a field or property named '{0}'",
+								this.CurrentToken.Value
+							));
+					}
+
+					MemberExpression data;
+
 					if (member is System.Reflection.FieldInfo)
 					{
-						return Expression.Field(null, member as FieldInfo);
-					}
-					else if (member is System.Reflection.PropertyInfo)
-					{
-						return Expression.Property(null, member as PropertyInfo);
+						data = Expression.Field(null, member as FieldInfo);
 					}
 					else
 					{
-						throw new Exception(string.Format(
-							"VOID_Data does not contain a field or property named '{0}'",
-							this.CurrentToken.Value
-						));
+						data = Expression.Property(null, member as PropertyInfo);
 					}
+
+					return data;
 				case Token.TokenType.StartOfEval:
 				case Token.TokenType.EndOfEval:
 					this.CurrentToken = this.scanner.GetNextToken();

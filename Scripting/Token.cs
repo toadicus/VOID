@@ -43,12 +43,13 @@ namespace VOID_ScriptedPanels
 			String,
 			StartOfEval,
 			EndOfEval,
-			FSpace,
 			DataVar,
 			ValueVar,
 			AddOperator,
 			MultOperator,
 			NumValue,
+			FormatOperator,
+			FormatString
 		}
 
 		private Token() {}

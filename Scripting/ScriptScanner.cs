@@ -37,7 +37,10 @@ namespace VOID_ScriptedPanels
 {
 	class ScriptScanner
 	{
-		private ScriptScanner() {}
+		internal ScriptScanner()
+		{
+
+		}
 
 		public ScriptScanner(string input)
 		{
@@ -63,9 +66,16 @@ namespace VOID_ScriptedPanels
 				switch (state)
 				{
 					case StateType.AfterDataVar:
+						switch (c)
+						{
+							case tokenStopChar:
+								pointer++;
+								this.state = StateType.NonEval;
+								return new Token(Token.TokenType.EndOfEval, c);
+						}
+
 						throw new VOIDScriptSyntaxException(string.Format(
-							"Expected EndOfLine after DataVar at position {0}, found '{1}'. " +
-							"DataVars must be the only input for a given line.",
+							"Expected EndOfEval '}}' after DataVar at position {0}, found '{1}'.",
 							pointer,
 							c
 						));
@@ -76,42 +86,28 @@ namespace VOID_ScriptedPanels
 							case tokenDataChar:
 								if (pointer > 0)
 								{
-									throw new VOIDScriptSyntaxException(string.Format(
-										"Found DataVar after start of line at position {0}. " +
-										"DataVars must be the only input for a given line.",
-										pointer
-									));
+									throw new VOIDScriptSyntaxException("DataVars must be the only input for a given line.");
 								}
 								state = StateType.InDataVar;
 								pointer++;
 								break;
 							case tokenStartChar:
-							case tokenFSpaceChar:
 								// Advance the pointer past this token.
 								if (currentToken.Length == 0)
 								{
-									if (c == tokenStartChar)
-									{
-										// there was no string data before this '{'.
+									// there was no string data before this '['.
 
-										// Change the state.
-										state = StateType.InEval;
+									// Change the state.
+									state = StateType.InEval;
 
-										// Advance the pointer past this '{'.
-										pointer++;
+									// Advance the pointer past this '['.
+									pointer++;
 
-										return new Token(Token.TokenType.StartOfEval, null);
-									}
-									else
-									{
-										pointer++;
-
-										return new Token(Token.TokenType.FSpace, null);
-									}
+									return new Token(Token.TokenType.StartOfEval, null);
 								}
 								else
 								{
-									// Return the string token that occurred right before this '{'.
+									// Return the string token that occurred right before this '['.
 									return new Token(
 										Token.TokenType.String,
 										currentToken.ToString()
@@ -127,14 +123,18 @@ namespace VOID_ScriptedPanels
 					case StateType.InEval:
 						switch (c)
 						{
+							case tokenFormatChar:
+								state = StateType.InFormatString;
+								pointer++;
+								return new Token(Token.TokenType.FormatOperator, null);
 							case tokenStopChar:
 								state = StateType.NonEval;
 								pointer++;
 								return new Token(Token.TokenType.EndOfEval, null);
-							case tokenFSpaceChar:
-								//state = StateType.InEval;
+							case tokenDataChar:
+								state = StateType.InDataVar;
 								pointer++;
-								return new Token(Token.TokenType.FSpace, null);
+								break;
 							case tokenValueChar:
 								state = StateType.InValueVar;
 								pointer++;
@@ -219,6 +219,18 @@ namespace VOID_ScriptedPanels
 							}
 						}
 						break;
+					case StateType.InFormatString:
+						switch (c)
+						{
+							case tokenStopChar:
+								state = StateType.InEval;
+								return new Token(Token.TokenType.FormatString, currentToken.ToString());
+							default:
+								currentToken.Append(c);
+								pointer++;
+								break;
+						}
+						break;
 					default:
 						throw new NotImplementedException();
 				}
@@ -232,13 +244,7 @@ namespace VOID_ScriptedPanels
 			}
 			else
 			{
-				switch (state)
-				{
-					case StateType.InDataVar:
-						return new Token(Token.TokenType.DataVar, currentToken.ToString());
-					default:
-						return new Token(Token.TokenType.String, currentToken.ToString());
-				}
+				return new Token(Token.TokenType.String, currentToken.ToString());
 			}
 		}
 
@@ -252,11 +258,11 @@ namespace VOID_ScriptedPanels
 		private int inputLength;
 		private int pointer;
 
-		private const char tokenStartChar = '{';
-		private const char tokenStopChar = '}';
-		private const char tokenFSpaceChar = '_';
+		private const char tokenStartChar = '[';
+		private const char tokenStopChar = ']';
 		private const char tokenDataChar = '$';
-		private const Char tokenValueChar = '#';
+		private const char tokenValueChar = '#';
+		private const char tokenFormatChar = ':';
 
 		internal enum StateType
 		{
@@ -266,6 +272,7 @@ namespace VOID_ScriptedPanels
 			InValueVar,
 			InNumValue,
 			AfterDataVar,
+			InFormatString
 		}
 	}
 }
