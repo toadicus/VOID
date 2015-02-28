@@ -120,6 +120,7 @@
     <Compile Include="Scripting\ScriptScanner.cs" />
     <Compile Include="Scripting\Token.cs" />
     <Compile Include="Scripting\VOID_ScriptedPanel.cs" />
+    <Compile Include="VOID_ScriptedManager.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

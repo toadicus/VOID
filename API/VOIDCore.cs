@@ -67,6 +67,8 @@ namespace VOID
 		public abstract event VOIDEventHandler onApplicationQuit;
 		public abstract event VOIDEventHandler onSkinChanged;
 
+		public abstract event VOIDEventHandler onUpdate;
+
 		public virtual void OnGUI() {}
 
 		public override void LoadConfig()

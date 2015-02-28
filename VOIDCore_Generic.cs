@@ -335,6 +335,7 @@ namespace VOID
 		 * */
 		public override event VOIDEventHandler onApplicationQuit;
 		public override event VOIDEventHandler onSkinChanged;
+		public override event VOIDEventHandler onUpdate;
 
 		/*
 		 * Methods
@@ -455,6 +456,11 @@ namespace VOID
 				if (module is IVOID_BehaviorModule)
 				{
 					((IVOID_BehaviorModule)module).Update();
+				}
+
+				if (this.onUpdate != null)
+				{
+					this.onUpdate(this);
 				}
 			}
 

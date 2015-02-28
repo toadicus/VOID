@@ -136,12 +136,7 @@ namespace VOID
 
 		public override string ToString()
 		{
-			return string.Format (
-				"{0}: {1}{2}",
-				this.Label,
-				this.Value.ToString (),
-				this.Units
-			);
+			return this.Value.ToString();
 		}
 	}
 
@@ -207,11 +202,7 @@ namespace VOID
 
 		public virtual string ToString(string format, IFormatProvider provider)
 		{
-			return string.Format (
-				"{0}{1}",
-				this.Value.ToString(format, provider),
-				this.Units
-			);
+			return this.Value.ToString(format, provider);
 		}
 
 		public virtual string ToSIString(int digits = 3, int MinMagnitude = 0, int MaxMagnitude = int.MaxValue)
@@ -340,11 +331,7 @@ namespace VOID
 
 		public string ToString(string format)
 		{
-			return string.Format("{0}: {1}{2}",
-				this.Label,
-				this.Value.ToString(format),
-				this.Units
-			);
+			return this.Value.ToString(format);
 		}
 
 		public string ValueUnitString(string format) {

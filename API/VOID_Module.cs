@@ -45,8 +45,8 @@ namespace VOID
 
 		protected float lastUpdate = 0;
 
-		private GameScenes[] validScenes;
-		private Game.Modes[] validModes;
+		protected GameScenes[] validScenes;
+		protected Game.Modes[] validModes;
 
 		/*
 		 * Properties

@@ -37,11 +37,43 @@ using VOID;
 
 namespace VOID_ScriptedPanels
 {
+	[VOID_GameModes(new Game.Modes[] {})]
+	[VOID_Scenes(new GameScenes[] {})]
 	public class VOID_ScriptedPanel : VOID_WindowModule, IConfigNode
 	{
+		public const string PANEL_KEY = "VOID_PANEL";
 		public const string LINE_KEY = "PANEL_LINE";
 		public const string TITLE_KEY = "Title";
 		public const string POSITION_KEY = "WindowPos";
+		public const string SCENES_KEY = "ValidScenes";
+		public const string MODES_KEY = "ValidModes";
+
+		private static readonly List<VOID_ScriptedPanel> panels = new List<VOID_ScriptedPanel>();
+
+		public static IList<VOID_ScriptedPanel> Panels
+		{
+			get
+			{
+				return panels.AsReadOnly();
+			}
+		}
+
+		public static void LoadScriptedPanels()
+		{
+			if (GameDatabase.Instance != null && GameDatabase.Instance.IsReady())
+			{
+				var panelConfigs = GameDatabase.Instance.GetConfigs(PANEL_KEY);
+
+				panels.Clear();
+
+				foreach (var panelConfig in panelConfigs)
+				{
+					ConfigNode panelNode = panelConfig.config;
+
+					panels.Add(new VOID_ScriptedPanel(panelNode));
+				}
+			}
+		}
 
 		private List<VOID_PanelLine> panelLines;
 
@@ -75,6 +107,77 @@ namespace VOID_ScriptedPanels
 
 				this.WindowPos.x = positionVector.x;
 				this.WindowPos.y = positionVector.y;
+			}
+
+			string scenesString;
+
+			if (node.TryGetValue(SCENES_KEY, out scenesString))
+			{
+				scenesString = scenesString.ToLower();
+
+				if (scenesString == "all")
+				{
+					this.validScenes = (GameScenes[])Enum.GetValues(typeof(GameScenes));
+				}
+
+				string[] scenesArray = scenesString.Split(',');
+
+				List<GameScenes> scenes = new List<GameScenes>();
+
+				foreach (string sceneString in scenesArray)
+				{
+					GameScenes scene;
+
+					try
+					{
+						scene = (GameScenes)Enum.Parse(typeof(GameScenes), sceneString.Trim(), true);
+						scenes.Add(scene);
+					}
+					catch
+					{
+						Tools.PostErrorMessage(
+							"{0}: Failed parsing {1}: '{2}' not a valid {3}.",
+							this.Name,
+							SCENES_KEY,
+							sceneString,
+							typeof(GameScenes).Name
+						);
+					}
+				}
+
+				this.validScenes = scenes.ToArray();
+			}
+
+			string modesString;
+
+			if (node.TryGetValue(MODES_KEY, out modesString))
+			{
+				string[] modesArray = modesString.Split(',');
+
+				List<Game.Modes> modes = new List<Game.Modes>();
+
+				foreach (string modeString in modesArray)
+				{
+					Game.Modes mode;
+
+					try
+					{
+						mode = (Game.Modes)Enum.Parse(typeof(Game.Modes), modeString.Trim(), true);
+						modes.Add(mode);
+					}
+					catch
+					{
+						Tools.PostErrorMessage(
+							"{0}: Failed parsing {1}: '{2}' not a valid {3}.",
+							this.Name,
+							SCENES_KEY,
+							modeString,
+							typeof(GameScenes).Name
+						);
+					}
+				}
+
+				this.validModes = modes.ToArray();
 			}
 
 			if (node.HasNode(LINE_KEY))
@@ -112,9 +215,20 @@ namespace VOID_ScriptedPanels
 			{
 				GUILayout.BeginHorizontal();
 
-				GUILayout.Label(line.LabelFunction.Invoke() + ":");
-				GUILayout.FlexibleSpace();
-				GUILayout.Label(line.ValueFunction.Invoke(), GUILayout.ExpandWidth (false));
+				if (line.LabelFunction != null)
+				{
+					GUILayout.Label((string)line.LabelFunction.DynamicInvoke());
+				}
+
+				if (line.LabelFunction != null && line.ValueFunction != null)
+				{
+					GUILayout.FlexibleSpace();
+				}
+
+				if (line.ValueFunction != null)
+				{
+					GUILayout.Label((string)line.ValueFunction.DynamicInvoke(), GUILayout.ExpandWidth(false));
+				}
 
 				GUILayout.EndHorizontal();
 			}
@@ -134,13 +248,13 @@ namespace VOID_ScriptedPanels
 
 		public ushort LineNumber;
 
-		public Func<string> LabelFunction
+		public Delegate LabelFunction
 		{
 			get;
 			private set;
 		}
 
-		public Func<string> ValueFunction
+		public Delegate ValueFunction
 		{
 			get;
 			private set;
@@ -154,7 +268,7 @@ namespace VOID_ScriptedPanels
 			}
 			set
 			{
-				this.LabelFunction = this.parseFunctionScript(value) as Func<string>;
+				this.LabelFunction = this.parseFunctionScript(value);
 
 				this.labelScript = value;
 			}
@@ -168,7 +282,7 @@ namespace VOID_ScriptedPanels
 			}
 			set
 			{
-				this.ValueFunction = this.parseFunctionScript(value) as Func<string>;
+				this.ValueFunction = this.parseFunctionScript(value);
 
 				this.valueScript = value;
 			}
@@ -194,15 +308,11 @@ namespace VOID_ScriptedPanels
 			if (node.TryGetValue(LABEL_KEY, out labelScript))
 			{
 				this.LabelScript = labelScript;
-
-				this.LabelFunction = this.parseFunctionScript(this.LabelScript) as Func<string>;
 			}
 
 			if (node.TryGetValue(VALUE_KEY, out valueScript))
 			{
 				this.ValueScript = valueScript;
-
-				this.ValueFunction = this.parseFunctionScript(this.ValueScript) as Func<string>;
 			}
 
 			string lineNo;
@@ -257,6 +367,8 @@ namespace VOID_ScriptedPanels
 
 				scriptExpression = parser.Parse();
 
+				Tools.PostDebugMessage(this, "Parsed expression '{0}' from '{1}'.", scriptExpression, script);
+
 				return scriptExpression.Compile();
 			}
 			catch (VOIDScriptSyntaxException x1)
@@ -267,7 +379,7 @@ namespace VOID_ScriptedPanels
 			catch (Exception x2)
 			{
 				Tools.PostErrorMessage("Failed to compile script: '{0}'.\nExpression: {1}",
-					this.LabelScript,
+					script,
 					scriptExpression
 				);
 
