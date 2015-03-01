@@ -67,12 +67,13 @@ namespace VOID_ScriptedPanels
 				{
 					foreach (var cfgFile in GameDatabase.Instance.root.AllConfigFiles)
 					{
-						if (cfgFile.ContainsConfig(PANEL_KEY))
+						foreach (var config in cfgFile.configs)
 						{
-							voidScriptFiles.Add(cfgFile);
-
-							Tools.PostLogMessage("VOID_ScriptedPanel: Added config file {0} (url: {1}, fullPath: {2}",
-								cfgFile, cfgFile.url, cfgFile.fullPath);
+							if (config.config.name == PANEL_KEY)
+							{
+								voidScriptFiles.Add(cfgFile);
+								break;
+							}
 						}
 					}
 				}
