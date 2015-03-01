@@ -169,8 +169,11 @@ namespace VOID_ScriptedPanels
 								}
 								else
 								{
-									// TODO: handle this string character that is not supported.
-									throw new NotImplementedException();
+									throw new VOIDScriptSyntaxException(string.Format(
+										"Unexpected character '{0}' in evaluation block at position {1}." +
+										"  Expected any digit, '.', '+', '-', '*', or '/'.",
+										c, pointer
+									));
 								}
 								break;
 						}
@@ -232,7 +235,7 @@ namespace VOID_ScriptedPanels
 						}
 						break;
 					default:
-						throw new NotImplementedException();
+						throw new NotImplementedException("Unexpected StateType.  This should be impossible; please report!");
 				}
 			}
 
