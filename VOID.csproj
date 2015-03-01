@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GameData\VOID\Textures\ATM_VOID.cfg" />
+    <None Include="GameData\VOID\TestPanels.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="API\" />
