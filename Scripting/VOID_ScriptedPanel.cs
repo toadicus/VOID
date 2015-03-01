@@ -48,6 +48,7 @@ namespace VOID_ScriptedPanels
 		public const string SCENES_KEY = "ValidScenes";
 		public const string MODES_KEY = "ValidModes";
 
+		private static readonly List<UrlDir.UrlFile> voidScriptFiles = new List<UrlDir.UrlFile>();
 		private static readonly List<VOID_ScriptedPanel> panels = new List<VOID_ScriptedPanel>();
 
 		public static IList<VOID_ScriptedPanel> Panels
@@ -62,15 +63,33 @@ namespace VOID_ScriptedPanels
 		{
 			if (GameDatabase.Instance != null && GameDatabase.Instance.IsReady())
 			{
-				var panelConfigs = GameDatabase.Instance.GetConfigs(PANEL_KEY);
+				if (voidScriptFiles.Count == 0)
+				{
+					foreach (var cfgFile in GameDatabase.Instance.root.AllConfigFiles)
+					{
+						if (cfgFile.ContainsConfig(PANEL_KEY))
+						{
+							voidScriptFiles.Add(cfgFile);
+
+							Tools.PostLogMessage("VOID_ScriptedPanel: Added config file {0} (url: {1}, fullPath: {2}",
+								cfgFile, cfgFile.url, cfgFile.fullPath);
+						}
+					}
+				}
 
 				panels.Clear();
 
-				foreach (var panelConfig in panelConfigs)
+				foreach (UrlDir.UrlFile file in voidScriptFiles)
 				{
-					ConfigNode panelNode = panelConfig.config;
+					var configs = UrlDir.UrlConfig.CreateNodeList(file.parent, file);
 
-					panels.Add(new VOID_ScriptedPanel(panelNode));
+					foreach (var panelConfig in configs)
+					{
+						if (panelConfig.config.name == PANEL_KEY)
+						{
+							panels.Add(new VOID_ScriptedPanel(panelConfig.config));
+						}
+					}
 				}
 			}
 		}
@@ -217,7 +236,20 @@ namespace VOID_ScriptedPanels
 
 				if (line.LabelFunction != null)
 				{
-					GUILayout.Label((string)line.LabelFunction.DynamicInvoke());
+					object labelObj = line.LabelFunction.DynamicInvoke();
+
+					if (labelObj is string)
+					{
+						GUILayout.Label((string)labelObj);
+					}
+					else if (labelObj is GUIContent)
+					{
+						GUILayout.Label((GUIContent)labelObj);
+					}
+					else
+					{
+						GUILayout.Label(labelObj.ToString());
+					}
 				}
 
 				if (line.LabelFunction != null && line.ValueFunction != null)
@@ -227,7 +259,20 @@ namespace VOID_ScriptedPanels
 
 				if (line.ValueFunction != null)
 				{
-					GUILayout.Label((string)line.ValueFunction.DynamicInvoke(), GUILayout.ExpandWidth(false));
+					object valueObj = line.ValueFunction.DynamicInvoke();
+
+					if (valueObj is string)
+					{
+						GUILayout.Label((string)valueObj);
+					}
+					else if (valueObj is GUIContent)
+					{
+						GUILayout.Label((GUIContent)valueObj);
+					}
+					else
+					{
+						GUILayout.Label(valueObj.ToString());
+					}
 				}
 
 				GUILayout.EndHorizontal();
@@ -268,7 +313,7 @@ namespace VOID_ScriptedPanels
 			}
 			set
 			{
-				this.LabelFunction = this.parseFunctionScript(value);
+				this.LabelFunction = this.parseFunctionScript(value, ParsingCell.Label);
 
 				this.labelScript = value;
 			}
@@ -282,10 +327,22 @@ namespace VOID_ScriptedPanels
 			}
 			set
 			{
-				this.ValueFunction = this.parseFunctionScript(value);
+				this.ValueFunction = this.parseFunctionScript(value, ParsingCell.Value);
 
 				this.valueScript = value;
 			}
+		}
+
+		public GUIContent LabelErrorContent
+		{
+			get;
+			private set;
+		}
+
+		public GUIContent ValueErrorContent
+		{
+			get;
+			private set;
 		}
 
 		public VOID_PanelLine()
@@ -357,7 +414,7 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
-		private Delegate parseFunctionScript(string script)
+		private Delegate parseFunctionScript(string script, ParsingCell cell)
 		{
 			LambdaExpression scriptExpression = null;
 
@@ -373,18 +430,51 @@ namespace VOID_ScriptedPanels
 			}
 			catch (VOIDScriptSyntaxException x1)
 			{
-				Tools.PostErrorMessage("Failed to parse script: '{0}'.", this.LabelScript);
-				throw x1;
+				return this.getSyntaxErrorContent("Syntax Error", x1.Message, cell);
 			}
-			catch (Exception x2)
+			catch (VOIDScriptParserException x2)
 			{
-				Tools.PostErrorMessage("Failed to compile script: '{0}'.\nExpression: {1}",
-					script,
-					scriptExpression
-				);
-
-				throw x2;
+				return this.getSyntaxErrorContent("Parser Error", x2.Message + " Please report!", cell);
 			}
+			catch (Exception x3)
+			{
+				Tools.PostErrorMessage(
+					"Compiler error processing VOIDScript line '{0}'.  Please report!\n{1}: {2}\n{3}",
+					script, x3.GetType().Name, x3.Message, x3.StackTrace);
+				return this.getSyntaxErrorContent("Compiler Error", x3.GetType().Name + " " + x3.Message, cell);
+			}
+		}
+
+		private Func<GUIContent> getSyntaxErrorContent(string message, string tooltip, ParsingCell cell)
+		{
+			switch (cell)
+			{
+				case ParsingCell.Label:
+					if (this.LabelErrorContent == null)
+					{
+						this.LabelErrorContent = new GUIContent(message);
+					}
+
+					this.LabelErrorContent.tooltip = tooltip;
+
+					return () => this.LabelErrorContent;
+				case ParsingCell.Value:
+					if (this.ValueErrorContent == null)
+					{
+						this.ValueErrorContent = new GUIContent(message);
+					}
+					this.ValueErrorContent.tooltip = tooltip;
+
+					return () => this.ValueErrorContent;
+				default:
+					return () => new GUIContent(message);
+			}
+		}
+
+		private enum ParsingCell
+		{
+			Label,
+			Value
 		}
 	}
 }
