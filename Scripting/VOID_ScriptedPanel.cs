@@ -95,6 +95,8 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
+		private string tooltipContents;
+
 		private List<VOID_PanelLine> panelLines;
 
 		public IList<VOID_PanelLine> PanelLines
@@ -229,6 +231,25 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
+		public override void DrawGUI()
+		{
+			base.DrawGUI();
+
+			if (this.tooltipContents != null && this.tooltipContents != string.Empty)
+			{
+				GUIStyle tooltipSkin = new GUIStyle(this.core.Skin.label);
+
+				tooltipSkin.normal.background = this.core.Skin.window.normal.background;
+				tooltipSkin.stretchWidth = false;
+				tooltipSkin.
+
+				Rect tooltipPos = new Rect(Event.current.mousePosition.x + 2, Event.current.mousePosition.y + 2, 0, 0);
+				GUI.Label(tooltipPos, this.tooltipContents, tooltipSkin);
+
+				GUI.depth = 0;
+			}
+		}
+
 		public override void ModuleWindow(int id)
 		{
 			foreach (var line in this.panelLines)
@@ -277,6 +298,11 @@ namespace VOID_ScriptedPanels
 				}
 
 				GUILayout.EndHorizontal();
+			}
+
+			if (Event.current.type == EventType.Repaint)
+			{
+				this.tooltipContents = GUI.tooltip;
 			}
 
 			base.ModuleWindow(id);
@@ -442,7 +468,7 @@ namespace VOID_ScriptedPanels
 				Tools.PostErrorMessage(
 					"Compiler error processing VOIDScript line '{0}'.  Please report!\n{1}: {2}\n{3}",
 					script, x3.GetType().Name, x3.Message, x3.StackTrace);
-				return this.getSyntaxErrorContent("Compiler Error", x3.GetType().Name + " " + x3.Message, cell);
+				return this.getSyntaxErrorContent("Compiler Error", x3.GetType().Name + ": " + x3.Message, cell);
 			}
 		}
 
