@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VOID
@@ -87,8 +88,36 @@ namespace VOID
 			private set;
 		}
 
+		public static GUIStyle currentTooltip
+		{
+			get;
+			private set;
+		}
+
+		public static GUISkin defUnitySkin
+		{
+			get;
+			private set;
+		}
+
+		public static GUISkin defKSPSkin
+		{
+			get;
+			private set;
+		}
+
 		public static void OnSkinChanged()
 		{
+			if (defUnitySkin == null && GUI.skin != null)
+			{
+				defUnitySkin = GUI.skin;
+			}
+
+			if (defKSPSkin == null && HighLogic.Skin != null)
+			{
+				defKSPSkin = HighLogic.Skin;
+			}
+
 			labelDefault = new GUIStyle(GUI.skin.label);
 
 			labelLink = new GUIStyle(GUI.skin.label);
@@ -116,14 +145,76 @@ namespace VOID
 			labelGreen = new GUIStyle(GUI.skin.label);
 			labelGreen.normal.textColor = Color.green;
 
+			if (VOID_Data.CoreInitialized)
+			{
+				SetCurrentTooltip();
+			}
+
 			Ready = true;
 		}
 
 		static VOID_Styles()
 		{
+			tooltipCache = new Dictionary<GUISkin, GUIStyle>();
+
 			OnSkinChanged();
 
 			Ready = false;
+		}
+
+		private static Dictionary<GUISkin, GUIStyle> tooltipCache;
+
+		/// <summary>
+		/// Private routine that sets the tooltip based on the Current skin
+		/// </summary>
+		private static void SetCurrentTooltip()
+		{
+			//Use the custom skin if it exists
+			if (!tooltipCache.ContainsKey(VOID_Data.Core.Skin))
+			{
+				//otherwise lets build a style for the defaults or take the label style otherwise
+				if (VOID_Data.Core.Skin == defUnitySkin)
+					tooltipCache[VOID_Data.Core.Skin] = new GUIStyle(defUnitySkin.box);
+				/*else if (VOID_Data.Core.Skin == defKSPSkin)
+					tooltipCache[VOID_Data.Core.Skin] = GenDefKSPTooltip();*/
+				else
+				{
+					tooltipCache[VOID_Data.Core.Skin] = genGenericTooltip();
+				}
+			}
+
+			currentTooltip = tooltipCache[VOID_Data.Core.Skin];
+		}
+
+		/// <summary>
+		/// private function that creates a tooltip style for KSP
+		/// </summary>
+		/// <returns>New Default Tooltip style for KSP</returns>
+		private static GUIStyle GenDefKSPTooltip()
+		{
+			//build a new style to return
+			GUIStyle retStyle = new GUIStyle(defKSPSkin.label);
+			//build the background
+			Texture2D texBack = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+			texBack.SetPixel(0, 0, new Color(0.5f, 0.5f, 0.5f, 0.95f));
+			texBack.Apply();
+			retStyle.normal.background = texBack;
+			//set some text defaults
+			retStyle.normal.textColor = new Color32(224, 224, 224, 255);
+			retStyle.padding = new RectOffset(3, 3, 3, 3);
+			retStyle.alignment = TextAnchor.MiddleCenter;
+			return retStyle;
+		}
+
+		private static GUIStyle genGenericTooltip()
+		{
+			GUIStyle genericStyle = new GUIStyle(VOID_Data.Core.Skin.textField);
+			genericStyle.fontStyle = FontStyle.Normal;
+			genericStyle.normal.textColor = (Color)XKCDColors.OffWhite;
+
+			genericStyle.padding = new RectOffset(3, 3, 3, 3);
+
+			return genericStyle;
 		}
 	}
 }

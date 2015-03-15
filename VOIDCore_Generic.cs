@@ -354,8 +354,6 @@ namespace VOID
 				this.LoadSkins();
 			}
 
-			GUI.skin = this.Skin;
-
 			if (!this.GUIStylesLoaded)
 			{
 				this.LoadGUIStyles();
@@ -366,6 +364,8 @@ namespace VOID
 					ToolbarManager.ToolbarAvailable,
 					this.useToolbarManager);
 			}
+
+			GUI.skin = this.Skin;
 
 			if (!this.useToolbarManager)
 			{

@@ -237,14 +237,21 @@ namespace VOID_ScriptedPanels
 
 			if (this.tooltipContents != null && this.tooltipContents != string.Empty)
 			{
-				GUIStyle tooltipSkin = new GUIStyle(this.core.Skin.label);
+				GUIStyle tooltipStyle = VOID_Styles.currentTooltip;
 
-				tooltipSkin.normal.background = this.core.Skin.window.normal.background;
-				tooltipSkin.stretchWidth = false;
-				tooltipSkin.
+				GUIContent contents = new GUIContent(this.tooltipContents);
+
+				tooltipStyle.stretchWidth = false;
+				tooltipStyle.wordWrap = true;
 
 				Rect tooltipPos = new Rect(Event.current.mousePosition.x + 2, Event.current.mousePosition.y + 2, 0, 0);
-				GUI.Label(tooltipPos, this.tooltipContents, tooltipSkin);
+
+				Vector2 tooltipSize = tooltipStyle.CalcSize(contents);
+
+				tooltipPos.height = tooltipSize.y;
+				tooltipPos.width = tooltipSize.x;
+
+				GUI.Label(tooltipPos, contents, tooltipStyle);
 
 				GUI.depth = 0;
 			}
