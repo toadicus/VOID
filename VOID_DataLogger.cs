@@ -360,16 +360,16 @@ namespace VOID
 			line.Append('"');
 			line.Append(',');
 
-			//Orbital velocity
-			line.Append(VOID_Data.orbitVelocity.Value.ToString("F3"));
-			line.Append(',');
-
 			// Apoapsis Altitude
 			line.Append(VOID_Data.orbitApoAlt.Value.ToString("G3"));
 			line.Append(',');
 
 			// Periapsis Altitude
 			line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G3"));
+			line.Append(',');
+
+			//Orbital velocity
+			line.Append(VOID_Data.orbitVelocity.Value.ToString("F3"));
 			line.Append(',');
 
 			//surface velocity
