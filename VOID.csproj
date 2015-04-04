@@ -115,6 +115,7 @@
     <Compile Include="Tools\VOID_StageExtensions.cs" />
     <Compile Include="API\VOID_SingletonCore.cs" />
     <Compile Include="API\VOID_SingletonWindow.cs" />
+    <Compile Include="API\Enums.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

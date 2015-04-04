@@ -90,6 +90,9 @@ namespace VOID
 		[AVOID_SaveValue("vesselSimActive")]
 		protected VOID_SaveValue<bool> vesselSimActive;
 
+		[AVOID_SaveValue("timeScaleFlags")]
+		protected VOID_SaveValue<UInt32> timeScaleFlags;
+
 		// Vessel Type Housekeeping
 		protected bool vesselTypesLoaded = false;
 
@@ -255,6 +258,18 @@ namespace VOID
 		{
 			get;
 			protected set;
+		}
+
+		public override VOID_TimeScale TimeScale
+		{
+			get
+			{
+				return (VOID_TimeScale)this.timeScaleFlags.value;
+			}
+			protected set
+			{
+				this.timeScaleFlags.value = (UInt32)value;
+			}
 		}
 
 		protected IconState activeState
@@ -596,6 +611,57 @@ namespace VOID
 
 			this.vesselSimActive.value = GUITools.Toggle(this.vesselSimActive.value,
 				"Enable Engineering Calculations");
+
+			bool useEarthTime = (this.TimeScale & VOID_TimeScale.KERBIN_TIME) == 0u;
+			bool useSiderealTime = (this.TimeScale & VOID_TimeScale.SOLAR_DAY) == 0u;
+			bool useRoundedScale = (this.TimeScale & VOID_TimeScale.ROUNDED_SCALE) != 0u;
+
+			useEarthTime = GUITools.Toggle(useEarthTime, "Use Earth Time (changes KSP option)");
+
+			GameSettings.KERBIN_TIME = !useEarthTime;
+
+			useSiderealTime = GUITools.Toggle(
+				useSiderealTime,
+				string.Format(
+					"Time Scale: {0}",
+					useSiderealTime ? "Sidereal" : "Solar"
+				)
+			);
+
+			useRoundedScale = GUITools.Toggle(
+				useRoundedScale,
+				string.Format(
+					"Time Scale: {0}",
+					useRoundedScale ? "Rounded" : "True"
+				)
+			);
+
+			if (useEarthTime)
+			{
+				this.TimeScale &= ~VOID_TimeScale.KERBIN_TIME;
+			}
+			else
+			{
+				this.TimeScale |= VOID_TimeScale.KERBIN_TIME;
+			}
+
+			if (useSiderealTime)
+			{
+				this.TimeScale &= ~VOID_TimeScale.SOLAR_DAY;
+			}
+			else
+			{
+				this.TimeScale |= VOID_TimeScale.SOLAR_DAY;
+			}
+
+			if (useRoundedScale)
+			{
+				this.TimeScale |= VOID_TimeScale.ROUNDED_SCALE;
+			}
+			else
+			{
+				this.TimeScale &= ~VOID_TimeScale.ROUNDED_SCALE;
+			}
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
@@ -1038,6 +1104,8 @@ namespace VOID
 			{
 				module.LoadConfig();
 			}
+
+			this.TimeScale |= GameSettings.KERBIN_TIME ? VOID_TimeScale.KERBIN_TIME : 0u;
 		}
 
 		public override void SaveConfig()
@@ -1118,14 +1186,6 @@ namespace VOID
 
 			_instance = null;
 			_initialized = false;
-		}
-
-		protected enum IconState
-		{
-			PowerOff = 1,
-			PowerOn = 2,
-			Inactive = 4,
-			Active = 8
 		}
 	}
 }
