@@ -317,8 +317,8 @@ namespace VOID
 					"\"Altitude above terrain (m)\"," +
 					"\"Surface Latitude (°)\"," +
 					"\"Surface Longitude (°)\"," +
-					"\"Apoapsis Altitude (m)\"" +
-					"\"Periapsis Altitude (m)\"" +
+					"\"Apoapsis Altitude (m)\"," +
+					"\"Periapsis Altitude (m)\"," +
 					"\"Orbital Velocity (m/s)\"," +
 					"\"Surface Velocity (m/s)\"," +
 					"\"Vertical Speed (m/s)\"," +
