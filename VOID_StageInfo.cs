@@ -151,7 +151,7 @@ namespace VOID
 
 			if (HighLogic.LoadedSceneIsEditor && this.selectedBody.atmosphere && this.useSeaLevel)
 			{
-				SimManager.Atmosphere = this.selectedBody.atmosphereMultiplier * 101.325d;
+				SimManager.Atmosphere = this.selectedBody.GetPressure(0) * PhysicsGlobals.KpaToAtmospheres;
 			}
 			else
 			{
