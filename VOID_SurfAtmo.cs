@@ -55,60 +55,61 @@ namespace VOID
 
 			GUILayout.BeginVertical();
 
-			this.precisionValues [idx]= (ushort)VOID_Data.trueAltitude.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues[idx] = (ushort)VOID_Data.trueAltitude.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			VOID_Data.surfLatitude.DoGUIHorizontal ();
+			VOID_Data.surfLatitude.DoGUIHorizontal();
 
-			VOID_Data.surfLongitude.DoGUIHorizontal ();
+			VOID_Data.surfLongitude.DoGUIHorizontal();
 
-			VOID_Data.vesselHeading.DoGUIHorizontal ();
+			VOID_Data.vesselHeading.DoGUIHorizontal();
 
-			this.precisionValues [idx]= (ushort)VOID_Data.terrainElevation.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues[idx] = (ushort)VOID_Data.terrainElevation.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
 			this.precisionValues[idx] = (ushort)VOID_Data.downrangeDistance.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)VOID_Data.surfVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues[idx] = (ushort)VOID_Data.surfVelocity.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)VOID_Data.vertVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues[idx] = (ushort)VOID_Data.vertVelocity.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			this.precisionValues [idx]= (ushort)VOID_Data.horzVelocity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues[idx] = (ushort)VOID_Data.horzVelocity.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			VOID_Data.temperature.DoGUIHorizontal ("F2");
+			VOID_Data.temperature.DoGUIHorizontal("F2");
 
-			this.precisionValues [idx]= (ushort)VOID_Data.atmDensity.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues[idx] = (ushort)VOID_Data.atmDensity.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			VOID_Data.atmPressure.DoGUIHorizontal ("F2");
+			this.precisionValues[idx] = (ushort)VOID_Data.atmPressure.DoGUIHorizontal(this.precisionValues[idx]);
+			idx++;
 
-			this.precisionValues [idx]= (ushort)VOID_Data.atmLimit.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues[idx] = (ushort)VOID_Data.atmLimit.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
 			// Toadicus edit: added Biome
-			VOID_Data.currBiome.DoGUIHorizontal ();
+			VOID_Data.currBiome.DoGUIHorizontal();
 
 			GUILayout.EndVertical();
 
 			base.ModuleWindow(id);
 		}
 
-		public override void LoadConfig ()
+		public override void LoadConfig()
 		{
-			base.LoadConfig ();
+			base.LoadConfig();
 
-			this.precisionValues = new IntCollection (4, this._precisionValues);
+			this.precisionValues = new IntCollection(4, this._precisionValues);
 		}
 
-		public override void Save (KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config)
 		{
 			this._precisionValues.value = this.precisionValues.collection;
 
-			base.Save (config);
+			base.Save(config);
 		}
 	}
 }
