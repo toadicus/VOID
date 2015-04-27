@@ -749,11 +749,20 @@ namespace VOID
 				{
 					double radius = this.Vessel.Radius();
 					SimManager.Gravity = this.Vessel.mainBody.gravParameter / (radius * radius);
+					SimManager.Atmosphere = this.Vessel.staticPressurekPa * PhysicsGlobals.KpaToAtmospheres;
+					SimManager.Mach = HighLogic.LoadedSceneIsEditor ? 1d :  this.Vessel.mach;
 				}
 
-				SimManager.minSimTime = new TimeSpan(0, 0, 0, 0, (int)(this.UpdatePeriod * 1000d));
+				#if DEBUG
+				SimManager.logOutput = true;
+				#endif
 
 				SimManager.TryStartSimulation();
+
+				Tools.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
+					SimManager.Atmosphere,
+					SimManager.Gravity
+				);
 			}
 			#if DEBUG
 			else
