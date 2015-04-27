@@ -116,29 +116,29 @@ namespace VOID
 		public static readonly VOID_DoubleValue atmDensity =
 			new VOID_DoubleValue(
 				"Atmosphere Density",
-				new Func<double>(() => Core.Vessel.atmDensity * 1000f),
+				new Func<double>(() => Core.Vessel.atmDensity * 1000d),
 				"g/m³"
 			);
 
-		public static readonly VOID_FloatValue atmLimit =
-			new VOID_FloatValue(
-				"Atmosphere Limit",
-				new Func<float>(() => Core.Vessel.mainBody.maxAtmosphereAltitude),
+		public static readonly VOID_DoubleValue atmLimit =
+			new VOID_DoubleValue(
+				"Atmosphere Depth",
+				new Func<double>(() => Core.Vessel.mainBody.atmosphereDepth),
 				"m"
 			);
 
 		public static readonly VOID_DoubleValue atmPressure =
 			new VOID_DoubleValue(
-				"Pressure",
-				new Func<double>(() => Core.Vessel.staticPressure),
-				"atm"
+				"Static Pressure",
+				new Func<double>(() => Core.Vessel.staticPressurekPa * 1000d),
+				"Pa"
 			);
 
-		public static readonly VOID_FloatValue temperature =
-			new VOID_FloatValue(
+		public static readonly VOID_DoubleValue temperature =
+			new VOID_DoubleValue(
 				"Temperature",
-				new Func<float>(() => Core.Vessel.flightIntegrator.getExternalTemperature()),
-				"°C"
+				new Func<double>(() => Core.Vessel.atmosphericTemperature),
+				"K"
 			);
 
 		#endregion
