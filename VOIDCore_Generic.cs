@@ -26,6 +26,8 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+using KerbalEngineer.Editor;
+using KerbalEngineer.Helpers;
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
@@ -89,6 +91,9 @@ namespace VOID
 
 		[AVOID_SaveValue("vesselSimActive")]
 		protected VOID_SaveValue<bool> vesselSimActive;
+
+		[AVOID_SaveValue("timeScaleFlags")]
+		protected VOID_SaveValue<UInt32> timeScaleFlags;
 
 		// Vessel Type Housekeeping
 		protected bool vesselTypesLoaded = false;
@@ -255,6 +260,18 @@ namespace VOID
 		{
 			get;
 			protected set;
+		}
+
+		public override VOID_TimeScale TimeScale
+		{
+			get
+			{
+				return (VOID_TimeScale)this.timeScaleFlags.value;
+			}
+			protected set
+			{
+				this.timeScaleFlags.value = (UInt32)value;
+			}
 		}
 
 		protected IconState activeState
@@ -603,6 +620,57 @@ namespace VOID
 			this.vesselSimActive.value = GUITools.Toggle(this.vesselSimActive.value,
 				"Enable Engineering Calculations");
 
+			bool useEarthTime = (this.TimeScale & VOID_TimeScale.KERBIN_TIME) == 0u;
+			bool useSiderealTime = (this.TimeScale & VOID_TimeScale.SOLAR_DAY) == 0u;
+			bool useRoundedScale = (this.TimeScale & VOID_TimeScale.ROUNDED_SCALE) != 0u;
+
+			useEarthTime = GUITools.Toggle(useEarthTime, "Use Earth Time (changes KSP option)");
+
+			GameSettings.KERBIN_TIME = !useEarthTime;
+
+			useSiderealTime = GUITools.Toggle(
+				useSiderealTime,
+				string.Format(
+					"Time Scale: {0}",
+					useSiderealTime ? "Sidereal" : "Solar"
+				)
+			);
+
+			useRoundedScale = GUITools.Toggle(
+				useRoundedScale,
+				string.Format(
+					"Time Scale: {0}",
+					useRoundedScale ? "Rounded" : "True"
+				)
+			);
+
+			if (useEarthTime)
+			{
+				this.TimeScale &= ~VOID_TimeScale.KERBIN_TIME;
+			}
+			else
+			{
+				this.TimeScale |= VOID_TimeScale.KERBIN_TIME;
+			}
+
+			if (useSiderealTime)
+			{
+				this.TimeScale &= ~VOID_TimeScale.SOLAR_DAY;
+			}
+			else
+			{
+				this.TimeScale |= VOID_TimeScale.SOLAR_DAY;
+			}
+
+			if (useRoundedScale)
+			{
+				this.TimeScale |= VOID_TimeScale.ROUNDED_SCALE;
+			}
+			else
+			{
+				this.TimeScale &= ~VOID_TimeScale.ROUNDED_SCALE;
+			}
+
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
 			GUILayout.Label("Skin:", GUILayout.ExpandWidth(false));
@@ -689,11 +757,22 @@ namespace VOID
 				{
 					double radius = this.Vessel.Radius();
 					SimManager.Gravity = this.Vessel.mainBody.gravParameter / (radius * radius);
+					SimManager.Atmosphere = this.Vessel.staticPressurekPa * PhysicsGlobals.KpaToAtmospheres;
+					SimManager.Mach = HighLogic.LoadedSceneIsEditor ? 1d :  this.Vessel.mach;
+					BuildAdvanced.Altitude = HighLogic.LoadedSceneIsEditor ? 0d : this.Vessel.altitude;
+					CelestialBodies.SelectedBody = HighLogic.LoadedSceneIsEditor ? this.HomeBody : this.Vessel.mainBody;
 				}
 
-				SimManager.minSimTime = new TimeSpan(0, 0, 0, 0, (int)(this.UpdatePeriod * 1000d));
+				#if DEBUG
+				SimManager.logOutput = true;
+				#endif
 
 				SimManager.TryStartSimulation();
+
+				Tools.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
+					SimManager.Atmosphere,
+					SimManager.Gravity
+				);
 			}
 			#if DEBUG
 			else
@@ -1044,6 +1123,8 @@ namespace VOID
 			{
 				module.LoadConfig();
 			}
+
+			this.TimeScale |= GameSettings.KERBIN_TIME ? VOID_TimeScale.KERBIN_TIME : 0u;
 		}
 
 		public override void SaveConfig()
@@ -1124,14 +1205,6 @@ namespace VOID
 
 			_instance = null;
 			_initialized = false;
-		}
-
-		protected enum IconState
-		{
-			PowerOff = 1,
-			PowerOn = 2,
-			Inactive = 4,
-			Active = 8
 		}
 	}
 }

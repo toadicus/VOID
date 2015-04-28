@@ -414,13 +414,25 @@ namespace VOID
 			{
 				get
 				{
-					if (GameSettings.KERBIN_TIME)
+					VOID_TimeScale flags = VOID_Data.Core.TimeScale &
+						(VOID_TimeScale.KERBIN_TIME | VOID_TimeScale.SOLAR_DAY | VOID_TimeScale.ROUNDED_SCALE);
+
+					switch (flags)
 					{
-						return 21600d;
-					}
-					else
-					{
-						return 86164.1d;
+						// Earth day, sidereal
+						case 0:
+							return 86164.1d;
+						// Earth day, solar (also rounded)
+						case VOID_TimeScale.ROUNDED_SCALE | VOID_TimeScale.SOLAR_DAY:
+						case VOID_TimeScale.ROUNDED_SCALE:
+						case VOID_TimeScale.SOLAR_DAY:
+							return 86400d;
+						// Kerbin day, solar
+						case VOID_TimeScale.KERBIN_TIME | VOID_TimeScale.SOLAR_DAY:
+							return 21650.813d;
+						// Kerbin day, sidereal (also rounded)
+						default:
+							return 21600d;
 					}
 				}
 			}
@@ -429,13 +441,28 @@ namespace VOID
 			{
 				get
 				{
-					if (GameSettings.KERBIN_TIME)
+					VOID_TimeScale flags = VOID_Data.Core.TimeScale &
+						(VOID_TimeScale.KERBIN_TIME | VOID_TimeScale.SOLAR_DAY | VOID_TimeScale.ROUNDED_SCALE);
+
+					switch (flags)
 					{
-						return 9203545d;
-					}
-					else
-					{
-						return 31558149d;
+						// Earth year, rounded
+						case VOID_TimeScale.SOLAR_DAY | VOID_TimeScale.ROUNDED_SCALE:
+						case VOID_TimeScale.ROUNDED_SCALE:
+							return 60 * 60 * 24 * 365;
+						// Kerbin year, rounded
+						case VOID_TimeScale.KERBIN_TIME | VOID_TimeScale.SOLAR_DAY | VOID_TimeScale.ROUNDED_SCALE:
+						case VOID_TimeScale.KERBIN_TIME | VOID_TimeScale.ROUNDED_SCALE:
+							return 60 * 60 * 6 * 426;
+						// Earth year, solar time
+						case VOID_TimeScale.SOLAR_DAY:
+							return 31556925.2507328;
+						// Earth year, sidereal time
+						case 0:
+							return 31558149.7635456d;
+						// Kerbin year, solar & sidereal time
+						default:
+							return 9203544.61750141d;
 					}
 				}
 			}

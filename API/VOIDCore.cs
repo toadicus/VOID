@@ -64,6 +64,8 @@ namespace VOID
 		public abstract Stage LastStage { get; protected set; }
 		public abstract Stage[] Stages { get; protected set; }
 
+		public abstract VOID_TimeScale TimeScale { get; protected set; }
+
 		public abstract event VOIDEventHandler onApplicationQuit;
 		public abstract event VOIDEventHandler onSkinChanged;
 

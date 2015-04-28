@@ -203,7 +203,7 @@ namespace VOID
 				GUILayout.Label("Natural satellites:");
 				GUILayout.Label("Artificial satellites:");
 				GUILayout.Label("Surface gravity:");
-				GUILayout.Label("Atmosphere altitude:");
+				GUILayout.Label("Atmosphere Depth:");
 				GUILayout.Label("Atmospheric O\u2082:");
 				GUILayout.Label("Has ocean:");
 
@@ -393,7 +393,7 @@ namespace VOID
 
 			if (body.atmosphere)
 			{
-				GUILayout.Label("≈ " + Tools.MuMech_ToSI(body.maxAtmosphereAltitude) + "m",
+				GUILayout.Label("≈ " + Tools.MuMech_ToSI(body.atmosphereDepth) + "m",
 					VOID_Styles.labelRight,
 					GUILayout.ExpandWidth(true));
 

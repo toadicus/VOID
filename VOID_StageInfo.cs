@@ -35,7 +35,7 @@ namespace VOID
 
 		private bool showColumnSelection;
 
-		private CelestialBody selectedBody;
+		private CelestialBody _selectedBody;
 		[AVOID_SaveValue("bodyIdx")]
 		private VOID_SaveValue<int> bodyIdx;
 		private int lastIdx;
@@ -45,6 +45,19 @@ namespace VOID
 		[AVOID_SaveValue("UseSealLevel")]
 		private VOID_SaveValue<bool> useSeaLevel;
 		private GUIContent seaLevelToggle;
+
+		private CelestialBody selectedBody
+		{
+			get
+			{
+				return this._selectedBody;
+			}
+			set
+			{
+				this._selectedBody = value;
+				KerbalEngineer.Helpers.CelestialBodies.SelectedBody = value;
+			}
+		}
 
 		public VOID_StageInfo() : base()
 		{
@@ -151,7 +164,7 @@ namespace VOID
 
 			if (HighLogic.LoadedSceneIsEditor && this.selectedBody.atmosphere && this.useSeaLevel)
 			{
-				SimManager.Atmosphere = this.selectedBody.atmosphereMultiplier * 101.325d;
+				SimManager.Atmosphere = this.selectedBody.GetPressure(0) * PhysicsGlobals.KpaToAtmospheres;
 			}
 			else
 			{

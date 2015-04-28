@@ -115,6 +115,7 @@
     <Compile Include="Tools\VOID_StageExtensions.cs" />
     <Compile Include="API\VOID_SingletonCore.cs" />
     <Compile Include="API\VOID_SingletonWindow.cs" />
+    <Compile Include="API\Enums.cs" />
     <Compile Include="Scripting\Exceptions.cs" />
     <Compile Include="Scripting\ScriptParser.cs" />
     <Compile Include="Scripting\ScriptScanner.cs" />
