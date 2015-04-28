@@ -105,6 +105,16 @@ namespace VOID
 			base.ModuleWindow(id);
 		}
 
+		public override void Save(KSP.IO.PluginConfiguration config)
+		{
+			base.Save(config);
+
+			foreach (var panel in this.validPanels)
+			{
+				panel.Save(config);
+			}
+		}
+
 		private void onUpdateHandler (object sender)
 		{
 			if (this.timeToUpdate)

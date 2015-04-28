@@ -47,6 +47,7 @@ namespace VOID_ScriptedPanels
 		public const string POSITION_KEY = "WindowPos";
 		public const string SCENES_KEY = "ValidScenes";
 		public const string MODES_KEY = "ValidModes";
+		public const string WIDTH_KEY = "Width";
 
 		private static readonly List<UrlDir.UrlFile> voidScriptFiles = new List<UrlDir.UrlFile>();
 		private static readonly List<VOID_ScriptedPanel> panels = new List<VOID_ScriptedPanel>();
@@ -95,6 +96,8 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
+		private bool showErrorPane;
+
 		private string tooltipContents;
 
 		private List<VOID_PanelLine> panelLines;
@@ -110,6 +113,7 @@ namespace VOID_ScriptedPanels
 		public VOID_ScriptedPanel() : base()
 		{
 			this.panelLines = new List<VOID_PanelLine>();
+			this.showErrorPane = false;
 		}
 
 		public VOID_ScriptedPanel(ConfigNode node) : this()
@@ -129,6 +133,18 @@ namespace VOID_ScriptedPanels
 
 				this.WindowPos.x = positionVector.x;
 				this.WindowPos.y = positionVector.y;
+			}
+
+			string widthString;
+
+			if (node.TryGetValue(WIDTH_KEY, out widthString))
+			{
+				float width;
+
+				if (float.TryParse(widthString, out width))
+				{
+					this.defWidth = width;
+				}
 			}
 
 			string scenesString;
@@ -213,6 +229,8 @@ namespace VOID_ScriptedPanels
 
 				this.panelLines.Sort((x, y) => x.LineNumber.CompareTo(y.LineNumber));
 			}
+
+			this.LoadConfig();
 		}
 
 		public void Save(ConfigNode node)
@@ -259,13 +277,55 @@ namespace VOID_ScriptedPanels
 
 		public override void ModuleWindow(int id)
 		{
-			foreach (var line in this.panelLines)
+			if (this.showErrorPane)
 			{
+				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+				GUILayout.BeginVertical();
+			}
+
+			List<int> errorIndices = null;
+			Dictionary<ushort, VOIDScriptRuntimeException> runtimeErrors = null;
+
+			for (int idx = 0; idx < this.panelLines.Count; idx++)
+			{
+				bool LineHasError = false;
+
+				var line = this.panelLines[idx];
+
+				if (line.LabelErrorContent != null || line.ValueErrorContent != null)
+				{
+					LineHasError = true;
+				}
+
 				GUILayout.BeginHorizontal();
 
 				if (line.LabelFunction != null)
 				{
-					object labelObj = line.LabelFunction.DynamicInvoke();
+					object labelObj;
+
+					try
+					{
+						labelObj = line.LabelFunction.DynamicInvoke();
+					}
+					catch (System.Reflection.TargetInvocationException tx)
+					{
+						var ix = tx.InnerException;
+
+						if (runtimeErrors == null)
+						{
+							runtimeErrors = new Dictionary<ushort, VOIDScriptRuntimeException>();
+						}
+
+						runtimeErrors[line.LineNumber] =
+							new VOIDScriptRuntimeException(ix, VOID_PanelLine.ParsingCell.Label);
+
+						LineHasError = true;
+
+						labelObj = new GUIContent("Syntax Error",
+							string.Format("{0}: {1}", ix.GetType().Name, ix.Message));
+						
+						Debug.LogException(ix);
+					}
 
 					if (labelObj is string)
 					{
@@ -288,7 +348,31 @@ namespace VOID_ScriptedPanels
 
 				if (line.ValueFunction != null)
 				{
-					object valueObj = line.ValueFunction.DynamicInvoke();
+					object valueObj;
+
+					try
+					{
+						valueObj = line.ValueFunction.DynamicInvoke();
+					}
+					catch (System.Reflection.TargetInvocationException tx)
+					{
+						var ix = tx.InnerException;
+
+						if (runtimeErrors == null)
+						{
+							runtimeErrors = new Dictionary<ushort, VOIDScriptRuntimeException>();
+						}
+
+						runtimeErrors[line.LineNumber] =
+							new VOIDScriptRuntimeException(ix, VOID_PanelLine.ParsingCell.Value);
+
+						LineHasError = true;
+
+						valueObj = new GUIContent("Syntax Error",
+							string.Format("{0}: {1}", ix.GetType().Name, ix.Message));
+
+						Debug.LogException(ix);
+					}
 
 					if (valueObj is string)
 					{
@@ -305,11 +389,145 @@ namespace VOID_ScriptedPanels
 				}
 
 				GUILayout.EndHorizontal();
+
+				if (LineHasError)
+				{
+					if (errorIndices == null)
+					{
+						errorIndices = new List<int>();
+					}
+
+					errorIndices.Add(idx);
+				}
 			}
 
 			if (Event.current.type == EventType.Repaint)
 			{
 				this.tooltipContents = GUI.tooltip;
+			}
+
+			if (this.showErrorPane)
+			{
+				GUILayout.EndVertical();
+
+				GUILayout.BeginVertical(this.core.Skin.box, GUILayout.MaxWidth(this.defWidth * 0.6f));
+
+				foreach (int idx in errorIndices)
+				{
+					var line = this.panelLines[idx];
+
+					if (line.LabelErrorContent != null)
+					{
+						GUILayout.BeginHorizontal();
+
+						string contents = string.Format(
+							"Error in label at line #{0}:\n" +
+							"{1}\n" +
+							"{2}",
+							line.LineNumber,
+							line.LabelErrorContent.text,
+							line.LabelErrorContent.tooltip
+						);
+
+						GUILayout.Label(contents);
+
+						GUILayout.EndHorizontal();
+					}
+
+					if (line.ValueErrorContent != null)
+					{
+						GUILayout.BeginHorizontal();
+
+						string contents = string.Format(
+							"Error in value at line #{0}:\n" +
+							"{1}\n" +
+							"{2}",
+							line.LineNumber,
+							line.ValueErrorContent.text,
+							line.ValueErrorContent.tooltip
+						);
+
+						GUILayout.Label(contents);
+
+						GUILayout.EndHorizontal();
+					}
+
+					if (runtimeErrors != null && runtimeErrors.ContainsKey(line.LineNumber))
+					{
+						GUILayout.BeginHorizontal();
+
+						var error = runtimeErrors[line.LineNumber];
+
+						string cellName;
+
+						switch (error.Cell)
+						{
+							case VOID_PanelLine.ParsingCell.Label:
+								cellName = "Label";
+								break;
+							case VOID_PanelLine.ParsingCell.Value:
+								cellName = "Value";
+								break;
+							default:
+								cellName = string.Empty;
+								break;
+						}
+
+						string contents = string.Format(
+							"Runtime error in {0} at line #{1}:\n" +
+							"{2}\n" +
+							"{3}",
+							cellName,
+							line.LineNumber,
+							error.InnerException.GetType().FullName,
+							error.Message
+						);
+
+						GUILayout.Label(contents);
+
+						GUILayout.EndHorizontal();
+					}
+				}
+
+				GUILayout.EndVertical();
+
+				GUILayout.EndHorizontal();
+			}
+
+			if (errorIndices != null)
+			{
+				GUIStyle buttonStyle = this.core.Skin.button;
+				RectOffset padding = buttonStyle.padding;
+				RectOffset border = buttonStyle.border;
+
+				Rect errorButtonRect = new Rect(
+					                      0f,
+					                      0f,
+					                      border.left + border.right,
+					                      border.top + border.bottom
+				                      );
+
+				errorButtonRect.width = Mathf.Max(errorButtonRect.width, 16f);
+				errorButtonRect.height = Mathf.Max(errorButtonRect.height, 16f);
+
+				errorButtonRect.x = this.WindowPos.width - (errorButtonRect.width - 2f) * 2f - 8f;
+				errorButtonRect.y = 2f;
+
+				GUI.Button(errorButtonRect, this.showErrorPane ? "←" : "→", buttonStyle);
+
+				if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
+				{
+					if (errorButtonRect.Contains(Event.current.mousePosition))
+					{
+						this.showErrorPane = !this.showErrorPane;
+
+						this.defWidth *= this.showErrorPane ? 2.5f : 0.4f;
+					}
+				}
+			}
+			else
+			{
+				this.showErrorPane = false;
 			}
 
 			base.ModuleWindow(id);
@@ -462,20 +680,30 @@ namespace VOID_ScriptedPanels
 
 				return scriptExpression.Compile();
 			}
-			catch (VOIDScriptSyntaxException x1)
+			catch (VOIDScriptSyntaxException sx)
 			{
-				return this.getSyntaxErrorContent("Syntax Error", x1.Message, cell);
+				return this.getSyntaxErrorContent("Syntax Error", sx.Message, cell);
 			}
-			catch (VOIDScriptParserException x2)
+			catch (InvalidOperationException iox)
 			{
-				return this.getSyntaxErrorContent("Parser Error", x2.Message + " Please report!", cell);
+				return this.getSyntaxErrorContent("Syntax Error",
+					string.Format("{0}: {1}", iox.GetType().Name, iox.Message), cell);
 			}
-			catch (Exception x3)
+			catch (FormatException fx)
+			{
+				return this.getSyntaxErrorContent("Syntax Error",
+					string.Format("{0}: {1}", fx.GetType().Name, fx.Message), cell);
+			}
+			catch (VOIDScriptParserException px)
+			{
+				return this.getSyntaxErrorContent("Parser Error", px.Message + " Please report!", cell);
+			}
+			catch (Exception ex)
 			{
 				Tools.PostErrorMessage(
 					"Compiler error processing VOIDScript line '{0}'.  Please report!\n{1}: {2}\n{3}",
-					script, x3.GetType().Name, x3.Message, x3.StackTrace);
-				return this.getSyntaxErrorContent("Compiler Error", x3.GetType().Name + ": " + x3.Message, cell);
+					script, ex.GetType().Name, ex.Message, ex.StackTrace);
+				return this.getSyntaxErrorContent("Compiler Error", ex.GetType().Name + ": " + ex.Message, cell);
 			}
 		}
 
@@ -505,7 +733,7 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
-		private enum ParsingCell
+		public enum ParsingCell
 		{
 			Label,
 			Value

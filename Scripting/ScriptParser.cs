@@ -233,7 +233,8 @@ namespace VOID_ScriptedPanels
 					return Expression.Constant(string.Empty);
 				case Token.TokenType.DataVar:
 				case Token.TokenType.ValueVar:
-					MemberInfo[] members = typeof(VOID_Data).GetMember((string)this.CurrentToken.Value);
+					string varName = (string)this.CurrentToken.Value;
+					MemberInfo[] members = typeof(VOID_Data).GetMember(varName);
 					MemberInfo member = null;
 
 					if (members.Length > 0)
@@ -245,6 +246,7 @@ namespace VOID_ScriptedPanels
 						member == null ||
 						(!(member is System.Reflection.FieldInfo) && !(member is System.Reflection.PropertyInfo)))
 					{
+						// TODO: Implement access through VOID_Data.DataValue.
 						throw new Exception(string.Format(
 								"VOID_Data does not contain a field or property named '{0}'",
 								this.CurrentToken.Value

@@ -282,7 +282,7 @@ namespace VOID
 
 				if (this is VOIDCore || this.core.configNeedsUpdate)
 				{
-					string typeName = this.GetType().Name;;
+					string typeName = this.GetType().Name;
 
 					if (this is VOIDCore && ((VOIDCore)this).configNeedsUpdate)
 					{
@@ -432,31 +432,34 @@ namespace VOID
 
 		public virtual void ModuleWindow(int id)
 		{
-			GUIStyle buttonStyle = this.core.Skin.button;
-			RectOffset padding = buttonStyle.padding;
-			RectOffset border = buttonStyle.border;
-
-			Rect closeRect = new Rect(
-				0f,
-				0f,
-				border.left + border.right,
-				border.top + border.bottom
-			);
-
-			closeRect.width = Mathf.Max(closeRect.width, 16f);
-			closeRect.height = Mathf.Max(closeRect.height, 16f);
-
-			closeRect.x = this.WindowPos.width - closeRect.width - 2f;
-			closeRect.y = 2f;
-
-			GUI.Button(closeRect, GUIContent.none, buttonStyle);
-
-			if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
+			if (this.decorateWindow)
 			{
-				if (closeRect.Contains(Event.current.mousePosition))
+				GUIStyle buttonStyle = this.core.Skin.button;
+				RectOffset padding = buttonStyle.padding;
+				RectOffset border = buttonStyle.border;
+
+				Rect closeRect = new Rect(
+					                0f,
+					                0f,
+					                border.left + border.right,
+					                border.top + border.bottom
+				                );
+
+				closeRect.width = Mathf.Max(closeRect.width, 16f);
+				closeRect.height = Mathf.Max(closeRect.height, 16f);
+
+				closeRect.x = this.WindowPos.width - closeRect.width - 2f;
+				closeRect.y = 2f;
+
+				GUI.Button(closeRect, GUIContent.none, buttonStyle);
+
+				if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
 				{
-					this.Active = false;
-					this.removeUILock();
+					if (closeRect.Contains(Event.current.mousePosition))
+					{
+						this.Active = false;
+						this.removeUILock();
+					}
 				}
 			}
 

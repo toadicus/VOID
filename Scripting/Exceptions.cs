@@ -38,5 +38,21 @@ namespace VOID_ScriptedPanels
 	{
 		public VOIDScriptSyntaxException(string msg) : base(msg) {}
 	}
+
+	public class VOIDScriptRuntimeException : Exception
+	{
+		public VOID_PanelLine.ParsingCell Cell
+		{
+			get;
+			private set;
+		}
+
+		public VOIDScriptRuntimeException(string msg, Exception inner) : base(msg, inner) {}
+
+		public VOIDScriptRuntimeException(Exception inner, VOID_PanelLine.ParsingCell cell) : this(inner.Message, inner)
+		{
+			this.Cell = cell;
+		}
+	}
 }
 
