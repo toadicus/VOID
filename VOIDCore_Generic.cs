@@ -26,6 +26,8 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+using KerbalEngineer.Editor;
+using KerbalEngineer.Helpers;
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
@@ -751,6 +753,8 @@ namespace VOID
 					SimManager.Gravity = this.Vessel.mainBody.gravParameter / (radius * radius);
 					SimManager.Atmosphere = this.Vessel.staticPressurekPa * PhysicsGlobals.KpaToAtmospheres;
 					SimManager.Mach = HighLogic.LoadedSceneIsEditor ? 1d :  this.Vessel.mach;
+					BuildAdvanced.Altitude = HighLogic.LoadedSceneIsEditor ? 0d : this.Vessel.altitude;
+					CelestialBodies.SelectedBody = HighLogic.LoadedSceneIsEditor ? this.HomeBody : this.Vessel.mainBody;
 				}
 
 				#if DEBUG
