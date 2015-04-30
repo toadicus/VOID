@@ -79,6 +79,16 @@ namespace VOID_ScriptedPanels
 					}
 				}
 
+				foreach (var panel in panels)
+				{
+					if (VOID_Data.CoreInitialized)
+					{
+						VOID_Data.Core.SaveConfig();
+					}
+
+					panel.StopGUI();
+				}
+
 				panels.Clear();
 
 				foreach (UrlDir.UrlFile file in voidScriptFiles)
@@ -89,7 +99,11 @@ namespace VOID_ScriptedPanels
 					{
 						if (panelConfig.config.name == PANEL_KEY)
 						{
-							panels.Add(new VOID_ScriptedPanel(panelConfig.config));
+							VOID_ScriptedPanel panel = new VOID_ScriptedPanel(panelConfig.config);
+
+							panel.SourceFileUrl = file.url;
+
+							panels.Add(panel);
 						}
 					}
 				}
@@ -102,12 +116,41 @@ namespace VOID_ScriptedPanels
 
 		private List<VOID_PanelLine> panelLines;
 
+		public override bool Active
+		{
+			get
+			{
+				return base.Active;
+			}
+			set
+			{
+				Tools.PostLogMessage("VOID_ScriptedPanel: Setting Active to {0}", value);
+
+				base.Active = value;
+
+				if (value)
+				{
+					this.StartGUI();
+				}
+				else
+				{
+					this.StopGUI();
+				}
+			}
+		}
+
 		public IList<VOID_PanelLine> PanelLines
 		{
 			get
 			{
 				return this.panelLines.AsReadOnly();
 			}
+		}
+
+		public string SourceFileUrl
+		{
+			get;
+			private set;
 		}
 
 		public VOID_ScriptedPanel() : base()
@@ -119,6 +162,8 @@ namespace VOID_ScriptedPanels
 		public VOID_ScriptedPanel(ConfigNode node) : this()
 		{
 			this.Load(node);
+
+			this.saveKeyName = string.Format("{0}_{1}", this.saveKeyName, (this.Name + this.SourceFileUrl).ToMD5Hash());
 		}
 
 		public void Load(ConfigNode node)
@@ -218,19 +263,34 @@ namespace VOID_ScriptedPanels
 				this.validModes = modes.ToArray();
 			}
 
+			bool hasDefinedLineOrder = false;
+
 			if (node.HasNode(LINE_KEY))
 			{
 				foreach (var lineNode in node.GetNodes(LINE_KEY))
 				{
 					VOID_PanelLine line = new VOID_PanelLine(lineNode);
 
+					if (line.LineNumber != ushort.MaxValue)
+					{
+						hasDefinedLineOrder = true;
+					}
+
 					this.panelLines.Add(line);
 				}
 
-				this.panelLines.Sort((x, y) => x.LineNumber.CompareTo(y.LineNumber));
+				if (hasDefinedLineOrder)
+				{
+					this.panelLines.Sort((x, y) => x.LineNumber.CompareTo(y.LineNumber));
+				}
 			}
 
 			this.LoadConfig();
+
+			if (this.Active)
+			{
+				this.StartGUI();
+			}
 		}
 
 		public void Save(ConfigNode node)

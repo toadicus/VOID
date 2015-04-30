@@ -66,13 +66,13 @@ namespace VOID
 		{
 			base.DrawGUI();
 
-			foreach (var panel in this.ValidPanels)
+			/*foreach (var panel in this.ValidPanels)
 			{
 				if (panel.Active)
 				{
 					panel.DrawGUI();
 				}
-			}
+			}*/
 		}
 
 		public override void ModuleWindow(int id)

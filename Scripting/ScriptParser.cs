@@ -257,11 +257,29 @@ namespace VOID_ScriptedPanels
 
 					if (member is System.Reflection.FieldInfo)
 					{
-						data = Expression.Field(null, member as FieldInfo);
+						FieldInfo field = member as FieldInfo;
+
+						data = Expression.Field(null, field);
+
+						var fieldType = field.FieldType;
+
+						if (typeof(IVOID_DataValue).IsAssignableFrom(fieldType))
+						{
+							data = Expression.Property(Expression.Convert(data, typeof(IVOID_DataValue)), "Value");
+						}
 					}
 					else
 					{
-						data = Expression.Property(null, member as PropertyInfo);
+						PropertyInfo property = member as PropertyInfo;
+
+						data = Expression.Property(null, property);
+
+						var propType = property.PropertyType;
+
+						if (typeof(IVOID_DataValue).IsAssignableFrom(propType))
+						{
+							data = Expression.Property(Expression.Convert(data, typeof(IVOID_DataValue)), "Value");
+						}
 					}
 
 					return data;
