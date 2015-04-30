@@ -36,6 +36,7 @@ using System.Linq;
 using System.Text;
 using ToadicusTools;
 using UnityEngine;
+using VOID_ScriptedPanels;
 
 namespace VOID
 {
@@ -593,6 +594,11 @@ namespace VOID
 						}
 
 						module.Active = GUITools.Toggle(module.Active, module.Name);
+					}
+
+					foreach (VOID_ScriptedPanel panel in VOID_ScriptedManager.Instance.ValidPanels)
+					{
+						panel.Active = GUITools.Toggle(panel.Active, panel.Name);
 					}
 				}
 			}
