@@ -44,6 +44,7 @@ namespace VOID_ScriptedPanels
 		public const string PANEL_KEY = "VOID_PANEL";
 		public const string LINE_KEY = "PANEL_LINE";
 		public const string TITLE_KEY = "Title";
+		public const string SUBTITLE_KEY = "Subtitle";
 		public const string POSITION_KEY = "WindowPos";
 		public const string SCENES_KEY = "ValidScenes";
 		public const string MODES_KEY = "ValidModes";
@@ -114,6 +115,7 @@ namespace VOID_ScriptedPanels
 
 		private string tooltipContents;
 
+		private VOID_PanelLine subTitle;
 		private List<VOID_PanelLine> panelLines;
 
 		public override bool Active
@@ -124,8 +126,6 @@ namespace VOID_ScriptedPanels
 			}
 			set
 			{
-				Tools.PostLogMessage("VOID_ScriptedPanel: Setting Active to {0}", value);
-
 				base.Active = value;
 
 				if (value)
@@ -270,6 +270,13 @@ namespace VOID_ScriptedPanels
 				this.validModes = modes.ToArray();
 			}
 
+			if (node.HasValue(SUBTITLE_KEY))
+			{
+				this.subTitle = new VOID_PanelLine();
+
+				this.subTitle.LabelScript = node.GetValue(SUBTITLE_KEY);
+			}
+
 			bool hasDefinedLineOrder = false;
 
 			if (node.HasNode(LINE_KEY))
@@ -341,6 +348,27 @@ namespace VOID_ScriptedPanels
 			{
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 				GUILayout.BeginVertical();
+			}
+
+			if (this.subTitle != null)
+			{
+				object subObj = this.subTitle.LabelFunction.DynamicInvoke();
+
+				if (subObj is string)
+				{
+					GUILayout.Label(
+						(string)subObj,
+						VOID_Styles.labelCenterBold,
+						GUILayout.ExpandWidth(true));
+				}
+				else if (subObj is GUIContent)
+				{
+					GUILayout.Label(
+						(GUIContent)subObj,
+						VOID_Styles.labelCenterBold,
+						GUILayout.ExpandWidth(true));
+				}
+
 			}
 
 			List<int> errorIndices = null;

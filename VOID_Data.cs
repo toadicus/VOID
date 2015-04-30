@@ -1221,6 +1221,22 @@ namespace VOID
 
 		#endregion
 
+		#region Vessel
+		public static VOID_StrValue VesselName = new VOID_StrValue("Vessel Name", delegate()
+			{
+				if (CoreInitialized)
+				{
+					if (Core.Vessel != null)
+					{
+						return Core.Vessel.vesselName;
+					}
+				}
+
+				return string.Empty;
+			}
+		);
+		#endregion
+
 		private static double burnTime(double deltaV, double initialMass, double massFlow, double thrust)
 		{
 			Tools.PostDebugMessage(typeof(VOID_Data), "calculating burnTime from:\n" +
