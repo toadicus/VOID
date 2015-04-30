@@ -164,6 +164,13 @@ namespace VOID_ScriptedPanels
 			this.Load(node);
 
 			this.saveKeyName = string.Format("{0}_{1}", this.saveKeyName, (this.Name + this.SourceFileUrl).ToMD5Hash());
+
+			this.LoadConfig();
+
+			if (this.Active)
+			{
+				this.StartGUI();
+			}
 		}
 
 		public void Load(ConfigNode node)
@@ -283,13 +290,6 @@ namespace VOID_ScriptedPanels
 				{
 					this.panelLines.Sort((x, y) => x.LineNumber.CompareTo(y.LineNumber));
 				}
-			}
-
-			this.LoadConfig();
-
-			if (this.Active)
-			{
-				this.StartGUI();
 			}
 		}
 

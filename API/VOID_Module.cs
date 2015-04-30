@@ -293,8 +293,9 @@ namespace VOID
 
 				if (this is VOIDCore || this.core.configNeedsUpdate)
 				{
-					string typeName = this.GetType().Name;
+					string typeName = this.saveKeyName;
 
+					// TODO: Is this still necessary?
 					if (this is VOIDCore && ((VOIDCore)this).configNeedsUpdate)
 					{
 						if (this is VOIDCore_Flight)
@@ -313,7 +314,7 @@ namespace VOID
 				{
 					fieldName = string.Format(
 						"{0}_{1}_{2}",
-						this.GetType().Name,
+						this.saveKeyName,
 						Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
 						attr.Name
 					);
@@ -389,7 +390,7 @@ namespace VOID
 				{
 					fieldName = string.Format(
 						"{0}_{1}_{2}",
-						this.GetType().Name,
+						this.saveKeyName,
 						Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
 						attr.Name
 					);
