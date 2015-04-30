@@ -152,9 +152,9 @@ namespace VOID
 			}
 		}
 
-		public override void Save(KSP.IO.PluginConfiguration config)
+		public override void SaveConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.Save(config);
+			base.SaveConfig(config);
 
 			foreach (HUDWindow window in this.Windows)
 			{

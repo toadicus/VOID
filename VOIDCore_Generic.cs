@@ -1144,11 +1144,11 @@ namespace VOID
 
 			config.load();
 
-			this.Save(config);
+			this.SaveConfig(config);
 
 			foreach (IVOID_Module module in this.modules)
 			{
-				module.Save(config);
+				module.SaveConfig(config);
 			}
 
 			config.save();

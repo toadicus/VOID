@@ -80,9 +80,9 @@ namespace VOID
 
 		public abstract void SaveConfig();
 
-		public override void Save(KSP.IO.PluginConfiguration config)
+		public override void SaveConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.Save(config);
+			base.SaveConfig(config);
 		}
 	}
 

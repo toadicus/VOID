@@ -362,7 +362,7 @@ namespace VOID
 			}
 		}
 
-		public virtual void Save(KSP.IO.PluginConfiguration config)
+		public virtual void SaveConfig(KSP.IO.PluginConfiguration config)
 		{
 			foreach (var field in this.GetType().GetMembers(
 				BindingFlags.Instance |

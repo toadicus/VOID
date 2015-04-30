@@ -105,13 +105,13 @@ namespace VOID
 			base.ModuleWindow(id);
 		}
 
-		public override void Save(KSP.IO.PluginConfiguration config)
+		public override void SaveConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.Save(config);
+			base.SaveConfig(config);
 
 			foreach (var panel in this.validPanels)
 			{
-				panel.Save(config);
+				panel.SaveConfig(config);
 			}
 		}
 
