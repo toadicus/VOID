@@ -352,6 +352,7 @@ namespace VOID
 				}
 			);
 
+		// TODO: Convert currThrust and maxThrust to available VOID_DataValue objects.
 		public static readonly VOID_StrValue currmaxThrust =
 			new VOID_StrValue(
 				"Thrust (curr/max)",
