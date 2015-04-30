@@ -41,9 +41,11 @@ namespace VOID
 		 * Fields
 		 * */
 		[AVOID_SaveValue("Active")]
-		protected VOID_SaveValue<bool> active = (VOID_SaveValue<bool>)false;
+		protected VOID_SaveValue<bool> active;
 
-		protected float lastUpdate = 0;
+		protected float lastUpdate;
+
+		protected string saveKeyName;
 
 		protected GameScenes[] validScenes;
 		protected Game.Modes[] validModes;
@@ -213,14 +215,23 @@ namespace VOID
 		/*
 		 * Methods
 		 * */
+		public VOID_Module()
+		{
+			this.active = (VOID_SaveValue<bool>)false;
+			this.lastUpdate = 0;
+			this.saveKeyName = this.GetType().Name;
+		}
+
 		public virtual void StartGUI()
 		{
 			if (!this.Active || this.GUIRunning)
 			{
+				Tools.PostDebugMessage("{0}: Active={1}, GUIRunning={2}, not starting.",
+					this.Name, this.Active, this.GUIRunning);
 				return;
 			}
 
-			Tools.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
+			Tools.PostDebugMessage ("Adding {0} to the draw queue.", this.GetType().Name);
 			RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
 		}
 
@@ -372,7 +383,7 @@ namespace VOID
 
 				if (this is VOIDCore)
 				{
-					fieldName = string.Format("{0}_{1}", this.GetType().Name, attr.Name);
+					fieldName = string.Format("{0}_{1}", this.saveKeyName, attr.Name);
 				}
 				else
 				{
