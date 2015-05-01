@@ -118,6 +118,8 @@ namespace VOID
 		{
 			StringBuilder hudString = new StringBuilder();
 
+			SimManager.TryStartSimulation();
+
 			if (this.core.LastStage == null)
 			{
 				return;
