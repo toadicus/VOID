@@ -947,17 +947,12 @@ namespace VOID
 			this.GUIStylesLoaded = true;
 		}
 
-		protected void LoadVesselTypes()
-		{
-			this.AllVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToArray();
-			this.vesselTypesLoaded = true;
-		}
-
 		protected void LoadBeforeUpdate()
 		{
 			if (!this.vesselTypesLoaded)
 			{
-				this.LoadVesselTypes();
+				this.AllVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToArray();
+				this.vesselTypesLoaded = true;
 			}
 
 			if (this.SortedBodyList == null && FlightGlobals.Bodies != null && FlightGlobals.Bodies.Count > 0)
