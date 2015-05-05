@@ -95,8 +95,9 @@ namespace VOID
 		[AVOID_SaveValue("timeScaleFlags")]
 		protected VOID_SaveValue<UInt32> timeScaleFlags;
 
-		// Vessel Type Housekeeping
+		// Load-up housekeeping
 		protected bool vesselTypesLoaded = false;
+		protected bool simManagerLoaded = false;
 
 		protected string defaultSkin = "KSP window 2";
 
@@ -741,18 +742,14 @@ namespace VOID
 
 		protected void UpdateSimManager()
 		{
-			if (HighLogic.LoadedSceneIsEditor)
-			{
-				SimManager.Gravity = VOID_Data.KerbinGee;
-			}
-			else
+			if (HighLogic.LoadedSceneIsFlight)
 			{
 				double radius = this.Vessel.Radius();
 				SimManager.Gravity = this.Vessel.mainBody.gravParameter / (radius * radius);
 				SimManager.Atmosphere = this.Vessel.staticPressurekPa * PhysicsGlobals.KpaToAtmospheres;
-				SimManager.Mach = HighLogic.LoadedSceneIsEditor ? 1d :  this.Vessel.mach;
-				BuildAdvanced.Altitude = HighLogic.LoadedSceneIsEditor ? 0d : this.Vessel.altitude;
-				CelestialBodies.SelectedBody = HighLogic.LoadedSceneIsEditor ? this.HomeBody : this.Vessel.mainBody;
+				SimManager.Mach = this.Vessel.mach;
+				BuildAdvanced.Altitude = this.Vessel.altitude;
+				CelestialBodies.SelectedBody = this.Vessel.mainBody;
 			}
 
 			#if DEBUG
@@ -972,6 +969,18 @@ namespace VOID
 				Debug.Log(string.Format("sortedBodyList: {0}", string.Join("\n\t", this.SortedBodyList.Select(b => b.bodyName).ToArray())));
 			}
 
+			// SimManager initialization that we don't necessarily want to repeat every Update.
+			if (!this.simManagerLoaded && this.HomeBody != null)
+			{
+				SimManager.Gravity = VOID_Data.KerbinGee;
+				SimManager.Atmosphere = 0d;
+				SimManager.Mach = 1d;
+				CelestialBodies.SelectedBody = this.HomeBody;
+				BuildAdvanced.Altitude = 0d;
+				SimManager.OnReady += this.GetSimManagerResults;
+
+				this.simManagerLoaded = true;
+			}
 		}
 
 		protected void InitializeToolbarButton()
@@ -1159,13 +1168,6 @@ namespace VOID
 			this.UpdateTimer = 0f;
 
 			this.vesselSimActive = (VOID_SaveValue<bool>)true;
-
-			SimManager.Atmosphere = 0d;
-			SimManager.Mach = 1d;
-			CelestialBodies.SelectedBody = this.HomeBody;
-			BuildAdvanced.Altitude = 0d;
-
-			SimManager.OnReady += this.GetSimManagerResults;
 
 			this.useToolbarManager = ToolbarManager.ToolbarAvailable;
 
