@@ -741,39 +741,30 @@ namespace VOID
 
 		protected void UpdateSimManager()
 		{
-			if (SimManager.ResultsReady())
+			if (HighLogic.LoadedSceneIsEditor)
 			{
-				if (HighLogic.LoadedSceneIsEditor)
-				{
-					SimManager.Gravity = VOID_Data.KerbinGee;
-				}
-				else
-				{
-					double radius = this.Vessel.Radius();
-					SimManager.Gravity = this.Vessel.mainBody.gravParameter / (radius * radius);
-					SimManager.Atmosphere = this.Vessel.staticPressurekPa * PhysicsGlobals.KpaToAtmospheres;
-					SimManager.Mach = HighLogic.LoadedSceneIsEditor ? 1d :  this.Vessel.mach;
-					BuildAdvanced.Altitude = HighLogic.LoadedSceneIsEditor ? 0d : this.Vessel.altitude;
-					CelestialBodies.SelectedBody = HighLogic.LoadedSceneIsEditor ? this.HomeBody : this.Vessel.mainBody;
-				}
-
-				#if DEBUG
-				SimManager.logOutput = true;
-				#endif
-
-				SimManager.TryStartSimulation();
-
-				Tools.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
-					SimManager.Atmosphere,
-					SimManager.Gravity
-				);
+				SimManager.Gravity = VOID_Data.KerbinGee;
 			}
-			#if DEBUG
 			else
 			{
-				Tools.PostDebugMessage(this, "VesselSimulator results not ready.");
+				double radius = this.Vessel.Radius();
+				SimManager.Gravity = this.Vessel.mainBody.gravParameter / (radius * radius);
+				SimManager.Atmosphere = this.Vessel.staticPressurekPa * PhysicsGlobals.KpaToAtmospheres;
+				SimManager.Mach = HighLogic.LoadedSceneIsEditor ? 1d :  this.Vessel.mach;
+				BuildAdvanced.Altitude = HighLogic.LoadedSceneIsEditor ? 0d : this.Vessel.altitude;
+				CelestialBodies.SelectedBody = HighLogic.LoadedSceneIsEditor ? this.HomeBody : this.Vessel.mainBody;
 			}
+
+			#if DEBUG
+			SimManager.logOutput = true;
 			#endif
+
+			SimManager.TryStartSimulation();
+
+			Tools.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
+				SimManager.Atmosphere,
+				SimManager.Gravity
+			);
 		}
 
 		protected void GetSimManagerResults()
@@ -1168,7 +1159,12 @@ namespace VOID
 			this.UpdateTimer = 0f;
 
 			this.vesselSimActive = (VOID_SaveValue<bool>)true;
+
 			SimManager.Atmosphere = 0d;
+			SimManager.Mach = 1d;
+			CelestialBodies.SelectedBody = this.HomeBody;
+			BuildAdvanced.Altitude = 0d;
+
 			SimManager.OnReady += this.GetSimManagerResults;
 
 			this.useToolbarManager = ToolbarManager.ToolbarAvailable;
