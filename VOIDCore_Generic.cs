@@ -462,19 +462,18 @@ namespace VOID
 
 			if (this.saveTimer > 2f)
 			{
-				if (!this.configDirty)
+				if (this.configDirty)
 				{
-					return;
+
+					Tools.PostDebugMessage(string.Format(
+							"{0}: Time to save, checking if configDirty: {1}",
+							this.GetType().Name,
+							this.configDirty
+						));
+
+					this.SaveConfig();
+					this.saveTimer = 0;
 				}
-
-				Tools.PostDebugMessage(string.Format(
-					"{0}: Time to save, checking if configDirty: {1}",
-					this.GetType().Name,
-					this.configDirty
-				));
-
-				this.SaveConfig();
-				this.saveTimer = 0;
 			}
 
 			this.UpdateTimer += Time.deltaTime;
