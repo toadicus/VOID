@@ -352,29 +352,15 @@ namespace VOID
 					this.useToolbarManager);
 			}
 
-			if (!this.useToolbarManager)
+			if (
+				this.iconState != (this.powerState | this.activeState) ||
+				(this.VOIDIconTexture == null && this.AppLauncherButton != null)
+			)
 			{
-				if (this.AppLauncherButton == null)
-				{
-					Tools.PostDebugMessage(this,
-						"UseToolbarManager = false (ToolbarAvailable = {0}) and " +
-						"AppLauncherButton is null, making AppLauncher button.",
-						ToolbarManager.ToolbarAvailable
-					);
-					this.InitializeAppLauncherButton();
-				}
-			}
-			else if (this.ToolbarButton == null)
-			{
-				Tools.PostDebugMessage(this,
-					"UseToolbarManager = true (ToolbarAvailable = {0}) and " +
-					"ToolbarButton is null, making Toolbar button.",
-					ToolbarManager.ToolbarAvailable
-				);
-				this.InitializeToolbarButton();
-			}
+				this.iconState = this.powerState | this.activeState;
 
-			this.SetIconTexture();
+				this.SetIconTexture(this.iconState);
+			}
 
 			if (this.Active)
 			{
@@ -472,7 +458,25 @@ namespace VOID
 
 			}
 
-			this.CheckAndSave();
+			this.saveTimer += Time.deltaTime;
+
+			if (this.saveTimer > 2f)
+			{
+				if (!this.configDirty)
+				{
+					return;
+				}
+
+				Tools.PostDebugMessage(string.Format(
+					"{0}: Time to save, checking if configDirty: {1}",
+					this.GetType().Name,
+					this.configDirty
+				));
+
+				this.SaveConfig();
+				this.saveTimer = 0;
+			}
+
 			this.UpdateTimer += Time.deltaTime;
 		}
 
@@ -1024,19 +1028,6 @@ namespace VOID
 			this.Active = !this.Active;
 		}
 
-		protected void SetIconTexture()
-		{
-			if (
-				this.iconState != (this.powerState | this.activeState) ||
-				(this.VOIDIconTexture == null && this.AppLauncherButton != null)
-			)
-			{
-				this.iconState = this.powerState | this.activeState;
-
-				this.SetIconTexture(this.iconState);
-			}
-		}
-
 		protected void SetIconTexture(IconState state)
 		{
 			switch (state)
@@ -1075,28 +1066,6 @@ namespace VOID
 				this.VOIDIconTexture = GameDatabase.Instance.GetTexture(texturePath.Replace("icon", "appIcon"), false);
 
 				this.AppLauncherButton.SetTexture(VOIDIconTexture);
-			}
-		}
-
-		protected virtual void CheckAndSave()
-		{
-			this.saveTimer += Time.deltaTime;
-
-			if (this.saveTimer > 2f)
-			{
-				if (!this.configDirty)
-				{
-					return;
-				}
-
-				Tools.PostDebugMessage(string.Format(
-					"{0}: Time to save, checking if configDirty: {1}",
-					this.GetType().Name,
-					this.configDirty
-				));
-
-				this.SaveConfig();
-				this.saveTimer = 0;
 			}
 		}
 
