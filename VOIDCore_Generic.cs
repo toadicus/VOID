@@ -60,7 +60,8 @@ namespace VOID
 		protected string VOIDIconOffActivePath;
 		protected string VOIDIconOffInactivePath;
 
-		private bool _useToolbarManager;
+		[AVOID_SaveValue("useToolbarManager")]
+		protected VOID_SaveValue<bool> useToolbarManager;
 
 		protected GUIStyle iconStyle;
 
@@ -315,39 +316,6 @@ namespace VOID
 			}
 		}
 
-		protected bool useToolbarManager
-		{
-			get
-			{
-				return _useToolbarManager & ToolbarManager.ToolbarAvailable;
-			}
-			set
-			{
-				if (_useToolbarManager == value)
-				{
-					return;
-				}
-
-				if (value == false && this.ToolbarButton != null)
-				{
-					this.ToolbarButton.Destroy();
-					this.ToolbarButton = null;
-				}
-				if (value == true)
-				{
-					if (this.AppLauncherButton != null)
-					{
-						ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
-						this.AppLauncherButton = null;
-					}
-
-					this.InitializeToolbarButton();
-				}
-
-				_useToolbarManager = value;
-			}
-		}
-
 		/*
 		 * Events
 		 * */
@@ -474,6 +442,34 @@ namespace VOID
 				{
 					((IVOID_BehaviorModule)module).Update();
 				}
+			}
+
+			if (this.useToolbarManager)
+			{
+				if (this.AppLauncherButton != null)
+				{
+					ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
+					this.AppLauncherButton = null;
+				}
+
+				if (this.ToolbarButton == null)
+				{
+					this.InitializeToolbarButton();
+				}
+			}
+			else
+			{
+				if (this.ToolbarButton != null)
+				{
+					this.ToolbarButton.Destroy();
+					this.ToolbarButton = null;
+				}
+
+				if (this.AppLauncherButton == null)
+				{
+					this.InitializeAppLauncherButton();
+				}
+
 			}
 
 			this.CheckAndSave();
@@ -610,7 +606,7 @@ namespace VOID
 		{
 			GUIContent _content;
 
-			this.useToolbarManager = GUITools.Toggle(this.useToolbarManager, "Use Blizzy's Toolbar If Available");
+			this.useToolbarManager.value = GUITools.Toggle(this.useToolbarManager, "Use Blizzy's Toolbar If Available");
 
 			this.vesselSimActive.value = GUITools.Toggle(this.vesselSimActive.value,
 				"Enable Engineering Calculations");
@@ -1164,7 +1160,7 @@ namespace VOID
 
 			this.vesselSimActive = (VOID_SaveValue<bool>)true;
 
-			this.useToolbarManager = ToolbarManager.ToolbarAvailable;
+			this.useToolbarManager = (VOID_SaveValue<bool>)ToolbarManager.ToolbarAvailable;
 
 			this.LoadConfig();
 
