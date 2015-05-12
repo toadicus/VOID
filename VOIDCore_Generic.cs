@@ -319,8 +319,10 @@ namespace VOID
 		/*
 		 * Events
 		 * */
+		// public 
 		public override event VOIDEventHandler onApplicationQuit;
 		public override event VOIDEventHandler onSkinChanged;
+		public override event VOIDEventHandler onUpdate;
 
 		/*
 		 * Methods
@@ -477,6 +479,11 @@ namespace VOID
 			}
 
 			this.UpdateTimer += Time.deltaTime;
+
+			if (this.onUpdate != null)
+			{
+				this.onUpdate(this);
+			}
 		}
 
 		public virtual void FixedUpdate()
