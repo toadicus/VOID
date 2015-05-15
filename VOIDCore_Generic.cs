@@ -395,8 +395,11 @@ namespace VOID
 				this.StartGUI();
 			}
 
-			foreach (IVOID_Module module in this.modules)
+			IVOID_Module module;
+			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
+				module = this.modules[idx];
+
 				if (
 					!module.GUIRunning &&
 					module.Active &&
@@ -514,8 +517,11 @@ namespace VOID
 				}
 			}
 
-			foreach (IVOID_Module module in this.modules)
+			IVOID_Module module;
+			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
+				module = this.modules[idx];
+
 				if (module is IVOID_BehaviorModule)
 				{
 					((IVOID_BehaviorModule)module).FixedUpdate();
@@ -525,8 +531,11 @@ namespace VOID
 
 		public void OnDestroy()
 		{
-			foreach (IVOID_Module module in this.modules)
+			IVOID_Module module;
+			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
+				module = this.modules[idx];
+
 				if (module is IVOID_BehaviorModule)
 				{
 					((IVOID_BehaviorModule)module).OnDestroy();
@@ -558,8 +567,11 @@ namespace VOID
 		{
 			this.StopGUI();
 
-			foreach (IVOID_Module module in this.modules)
+			IVOID_Module module;
+			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
+				module = this.modules[idx];
+
 				module.StopGUI();
 				module.StartGUI();
 			}
@@ -586,8 +598,11 @@ namespace VOID
 
 				if (togglePower || !HighLogic.LoadedSceneIsFlight)
 				{
-					foreach (IVOID_Module module in this.modules)
+					IVOID_Module module;
+					for (int idx = 0; idx < this.modules.Count; idx++)
 					{
+						module = this.modules[idx];
+
 						if (module is VOID_ConfigWindow)
 						{
 							continue;
@@ -738,9 +753,12 @@ namespace VOID
 			}
 			GUILayout.EndHorizontal();
 
-			foreach (IVOID_Module mod in this.modules)
+			IVOID_Module module;
+			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
-				mod.DrawConfigurables();
+				module = this.modules[idx];
+
+				module.DrawConfigurables();
 			}
 
 			this.FactoryReset = GUITools.Toggle(this.FactoryReset, "Factory Reset");
@@ -787,10 +805,17 @@ namespace VOID
 			Tools.DebugLogger sb = Tools.DebugLogger.New(this);
 			sb.AppendLine("Loading modules...");
 
-			foreach (AssemblyLoader.LoadedAssembly assy in AssemblyLoader.loadedAssemblies)
+			AssemblyLoader.LoadedAssembly assy;
+			for (int aIdx = 0; aIdx < AssemblyLoader.loadedAssemblies.Count; aIdx++)
 			{
-				foreach (Type loadedType in assy.assembly.GetExportedTypes())
+				assy = AssemblyLoader.loadedAssemblies[aIdx];
+
+				Type[] loadedTypes = assy.assembly.GetExportedTypes();
+				Type loadedType;
+				for (int tIdx = 0; tIdx < loadedTypes.Length; tIdx++)
 				{
+					loadedType = loadedTypes[tIdx];
+
 					if (
 						loadedType.IsInterface ||
 						loadedType.IsAbstract ||
@@ -1079,8 +1104,11 @@ namespace VOID
 		{
 			base.LoadConfig();
 
-			foreach (IVOID_Module module in this.modules)
+			IVOID_Module module;
+			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
+				module = this.modules[idx];
+
 				module.LoadConfig();
 			}
 
@@ -1100,8 +1128,11 @@ namespace VOID
 
 			this.Save(config);
 
-			foreach (IVOID_Module module in this.modules)
+			IVOID_Module module;
+			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
+				module = this.modules[idx];
+
 				module.Save(config);
 			}
 

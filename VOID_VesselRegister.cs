@@ -141,8 +141,11 @@ namespace VOID
 
 			selectorScrollPos = GUILayout.BeginScrollView(selectorScrollPos, false, false);
 
-			foreach (Vessel v in FlightGlobals.Vessels)
+			Vessel v;
+			for (int idx = 0; idx < FlightGlobals.Vessels.Count; idx++)
 			{
+				v = FlightGlobals.Vessels[idx];
+
 				if (v != Vessel && v.vesselType == selectedVesselType && v.mainBody == seletedBody)
 				{
 					if ((vesselSituation == "Landed" &&

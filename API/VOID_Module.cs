@@ -118,8 +118,13 @@ namespace VOID
 				if (this.validModes == null)
 				{
 					Tools.PostDebugMessage(this, "validModes is null when checking inValidGame; fetching attribute.");
-					foreach (var attr in this.GetType().GetCustomAttributes(false))
+
+					object[] attributes = this.GetType().GetCustomAttributes(false);
+					object attr;
+					for (int idx = 0; idx < attributes.Length; idx++)
 					{
+						attr = attributes[idx];
+
 						if (attr is VOID_GameModesAttribute)
 						{
 							VOID_GameModesAttribute addonAttr = (VOID_GameModesAttribute)attr;
@@ -158,8 +163,12 @@ namespace VOID
 				if (this.validScenes == null)
 				{
 					Tools.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
-					foreach (var attr in this.GetType().GetCustomAttributes(false))
+					object[] attributes = this.GetType().GetCustomAttributes(false);
+					object attr;
+					for (int idx = 0; idx < attributes.Length; idx++)
 					{
+						attr = attributes[idx];
+
 						if (attr is VOID_ScenesAttribute)
 						{
 							VOID_ScenesAttribute addonAttr = (VOID_ScenesAttribute)attr;
@@ -253,24 +262,29 @@ namespace VOID
 				}
 			}
 
-			foreach (var field in this.GetType().GetMembers(
-				BindingFlags.NonPublic |
-				BindingFlags.Public |
-				BindingFlags.Instance |
-				BindingFlags.FlattenHierarchy
-			))
+			MemberInfo[] members = this.GetType().GetMembers(
+				                         BindingFlags.NonPublic |
+				                         BindingFlags.Public |
+				                         BindingFlags.Instance |
+				                         BindingFlags.FlattenHierarchy
+			                         );
+			MemberInfo member;
+
+			for (int fIdx = 0; fIdx < members.Length; fIdx++)
 			{
-				if (!(field is FieldInfo || field is PropertyInfo))
+				member = members[fIdx];
+
+				if (!(member is FieldInfo || member is PropertyInfo))
 				{
 					continue;
 				}
 
-				if (field is PropertyInfo && (field as PropertyInfo).GetIndexParameters().Length > 0)
+				if (member is PropertyInfo && (member as PropertyInfo).GetIndexParameters().Length > 0)
 				{
 					continue;
 				}
 
-				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
+				object[] attrs = member.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
 				if (attrs.Length == 0) {
 					continue;
@@ -312,13 +326,13 @@ namespace VOID
 
 				object fieldValue;
 
-				if (field is FieldInfo)
+				if (member is FieldInfo)
 				{
-					fieldValue = (field as FieldInfo).GetValue(this);
+					fieldValue = (member as FieldInfo).GetValue(this);
 				}
 				else
 				{
-					fieldValue = (field as PropertyInfo).GetValue(this, null);
+					fieldValue = (member as PropertyInfo).GetValue(this, null);
 				}
 
 				bool convertBack = false;
@@ -338,13 +352,13 @@ namespace VOID
 					fieldValue = convertValue;
 				}
 
-				if (field is FieldInfo)
+				if (member is FieldInfo)
 				{
-					(field as FieldInfo).SetValue(this, fieldValue);
+					(member as FieldInfo).SetValue(this, fieldValue);
 				}
 				else
 				{
-					(field as PropertyInfo).SetValue(this, fieldValue, null);
+					(member as PropertyInfo).SetValue(this, fieldValue, null);
 				}
 
 				Tools.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
@@ -353,14 +367,19 @@ namespace VOID
 
 		public virtual void Save(KSP.IO.PluginConfiguration config)
 		{
-			foreach (var field in this.GetType().GetMembers(
-				BindingFlags.Instance |
+			MemberInfo[] members = this.GetType().GetMembers(
 				BindingFlags.NonPublic |
 				BindingFlags.Public |
+				BindingFlags.Instance |
 				BindingFlags.FlattenHierarchy
-				))
+			);
+			MemberInfo member;
+
+			for (int fIdx = 0; fIdx < members.Length; fIdx++)
 			{
-				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
+				member = members[fIdx];
+
+				object[] attrs = member.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
 				if (attrs.Length == 0) {
 					continue;
@@ -386,13 +405,13 @@ namespace VOID
 
 				object fieldValue;
 
-				if (field is FieldInfo)
+				if (member is FieldInfo)
 				{
-					fieldValue = (field as FieldInfo).GetValue(this);
+					fieldValue = (member as FieldInfo).GetValue(this);
 				}
 				else
 				{
-					fieldValue = (field as PropertyInfo).GetValue(this, null);
+					fieldValue = (member as PropertyInfo).GetValue(this, null);
 				}
 
 				if (fieldValue is IVOID_SaveValue)

@@ -232,8 +232,11 @@ namespace VOID
 		{
 			if (this.primaryHUD == null)
 			{
-				foreach (IVOID_Module module in this.core.Modules)
+				IVOID_Module module;
+				for (int idx = 0; idx < this.core.Modules.Count; idx++)
 				{
+					module = this.core.Modules[idx];
+
 					if (module is VOID_HUD)
 					{
 						this.primaryHUD = module as VOID_HUD;
@@ -259,8 +262,11 @@ namespace VOID
 
 			if (GUILayout.Button(string.Intern("Reset Advanced HUD Positions"), GUILayout.ExpandWidth(false)))
 			{
-				foreach (HUDWindow window in this.Windows)
+				HUDWindow window;
+				for (int idx = 0; idx < this.Windows.Count; idx++)
 				{
+					window = this.Windows[idx];
+
 					window.WindowPos = new Rect(window.defaultWindowPos);
 				}
 			}

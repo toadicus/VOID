@@ -41,8 +41,11 @@ namespace VOID
 			}
 			else
 			{
-				foreach (CelestialBody body in core.SortedBodyList)
+				CelestialBody body;
+				for (int idx = 0; idx < core.SortedBodyList.Count; idx++)
 				{
+					body = core.SortedBodyList[idx];
+
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
 					GUILayout.Label(body.bodyName);
