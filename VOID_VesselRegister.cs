@@ -28,7 +28,6 @@
 
 using KSP;
 using System;
-using System.Linq;
 using ToadicusTools;
 using UnityEngine;
 
@@ -76,7 +75,7 @@ namespace VOID
 
 		public override void ModuleWindow(int id)
 		{
-			if (!this.core.AllVesselTypes.Any())
+			if (this.core.AllVesselTypes.Length < 1)
 			{
 				return;
 			}

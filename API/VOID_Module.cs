@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using ToadicusTools;
 using UnityEngine;
@@ -286,11 +285,16 @@ namespace VOID
 
 				object[] attrs = member.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
-				if (attrs.Length == 0) {
+				AVOID_SaveValue attr;
+
+				if (attrs.Length > 0)
+				{
+					attr = (AVOID_SaveValue)attrs[0];
+				}
+				else
+				{
 					continue;
 				}
-
-				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
 				string fieldName = string.Empty;
 
@@ -381,11 +385,16 @@ namespace VOID
 
 				object[] attrs = member.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
-				if (attrs.Length == 0) {
+				AVOID_SaveValue attr;
+
+				if (attrs.Length > 0)
+				{
+					attr = (AVOID_SaveValue)attrs[0];
+				}
+				else
+				{
 					continue;
 				}
-
-				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
 				string fieldName;
 

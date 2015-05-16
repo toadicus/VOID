@@ -29,7 +29,6 @@
 using KSP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToadicusTools;
 using UnityEngine;
 
@@ -63,7 +62,14 @@ namespace VOID
 
 			if (this.RegisterModule == null)
 			{
-				this.RegisterModule = this.core.Modules.Where(m => typeof(VOID_VesselRegister).IsAssignableFrom(m.GetType())).FirstOrDefault() as VOID_VesselRegister;
+				for (int idx = 0; idx < this.core.Modules.Count; idx++)
+				{
+					if (this.core.Modules[idx] is VOID_VesselRegister)
+					{
+						this.RegisterModule = this.core.Modules[idx] as VOID_VesselRegister;
+						break;
+					}
+				}
 			}
 
 			GUILayout.BeginVertical();

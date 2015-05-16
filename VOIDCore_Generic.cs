@@ -32,7 +32,6 @@ using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using ToadicusTools;
 using UnityEngine;
@@ -107,7 +106,7 @@ namespace VOID
 		protected int skinIdx;
 
 		protected Dictionary<string, GUISkin> validSkins;
-		protected string[] skinNames;
+		protected List<string> skinNames;
 		protected string[] forbiddenSkins =
 			{
 				"PlaqueDialogSkin",
@@ -723,10 +722,10 @@ namespace VOID
 				));
 			}
 
-			this.skinIdx %= this.skinNames.Length;
+			this.skinIdx %= this.skinNames.Count;
 			if (this.skinIdx < 0)
 			{
-				this.skinIdx += this.skinNames.Length;
+				this.skinIdx += this.skinNames.Count;
 			}
 
 			if (this.skinName != skinNames[this.skinIdx])
@@ -794,9 +793,9 @@ namespace VOID
 
 			this.Stages = SimManager.Stages;
 
-			if (this.Stages != null)
+			if (this.Stages != null && this.Stages.Length > 0)
 			{
-				this.LastStage = this.Stages.Last();
+				this.LastStage = this.Stages[this.Stages.Length - 1];
 			}
 		}
 
@@ -853,15 +852,15 @@ namespace VOID
 
 		protected void LoadModule(Type T)
 		{
-			var existingModules = this.modules.Where(mod => mod.GetType().Name == T.Name);
-			if (existingModules.Any())
+			/*var existingModules = this.modules.Where(mod => mod.GetType().Name == T.Name);
+			if (existingModules.Any())*/
+			for (int mIdx = 0; mIdx < this.modules.Count; mIdx++)
 			{
-				Tools.PostDebugMessage(string.Format(
-					"{0}: refusing to load {1}: already loaded",
-					this.GetType().Name,
-					T.Name
-				));
-				return;
+				if (this.modules[mIdx].Name == T.Name)
+				{
+					Tools.PostErrorMessage("{0}: refusing to load {1}: already loaded", this.GetType().Name, T.Name);
+					return;
+				}
 			}
 
 			var InstanceProperty = T.GetProperty(
@@ -910,20 +909,21 @@ namespace VOID
 
 		protected void LoadSkins()
 		{
-			Tools.PostDebugMessage("AssetBase has skins: \n" +
-				string.Join("\n\t",
-					Resources.FindObjectsOfTypeAll(typeof(GUISkin))
-					.Select(s => s.ToString())
-					.ToArray()
-				)
-			);
+			this.validSkins = new Dictionary<string, GUISkin>();
+			this.skinNames = new List<string>();
 
-			this.validSkins = Resources.FindObjectsOfTypeAll(typeof(GUISkin))
-				.Where(s => !this.forbiddenSkins.Contains(s.name))
-				.Select(s => s as GUISkin)
-				.GroupBy(s => s.name)
-				.Select(g => g.First())
-				.ToDictionary(s => s.name);
+			UnityEngine.Object[] skins = Resources.FindObjectsOfTypeAll(typeof(GUISkin));
+			GUISkin skin;
+			for (int sIdx = 0; sIdx < skins.Length; sIdx++)
+			{
+				skin = (GUISkin)skins[sIdx];
+
+				if (!this.forbiddenSkins.Contains(skin.name))
+				{
+					this.validSkins[skin.name] = skin;
+					this.skinNames.Add(skin.name);
+				}
+			}
 
 			Tools.PostDebugMessage(string.Format(
 				"{0}: loaded {1} GUISkins.",
@@ -931,12 +931,11 @@ namespace VOID
 				this.validSkins.Count
 			));
 
-			this.skinNames = this.validSkins.Keys.ToArray();
-			Array.Sort(this.skinNames);
+			this.skinNames.Sort();
 
 			int defaultIdx = int.MinValue;
 
-			for (int i = 0; i < this.skinNames.Length; i++)
+			for (int i = 0; i < this.skinNames.Count; i++)
 			{
 				if (this.skinNames[i] == this.skinName)
 				{
@@ -982,7 +981,14 @@ namespace VOID
 		{
 			if (!this.vesselTypesLoaded)
 			{
-				this.AllVesselTypes = Enum.GetValues(typeof(VesselType)).OfType<VesselType>().ToArray();
+				Array typeObjs = Enum.GetValues(typeof(VesselType));
+				this.AllVesselTypes = new VesselType[typeObjs.Length];
+
+				for (int idx = 0; idx < typeObjs.Length; idx++)
+				{
+					this.AllVesselTypes[idx] = (VesselType)typeObjs.GetValue(idx);
+				}
+
 				this.vesselTypesLoaded = true;
 			}
 
@@ -991,8 +997,6 @@ namespace VOID
 				this.SortedBodyList = new List<CelestialBody>(FlightGlobals.Bodies);
 				this.SortedBodyList.Sort(new CBListComparer());
 				this.SortedBodyList.Reverse();
-
-				Debug.Log(string.Format("sortedBodyList: {0}", string.Join("\n\t", this.SortedBodyList.Select(b => b.bodyName).ToArray())));
 			}
 
 			// SimManager initialization that we don't necessarily want to repeat every Update.

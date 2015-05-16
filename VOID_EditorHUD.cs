@@ -30,7 +30,6 @@ using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using ToadicusTools;
 using UnityEngine;
@@ -58,9 +57,12 @@ namespace VOID
 			{
 				if (this._vesselOverlays == null)
 				{
-					this._vesselOverlays = (EditorVesselOverlays)Resources
-						.FindObjectsOfTypeAll(typeof(EditorVesselOverlays))
-						.FirstOrDefault();
+					UnityEngine.Object[] overlayObjs = Resources.FindObjectsOfTypeAll(typeof(EditorVesselOverlays));
+
+					if (overlayObjs.Length > 0)
+					{
+						this._vesselOverlays = (EditorVesselOverlays)overlayObjs[0];
+					}
 				}
 
 				return this._vesselOverlays;
