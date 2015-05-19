@@ -118,7 +118,7 @@ namespace VOID
 
 		public void ehudWindowFunc(int id)
 		{
-			StringBuilder hudString = new StringBuilder();
+			StringBuilder hudString = Tools.GetStringBuilder();
 
 			if (this.core.LastStage == null)
 			{
@@ -192,6 +192,8 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
+
+			Tools.PutStringBuilder(hudString);
 		}
 
 		public override void DrawGUI()

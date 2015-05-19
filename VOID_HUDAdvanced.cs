@@ -103,7 +103,7 @@ namespace VOID
 		{
 			StringBuilder leftHUD;
 
-			leftHUD = new StringBuilder();
+			leftHUD = Tools.GetStringBuilder();
 
 			VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
 
@@ -161,13 +161,15 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
+
+			Tools.PutStringBuilder(leftHUD);
 		}
 
 		protected void rightHUDWindow(int id)
 		{
 			StringBuilder rightHUD;
 
-			rightHUD = new StringBuilder();
+			rightHUD = Tools.GetStringBuilder();
 
 			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
@@ -225,6 +227,8 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
+
+			Tools.PutStringBuilder(rightHUD);
 		}
 
 		public override void DrawGUI()
