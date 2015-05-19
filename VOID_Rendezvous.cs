@@ -57,8 +57,8 @@ namespace VOID
 
 		public override void ModuleWindow(int id)
 		{
-			Vessel rendezvessel = new Vessel();
-			CelestialBody rendezbody = new CelestialBody();
+			Vessel rendezvessel;
+			CelestialBody rendezbody;
 
 			if (this.RegisterModule == null)
 			{
