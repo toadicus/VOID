@@ -723,16 +723,57 @@ namespace VOID
 				"m"
 			);
 
-		public static readonly VOID_StrValue surfLatitude =
+		public static readonly VOID_StrValue surfLatitudeString =
 			new VOID_StrValue(
 				"Latitude",
 				new Func<string>(() => VOID_Tools.GetLatitudeString(Core.Vessel))
 			);
 
-		public static readonly VOID_StrValue surfLongitude =
+		public static readonly VOID_DoubleValue surfLatitude =
+			new VOID_DoubleValue(
+				"Latitude",
+				delegate()
+				{
+					if (CoreInitialized && Core.Vessel != null)
+					{
+						return Core.Vessel.latitude;
+					}
+					return double.NaN;
+				},
+				"°"
+			);
+
+		public static readonly VOID_StrValue surfLongitudeString =
 			new VOID_StrValue(
 				"Longitude",
 				new Func<string>(() => VOID_Tools.GetLongitudeString(Core.Vessel))
+			);
+
+		public static readonly VOID_DoubleValue surfLongitude =
+			new VOID_DoubleValue(
+				"Longitude",
+				delegate()
+				{
+					if (CoreInitialized && Core.Vessel != null)
+					{
+						double longitude = Core.Vessel.longitude;
+
+						longitude = VOID_Tools.FixDegreeDomain(longitude);
+
+						if (longitude < -180d)
+						{
+							longitude += 360d;
+						}
+						if (longitude >= 180)
+						{
+							longitude -= 360d;
+						}
+
+						return longitude;
+					}
+					return double.NaN;
+				},
+				"°"
 			);
 
 		public static readonly VOID_DoubleValue trueAltitude =

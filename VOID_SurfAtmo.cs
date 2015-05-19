@@ -58,9 +58,9 @@ namespace VOID
 			this.precisionValues[idx] = (ushort)VOID_Data.trueAltitude.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			VOID_Data.surfLatitude.DoGUIHorizontal();
+			VOID_Data.surfLatitudeString.DoGUIHorizontal();
 
-			VOID_Data.surfLongitude.DoGUIHorizontal();
+			VOID_Data.surfLongitudeString.DoGUIHorizontal();
 
 			VOID_Data.vesselHeading.DoGUIHorizontal();
 

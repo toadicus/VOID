@@ -143,8 +143,8 @@ namespace VOID
 					VOID_Data.horzVelocity.ToSIString()
 				);
 				rightHUD.AppendFormat("\nLat: {0} Lon: {1}",
-					VOID_Data.surfLatitude.ValueUnitString(),
-					VOID_Data.surfLongitude.ValueUnitString()
+					VOID_Data.surfLatitudeString.ValueUnitString(),
+					VOID_Data.surfLongitudeString.ValueUnitString()
 				);
 				rightHUD.AppendFormat("\nHdg: {0} Pit: {1}",
 					VOID_Data.vesselHeading.ValueUnitString(),
