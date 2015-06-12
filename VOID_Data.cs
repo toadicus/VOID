@@ -482,14 +482,16 @@ namespace VOID
 						return Vector3d.zero;
 					}
 
-					List<PartModule> engineModules = Core.Vessel.getModulesOfType<PartModule>();
+					IList<PartModule> engineModules = Core.Vessel.getModulesOfType<PartModule>();
 
 					Vector3d thrustPos = Vector3d.zero;
 					Vector3d thrustDir = Vector3d.zero;
 					float thrust = 0;
 
-					foreach (PartModule engine in engineModules)
+					PartModule engine;
+					for (int idx = 0; idx < engineModules.Count; idx++)
 					{
+						engine = engineModules[idx];
 						float moduleThrust = 0;
 
 						switch (engine.moduleName)
@@ -580,8 +582,11 @@ namespace VOID
 					currentAmount = 0d;
 					currentRequirement = 0d;
 
-					foreach (Part part in Core.Vessel.Parts)
+					Part part;
+					for (int idx = 0; idx < Core.Vessel.Parts.Count; idx++)
 					{
+						part = Core.Vessel.Parts[idx];
+
 						if (part.enabled)
 						{
 							ModuleEngines engineModule;
@@ -599,8 +604,11 @@ namespace VOID
 
 							if (propellantList != null)
 							{
-								foreach (Propellant propellant in propellantList)
+								Propellant propellant;
+								for (int propIdx = 0; propIdx < propellantList.Count; propIdx++)
 								{
+									propellant = propellantList[propIdx];
+
 									if (propellant.name == "IntakeAir")
 									{
 										currentRequirement += propellant.currentRequirement / TimeWarp.fixedDeltaTime;
@@ -716,16 +724,57 @@ namespace VOID
 				"m"
 			);
 
-		public static readonly VOID_StrValue surfLatitude =
+		public static readonly VOID_StrValue surfLatitudeString =
 			new VOID_StrValue(
 				"Latitude",
 				new Func<string>(() => VOID_Tools.GetLatitudeString(Core.Vessel))
 			);
 
-		public static readonly VOID_StrValue surfLongitude =
+		public static readonly VOID_DoubleValue surfLatitude =
+			new VOID_DoubleValue(
+				"Latitude",
+				delegate()
+				{
+					if (CoreInitialized && Core.Vessel != null)
+					{
+						return Core.Vessel.latitude;
+					}
+					return double.NaN;
+				},
+				"°"
+			);
+
+		public static readonly VOID_StrValue surfLongitudeString =
 			new VOID_StrValue(
 				"Longitude",
 				new Func<string>(() => VOID_Tools.GetLongitudeString(Core.Vessel))
+			);
+
+		public static readonly VOID_DoubleValue surfLongitude =
+			new VOID_DoubleValue(
+				"Longitude",
+				delegate()
+				{
+					if (CoreInitialized && Core.Vessel != null)
+					{
+						double longitude = Core.Vessel.longitude;
+
+						longitude = VOID_Tools.FixDegreeDomain(longitude);
+
+						if (longitude < -180d)
+						{
+							longitude += 360d;
+						}
+						if (longitude >= 180)
+						{
+							longitude -= 360d;
+						}
+
+						return longitude;
+					}
+					return double.NaN;
+				},
+				"°"
 			);
 
 		public static readonly VOID_DoubleValue trueAltitude =

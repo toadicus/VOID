@@ -29,7 +29,6 @@
 using KSP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToadicusTools;
 using UnityEngine;
 
@@ -50,12 +49,16 @@ namespace VOID
 
 		public override void ModuleWindow(int id)
 		{
+			CelestialBody body;
+
 			GUILayout.BeginVertical();
 
 			if (Vessel.mainBody.name == "Sun")  //Vessel is orbiting the Sun
 			{
-			    foreach (CelestialBody body in Vessel.mainBody.orbitingBodies)
+			    for (int idx = 0; idx < Vessel.mainBody.orbitingBodies.Count; idx++)
 			    {
+					body = Vessel.mainBody.orbitingBodies[idx];
+
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					if (GUILayout.Button(body.bodyName))
 					{
@@ -75,8 +78,9 @@ namespace VOID
 			}
 			else if (Vessel.mainBody.referenceBody.name == "Sun")	//Vessel is orbiting a planet
 			{
-			    foreach (CelestialBody body in Vessel.mainBody.referenceBody.orbitingBodies)
-			    {
+			    for (int idx = 0; idx < Vessel.mainBody.referenceBody.orbitingBodies.Count; idx++)
+				{
+					body = Vessel.mainBody.referenceBody.orbitingBodies[idx];
 			        if (body.name != Vessel.mainBody.name)	// show other planets
 			        {
 			            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -96,8 +100,10 @@ namespace VOID
 			            }
 			        }
 			    }
-			    foreach (CelestialBody body in Vessel.mainBody.orbitingBodies)	// show moons
+			    for (int moonIdx = 0; moonIdx < Vessel.mainBody.orbitingBodies.Count; moonIdx++)
 			    {
+					body = Vessel.mainBody.orbitingBodies[moonIdx];
+
 			        GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			        if (GUILayout.Button(body.bodyName))
 			        {
@@ -117,8 +123,10 @@ namespace VOID
 			}
 			else if (Vessel.mainBody.referenceBody.referenceBody.name == "Sun")	// Vessel is orbiting a moon
 			{
-			    foreach (CelestialBody body in Vessel.mainBody.referenceBody.orbitingBodies)
+			    for (int idx = 0; idx < Vessel.mainBody.referenceBody.orbitingBodies.Count; idx++)
 			    {
+					body = Vessel.mainBody.referenceBody.orbitingBodies[idx];
+
 					if (body.name != Vessel.mainBody.name)	// show other moons
 					{
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));

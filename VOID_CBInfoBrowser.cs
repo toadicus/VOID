@@ -380,8 +380,12 @@ namespace VOID
 
 			//show # artificial satellites
 			int num_art_sats = 0;
-			foreach (Vessel v in FlightGlobals.Vessels)
+
+			Vessel v;
+			for (int idx = 0; idx < FlightGlobals.Vessels.Count; idx++)
 			{
+				v = FlightGlobals.Vessels[idx];
+
 				if (v.mainBody == body && v.situation.ToString() == "ORBITING") num_art_sats++;
 			}
 

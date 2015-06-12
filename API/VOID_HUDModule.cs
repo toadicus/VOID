@@ -104,8 +104,11 @@ namespace VOID
 				SimManager.RequestSimulation();
 			}
 
-			foreach (HUDWindow window in this.Windows)
+			HUDWindow window;
+			for (int idx = 0; idx < this.Windows.Count; idx++)
 			{
+				window = this.Windows[idx];
+
 				window.WindowPos = GUILayout.Window(
 					this.core.WindowID,
 					window.WindowPos,
@@ -127,8 +130,11 @@ namespace VOID
 
 			if (GUILayout.Button(string.Intern("Reset HUD Positions"), GUILayout.ExpandWidth(false)))
 			{
-				foreach (HUDWindow window in this.Windows)
+				HUDWindow window;
+				for (int idx = 0; idx < this.Windows.Count; idx++)
 				{
+					window = this.Windows[idx];
+
 					window.WindowPos = new Rect(window.defaultWindowPos);
 				}
 			}
@@ -143,8 +149,11 @@ namespace VOID
 			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_HUDModule>();
 			config.load();
 
-			foreach (HUDWindow window in this.Windows)
+			HUDWindow window;
+			for (int idx = 0; idx < this.Windows.Count; idx++)
 			{
+				window = this.Windows[idx];
+
 				string saveName = string.Format("{0}_{1}", this.GetType().Name, window.WindowName);
 				Rect loadedPos = config.GetValue(saveName, window.defaultWindowPos);
 
@@ -152,12 +161,15 @@ namespace VOID
 			}
 		}
 
-		public override void SaveConfig(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config)
 		{
-			base.SaveConfig(config);
+			base.Save(config);
 
-			foreach (HUDWindow window in this.Windows)
+			HUDWindow window;
+			for (int idx = 0; idx < this.Windows.Count; idx++)
 			{
+				window = this.Windows[idx];
+
 				string saveName = string.Format("{0}_{1}", this.GetType().Name, window.WindowName);
 				config.SetValue(saveName, window.WindowPos);
 			}

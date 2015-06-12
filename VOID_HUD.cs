@@ -70,7 +70,7 @@ namespace VOID
 		{
 			StringBuilder leftHUD;
 
-			leftHUD = new StringBuilder();
+			leftHUD = Tools.GetStringBuilder();
 
 			VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
 
@@ -116,13 +116,15 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
+
+			Tools.PutStringBuilder(leftHUD);
 		}
 
 		protected void rightHUDWindow(int id)
 		{
 			StringBuilder rightHUD;
 
-			rightHUD = new StringBuilder();
+			rightHUD = Tools.GetStringBuilder();
 
 			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
@@ -141,8 +143,8 @@ namespace VOID
 					VOID_Data.horzVelocity.ToSIString()
 				);
 				rightHUD.AppendFormat("\nLat: {0} Lon: {1}",
-					VOID_Data.surfLatitude.ValueUnitString(),
-					VOID_Data.surfLongitude.ValueUnitString()
+					VOID_Data.surfLatitudeString.ValueUnitString(),
+					VOID_Data.surfLongitudeString.ValueUnitString()
 				);
 				rightHUD.AppendFormat("\nHdg: {0} Pit: {1}",
 					VOID_Data.vesselHeading.ValueUnitString(),
@@ -182,6 +184,8 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
+
+			Tools.PutStringBuilder(rightHUD);
 		}
 	}
 }

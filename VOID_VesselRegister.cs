@@ -28,7 +28,6 @@
 
 using KSP;
 using System;
-using System.Linq;
 using ToadicusTools;
 using UnityEngine;
 
@@ -76,7 +75,7 @@ namespace VOID
 
 		public override void ModuleWindow(int id)
 		{
-			if (!this.core.AllVesselTypes.Any())
+			if (this.core.AllVesselTypes.Length < 1)
 			{
 				return;
 			}
@@ -141,8 +140,11 @@ namespace VOID
 
 			selectorScrollPos = GUILayout.BeginScrollView(selectorScrollPos, false, false);
 
-			foreach (Vessel v in FlightGlobals.Vessels)
+			Vessel v;
+			for (int idx = 0; idx < FlightGlobals.Vessels.Count; idx++)
 			{
+				v = FlightGlobals.Vessels[idx];
+
 				if (v != Vessel && v.vesselType == selectedVesselType && v.mainBody == seletedBody)
 				{
 					if ((vesselSituation == "Landed" &&

@@ -127,8 +127,11 @@ namespace VOID
 
 		protected virtual bool InValidScene()
 		{
-			foreach (var attr in this.GetType().GetCustomAttributes(true))
+			object[] attributes = this.GetType().GetCustomAttributes(true);
+			object attr;
+			for (int idx = 0; idx < attributes.Length; idx++)
 			{
+				attr = attributes[idx];
 				if (attr is KSPAddon)
 				{
 					KSPAddon addonAttr = (KSPAddon)attr;

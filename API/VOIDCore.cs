@@ -68,7 +68,6 @@ namespace VOID
 
 		public abstract event VOIDEventHandler onApplicationQuit;
 		public abstract event VOIDEventHandler onSkinChanged;
-
 		public abstract event VOIDEventHandler onUpdate;
 
 		public virtual void OnGUI() {}
@@ -80,9 +79,9 @@ namespace VOID
 
 		public abstract void SaveConfig();
 
-		public override void SaveConfig(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config)
 		{
-			base.SaveConfig(config);
+			base.Save(config);
 		}
 	}
 

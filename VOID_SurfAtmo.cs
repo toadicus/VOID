@@ -58,9 +58,9 @@ namespace VOID
 			this.precisionValues[idx] = (ushort)VOID_Data.trueAltitude.DoGUIHorizontal(this.precisionValues[idx]);
 			idx++;
 
-			VOID_Data.surfLatitude.DoGUIHorizontal();
+			VOID_Data.surfLatitudeString.DoGUIHorizontal();
 
-			VOID_Data.surfLongitude.DoGUIHorizontal();
+			VOID_Data.surfLongitudeString.DoGUIHorizontal();
 
 			VOID_Data.vesselHeading.DoGUIHorizontal();
 
@@ -105,11 +105,11 @@ namespace VOID
 			this.precisionValues = new IntCollection(4, this._precisionValues);
 		}
 
-		public override void SaveConfig(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config)
 		{
 			this._precisionValues.value = this.precisionValues.collection;
 
-			base.SaveConfig(config);
+			base.Save(config);
 		}
 	}
 }

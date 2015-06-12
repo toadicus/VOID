@@ -30,7 +30,6 @@ using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using ToadicusTools;
 using UnityEngine;
@@ -104,7 +103,7 @@ namespace VOID
 		{
 			StringBuilder leftHUD;
 
-			leftHUD = new StringBuilder();
+			leftHUD = Tools.GetStringBuilder();
 
 			VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
 
@@ -162,13 +161,15 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
+
+			Tools.PutStringBuilder(leftHUD);
 		}
 
 		protected void rightHUDWindow(int id)
 		{
 			StringBuilder rightHUD;
 
-			rightHUD = new StringBuilder();
+			rightHUD = Tools.GetStringBuilder();
 
 			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
@@ -226,14 +227,19 @@ namespace VOID
 			}
 
 			GUI.BringWindowToBack(id);
+
+			Tools.PutStringBuilder(rightHUD);
 		}
 
 		public override void DrawGUI()
 		{
 			if (this.primaryHUD == null)
 			{
-				foreach (IVOID_Module module in this.core.Modules)
+				IVOID_Module module;
+				for (int idx = 0; idx < this.core.Modules.Count; idx++)
 				{
+					module = this.core.Modules[idx];
+
 					if (module is VOID_HUD)
 					{
 						this.primaryHUD = module as VOID_HUD;
@@ -259,8 +265,11 @@ namespace VOID
 
 			if (GUILayout.Button(string.Intern("Reset Advanced HUD Positions"), GUILayout.ExpandWidth(false)))
 			{
-				foreach (HUDWindow window in this.Windows)
+				HUDWindow window;
+				for (int idx = 0; idx < this.Windows.Count; idx++)
 				{
+					window = this.Windows[idx];
+
 					window.WindowPos = new Rect(window.defaultWindowPos);
 				}
 			}

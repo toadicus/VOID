@@ -305,7 +305,7 @@ namespace VOID
 			//called if logging is on and interval has passed
 			//writes one line to the csvList
 
-			StringBuilder line = new StringBuilder();
+			StringBuilder line = Tools.GetStringBuilder();
 
 			if (firstWrite)
 			{
@@ -408,6 +408,8 @@ namespace VOID
 			csvBytes.AddRange(this.utf8Encoding.GetBytes(line.ToString()));
 
 			this.csvCollectTimer = 0f;
+
+			Tools.PutStringBuilder(line);
 		}
 
 		#endregion

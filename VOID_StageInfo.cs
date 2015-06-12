@@ -7,7 +7,6 @@ using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToadicusTools;
 using UnityEngine;
 
@@ -171,8 +170,11 @@ namespace VOID
 				SimManager.Atmosphere = 0d;
 			}
 
-			foreach (Stage stage in core.Stages)
+			Stage stage;
+			for (int idx = 0; idx < core.Stages.Length; idx++)
 			{
+				stage = core.Stages[idx];
+
 				if (stage.deltaV == 0 && stage.mass == 0)
 				{
 					continue;
@@ -288,8 +290,10 @@ namespace VOID
 
 		private void BodyPickerWindow(int _)
 		{
-			foreach (CelestialBody body in core.SortedBodyList)
+			CelestialBody body;
+			for (int idx = 0; idx < core.SortedBodyList.Count; idx++)
 			{
+				body = core.SortedBodyList[idx];
 				if (GUILayout.Button(body.bodyName, VOID_Styles.labelDefault))
 				{
 					Debug.Log("Picked new body focus: " + body.bodyName);

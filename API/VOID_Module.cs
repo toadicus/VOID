@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using ToadicusTools;
 using UnityEngine;
@@ -120,8 +119,13 @@ namespace VOID
 				if (this.validModes == null)
 				{
 					Tools.PostDebugMessage(this, "validModes is null when checking inValidGame; fetching attribute.");
-					foreach (var attr in this.GetType().GetCustomAttributes(false))
+
+					object[] attributes = this.GetType().GetCustomAttributes(false);
+					object attr;
+					for (int idx = 0; idx < attributes.Length; idx++)
 					{
+						attr = attributes[idx];
+
 						if (attr is VOID_GameModesAttribute)
 						{
 							VOID_GameModesAttribute addonAttr = (VOID_GameModesAttribute)attr;
@@ -160,8 +164,12 @@ namespace VOID
 				if (this.validScenes == null)
 				{
 					Tools.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
-					foreach (var attr in this.GetType().GetCustomAttributes(false))
+					object[] attributes = this.GetType().GetCustomAttributes(false);
+					object attr;
+					for (int idx = 0; idx < attributes.Length; idx++)
 					{
+						attr = attributes[idx];
+
 						if (attr is VOID_ScenesAttribute)
 						{
 							VOID_ScenesAttribute addonAttr = (VOID_ScenesAttribute)attr;
@@ -264,30 +272,40 @@ namespace VOID
 				}
 			}
 
-			foreach (var field in this.GetType().GetMembers(
-				BindingFlags.NonPublic |
-				BindingFlags.Public |
-				BindingFlags.Instance |
-				BindingFlags.FlattenHierarchy
-			))
+			MemberInfo[] members = this.GetType().GetMembers(
+				                         BindingFlags.NonPublic |
+				                         BindingFlags.Public |
+				                         BindingFlags.Instance |
+				                         BindingFlags.FlattenHierarchy
+			                         );
+			MemberInfo member;
+
+			for (int fIdx = 0; fIdx < members.Length; fIdx++)
 			{
-				if (!(field is FieldInfo || field is PropertyInfo))
+				member = members[fIdx];
+
+				if (!(member is FieldInfo || member is PropertyInfo))
 				{
 					continue;
 				}
 
-				if (field is PropertyInfo && (field as PropertyInfo).GetIndexParameters().Length > 0)
+				if (member is PropertyInfo && (member as PropertyInfo).GetIndexParameters().Length > 0)
 				{
 					continue;
 				}
 
-				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
+				object[] attrs = member.GetCustomAttributes(typeof(AVOID_SaveValue), false);
 
-				if (attrs.Length == 0) {
+				AVOID_SaveValue attr;
+
+				if (attrs.Length > 0)
+				{
+					attr = (AVOID_SaveValue)attrs[0];
+				}
+				else
+				{
 					continue;
 				}
-
-				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
 				string fieldName = string.Empty;
 
@@ -324,13 +342,13 @@ namespace VOID
 
 				object fieldValue;
 
-				if (field is FieldInfo)
+				if (member is FieldInfo)
 				{
-					fieldValue = (field as FieldInfo).GetValue(this);
+					fieldValue = (member as FieldInfo).GetValue(this);
 				}
 				else
 				{
-					fieldValue = (field as PropertyInfo).GetValue(this, null);
+					fieldValue = (member as PropertyInfo).GetValue(this, null);
 				}
 
 				bool convertBack = false;
@@ -350,35 +368,45 @@ namespace VOID
 					fieldValue = convertValue;
 				}
 
-				if (field is FieldInfo)
+				if (member is FieldInfo)
 				{
-					(field as FieldInfo).SetValue(this, fieldValue);
+					(member as FieldInfo).SetValue(this, fieldValue);
 				}
 				else
 				{
-					(field as PropertyInfo).SetValue(this, fieldValue, null);
+					(member as PropertyInfo).SetValue(this, fieldValue, null);
 				}
 
 				Tools.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
 			}
 		}
 
-		public virtual void SaveConfig(KSP.IO.PluginConfiguration config)
+		public virtual void Save(KSP.IO.PluginConfiguration config)
 		{
-			foreach (var field in this.GetType().GetMembers(
-				BindingFlags.Instance |
+			MemberInfo[] members = this.GetType().GetMembers(
 				BindingFlags.NonPublic |
 				BindingFlags.Public |
+				BindingFlags.Instance |
 				BindingFlags.FlattenHierarchy
-				))
-			{
-				object[] attrs = field.GetCustomAttributes(typeof(AVOID_SaveValue), false);
+			);
+			MemberInfo member;
 
-				if (attrs.Length == 0) {
+			for (int fIdx = 0; fIdx < members.Length; fIdx++)
+			{
+				member = members[fIdx];
+
+				object[] attrs = member.GetCustomAttributes(typeof(AVOID_SaveValue), false);
+
+				AVOID_SaveValue attr;
+
+				if (attrs.Length > 0)
+				{
+					attr = (AVOID_SaveValue)attrs[0];
+				}
+				else
+				{
 					continue;
 				}
-
-				AVOID_SaveValue attr = attrs.FirstOrDefault () as AVOID_SaveValue;
 
 				string fieldName;
 
@@ -398,13 +426,13 @@ namespace VOID
 
 				object fieldValue;
 
-				if (field is FieldInfo)
+				if (member is FieldInfo)
 				{
-					fieldValue = (field as FieldInfo).GetValue(this);
+					fieldValue = (member as FieldInfo).GetValue(this);
 				}
 				else
 				{
-					fieldValue = (field as PropertyInfo).GetValue(this, null);
+					fieldValue = (member as PropertyInfo).GetValue(this, null);
 				}
 
 				if (fieldValue is IVOID_SaveValue)

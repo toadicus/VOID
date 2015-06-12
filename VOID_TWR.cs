@@ -3,11 +3,9 @@
 // This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License. To view a
 // copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/
 
+using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToadicusTools;
 using UnityEngine;
 
 namespace VOID
@@ -28,7 +26,7 @@ namespace VOID
 				(TimeWarp.CurrentRate <= TimeWarp.MaxPhysicsRate)
 			)
 			{
-				KerbalEngineer.VesselSimulator.SimManager.RequestSimulation();
+				SimManager.RequestSimulation();
 			}
 
 			GUILayout.BeginVertical();
@@ -43,8 +41,11 @@ namespace VOID
 			}
 			else
 			{
-				foreach (CelestialBody body in core.SortedBodyList)
+				CelestialBody body;
+				for (int idx = 0; idx < core.SortedBodyList.Count; idx++)
 				{
+					body = core.SortedBodyList[idx];
+
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
 					GUILayout.Label(body.bodyName);
