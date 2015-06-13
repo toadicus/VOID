@@ -69,14 +69,33 @@ namespace VOID_ScriptedPanels
 
 		public static void LoadScriptedPanels()
 		{
+			IEnumerable<UrlDir.UrlFile> cfgFiles;
+			IEnumerator<UrlDir.UrlFile> cfgEnumerator;
+			UrlDir.UrlFile cfgFile;
+
+			VOID_ScriptedPanel panel;
+			List<UrlDir.UrlConfig> configs;
+			UrlDir.UrlConfig config;
+
+			UrlDir.UrlFile file;
+			UrlDir.UrlConfig panelConfig;
+
 			if (GameDatabase.Instance != null && GameDatabase.Instance.IsReady())
 			{
 				if (voidScriptFiles.Count == 0)
 				{
-					foreach (var cfgFile in GameDatabase.Instance.root.AllConfigFiles)
+					cfgFiles = GameDatabase.Instance.root.AllConfigFiles;
+					cfgEnumerator = cfgFiles.GetEnumerator();
+
+					while (cfgEnumerator.MoveNext())
 					{
-						foreach (var config in cfgFile.configs)
+						cfgFile = cfgEnumerator.Current;
+						configs = cfgFile.configs;
+
+						for (int cfgIdx = 0; cfgIdx < configs.Count; cfgIdx++)
 						{
+							config = configs[cfgIdx];
+
 							if (config.config.name == PANEL_KEY)
 							{
 								voidScriptFiles.Add(cfgFile);
@@ -86,8 +105,10 @@ namespace VOID_ScriptedPanels
 					}
 				}
 
-				foreach (var panel in panels)
+				for (int pIdx = 0; pIdx < panels.Count; pIdx++)
 				{
+					panel = panels[pIdx];
+
 					if (VOID_Data.CoreInitialized)
 					{
 						VOID_Data.Core.SaveConfig();
@@ -98,15 +119,19 @@ namespace VOID_ScriptedPanels
 
 				panels.Clear();
 
-				foreach (UrlDir.UrlFile file in voidScriptFiles)
+				for (int fIdx = 0; fIdx < voidScriptFiles.Count; fIdx++)
 				{
-					var configs = UrlDir.UrlConfig.CreateNodeList(file.parent, file);
+					file = voidScriptFiles[fIdx];
 
-					foreach (var panelConfig in configs)
+					configs = UrlDir.UrlConfig.CreateNodeList(file.parent, file);
+
+					for (int cIdx = 0; cIdx < configs.Count; cIdx++)
 					{
+						panelConfig = configs[cIdx];
+
 						if (panelConfig.config.name == PANEL_KEY)
 						{
-							VOID_ScriptedPanel panel = new VOID_ScriptedPanel(panelConfig.config);
+							panel = new VOID_ScriptedPanel(panelConfig.config);
 
 							panel.SourceFileUrl = file.url;
 
@@ -233,8 +258,11 @@ namespace VOID_ScriptedPanels
 
 				List<GameScenes> scenes = new List<GameScenes>();
 
-				foreach (string sceneString in scenesArray)
+				string sceneString;
+				for (int sIdx = 0; sIdx < scenesArray.Length; sIdx++)
 				{
+					sceneString = scenesArray[sIdx];
+
 					GameScenes scene;
 
 					try
@@ -258,6 +286,8 @@ namespace VOID_ScriptedPanels
 			}
 
 			string modesString;
+			string modeString;
+			Game.Modes mode;
 
 			if (node.TryGetValue(MODES_KEY, out modesString))
 			{
@@ -265,9 +295,9 @@ namespace VOID_ScriptedPanels
 
 				List<Game.Modes> modes = new List<Game.Modes>();
 
-				foreach (string modeString in modesArray)
+				for (int mIdx = 0; mIdx < modesArray.Length; mIdx++)
 				{
-					Game.Modes mode;
+					modeString = modesArray[mIdx];
 
 					try
 					{
@@ -400,6 +430,8 @@ namespace VOID_ScriptedPanels
 
 		public override void ModuleWindow(int id)
 		{
+			bool mayHaveErrorPane = false;
+
 			if (this.showErrorPane)
 			{
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -428,6 +460,8 @@ namespace VOID_ScriptedPanels
 
 			VOID_PanelLineGroup.DoLineLoop(this.PanelLines, this.runtimeErrors, this.errorIndices);
 
+			mayHaveErrorPane |= this.errorIndices.Count > 0;
+
 			VOID_PanelLineGroup group;
 			for (int gIdx = 0; gIdx < this.lineGroups.Count; gIdx++)
 			{
@@ -438,6 +472,8 @@ namespace VOID_ScriptedPanels
 				if (group.IsShown)
 				{
 					VOID_PanelLineGroup.DoLineLoop(group.PanelLines, group.runtimeErrors, group.errorIndices);
+
+					mayHaveErrorPane |= group.errorIndices.Count > 0;
 				}
 			}
 
@@ -471,7 +507,7 @@ namespace VOID_ScriptedPanels
 				GUILayout.EndHorizontal();
 			}
 
-			if (errorIndices.Count > 0)
+			if (mayHaveErrorPane)
 			{
 				GUIStyle buttonStyle = this.core.Skin.button;
 				RectOffset padding = buttonStyle.padding;
@@ -513,6 +549,8 @@ namespace VOID_ScriptedPanels
 
 	public class VOID_PanelLineGroup : IConfigNode
 	{
+		public const string ISSHOWN_KEY = "IsShown";
+
 		public static void DoLineLoop(
 			IList<VOID_PanelLine> lines,
 			Dictionary<ushort, VOIDScriptRuntimeException> _runtimeErrors,
@@ -642,7 +680,6 @@ namespace VOID_ScriptedPanels
 			VOID_PanelLine line;
 			int lineIdx;
 
-			// foreach (int idx in _errorIndices)
 			for (int iIdx = 0; iIdx < _errorIndices.Count; iIdx++)
 			{
 				lineIdx = _errorIndices[iIdx];
@@ -709,7 +746,7 @@ namespace VOID_ScriptedPanels
 					}
 
 					contents = string.Format(
-						"{3}Runtime error in {0} at line #{1}:\n" +
+						"{4}Runtime error in {0} at line #{1}:\n" +
 						"{2}\n" +
 						"{3}",
 						cellName,
@@ -763,6 +800,7 @@ namespace VOID_ScriptedPanels
 			this.runtimeErrors = new Dictionary<ushort, VOIDScriptRuntimeException>();
 
 			this.Name = "Extended Info";
+			this.IsShown = false;
 		}
 
 		public void Load(ConfigNode node)
@@ -773,6 +811,8 @@ namespace VOID_ScriptedPanels
 			bool hasDefinedLineOrder = false;
 
 			this.Name = node.GetValue(VOID_ScriptedPanel.TITLE_KEY, this.Name);
+
+			this.IsShown = node.GetValue(ISSHOWN_KEY, this.IsShown);
 
 			if (node.HasNode(VOID_ScriptedPanel.LINE_KEY))
 			{
@@ -804,6 +844,8 @@ namespace VOID_ScriptedPanels
 			ConfigNode lineNode;
 
 			node.SafeSetValue(VOID_ScriptedPanel.TITLE_KEY, this.Name);
+
+			node.SafeSetValue(ISSHOWN_KEY, this.IsShown);
 
 			node.ClearNodes();
 
