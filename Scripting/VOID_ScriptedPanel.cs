@@ -402,6 +402,47 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
+		public override void LoadConfig()
+		{
+			base.LoadConfig();
+
+			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Module> ();
+			config.load();
+
+			VOID_PanelLineGroup group;
+
+			string groupIsShownKey;
+
+			for (int idx = 0; idx < this.lineGroups.Count; idx++)
+			{
+				group = this.lineGroups[idx];
+
+				groupIsShownKey = string.Format("{0}_{1}{2}",
+					this.saveKeyName, group.Name, VOID_PanelLineGroup.ISSHOWN_KEY);
+
+				group.IsShown = config.GetValue(groupIsShownKey, group.IsShown);
+			}
+		}
+
+		public override void Save(KSP.IO.PluginConfiguration config)
+		{
+			base.Save(config);
+
+			VOID_PanelLineGroup group;
+
+			string groupIsShownKey;
+
+			for (int idx = 0; idx < this.lineGroups.Count; idx++)
+			{
+				group = this.lineGroups[idx];
+
+				groupIsShownKey = string.Format("{0}_{1}{2}",
+					this.saveKeyName, group.Name, VOID_PanelLineGroup.ISSHOWN_KEY);
+
+				config.SetValue(groupIsShownKey, group.IsShown);
+			}
+		}
+
 		public override void DrawGUI()
 		{
 			base.DrawGUI();
