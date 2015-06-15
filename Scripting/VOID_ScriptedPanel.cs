@@ -424,9 +424,9 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
-		public override void Save(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config, string sceneKey)
 		{
-			base.Save(config);
+			base.Save(config, sceneKey);
 
 			VOID_PanelLineGroup group;
 
