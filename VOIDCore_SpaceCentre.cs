@@ -32,6 +32,14 @@ namespace VOID
 	[VOID_Scenes(GameScenes.SPACECENTER)]
 	public class VOIDCore_SpaceCentre : VOIDCore_Generic<VOIDCore_SpaceCentre>
 	{
+		public override string SceneKey
+		{
+			get
+			{
+				return "SPACECENTER";
+			}
+		}
+
 		public override void FixedUpdate() {}
 	}
 }

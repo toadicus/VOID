@@ -46,7 +46,7 @@ namespace VOID
 
 		void LoadConfig();
 
-		void Save(KSP.IO.PluginConfiguration config);
+		void Save(KSP.IO.PluginConfiguration config, string sceneKey);
 	}
 
 	public interface IVOID_BehaviorModule : IVOID_Module
