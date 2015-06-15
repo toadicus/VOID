@@ -105,11 +105,11 @@ namespace VOID
 			this.precisionValues = new IntCollection(4, this._precisionValues);
 		}
 
-		public override void Save(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config, string sceneKey)
 		{
 			this._precisionValues.value = this.precisionValues.collection;
 
-			base.Save(config);
+			base.Save(config, sceneKey);
 		}
 	}
 }

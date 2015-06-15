@@ -38,6 +38,15 @@ namespace VOID
 	[VOID_Scenes(GameScenes.EDITOR)]
 	public class VOIDCore_Editor : VOIDCore_Generic<VOIDCore_Editor>
 	{
+		public override string SceneKey
+		{
+			get
+			{
+				return "EDITOR";
+			}
+		}
+
+
 		public override void FixedUpdate() {}
 	}
 }

@@ -1130,14 +1130,14 @@ namespace VOID
 
 			config.load();
 
-			this.Save(config);
+			this.Save(config, this.SceneKey);
 
 			IVOID_Module module;
 			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
 				module = this.modules[idx];
 
-				module.Save(config);
+				module.Save(config, this.SceneKey);
 			}
 
 			config.save();
