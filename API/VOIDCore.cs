@@ -43,6 +43,8 @@ namespace VOID
 		public abstract int ConfigVersion { get; }
 		public virtual bool configNeedsUpdate { get; set; }
 
+		public abstract string SceneKey { get; }
+
 		public abstract int WindowID { get; }
 		public abstract bool configDirty { get; set; }
 		public abstract bool powerAvailable	{ get; protected set; }
@@ -79,9 +81,9 @@ namespace VOID
 
 		public abstract void SaveConfig();
 
-		public override void Save(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config, string sceneKey)
 		{
-			base.Save(config);
+			base.Save(config, sceneKey);
 		}
 	}
 

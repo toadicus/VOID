@@ -161,9 +161,9 @@ namespace VOID
 			}
 		}
 
-		public override void Save(KSP.IO.PluginConfiguration config)
+		public override void Save(KSP.IO.PluginConfiguration config, string sceneKey)
 		{
-			base.Save(config);
+			base.Save(config, sceneKey);
 
 			HUDWindow window;
 			for (int idx = 0; idx < this.Windows.Count; idx++)

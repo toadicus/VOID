@@ -369,7 +369,7 @@ namespace VOID
 			}
 		}
 
-		public virtual void Save(KSP.IO.PluginConfiguration config)
+		public virtual void Save(KSP.IO.PluginConfiguration config, string sceneKey)
 		{
 			MemberInfo[] members = this.GetType().GetMembers(
 				BindingFlags.NonPublic |
@@ -407,7 +407,7 @@ namespace VOID
 					fieldName = string.Format(
 						"{0}_{1}_{2}",
 						this.GetType().Name,
-						Enum.GetName(typeof(GameScenes), HighLogic.LoadedScene),
+						sceneKey,
 						attr.Name
 					);
 				}
