@@ -7,7 +7,7 @@ using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
-using ToadicusTools;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 
 namespace VOID
@@ -259,7 +259,7 @@ namespace VOID
 			{
 				GUILayout.BeginHorizontal();
 
-				this.useSeaLevel.value = GUITools.Toggle(this.useSeaLevel, this.seaLevelToggle, false);
+				this.useSeaLevel.value = Layout.Toggle(this.useSeaLevel, this.seaLevelToggle, false);
 
 				GUILayout.EndHorizontal();
 			}
