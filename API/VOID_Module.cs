@@ -116,7 +116,7 @@ namespace VOID
 			{
 				if (this.validModes == null)
 				{
-					Tools.PostDebugMessage(this, "validModes is null when checking inValidGame; fetching attribute.");
+					Logging.PostDebugMessage(this, "validModes is null when checking inValidGame; fetching attribute.");
 
 					object[] attributes = this.GetType().GetCustomAttributes(false);
 					object attr;
@@ -130,7 +130,7 @@ namespace VOID
 
 							this.validModes = addonAttr.ValidModes;
 
-							Tools.PostDebugMessage("Found VOID_GameModesAttribute; validScenes set.");
+							Logging.PostDebugMessage("Found VOID_GameModesAttribute; validScenes set.");
 
 							break;
 						}
@@ -147,7 +147,7 @@ namespace VOID
 							Game.Modes.SCIENCE_SANDBOX
 						};
 
-						Tools.PostDebugMessage("No VOID_GameModesAttribute found; validScenes defaulted to flight.");
+						Logging.PostDebugMessage("No VOID_GameModesAttribute found; validScenes defaulted to flight.");
 					}
 				}
 
@@ -161,7 +161,7 @@ namespace VOID
 			{
 				if (this.validScenes == null)
 				{
-					Tools.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
+					Logging.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
 					object[] attributes = this.GetType().GetCustomAttributes(false);
 					object attr;
 					for (int idx = 0; idx < attributes.Length; idx++)
@@ -174,7 +174,7 @@ namespace VOID
 
 							this.validScenes = addonAttr.ValidScenes;
 
-							Tools.PostDebugMessage("Found VOID_ScenesAttribute; validScenes set.");
+							Logging.PostDebugMessage("Found VOID_ScenesAttribute; validScenes set.");
 
 							break;
 						}
@@ -183,7 +183,7 @@ namespace VOID
 					if (this.validScenes == null)
 					{
 						this.validScenes = new GameScenes[] { GameScenes.FLIGHT };
-						Tools.PostDebugMessage("No VOID_ScenesAttribute found; validScenes defaulted to flight.");
+						Logging.PostDebugMessage("No VOID_ScenesAttribute found; validScenes defaulted to flight.");
 					}
 				}
 
@@ -228,7 +228,7 @@ namespace VOID
 				return;
 			}
 
-			Tools.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
+			Logging.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
 			RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
 		}
 
@@ -238,7 +238,7 @@ namespace VOID
 			{
 				return;
 			}
-			Tools.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
+			Logging.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
 			RenderingManager.RemoveFromPostDrawQueue (3, this.DrawGUI);
 		}
 
@@ -326,7 +326,7 @@ namespace VOID
 					);
 				}
 
-				Tools.PostDebugMessage(string.Format("{0}: Loading field {1}.", this.GetType().Name, fieldName));
+				Logging.PostDebugMessage(string.Format("{0}: Loading field {1}.", this.GetType().Name, fieldName));
 
 				object fieldValue;
 
@@ -365,7 +365,7 @@ namespace VOID
 					(member as PropertyInfo).SetValue(this, fieldValue, null);
 				}
 
-				Tools.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
+				Logging.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
 			}
 		}
 
@@ -430,7 +430,7 @@ namespace VOID
 
 				config.SetValue(fieldName, fieldValue);
 
-				Tools.PostDebugMessage(string.Format("{0}: Saved field {1}.", this.GetType().Name, fieldName));
+				Logging.PostDebugMessage(string.Format("{0}: Saved field {1}.", this.GetType().Name, fieldName));
 			}
 		}
 	}
