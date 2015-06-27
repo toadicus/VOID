@@ -26,10 +26,13 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ToadicusTools;
+using ToadicusTools.Extensions;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 
 namespace VOID
@@ -116,7 +119,7 @@ namespace VOID
 			{
 				if (this.validModes == null)
 				{
-					Logging.PostDebugMessage(this, "validModes is null when checking inValidGame; fetching attribute.");
+					ToadicusTools.Logging.PostDebugMessage(this, "validModes is null when checking inValidGame; fetching attribute.");
 
 					object[] attributes = this.GetType().GetCustomAttributes(false);
 					object attr;
@@ -130,7 +133,7 @@ namespace VOID
 
 							this.validModes = addonAttr.ValidModes;
 
-							Logging.PostDebugMessage("Found VOID_GameModesAttribute; validScenes set.");
+							ToadicusTools.Logging.PostDebugMessage("Found VOID_GameModesAttribute; validScenes set.");
 
 							break;
 						}
@@ -147,7 +150,7 @@ namespace VOID
 							Game.Modes.SCIENCE_SANDBOX
 						};
 
-						Logging.PostDebugMessage("No VOID_GameModesAttribute found; validScenes defaulted to flight.");
+						ToadicusTools.Logging.PostDebugMessage("No VOID_GameModesAttribute found; validScenes defaulted to flight.");
 					}
 				}
 
@@ -161,7 +164,7 @@ namespace VOID
 			{
 				if (this.validScenes == null)
 				{
-					Logging.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
+					ToadicusTools.Logging.PostDebugMessage(this, "validScenes is null when checking inValidScene; fetching attribute.");
 					object[] attributes = this.GetType().GetCustomAttributes(false);
 					object attr;
 					for (int idx = 0; idx < attributes.Length; idx++)
@@ -174,7 +177,7 @@ namespace VOID
 
 							this.validScenes = addonAttr.ValidScenes;
 
-							Logging.PostDebugMessage("Found VOID_ScenesAttribute; validScenes set.");
+							ToadicusTools.Logging.PostDebugMessage("Found VOID_ScenesAttribute; validScenes set.");
 
 							break;
 						}
@@ -183,7 +186,7 @@ namespace VOID
 					if (this.validScenes == null)
 					{
 						this.validScenes = new GameScenes[] { GameScenes.FLIGHT };
-						Logging.PostDebugMessage("No VOID_ScenesAttribute found; validScenes defaulted to flight.");
+						ToadicusTools.Logging.PostDebugMessage("No VOID_ScenesAttribute found; validScenes defaulted to flight.");
 					}
 				}
 
@@ -228,7 +231,7 @@ namespace VOID
 				return;
 			}
 
-			Logging.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
+			ToadicusTools.Logging.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
 			RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
 		}
 
@@ -238,7 +241,7 @@ namespace VOID
 			{
 				return;
 			}
-			Logging.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
+			ToadicusTools.Logging.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
 			RenderingManager.RemoveFromPostDrawQueue (3, this.DrawGUI);
 		}
 
@@ -326,7 +329,7 @@ namespace VOID
 					);
 				}
 
-				Logging.PostDebugMessage(string.Format("{0}: Loading field {1}.", this.GetType().Name, fieldName));
+				ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Loading field {1}.", this.GetType().Name, fieldName));
 
 				object fieldValue;
 
@@ -365,7 +368,7 @@ namespace VOID
 					(member as PropertyInfo).SetValue(this, fieldValue, null);
 				}
 
-				Logging.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
+				ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Loaded field {1}.", this.GetType().Name, fieldName));
 			}
 		}
 
@@ -430,7 +433,7 @@ namespace VOID
 
 				config.SetValue(fieldName, fieldValue);
 
-				Logging.PostDebugMessage(string.Format("{0}: Saved field {1}.", this.GetType().Name, fieldName));
+				ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Saved field {1}.", this.GetType().Name, fieldName));
 			}
 		}
 	}
@@ -519,11 +522,11 @@ namespace VOID
 
 			if (HighLogic.LoadedSceneIsEditor)
 			{
-				_Pos = Tools.ClampRectToEditorPad(_Pos);
+				_Pos = WindowTools.ClampRectToEditorPad(_Pos);
 			}
 			else
 			{
-				_Pos = Tools.ClampRectToScreen(_Pos);
+				_Pos = WindowTools.ClampRectToScreen(_Pos);
 			}
 
 			if (_Pos != this.WindowPos)

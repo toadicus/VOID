@@ -26,12 +26,14 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ToadicusTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -63,129 +65,122 @@ namespace VOID
 			this.rightHUD = new HUDWindow("rightHUD", this.rightHUDWindow, new Rect(Screen.width * .625f, 0f, 300f, 90f));
 			this.Windows.Add(this.rightHUD);
 
-			Tools.PostDebugMessage ("VOID_HUD: Constructed.");
+			ToadicusTools.Logging.PostDebugMessage ("VOID_HUD: Constructed.");
 		}
 
 		protected void leftHUDWindow(int id)
 		{
-			StringBuilder leftHUD;
-
-			leftHUD = Tools.GetStringBuilder();
-
-			VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
-
-			if (this.core.powerAvailable)
+			using (PooledStringBuilder leftHUD = PooledStringBuilder.Get())
 			{
-				leftHUD.AppendFormat("Primary: {0} Inc: {1}",
-					VOID_Data.primaryName.ValueUnitString(),
-					VOID_Data.orbitInclination.ValueUnitString("F3")
+				VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
+
+				if (this.core.powerAvailable)
+				{
+					leftHUD.AppendFormat("Primary: {0} Inc: {1}",
+						VOID_Data.primaryName.ValueUnitString(),
+						VOID_Data.orbitInclination.ValueUnitString("F3")
+					);
+					leftHUD.AppendFormat("\nObt Alt: {0} Obt Vel: {1}",
+						VOID_Data.orbitAltitude.ToSIString(),
+						VOID_Data.orbitVelocity.ToSIString()
+					);
+					leftHUD.AppendFormat("\nAp: {0} ETA {1}",
+						VOID_Data.orbitApoAlt.ToSIString(),
+						VOID_Data.timeToApo.ValueUnitString()
+					);
+					leftHUD.AppendFormat("\nPe: {0} ETA {1}",
+						VOID_Data.oribtPeriAlt.ToSIString(),
+						VOID_Data.timeToPeri.ValueUnitString()
+					);
+					leftHUD.AppendFormat("\nTot Δv: {0} Stg Δv: {1}",
+						VOID_Data.totalDeltaV.ToSIString(2),
+						VOID_Data.stageDeltaV.ToSIString(2)
+					);
+				}
+				else
+				{
+					VOID_Styles.labelHud.normal.textColor = Color.red;
+					leftHUD.Append(string.Intern("-- POWER LOST --"));
+				}
+
+				GUILayout.Label(
+					leftHUD.ToString(),
+					VOID_Styles.labelHud,
+					GUILayout.ExpandWidth(true),
+					GUILayout.ExpandHeight(true)
 				);
-				leftHUD.AppendFormat("\nObt Alt: {0} Obt Vel: {1}",
-					VOID_Data.orbitAltitude.ToSIString(),
-					VOID_Data.orbitVelocity.ToSIString()
-				);
-				leftHUD.AppendFormat("\nAp: {0} ETA {1}",
-					VOID_Data.orbitApoAlt.ToSIString(),
-					VOID_Data.timeToApo.ValueUnitString()
-				);
-				leftHUD.AppendFormat("\nPe: {0} ETA {1}",
-					VOID_Data.oribtPeriAlt.ToSIString(),
-					VOID_Data.timeToPeri.ValueUnitString()
-				);
-				leftHUD.AppendFormat("\nTot Δv: {0} Stg Δv: {1}",
-					VOID_Data.totalDeltaV.ToSIString(2),
-					VOID_Data.stageDeltaV.ToSIString(2)
-				);
+
+				if (!this.positionsLocked)
+				{
+					GUI.DragWindow();
+				}
+
+				GUI.BringWindowToBack(id);
 			}
-			else
-			{
-				VOID_Styles.labelHud.normal.textColor = Color.red;
-				leftHUD.Append(string.Intern("-- POWER LOST --"));
-			}
-
-			GUILayout.Label(
-				leftHUD.ToString(),
-				VOID_Styles.labelHud,
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
-			);
-
-			if (!this.positionsLocked)
-			{
-				GUI.DragWindow();
-			}
-
-			GUI.BringWindowToBack(id);
-
-			Tools.PutStringBuilder(leftHUD);
 		}
 
 		protected void rightHUDWindow(int id)
 		{
-			StringBuilder rightHUD;
-
-			rightHUD = Tools.GetStringBuilder();
-
-			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
-
-			if (this.core.powerAvailable)
+			using (PooledStringBuilder rightHUD = PooledStringBuilder.Get())
 			{
-				rightHUD.AppendFormat("Biome: {0} Sit: {1}",
-					VOID_Data.currBiome.ValueUnitString(),
-					VOID_Data.expSituation.ValueUnitString()
-				);
-				rightHUD.AppendFormat("\nSrf Alt: {0} Srf Vel: {1}",
-					VOID_Data.trueAltitude.ToSIString(),
-					VOID_Data.surfVelocity.ToSIString()
-				);
-				rightHUD.AppendFormat("\nVer: {0} Hor: {1}",
-					VOID_Data.vertVelocity.ToSIString(),
-					VOID_Data.horzVelocity.ToSIString()
-				);
-				rightHUD.AppendFormat("\nLat: {0} Lon: {1}",
-					VOID_Data.surfLatitudeString.ValueUnitString(),
-					VOID_Data.surfLongitudeString.ValueUnitString()
-				);
-				rightHUD.AppendFormat("\nHdg: {0} Pit: {1}",
-					VOID_Data.vesselHeading.ValueUnitString(),
-					VOID_Data.vesselPitch.ToSIString(2)
-				);
+				VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
-				if (
-					this.core.Vessel.mainBody == this.core.HomeBody &&
-					(
-						this.core.Vessel.situation == Vessel.Situations.FLYING ||
-						this.core.Vessel.situation == Vessel.Situations.SUB_ORBITAL ||
-						this.core.Vessel.situation == Vessel.Situations.LANDED ||
-						this.core.Vessel.situation == Vessel.Situations.SPLASHED
-					)
-				)
+				if (this.core.powerAvailable)
 				{
-					rightHUD.AppendFormat("\nRange to KSC: {0}", VOID_Data.downrangeDistance.ValueUnitString(2));
+					rightHUD.AppendFormat("Biome: {0} Sit: {1}",
+						VOID_Data.currBiome.ValueUnitString(),
+						VOID_Data.expSituation.ValueUnitString()
+					);
+					rightHUD.AppendFormat("\nSrf Alt: {0} Srf Vel: {1}",
+						VOID_Data.trueAltitude.ToSIString(),
+						VOID_Data.surfVelocity.ToSIString()
+					);
+					rightHUD.AppendFormat("\nVer: {0} Hor: {1}",
+						VOID_Data.vertVelocity.ToSIString(),
+						VOID_Data.horzVelocity.ToSIString()
+					);
+					rightHUD.AppendFormat("\nLat: {0} Lon: {1}",
+						VOID_Data.surfLatitudeString.ValueUnitString(),
+						VOID_Data.surfLongitudeString.ValueUnitString()
+					);
+					rightHUD.AppendFormat("\nHdg: {0} Pit: {1}",
+						VOID_Data.vesselHeading.ValueUnitString(),
+						VOID_Data.vesselPitch.ToSIString(2)
+					);
+
+					if (
+						this.core.Vessel.mainBody == this.core.HomeBody &&
+						(
+						    this.core.Vessel.situation == Vessel.Situations.FLYING ||
+						    this.core.Vessel.situation == Vessel.Situations.SUB_ORBITAL ||
+						    this.core.Vessel.situation == Vessel.Situations.LANDED ||
+						    this.core.Vessel.situation == Vessel.Situations.SPLASHED
+						))
+					{
+						rightHUD.AppendFormat("\nRange to KSC: {0}", VOID_Data.downrangeDistance.ValueUnitString(2));
+					}
 				}
+				else
+				{
+					VOID_Styles.labelHud.normal.textColor = Color.red;
+					rightHUD.Append(string.Intern("-- POWER LOST --"));
+				}
+
+
+				GUILayout.Label(
+					rightHUD.ToString(),
+					VOID_Styles.labelHud,
+					GUILayout.ExpandWidth(true),
+					GUILayout.ExpandHeight(true)
+				);
+
+				if (!this.positionsLocked)
+				{
+					GUI.DragWindow();
+				}
+
+				GUI.BringWindowToBack(id);
 			}
-			else
-			{
-				VOID_Styles.labelHud.normal.textColor = Color.red;
-				rightHUD.Append(string.Intern("-- POWER LOST --"));
-			}
-
-
-			GUILayout.Label(
-				rightHUD.ToString(),
-				VOID_Styles.labelHud,
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
-			);
-
-			if (!this.positionsLocked)
-			{
-				GUI.DragWindow();
-			}
-
-			GUI.BringWindowToBack(id);
-
-			Tools.PutStringBuilder(rightHUD);
 		}
 	}
 }

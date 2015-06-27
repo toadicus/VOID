@@ -1022,75 +1022,75 @@ namespace VOID
 	{
 		public int Compare(CelestialBody bodyA, CelestialBody bodyB)
 		{
-			Tools.PostDebugMessage(this, "got bodyA: {0} & bodyB: {1}", bodyA, bodyB);
+			Logging.PostDebugMessage(this, "got bodyA: {0} & bodyB: {1}", bodyA, bodyB);
 
 			if (bodyA == null && bodyB == null)
 			{
-				Tools.PostDebugMessage(this, "both bodies are null, returning 0");
+				Logging.PostDebugMessage(this, "both bodies are null, returning 0");
 				return 0;
 			}
 			if (bodyA == null)
 			{
-				Tools.PostDebugMessage(this, "bodyA is null, returning -1");
+				Logging.PostDebugMessage(this, "bodyA is null, returning -1");
 				return -1;
 			}
 			if (bodyB == null)
 			{
-				Tools.PostDebugMessage(this, "bodyB is null, returning 1");
+				Logging.PostDebugMessage(this, "bodyB is null, returning 1");
 				return 1;
 			}
 
-			Tools.PostDebugMessage(this, "bodies are not null, carrying on");
+			Logging.PostDebugMessage(this, "bodies are not null, carrying on");
 
 			if (object.ReferenceEquals(bodyA, bodyB))
 			{
-				Tools.PostDebugMessage(this, "bodies are equal, returning 0");
+				Logging.PostDebugMessage(this, "bodies are equal, returning 0");
 				return 0;
 			}
 
-			Tools.PostDebugMessage(this, "bodies are not equal, carrying on");
+			Logging.PostDebugMessage(this, "bodies are not equal, carrying on");
 
 			if (bodyA.orbitDriver == null)
 			{
-				Tools.PostDebugMessage(this, "bodyA.orbit is null (bodyA is the sun, returning 1");
+				Logging.PostDebugMessage(this, "bodyA.orbit is null (bodyA is the sun, returning 1");
 				return 1;
 			}
 			if (bodyB.orbitDriver == null)
 			{
-				Tools.PostDebugMessage(this, "bodyB.orbit is null (bodyB is the sun, returning -1");
+				Logging.PostDebugMessage(this, "bodyB.orbit is null (bodyB is the sun, returning -1");
 				return -1;
 			}
 
-			Tools.PostDebugMessage(this, "orbits are not null, carrying on");
+			Logging.PostDebugMessage(this, "orbits are not null, carrying on");
 
 			if (bodyA.orbit.referenceBody == bodyB.orbit.referenceBody)
 			{
-				Tools.PostDebugMessage(this, "bodies share a parent, comparing SMAs");
+				Logging.PostDebugMessage(this, "bodies share a parent, comparing SMAs");
 				return -bodyA.orbit.semiMajorAxis.CompareTo(bodyB.orbit.semiMajorAxis);
 			}
 
-			Tools.PostDebugMessage(this, "orbits do not share a parent, carrying on");
+			Logging.PostDebugMessage(this, "orbits do not share a parent, carrying on");
 
 			if (bodyA.hasAncestor(bodyB))
 			{
-				Tools.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning -1");
+				Logging.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning -1");
 				return -1;
 			}
 			if (bodyB.hasAncestor(bodyA))
 			{
-				Tools.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning 1");
+				Logging.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning 1");
 				return 1;
 			}
 
-			Tools.PostDebugMessage(this, "bodies do not have an obvious relationship, searching for one");
+			Logging.PostDebugMessage(this, "bodies do not have an obvious relationship, searching for one");
 
 			if (VOID_Tools.NearestRelatedParents(ref bodyA, ref bodyB))
 			{
-				Tools.PostDebugMessage(this, "good relation {0} and {1}, comparing", bodyA.bodyName, bodyB.bodyName);
+				Logging.PostDebugMessage(this, "good relation {0} and {1}, comparing", bodyA.bodyName, bodyB.bodyName);
 				return this.Compare(bodyA, bodyB);
 			}
 
-			Tools.PostDebugMessage(this, "bad relation {0} and {1}, giving up", bodyA.bodyName, bodyB.bodyName);
+			Logging.PostDebugMessage(this, "bad relation {0} and {1}, giving up", bodyA.bodyName, bodyB.bodyName);
 
 			return 0;
 		}

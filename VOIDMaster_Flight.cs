@@ -43,7 +43,7 @@
 using System;
 using UnityEngine;
 using KerbalEngineer.VesselSimulator;
-using ToadicusTools;
+using ToadicusTools.Extensions;
 
 namespace VOID
 {

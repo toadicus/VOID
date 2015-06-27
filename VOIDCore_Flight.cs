@@ -29,7 +29,7 @@
 using KSP;
 using System;
 using UnityEngine;
-using ToadicusTools;
+using ToadicusTools.GUIUtils;
 
 namespace VOID
 {
@@ -49,7 +49,7 @@ namespace VOID
 		{
 			if (HighLogic.LoadedSceneIsFlight)
 			{
-				this.consumeResource.value = GUITools.Toggle(this.consumeResource, "Consume Resources");
+				this.consumeResource.value = Layout.Toggle(this.consumeResource, "Consume Resources");
 			}
 
 			base.DrawConfigurables();

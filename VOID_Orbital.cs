@@ -26,9 +26,11 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using KSP;
 using System;
-using ToadicusTools;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 
 namespace VOID
@@ -40,7 +42,7 @@ namespace VOID
 
 		[AVOID_SaveValue("precisionValues")]
 		protected VOID_SaveValue<long> _precisionValues;
-		protected IntCollection precisionValues;
+		protected ToadicusTools.IntCollection precisionValues;
 
 		public VOID_Orbital()
 		{
@@ -83,7 +85,7 @@ namespace VOID
 			this.precisionValues [idx]= (ushort)VOID_Data.gravityAccel.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.toggleExtended.value = GUITools.Toggle(this.toggleExtended, "Extended info");
+			this.toggleExtended.value = Layout.Toggle(this.toggleExtended, "Extended info");
 
 			if (this.toggleExtended)
             {
@@ -120,7 +122,7 @@ namespace VOID
 		{
 			base.LoadConfig ();
 
-			this.precisionValues = new IntCollection (4, this._precisionValues);
+			this.precisionValues = new ToadicusTools.IntCollection (4, this._precisionValues);
 		}
 
 		public override void Save (KSP.IO.PluginConfiguration config, string sceneKey)

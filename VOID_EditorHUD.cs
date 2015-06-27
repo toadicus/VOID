@@ -26,12 +26,14 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ToadicusTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -113,87 +115,86 @@ namespace VOID
 			);
 			this.Windows.Add(this.ehudWindow);
 
-			Tools.PostDebugMessage (this.GetType().Name + ": Constructed.");
+			ToadicusTools.Logging.PostDebugMessage (this.GetType().Name + ": Constructed.");
 		}
 
 		public void ehudWindowFunc(int id)
 		{
-			StringBuilder hudString = Tools.GetStringBuilder();
-
-			if (this.core.LastStage == null)
+			using (PooledStringBuilder hudString = PooledStringBuilder.Get())
 			{
-				return;
-			}
+				if (this.core.LastStage == null)
+				{
+					return;
+				}
 
-			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
+				VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
-			hudString.Append("Total Mass: ");
-			hudString.Append(this.core.LastStage.totalMass.ToString("F3"));
-			hudString.Append('t');
+				hudString.Append("Total Mass: ");
+				hudString.Append(this.core.LastStage.totalMass.ToString("F3"));
+				hudString.Append('t');
 
-			hudString.Append(' ');
+				hudString.Append(' ');
 
-			hudString.Append("Part Count: ");
-			hudString.Append(EditorLogic.SortedShipList.Count);
+				hudString.Append("Part Count: ");
+				hudString.Append(EditorLogic.SortedShipList.Count);
 
-			hudString.Append('\n');
-
-			hudString.Append("Total Delta-V: ");
-			hudString.Append(Tools.MuMech_ToSI(this.core.LastStage.totalDeltaV));
-			hudString.Append("m/s");
-
-			hudString.Append('\n');
-
-			hudString.Append("Bottom Stage Delta-V");
-			hudString.Append(Tools.MuMech_ToSI(this.core.LastStage.deltaV));
-			hudString.Append("m/s");
-
-			hudString.Append('\n');
-
-			hudString.Append("Bottom Stage T/W Ratio: ");
-			hudString.Append(this.core.LastStage.thrustToWeight.ToString("F3"));
-
-			Tools.PostDebugMessage(this,
-				"CoMmarker.gameObject.activeInHierarchy: {0};" +
-				"CoTmarker.gameObject.activeInHierarchy: {1}",
-				this.CoMmarker.gameObject.activeInHierarchy,
-				this.CoTmarker.gameObject.activeInHierarchy
-			);
-
-			if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
-			{
-				Tools.PostDebugMessage(this, "CoM and CoT markers are active, doing thrust offset.");
 				hudString.Append('\n');
 
-				hudString.Append("Thrust Offset: ");
-				hudString.Append(
-					Vector3.Cross(
-						this.CoTmarker.dirMarkerObject.transform.forward,
-						this.CoMmarker.posMarkerObject.transform.position - this.CoTmarker.posMarkerObject.transform.position
-					).ToString("F3"));
-			}
-			#if DEBUG
+				hudString.Append("Total Delta-V: ");
+				hudString.Append(SIFormatProvider.ToSI(this.core.LastStage.totalDeltaV));
+				hudString.Append("m/s");
+
+				hudString.Append('\n');
+
+				hudString.Append("Bottom Stage Delta-V");
+				hudString.Append(SIFormatProvider.ToSI(this.core.LastStage.deltaV));
+				hudString.Append("m/s");
+
+				hudString.Append('\n');
+
+				hudString.Append("Bottom Stage T/W Ratio: ");
+				hudString.Append(this.core.LastStage.thrustToWeight.ToString("F3"));
+
+				ToadicusTools.Logging.PostDebugMessage(this,
+					"CoMmarker.gameObject.activeInHierarchy: {0};" +
+					"CoTmarker.gameObject.activeInHierarchy: {1}",
+					this.CoMmarker.gameObject.activeInHierarchy,
+					this.CoTmarker.gameObject.activeInHierarchy
+				);
+
+				if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
+				{
+					ToadicusTools.Logging.PostDebugMessage(this, "CoM and CoT markers are active, doing thrust offset.");
+					hudString.Append('\n');
+
+					hudString.Append("Thrust Offset: ");
+					hudString.Append(
+						Vector3.Cross(
+							this.CoTmarker.dirMarkerObject.transform.forward,
+							this.CoMmarker.posMarkerObject.transform.position - this.CoTmarker.posMarkerObject.transform.position
+						).ToString("F3"));
+				}
+				#if DEBUG
 			else
 			{
-				Tools.PostDebugMessage(this, "CoM and CoT markers are not active, thrust offset skipped.");
+				ToadicusTools.Logging.PostDebugMessage(this, "CoM and CoT markers are not active, thrust offset skipped.");
 			}
-			#endif
+				#endif
 
-			GUILayout.Label(
-				hudString.ToString(),
-				VOID_Styles.labelHud,
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
-			);
+				GUILayout.Label(
+					hudString.ToString(),
+					VOID_Styles.labelHud,
+					GUILayout.ExpandWidth(true),
+					GUILayout.ExpandHeight(true)
+				);
 
-			if (!this.positionsLocked)
-			{
-				GUI.DragWindow();
+				if (!this.positionsLocked)
+				{
+					GUI.DragWindow();
+				}
+
+				GUI.BringWindowToBack(id);
 			}
-
-			GUI.BringWindowToBack(id);
-
-			Tools.PutStringBuilder(hudString);
 		}
 
 		public override void DrawGUI()
@@ -216,7 +217,7 @@ namespace VOID
 				return;
 			}
 
-			Tools.PostDebugMessage(this,
+			ToadicusTools.Logging.PostDebugMessage(this,
 				"EditorPartList topLeft.parent.parent.position: {0}\n" +
 				"EditorPartList topLeft.parent.position: {1}\n" +
 				"EditorPartList topLeft.position: {2}\n" +

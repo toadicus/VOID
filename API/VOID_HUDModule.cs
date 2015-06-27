@@ -31,7 +31,7 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ToadicusTools;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 
 namespace VOID
@@ -139,7 +139,7 @@ namespace VOID
 				}
 			}
 
-			this.positionsLocked.value = GUITools.Toggle(this.positionsLocked, "Lock HUD Positions");
+			this.positionsLocked.value = Layout.Toggle(this.positionsLocked, "Lock HUD Positions");
 		}
 
 		public override void LoadConfig()

@@ -29,7 +29,7 @@
 using KSP;
 using System;
 using System.Collections.Generic;
-using ToadicusTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -373,8 +373,8 @@ namespace VOID
 
 			GUILayout.Label(p.ToString("##,#") + "kg/m³", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-			if (body.bodyName == "Sun") GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
-			else GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+			if (body.bodyName == "Sun") GUILayout.Label(SIFormatProvider.ToSI(body.sphereOfInfluence, 3), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+			else GUILayout.Label(SIFormatProvider.ToSI(body.sphereOfInfluence, 3), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(body.orbitingBodies.Count.ToString(), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
@@ -393,11 +393,11 @@ namespace VOID
 
 			double g_ASL = (VOIDCore.Constant_G * body.Mass) / (body.Radius * body.Radius);
 
-			GUILayout.Label(Tools.MuMech_ToSI(g_ASL) + "m/s²", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+			GUILayout.Label(SIFormatProvider.ToSI(g_ASL, 3) + "m/s²", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			if (body.atmosphere)
 			{
-				GUILayout.Label("≈ " + Tools.MuMech_ToSI(body.atmosphereDepth) + "m",
+				GUILayout.Label("≈ " + SIFormatProvider.ToSI(body.atmosphereDepth, 3) + "m",
 					VOID_Styles.labelRight,
 					GUILayout.ExpandWidth(true));
 

@@ -26,6 +26,8 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using KerbalEngineer.Editor;
 using KerbalEngineer.Helpers;
 using KerbalEngineer.VesselSimulator;
@@ -33,7 +35,10 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ToadicusTools;
+using ToadicusTools.DebugTools;
+using ToadicusTools.Extensions;
+using ToadicusTools.GUIUtils;
+using ToadicusTools.Wrappers;
 using UnityEngine;
 
 namespace VOID
@@ -346,7 +351,7 @@ namespace VOID
 			{
 				this.LoadGUIStyles();
 
-				Tools.PostDebugMessage(
+				ToadicusTools.Logging.PostDebugMessage(
 					this,
 					"ToolbarAvailable: {0}, UseToobarManager: {1}",
 					ToolbarManager.ToolbarAvailable,
@@ -385,7 +390,7 @@ namespace VOID
 				)
 			)
 			{
-				Tools.PostDebugMessage(this, "Updating SimManager.");
+				ToadicusTools.Logging.PostDebugMessage(this, "Updating SimManager.");
 				this.UpdateSimManager();
 			}
 
@@ -469,7 +474,7 @@ namespace VOID
 				if (this.configDirty)
 				{
 
-					Tools.PostDebugMessage(string.Format(
+					ToadicusTools.Logging.PostDebugMessage(string.Format(
 							"{0}: Time to save, checking if configDirty: {1}",
 							this.GetType().Name,
 							this.configDirty
@@ -607,7 +612,7 @@ namespace VOID
 							continue;
 						}
 
-						module.Active = GUITools.Toggle(module.Active, module.Name);
+						module.Active = Layout.Toggle(module.Active, module.Name);
 					}
 				}
 			}
@@ -616,7 +621,7 @@ namespace VOID
 				GUILayout.Label("-- POWER LOST --", VOID_Styles.labelRed);
 			}
 
-			VOID_ConfigWindow.Instance.Active = GUITools.Toggle(
+			VOID_ConfigWindow.Instance.Active = Layout.Toggle(
 				VOID_ConfigWindow.Instance.Active,
 				"Configuration"
 			);
@@ -630,20 +635,20 @@ namespace VOID
 		{
 			GUIContent _content;
 
-			this.useToolbarManager.value = GUITools.Toggle(this.useToolbarManager, "Use Blizzy's Toolbar If Available");
+			this.useToolbarManager.value = Layout.Toggle(this.useToolbarManager, "Use Blizzy's Toolbar If Available");
 
-			this.vesselSimActive.value = GUITools.Toggle(this.vesselSimActive.value,
+			this.vesselSimActive.value = Layout.Toggle(this.vesselSimActive.value,
 				"Enable Engineering Calculations");
 
 			bool useEarthTime = (this.TimeScale & VOID_TimeScale.KERBIN_TIME) == 0u;
 			bool useSiderealTime = (this.TimeScale & VOID_TimeScale.SOLAR_DAY) == 0u;
 			bool useRoundedScale = (this.TimeScale & VOID_TimeScale.ROUNDED_SCALE) != 0u;
 
-			useEarthTime = GUITools.Toggle(useEarthTime, "Use Earth Time (changes KSP option)");
+			useEarthTime = Layout.Toggle(useEarthTime, "Use Earth Time (changes KSP option)");
 
 			GameSettings.KERBIN_TIME = !useEarthTime;
 
-			useSiderealTime = GUITools.Toggle(
+			useSiderealTime = Layout.Toggle(
 				useSiderealTime,
 				string.Format(
 					"Time Scale: {0}",
@@ -651,7 +656,7 @@ namespace VOID
 				)
 			);
 
-			useRoundedScale = GUITools.Toggle(
+			useRoundedScale = Layout.Toggle(
 				useRoundedScale,
 				string.Format(
 					"Time Scale: {0}",
@@ -697,7 +702,7 @@ namespace VOID
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.skinIdx--;
-				Tools.PostDebugMessage(string.Format(
+				ToadicusTools.Logging.PostDebugMessage(string.Format(
 					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this.skinName,
@@ -714,7 +719,7 @@ namespace VOID
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.skinIdx++;
-				Tools.PostDebugMessage(string.Format(
+				ToadicusTools.Logging.PostDebugMessage(string.Format(
 					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this.skinName,
@@ -760,7 +765,7 @@ namespace VOID
 				module.DrawConfigurables();
 			}
 
-			this.FactoryReset = GUITools.Toggle(this.FactoryReset, "Factory Reset");
+			this.FactoryReset = Layout.Toggle(this.FactoryReset, "Factory Reset");
 		}
 
 		protected void UpdateSimManager()
@@ -781,7 +786,7 @@ namespace VOID
 
 			SimManager.TryStartSimulation();
 
-			Tools.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
+			ToadicusTools.Logging.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
 				SimManager.Atmosphere,
 				SimManager.Gravity
 			);
@@ -789,7 +794,7 @@ namespace VOID
 
 		protected void GetSimManagerResults()
 		{
-			Tools.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
+			ToadicusTools.Logging.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
 
 			this.Stages = SimManager.Stages;
 
@@ -801,53 +806,54 @@ namespace VOID
 
 		protected void LoadModulesOfType<U>()
 		{
-			Tools.DebugLogger sb = Tools.DebugLogger.New(this);
-			sb.AppendLine("Loading modules...");
-
-			AssemblyLoader.LoadedAssembly assy;
-			for (int aIdx = 0; aIdx < AssemblyLoader.loadedAssemblies.Count; aIdx++)
+			using (PooledDebugLogger sb = PooledDebugLogger.New(this))
 			{
-				assy = AssemblyLoader.loadedAssemblies[aIdx];
+				sb.AppendLine("Loading modules...");
 
-				Type[] loadedTypes = assy.assembly.GetExportedTypes();
-				Type loadedType;
-				for (int tIdx = 0; tIdx < loadedTypes.Length; tIdx++)
+				AssemblyLoader.LoadedAssembly assy;
+				for (int aIdx = 0; aIdx < AssemblyLoader.loadedAssemblies.Count; aIdx++)
 				{
-					loadedType = loadedTypes[tIdx];
+					assy = AssemblyLoader.loadedAssemblies[aIdx];
 
-					if (
-						loadedType.IsInterface ||
-						loadedType.IsAbstract ||
-						!typeof(U).IsAssignableFrom(loadedType) ||
-						typeof(VOIDCore).IsAssignableFrom(loadedType)
-					)
+					Type[] loadedTypes = assy.assembly.GetExportedTypes();
+					Type loadedType;
+					for (int tIdx = 0; tIdx < loadedTypes.Length; tIdx++)
 					{
-						continue;
-					}
+						loadedType = loadedTypes[tIdx];
 
-					sb.AppendFormat("Checking IVOID_Module type {0}...", loadedType.Name);
+						if (
+							loadedType.IsInterface ||
+							loadedType.IsAbstract ||
+							!typeof(U).IsAssignableFrom(loadedType) ||
+							typeof(VOIDCore).IsAssignableFrom(loadedType))
+						{
+							continue;
+						}
 
-					try
-					{
-						this.LoadModule(loadedType);
-						sb.AppendLine("Success.");
-					}
-					catch (Exception ex)
-					{
-						sb.AppendFormat("Failed, caught {0}\n", ex.GetType().Name);
+						sb.AppendFormat("Checking IVOID_Module type {0}...", loadedType.Name);
 
-						#if DEBUG
+						try
+						{
+							this.LoadModule(loadedType);
+							sb.AppendLine("Success.");
+						}
+						catch (Exception ex)
+						{
+							sb.AppendFormat("Failed, caught {0}\n", ex.GetType().Name);
+
+							#if DEBUG
 						Debug.LogException(ex);
-						#endif
+							#endif
+						}
 					}
 				}
+
+				this.modulesLoaded = true;
+
+				sb.AppendFormat("Loaded {0} modules.\n", this.Modules.Count);
+
+				sb.Print();
 			}
-
-			this.modulesLoaded = true;
-
-			sb.AppendFormat("Loaded {0} modules.\n", this.Modules.Count);
-
-			sb.Print();
 		}
 
 		protected void LoadModule(Type T)
@@ -858,7 +864,7 @@ namespace VOID
 			{
 				if (this.modules[mIdx].Name == T.Name)
 				{
-					Tools.PostErrorMessage("{0}: refusing to load {1}: already loaded", this.GetType().Name, T.Name);
+					ToadicusTools.Logging.PostErrorMessage("{0}: refusing to load {1}: already loaded", this.GetType().Name, T.Name);
 					return;
 				}
 			}
@@ -892,7 +898,7 @@ namespace VOID
 				module.LoadConfig();
 				this.modules.Add(module);
 
-				Tools.PostDebugMessage(string.Format(
+				ToadicusTools.Logging.PostDebugMessage(string.Format(
 						"{0}: loaded module {1}.",
 						this.GetType().Name,
 						T.Name
@@ -925,7 +931,7 @@ namespace VOID
 				}
 			}
 
-			Tools.PostDebugMessage(string.Format(
+			ToadicusTools.Logging.PostDebugMessage(string.Format(
 				"{0}: loaded {1} GUISkins.",
 				this.GetType().Name,
 				this.validSkins.Count
@@ -956,7 +962,7 @@ namespace VOID
 				this.skinIdx = defaultIdx;
 			}
 
-			Tools.PostDebugMessage(string.Format(
+			ToadicusTools.Logging.PostDebugMessage(string.Format(
 				"{0}: _skinIdx = {1}.",
 				this.GetType().Name,
 				this.skinName.ToString()
@@ -1018,7 +1024,7 @@ namespace VOID
 			// Do nothing if (the Toolbar is not available.
 			if (!ToolbarManager.ToolbarAvailable)
 			{
-				Tools.PostDebugMessage(this, "Refusing to make a ToolbarButton: ToolbarAvailable = false");
+				ToadicusTools.Logging.PostDebugMessage(this, "Refusing to make a ToolbarButton: ToolbarAvailable = false");
 				return;
 			}
 
@@ -1034,7 +1040,7 @@ namespace VOID
 				this.ToggleMainWindow();
 			};
 
-			Tools.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
+			ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
 		}
 
 		protected void InitializeAppLauncherButton()
@@ -1047,7 +1053,7 @@ namespace VOID
 					this.VOIDIconTexture
 				);
 
-				Tools.PostDebugMessage(
+				ToadicusTools.Logging.PostDebugMessage(
 					this,
 					"AppLauncherButton initialized in {0}",
 					Enum.GetName(

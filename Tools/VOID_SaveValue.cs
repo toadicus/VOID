@@ -26,10 +26,11 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using KSP;
 using System;
 using System.Collections.Generic;
-using ToadicusTools;
 using UnityEngine;
 
 namespace VOID
@@ -65,7 +66,7 @@ namespace VOID
 			{
 				if (this.Core != null && !System.Object.Equals(this._value, value))
 				{
-					Tools.PostDebugMessage (string.Format (
+					ToadicusTools.Logging.PostDebugMessage (string.Format (
 						"VOID: Dirtying config for type {0}." +
 						"\n\t Old Value: {2}, New Value: {3}" +
 						"\n\t Object.Equals(New, Old): {4}\n" +

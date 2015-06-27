@@ -26,8 +26,11 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using System;
-using ToadicusTools;
+using ToadicusTools.MuMechTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -148,7 +151,7 @@ namespace VOID
 	public abstract class VOID_NumValue<T> : VOID_DataValue<T>, IFormattable
 		where T : IFormattable, IConvertible, IComparable
 	{
-		public static IFormatProvider formatProvider = Tools.SIFormatter;
+		public static IFormatProvider formatProvider = SIFormatProvider.SIFormatter;
 
 		public static implicit operator Double(VOID_NumValue<T> v)
 		{
@@ -218,7 +221,7 @@ namespace VOID
 		{
 			return string.Format (
 				"{0}{1}",
-				Tools.MuMech_ToSI (this, digits, MinMagnitude, MaxMagnitude),
+				MuMechTools.MuMech_ToSI (this, digits, MinMagnitude, MaxMagnitude),
 				this.Units
 			);
 		}
@@ -234,7 +237,7 @@ namespace VOID
 
 		public virtual string ValueUnitString(int digits, int MinMagnitude, int MaxMagnitude)
 		{
-			return Tools.MuMech_ToSI(this, digits, MinMagnitude, MaxMagnitude) + this.Units;
+			return MuMechTools.MuMech_ToSI(this, digits, MinMagnitude, MaxMagnitude) + this.Units;
 		}
 
 		public virtual void DoGUIHorizontal(string format)
@@ -282,7 +285,7 @@ namespace VOID
 				Rect lastRect = GUILayoutUtility.GetLastRect();
 				if (lastRect.Contains(Event.current.mousePosition))
 				{
-					Tools.PostDebugMessage(string.Format("{0}: Changing digits from {1}",
+					ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Changing digits from {1}",
 						this.GetType().Name,
 						digits
 					));
@@ -301,7 +304,7 @@ namespace VOID
 						digits += 9;
 					}
 
-					Tools.PostDebugMessage(string.Format("{0}: Changed digits to {1}.",
+					ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Changed digits to {1}.",
 						this.GetType().Name,
 						digits
 					));
