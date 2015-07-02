@@ -808,7 +808,16 @@ namespace VOID
 		public static readonly VOID_DoubleValue horzVelocity =
 			new VOID_DoubleValue(
 				"Horizontal speed",
-				new Func<double>(() => Core.Vessel.horizontalSrfSpeed),
+				delegate
+				{
+					double srfSpeedSqr = Core.Vessel.srfSpeed;
+					srfSpeedSqr *= srfSpeedSqr;
+
+					double vrtSpeedSqr = Core.Vessel.verticalSpeed;
+					vrtSpeedSqr *= vrtSpeedSqr;
+
+					return Math.Sqrt(srfSpeedSqr - vrtSpeedSqr);
+				},
 				"m/s"
 			);
 
