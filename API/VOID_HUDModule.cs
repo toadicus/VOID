@@ -142,11 +142,10 @@ namespace VOID
 			this.positionsLocked.value = Layout.Toggle(this.positionsLocked, "Lock HUD Positions");
 		}
 
-		public override void LoadConfig()
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.LoadConfig();
+			base.LoadConfig(config);
 
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_HUDModule>();
 			config.load();
 
 			HUDWindow window;

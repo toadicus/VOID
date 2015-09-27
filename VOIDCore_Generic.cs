@@ -462,7 +462,7 @@ namespace VOID
 
 			this.saveTimer += Time.deltaTime;
 
-			if (this.saveTimer > 2f)
+			if (this.modulesLoaded && this.saveTimer > 2f)
 			{
 				if (this.configDirty)
 				{
@@ -841,6 +841,8 @@ namespace VOID
 					}
 				}
 
+				this.LoadConfig();
+
 				this.modulesLoaded = true;
 
 				sb.AppendFormat("Loaded {0} modules.\n", this.Modules.Count);
@@ -888,7 +890,6 @@ namespace VOID
 
 			if (module.InValidGame && module.InValidScene)
 			{
-				module.LoadConfig();
 				this.modules.Add(module);
 
 				ToadicusTools.Logging.PostDebugMessage(string.Format(
@@ -1103,16 +1104,34 @@ namespace VOID
 			}
 		}
 
-		public override void LoadConfig()
+		public void LoadConfig()
 		{
-			base.LoadConfig();
+
+			if (!System.IO.File.Exists(this.VOIDSettingsPath) && KSP.IO.File.Exists<VOID_Module>("config.xml"))
+			{
+				ToadicusTools.Logging.PostLogMessage(
+					"VOID: No per-save config file but old file detected; copying from old file."
+				);
+
+				System.IO.File.Copy(
+					KSP.IO.IOUtils.GetFilePathFor(typeof(VOID_Module), "config.xml"),
+					this.VOIDSettingsPath
+				);
+			}
+
+			this.LoadConfig(new ToadicusTools.PluginConfiguration(this.VOIDSettingsPath));
+		}
+
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
+		{
+			base.LoadConfig(config);
 
 			IVOID_Module module;
 			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
 				module = this.modules[idx];
 
-				module.LoadConfig();
+				module.LoadConfig(config);
 			}
 
 			this.TimeScale |= GameSettings.KERBIN_TIME ? VOID_TimeScale.KERBIN_TIME : 0u;
@@ -1123,9 +1142,10 @@ namespace VOID
 			if (this.configNeedsUpdate && this is VOIDCore_Flight)
 			{
 				KSP.IO.File.Delete<T>("config.xml");
+				System.IO.File.Delete(this.VOIDSettingsPath);
 			}
 
-			var config = KSP.IO.PluginConfiguration.CreateForType<T>();
+			KSP.IO.PluginConfiguration config = new ToadicusTools.PluginConfiguration(this.VOIDSettingsPath);
 
 			config.load();
 
@@ -1171,9 +1191,8 @@ namespace VOID
 
 			this.useToolbarManager = (VOID_SaveValue<bool>)ToolbarManager.ToolbarAvailable;
 
-			this.LoadConfig();
-
-			this.configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
+			this.SaveGamePath = string.Format("{0}saves/{1}", ToadicusTools.IOTools.KSPRootPath, HighLogic.SaveFolder);
+			this.VOIDSettingsPath = string.Format("{0}/VOIDConfig.xml", this.SaveGamePath);
 
 			this.FactoryReset = false;
 		}

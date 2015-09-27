@@ -249,9 +249,8 @@ namespace VOID
 
 		public virtual void DrawConfigurables() {}
 
-		public virtual void LoadConfig()
+		public virtual void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Module> ();
 			config.load ();
 
 			if (this is VOIDCore)
@@ -374,6 +373,22 @@ namespace VOID
 
 		public virtual void Save(KSP.IO.PluginConfiguration config, string sceneKey)
 		{
+			if (config == null)
+			{
+				ToadicusTools.Logging.PostErrorMessage(
+					"{0}: config argument was null, bailing out.",
+					this.GetType().Name
+				);
+			}
+
+			if (sceneKey == null)
+			{
+				ToadicusTools.Logging.PostErrorMessage(
+					"{0}: sceneKey argument was null, bailing out.",
+					this.GetType().Name
+				);
+			}
+
 			MemberInfo[] members = this.GetType().GetMembers(
 				BindingFlags.NonPublic |
 				BindingFlags.Public |

@@ -44,7 +44,8 @@ namespace VOID
 
 		void DrawConfigurables();
 
-		void LoadConfig();
+		// void LoadConfig();
+		void LoadConfig(KSP.IO.PluginConfiguration config);
 
 		void Save(KSP.IO.PluginConfiguration config, string sceneKey);
 	}

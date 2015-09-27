@@ -107,14 +107,11 @@ namespace VOID
 			{
 				if (this._fileName == null || this._fileName == string.Empty)
 				{
-					this._fileName = KSP.IO.IOUtils.GetFilePathFor(
-						typeof(VOIDCore),
-						string.Format(
-							"{0}_{1}",
-							this.Vessel.vesselName,
-							"data.csv"
-						),
-						null
+					this._fileName = string.Format(
+						"{0}/{1}_{2}",
+						this.core.SaveGamePath,
+						this.Vessel.vesselName,
+						"data.csv"
 					);
 				}
 
@@ -237,9 +234,9 @@ namespace VOID
 
 		#region VOID_Module Overrides
 
-		public override void LoadConfig()
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.LoadConfig();
+			base.LoadConfig(config);
 
 			this.logIntervalStr = this.logInterval.value.ToString("#.0##");
 		}

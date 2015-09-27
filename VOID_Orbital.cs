@@ -118,9 +118,9 @@ namespace VOID
 			base.ModuleWindow(id);
 		}
 
-		public override void LoadConfig ()
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.LoadConfig ();
+			base.LoadConfig(config);
 
 			this.precisionValues = new ToadicusTools.IntCollection (4, this._precisionValues);
 		}

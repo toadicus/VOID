@@ -42,6 +42,9 @@ namespace VOID
 		public abstract int ConfigVersion { get; }
 		public virtual bool configNeedsUpdate { get; set; }
 
+		public virtual string SaveGamePath { get; protected set; }
+		public virtual string VOIDSettingsPath { get; protected set; }
+
 		public abstract string SceneKey { get; }
 
 		public abstract int WindowID { get; }
@@ -71,11 +74,6 @@ namespace VOID
 		public abstract event VOIDEventHandler onUpdate;
 
 		public virtual void OnGUI() {}
-
-		public override void LoadConfig()
-		{
-			base.LoadConfig();
-		}
 
 		public abstract void SaveConfig();
 
