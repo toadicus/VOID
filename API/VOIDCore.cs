@@ -58,7 +58,6 @@ namespace VOID
 		public abstract GUISkin Skin { get; }
 
 		public abstract CelestialBody HomeBody { get; }
-		public abstract IList<CelestialBody> AllBodies { get; }
 		public abstract List<CelestialBody> SortedBodyList { get; protected set; }
 
 		public abstract VesselType[] AllVesselTypes { get; protected set; }

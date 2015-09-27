@@ -153,13 +153,6 @@ namespace VOID
 				base.Active = value;
 			}
 		}
-		public override IList<CelestialBody> AllBodies
-		{
-			get
-			{
-				return FlightGlobals.Bodies.AsReadOnly();
-			}
-		}
 
 		public override VesselType[] AllVesselTypes
 		{
