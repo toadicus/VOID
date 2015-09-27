@@ -79,6 +79,16 @@ namespace VOID
 				return;
 			}
 
+			if (selectedBodyIdx >= this.core.SortedBodyList.Count)
+			{
+				selectedBodyIdx.value %= this.core.SortedBodyList.Count;
+			}
+
+			if (selectedBodyIdx < 0)
+			{
+				selectedBodyIdx.value += this.core.SortedBodyList.Count;
+			}
+
 			GUILayout.BeginVertical();
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -87,21 +97,21 @@ namespace VOID
 				selectedBodyIdx.value--;
 				if (selectedBodyIdx < 0)
 				{
-					selectedBodyIdx.value = this.core.AllBodies.Count - 1;
+					selectedBodyIdx.value = this.core.SortedBodyList.Count - 1;
 				}
 			}
-			GUILayout.Label(this.core.AllBodies[selectedBodyIdx].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.SortedBodyList[selectedBodyIdx].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">"))
 			{
 				selectedBodyIdx.value++;
-				if (selectedBodyIdx > this.core.AllBodies.Count - 1)
+				if (selectedBodyIdx > this.core.SortedBodyList.Count - 1)
 				{
 					selectedBodyIdx.value = 0;
 				}
 			}
 			GUILayout.EndHorizontal();
 
-			seletedBody = this.core.AllBodies[selectedBodyIdx];
+			seletedBody = this.core.SortedBodyList[selectedBodyIdx];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<"))
