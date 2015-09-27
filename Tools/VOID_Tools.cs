@@ -335,21 +335,16 @@ namespace VOID
 					{
 						func(id);
 					}
-					#if DEBUG
+					#if !DEBUG
 					catch (ArgumentException)
-					#else
-					catch (ArgumentException)
-					#endif
 					{
 						Debug.LogWarning(
-							string.Format("[{0}]: ArgumentException caught during window call.  This is not a bug.",
+							string.Format("[{0}]: ArgumentException caught during window call." +
+								"  This may not be a bug when occuring during scene changes.",
 								func.Target.GetType().Name
 							));
-
-						/*#if DEBUG
-						Debug.LogException(ex);
-						#endif*/
 					}
+					#endif
 					catch (Exception ex)
 					{
 						Debug.LogError(
