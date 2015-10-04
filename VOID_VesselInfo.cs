@@ -59,27 +59,27 @@ namespace VOID
 				VOID_Styles.labelCenterBold,
 				GUILayout.ExpandWidth(true));
 
-			VOID_Data.geeForce.DoGUIHorizontal ("F2");
+			VOID_Data.geeForce.DoGUIHorizontal("F2");
 
-			VOID_Data.partCount.DoGUIHorizontal ();
+			VOID_Data.partCount.DoGUIHorizontal();
 
-			VOID_Data.totalMass.DoGUIHorizontal ("F3");
+			VOID_Data.totalMass.DoGUIHorizontal("F3");
 
 			VOID_Data.stageResourceMass.DoGUIHorizontal("F3");
 
 			VOID_Data.resourceMass.DoGUIHorizontal("F3");
 
-			VOID_Data.stageDeltaV.DoGUIHorizontal (3, false);
+			VOID_Data.stageDeltaV.DoGUIHorizontal(3, false);
 
-			VOID_Data.totalDeltaV.DoGUIHorizontal (3, false);
+			VOID_Data.totalDeltaV.DoGUIHorizontal(3, false);
 
-			VOID_Data.mainThrottle.DoGUIHorizontal ("F0");
+			VOID_Data.mainThrottle.DoGUIHorizontal("P0");
 
-			VOID_Data.currmaxThrust.DoGUIHorizontal ();
+			VOID_Data.currmaxThrust.DoGUIHorizontal();
 
-			VOID_Data.currmaxThrustWeight.DoGUIHorizontal ();
+			VOID_Data.currmaxThrustWeight.DoGUIHorizontal();
 
-			VOID_Data.surfaceThrustWeight.DoGUIHorizontal ("F2");
+			VOID_Data.surfaceThrustWeight.DoGUIHorizontal("F2");
 
 			VOID_Data.intakeAirStatus.DoGUIHorizontal();
 

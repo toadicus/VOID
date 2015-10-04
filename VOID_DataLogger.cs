@@ -323,15 +323,18 @@ namespace VOID
 						"\"Surface Longitude (°)\"," +
 						"\"Apoapsis Altitude (m)\"," +
 						"\"Periapsis Altitude (m)\"," +
+						"\"Orbital Inclination (°)\"," +
 						"\"Orbital Velocity (m/s)\"," +
 						"\"Surface Velocity (m/s)\"," +
 						"\"Vertical Speed (m/s)\"," +
 						"\"Horizontal Speed (m/s)\"," +
+						"\"Current Thrust (kN)\"," +
 						"\"Gee Force (gees)\"," +
 						"\"Temperature (°C)\"," +
 						"\"Gravity (m/s²)\"," +
 						"\"Atmosphere Density (g/m³)\"," +
 						"\"Downrange Distance  (m)\"," +
+						"\"Main Throttle\"," +
 						"\n"
 					);
 				}
@@ -372,6 +375,10 @@ namespace VOID
 				line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G3"));
 				line.Append(',');
 
+				// Orbital Inclination
+				line.Append(VOID_Data.orbitInclination.Value.ToString("F3"));
+				line.Append(',');
+
 				//Orbital velocity
 				line.Append(VOID_Data.orbitVelocity.Value.ToString("F3"));
 				line.Append(',');
@@ -386,6 +393,10 @@ namespace VOID
 
 				//horizontal speed
 				line.Append(VOID_Data.horzVelocity.Value.ToString("F3"));
+				line.Append(',');
+
+				// Current Thrust
+				line.Append(VOID_Data.currThrust.Value.ToString("G3"));
 				line.Append(',');
 
 				//gee force
@@ -406,6 +417,10 @@ namespace VOID
 
 				// Downrange Distance
 				line.Append((VOID_Data.downrangeDistance.Value.ToString("G3")));
+				line.Append(',');
+
+				// Main Throttle
+				line.Append(VOID_Data.mainThrottle.Value.ToString("P2"));
 
 				line.Append('\n');
 

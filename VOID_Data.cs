@@ -233,8 +233,8 @@ namespace VOID
 		public static readonly VOID_FloatValue mainThrottle =
 			new VOID_FloatValue(
 				"Throttle",
-				new Func<float>(() => Core.Vessel.ctrlState.mainThrottle * 100f),
-				"%"
+				new Func<float>(() => Core.Vessel.ctrlState.mainThrottle),
+				""
 			);
 
 		#endregion
@@ -353,6 +353,19 @@ namespace VOID
 						(VOID_Data.maxThrustWeight.Value).ToString("F2")
 					);
 				}
+			);
+
+		public static readonly VOID_DoubleValue currThrust =
+			new VOID_DoubleValue(
+				"Current Thrust",
+				delegate()
+				{
+					if (Core.Stages == null || Core.LastStage == null)
+						return double.NaN;
+
+					return Core.LastStage.actualThrust;
+				},
+				"kN"
 			);
 
 		public static readonly VOID_StrValue currmaxThrust =
