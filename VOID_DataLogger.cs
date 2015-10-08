@@ -348,75 +348,75 @@ namespace VOID
 				line.Append(',');
 
 				//Altitude ASL
-				line.Append(VOID_Data.orbitAltitude.Value.ToString("F3"));
+				line.Append(VOID_Data.orbitAltitude.Value.ToString("G9"));
 				line.Append(',');
 
 				//Altitude (true)
-				line.Append(VOID_Data.trueAltitude.Value.ToString("F3"));
+				line.Append(VOID_Data.trueAltitude.Value.ToString("G9"));
 				line.Append(',');
 
 				// Surface Latitude
 				line.Append('"');
-				line.Append(VOID_Data.surfLatitude.Value);
+				line.Append(VOID_Data.surfLatitude.Value.ToString("F3"));
 				line.Append('"');
 				line.Append(',');
 
 				// Surface Longitude
 				line.Append('"');
-				line.Append(VOID_Data.surfLongitude.Value);
+				line.Append(VOID_Data.surfLongitude.Value.ToString("F3"));
 				line.Append('"');
 				line.Append(',');
 
 				// Apoapsis Altitude
-				line.Append(VOID_Data.orbitApoAlt.Value.ToString("G3"));
+				line.Append(VOID_Data.orbitApoAlt.Value.ToString("G9"));
 				line.Append(',');
 
 				// Periapsis Altitude
-				line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G3"));
+				line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G9"));
 				line.Append(',');
 
 				// Orbital Inclination
-				line.Append(VOID_Data.orbitInclination.Value.ToString("F3"));
+				line.Append(VOID_Data.orbitInclination.Value.ToString("F2"));
 				line.Append(',');
 
 				//Orbital velocity
-				line.Append(VOID_Data.orbitVelocity.Value.ToString("F3"));
+				line.Append(VOID_Data.orbitVelocity.Value.ToString("G9"));
 				line.Append(',');
 
 				//surface velocity
-				line.Append(VOID_Data.surfVelocity.Value.ToString("F3"));
+				line.Append(VOID_Data.surfVelocity.Value.ToString("G9"));
 				line.Append(',');
 
 				//vertical speed
-				line.Append(VOID_Data.vertVelocity.Value.ToString("F3"));
+				line.Append(VOID_Data.vertVelocity.Value.ToString("G9"));
 				line.Append(',');
 
 				//horizontal speed
-				line.Append(VOID_Data.horzVelocity.Value.ToString("F3"));
+				line.Append(VOID_Data.horzVelocity.Value.ToString("G9"));
 				line.Append(',');
 
 				// Current Thrust
-				line.Append(VOID_Data.currThrust.Value.ToString("G3"));
+				line.Append(VOID_Data.currThrust.Value.ToString("G9"));
 				line.Append(',');
 
 				//gee force
-				line.Append(VOID_Data.geeForce.Value.ToString("F3"));
+				line.Append(VOID_Data.geeForce.Value.ToString("G9"));
 				line.Append(',');
 
 				//temperature
-				line.Append(VOID_Data.temperature.Value.ToString("F2"));
+				line.Append(VOID_Data.temperature.Value.ToString("F3"));
 				line.Append(',');
 
 				//gravity
-				line.Append(VOID_Data.gravityAccel.Value.ToString("F3"));
+				line.Append(VOID_Data.gravityAccel.Value.ToString("G9"));
 				line.Append(',');
 
 				//atm density
-				line.Append(VOID_Data.atmDensity.Value.ToString("G3"));
+				line.Append(VOID_Data.atmDensity.Value.ToString("G9"));
 				line.Append(',');
 
 				// Downrange Distance
-				line.Append((VOID_Data.downrangeDistance.Value.ToString("G3")));
+				line.Append((VOID_Data.downrangeDistance.Value.ToString("G9")));
 				line.Append(',');
 
 				// Main Throttle
