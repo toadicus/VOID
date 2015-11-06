@@ -823,13 +823,7 @@ namespace VOID
 				"Horizontal speed",
 				delegate
 				{
-					double srfSpeedSqr = Core.Vessel.srfSpeed;
-					srfSpeedSqr *= srfSpeedSqr;
-
-					double vrtSpeedSqr = Core.Vessel.verticalSpeed;
-					vrtSpeedSqr *= vrtSpeedSqr;
-
-					return Math.Sqrt(srfSpeedSqr - vrtSpeedSqr);
+					return Core.Vessel.horizontalSrfSpeed;
 				},
 				"m/s"
 			);
