@@ -26,12 +26,10 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// TODO: Remove ToadicusTools. prefixes after refactor is done.
-
 using KSP;
 using System;
 using System.Text;
-
+using ToadicusTools;
 using ToadicusTools.Text;
 using UnityEngine;
 
@@ -119,7 +117,7 @@ namespace VOID
 		{
 			get
 			{
-				ToadicusTools.Logging.PostDebugMessage(
+				Logging.PostDebugMessage(
 					this,
 					"Checking init state:" +
 					"\n\tcurrentFunds={0}" +
@@ -204,7 +202,7 @@ namespace VOID
 
 		private void initCurrencies()
 		{
-			ToadicusTools.Logging.PostDebugMessage(
+			Logging.PostDebugMessage(
 				this,
 				"Initializing currencies." +
 				"\n\tFunding.Instance={0}" +
@@ -239,11 +237,11 @@ namespace VOID
 
 			bool texturesLoaded;
 
-			texturesLoaded = ToadicusTools.IOTools.LoadTexture(out this.fundsIconGreen, "VOID/Textures/fundsgreen.png", 10, 18);
-			texturesLoaded &= ToadicusTools.IOTools.LoadTexture(out this.fundsIconRed, "VOID/Textures/fundsred.png", 10, 18);
-			texturesLoaded &= ToadicusTools.IOTools.LoadTexture(out this.reputationIconGreen, "VOID/Textures/repgreen.png", 16, 18);
-			texturesLoaded &= ToadicusTools.IOTools.LoadTexture(out this.reputationIconRed, "VOID/Textures/repred.png", 16, 18);
-			texturesLoaded &= ToadicusTools.IOTools.LoadTexture(out this.scienceIcon, "VOID/Textures/science.png", 16, 18);
+			texturesLoaded = IOTools.LoadTexture(out this.fundsIconGreen, "VOID/Textures/fundsgreen.png", 10, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.fundsIconRed, "VOID/Textures/fundsred.png", 10, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.reputationIconGreen, "VOID/Textures/repgreen.png", 16, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.reputationIconRed, "VOID/Textures/repred.png", 16, 18);
+			texturesLoaded &= IOTools.LoadTexture(out this.scienceIcon, "VOID/Textures/science.png", 16, 18);
 
 			this.fundsContent = new GUIContent();
 			this.repContent = new GUIContent();

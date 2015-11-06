@@ -26,12 +26,11 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// TODO: Remove ToadicusTools. prefixes after refactor is done.
-
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
+using ToadicusTools;
 using ToadicusTools.Extensions;
 using ToadicusTools.MuMechTools;
 using UnityEngine;
@@ -563,10 +562,10 @@ namespace VOID
 					thrustPos = vesselTransform.InverseTransformPoint(thrustPos);
 					thrustDir = vesselTransform.InverseTransformDirection(thrustDir);
 
-					Vector3d thrustOffset = ToadicusTools.VectorTools.PointDistanceToLine(
+					Vector3d thrustOffset = VectorTools.PointDistanceToLine(
 						                        thrustPos, thrustDir.normalized, Core.Vessel.findLocalCenterOfMass());
 
-					ToadicusTools.Logging.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
+					Logging.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
 					"\tthrustPos: {0}\n" +
 					"\tthrustDir: {1}\n" +
 					"\tthrustOffset: {2}\n" +
@@ -1290,7 +1289,7 @@ namespace VOID
 
 		private static double burnTime(double deltaV, double initialMass, double massFlow, double thrust)
 		{
-			ToadicusTools.Logging.PostDebugMessage(typeof(VOID_Data), "calculating burnTime from:\n" +
+			Logging.PostDebugMessage(typeof(VOID_Data), "calculating burnTime from:\n" +
 			"\tdeltaV: {0}\n" +
 			"\tinitialMass: {1}\n" +
 			"\tmassFlow: {2}\n" +

@@ -26,13 +26,12 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// TODO: Remove ToadicusTools. prefixes after refactor is done.
-
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToadicusTools;
 using ToadicusTools.GUIUtils;
 using ToadicusTools.Text;
 using UnityEngine;
@@ -99,7 +98,7 @@ namespace VOID
 
 			this.positionsLocked.value = true;
 
-			ToadicusTools.Logging.PostDebugMessage (this, "Constructed.");
+			Logging.PostDebugMessage (this, "Constructed.");
 		}
 
 		protected void leftHUDWindow(int id)

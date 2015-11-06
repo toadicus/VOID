@@ -26,8 +26,6 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// TODO: Remove ToadicusTools. prefixes after refactor is done.
-
 using KerbalEngineer.Editor;
 using KerbalEngineer.Helpers;
 using KerbalEngineer.VesselSimulator;
@@ -35,6 +33,7 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToadicusTools;
 using ToadicusTools.DebugTools;
 using ToadicusTools.Extensions;
 using ToadicusTools.GUIUtils;
@@ -344,7 +343,7 @@ namespace VOID
 			{
 				this.LoadGUIStyles();
 
-				ToadicusTools.Logging.PostDebugMessage(
+				Logging.PostDebugMessage(
 					this,
 					"ToolbarAvailable: {0}, UseToobarManager: {1}",
 					ToolbarManager.ToolbarAvailable,
@@ -383,7 +382,7 @@ namespace VOID
 				)
 			)
 			{
-				ToadicusTools.Logging.PostDebugMessage(this, "Updating SimManager.");
+				Logging.PostDebugMessage(this, "Updating SimManager.");
 				this.UpdateSimManager();
 			}
 
@@ -467,7 +466,7 @@ namespace VOID
 				if (this.configDirty)
 				{
 
-					ToadicusTools.Logging.PostDebugMessage(string.Format(
+					Logging.PostDebugMessage(string.Format(
 							"{0}: Time to save, checking if configDirty: {1}",
 							this.GetType().Name,
 							this.configDirty
@@ -695,7 +694,7 @@ namespace VOID
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.skinIdx--;
-				ToadicusTools.Logging.PostDebugMessage(string.Format(
+				Logging.PostDebugMessage(string.Format(
 					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this.skinName,
@@ -712,7 +711,7 @@ namespace VOID
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.skinIdx++;
-				ToadicusTools.Logging.PostDebugMessage(string.Format(
+				Logging.PostDebugMessage(string.Format(
 					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this.skinName,
@@ -779,7 +778,7 @@ namespace VOID
 
 			SimManager.TryStartSimulation();
 
-			ToadicusTools.Logging.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
+			Logging.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
 				SimManager.Atmosphere,
 				SimManager.Gravity
 			);
@@ -787,7 +786,7 @@ namespace VOID
 
 		protected void GetSimManagerResults()
 		{
-			ToadicusTools.Logging.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
+			Logging.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
 
 			this.Stages = SimManager.Stages;
 
@@ -859,7 +858,7 @@ namespace VOID
 			{
 				if (this.modules[mIdx].Name == T.Name)
 				{
-					ToadicusTools.Logging.PostErrorMessage("{0}: refusing to load {1}: already loaded", this.GetType().Name, T.Name);
+					Logging.PostErrorMessage("{0}: refusing to load {1}: already loaded", this.GetType().Name, T.Name);
 					return;
 				}
 			}
@@ -892,7 +891,7 @@ namespace VOID
 			{
 				this.modules.Add(module);
 
-				ToadicusTools.Logging.PostDebugMessage(string.Format(
+				Logging.PostDebugMessage(string.Format(
 						"{0}: loaded module {1}.",
 						this.GetType().Name,
 						T.Name
@@ -925,7 +924,7 @@ namespace VOID
 				}
 			}
 
-			ToadicusTools.Logging.PostDebugMessage(string.Format(
+			Logging.PostDebugMessage(string.Format(
 				"{0}: loaded {1} GUISkins.",
 				this.GetType().Name,
 				this.validSkins.Count
@@ -956,7 +955,7 @@ namespace VOID
 				this.skinIdx = defaultIdx;
 			}
 
-			ToadicusTools.Logging.PostDebugMessage(string.Format(
+			Logging.PostDebugMessage(string.Format(
 				"{0}: _skinIdx = {1}.",
 				this.GetType().Name,
 				this.skinName.ToString()
@@ -1018,7 +1017,7 @@ namespace VOID
 			// Do nothing if (the Toolbar is not available.
 			if (!ToolbarManager.ToolbarAvailable)
 			{
-				ToadicusTools.Logging.PostDebugMessage(this, "Refusing to make a ToolbarButton: ToolbarAvailable = false");
+				Logging.PostDebugMessage(this, "Refusing to make a ToolbarButton: ToolbarAvailable = false");
 				return;
 			}
 
@@ -1034,7 +1033,7 @@ namespace VOID
 				this.ToggleMainWindow();
 			};
 
-			ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
+			Logging.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
 		}
 
 		protected void InitializeAppLauncherButton()
@@ -1047,7 +1046,7 @@ namespace VOID
 					this.VOIDIconTexture
 				);
 
-				ToadicusTools.Logging.PostDebugMessage(
+				Logging.PostDebugMessage(
 					this,
 					"AppLauncherButton initialized in {0}",
 					Enum.GetName(
@@ -1109,7 +1108,7 @@ namespace VOID
 
 			if (!System.IO.File.Exists(this.VOIDSettingsPath) && KSP.IO.File.Exists<VOID_Module>("config.xml"))
 			{
-				ToadicusTools.Logging.PostLogMessage(
+				Logging.PostLogMessage(
 					"VOID: No per-save config file but old file detected; copying from old file."
 				);
 
@@ -1119,7 +1118,7 @@ namespace VOID
 				);
 			}
 
-			this.LoadConfig(new ToadicusTools.PluginConfiguration(this.VOIDSettingsPath));
+			this.LoadConfig(new PluginConfiguration(this.VOIDSettingsPath));
 		}
 
 		public override void LoadConfig(KSP.IO.PluginConfiguration config)
@@ -1145,7 +1144,7 @@ namespace VOID
 				System.IO.File.Delete(this.VOIDSettingsPath);
 			}
 
-			KSP.IO.PluginConfiguration config = new ToadicusTools.PluginConfiguration(this.VOIDSettingsPath);
+			KSP.IO.PluginConfiguration config = new PluginConfiguration(this.VOIDSettingsPath);
 
 			config.load();
 
@@ -1191,7 +1190,7 @@ namespace VOID
 
 			this.useToolbarManager = (VOID_SaveValue<bool>)ToolbarManager.ToolbarAvailable;
 
-			this.SaveGamePath = string.Format("{0}saves/{1}", ToadicusTools.IOTools.KSPRootPath, HighLogic.SaveFolder);
+			this.SaveGamePath = string.Format("{0}saves/{1}", IOTools.KSPRootPath, HighLogic.SaveFolder);
 			this.VOIDSettingsPath = string.Format("{0}/VOIDConfig.xml", this.SaveGamePath);
 
 			this.FactoryReset = false;

@@ -26,13 +26,12 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// TODO: Remove ToadicusTools. prefixes after refactor is done.
-
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToadicusTools;
 using ToadicusTools.Text;
 using UnityEngine;
 
@@ -115,7 +114,7 @@ namespace VOID
 			);
 			this.Windows.Add(this.ehudWindow);
 
-			ToadicusTools.Logging.PostDebugMessage (this.GetType().Name + ": Constructed.");
+			Logging.PostDebugMessage (this.GetType().Name + ": Constructed.");
 		}
 
 		public void ehudWindowFunc(int id)
@@ -155,7 +154,7 @@ namespace VOID
 				hudString.Append("Bottom Stage T/W Ratio: ");
 				hudString.Append(this.core.LastStage.thrustToWeight.ToString("F3"));
 
-				ToadicusTools.Logging.PostDebugMessage(this,
+				Logging.PostDebugMessage(this,
 					"CoMmarker.gameObject.activeInHierarchy: {0};" +
 					"CoTmarker.gameObject.activeInHierarchy: {1}",
 					this.CoMmarker.gameObject.activeInHierarchy,
@@ -164,7 +163,7 @@ namespace VOID
 
 				if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
 				{
-					ToadicusTools.Logging.PostDebugMessage(this, "CoM and CoT markers are active, doing thrust offset.");
+					Logging.PostDebugMessage(this, "CoM and CoT markers are active, doing thrust offset.");
 					hudString.Append('\n');
 
 					hudString.Append("Thrust Offset: ");
@@ -177,7 +176,7 @@ namespace VOID
 				#if DEBUG
 			else
 			{
-				ToadicusTools.Logging.PostDebugMessage(this, "CoM and CoT markers are not active, thrust offset skipped.");
+				Logging.PostDebugMessage(this, "CoM and CoT markers are not active, thrust offset skipped.");
 			}
 				#endif
 
@@ -217,7 +216,7 @@ namespace VOID
 				return;
 			}
 
-			ToadicusTools.Logging.PostDebugMessage(this,
+			Logging.PostDebugMessage(this,
 				"EditorPartList topLeft.parent.parent.position: {0}\n" +
 				"EditorPartList topLeft.parent.position: {1}\n" +
 				"EditorPartList topLeft.position: {2}\n" +

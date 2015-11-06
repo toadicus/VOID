@@ -26,13 +26,12 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// TODO: Remove ToadicusTools. prefixes after refactor is done.
-
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToadicusTools;
 using ToadicusTools.Text;
 using UnityEngine;
 
@@ -65,7 +64,7 @@ namespace VOID
 			this.rightHUD = new HUDWindow("rightHUD", this.rightHUDWindow, new Rect(Screen.width * .625f, 0f, 300f, 90f));
 			this.Windows.Add(this.rightHUD);
 
-			ToadicusTools.Logging.PostDebugMessage ("VOID_HUD: Constructed.");
+			Logging.PostDebugMessage ("VOID_HUD: Constructed.");
 		}
 
 		protected void leftHUDWindow(int id)

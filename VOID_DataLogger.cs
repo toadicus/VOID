@@ -26,13 +26,12 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// TODO: Remove ToadicusTools. prefixes after refactor is done.
-
 using KSP;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ToadicusTools;
 using ToadicusTools.DebugTools;
 using ToadicusTools.GUIUtils;
 using ToadicusTools.Text;
@@ -436,7 +435,7 @@ namespace VOID
 
 		protected void AsyncWriteCallback(IAsyncResult result)
 		{
-			ToadicusTools.Logging.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
+			Logging.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
 
 			this.outputFile.EndWrite(result);
 			this.outstandingWrites--;
