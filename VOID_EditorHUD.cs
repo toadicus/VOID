@@ -145,7 +145,7 @@ namespace VOID
 
 				hudString.Append('\n');
 
-				hudString.Append("Bottom Stage Delta-V");
+				hudString.Append("Bottom Stage Delta-V: ");
 				hudString.Append(SIFormatProvider.ToSI(this.core.LastStage.deltaV));
 				hudString.Append("m/s");
 
