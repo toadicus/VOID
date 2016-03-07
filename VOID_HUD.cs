@@ -58,10 +58,10 @@ namespace VOID
 
 			this.Active = true;
 
-			this.leftHUD = new HUDWindow("leftHUD", this.leftHUDWindow, new Rect(Screen.width * .375f - 300f, 0f, 300f, 90f));
+			this.leftHUD = new HUDWindow("leftHUD", this.leftHUDWindow, new Rect((float)Screen.width * .375f - 300f, 0f, 300f, 90f));
 			this.Windows.Add(this.leftHUD);
 
-			this.rightHUD = new HUDWindow("rightHUD", this.rightHUDWindow, new Rect(Screen.width * .625f, 0f, 300f, 90f));
+			this.rightHUD = new HUDWindow("rightHUD", this.rightHUDWindow, new Rect((float)Screen.width * .625f, 0f, 300f, 90f));
 			this.Windows.Add(this.rightHUD);
 
 			Logging.PostDebugMessage ("VOID_HUD: Constructed.");
