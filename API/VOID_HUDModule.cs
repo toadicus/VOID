@@ -93,6 +93,11 @@ namespace VOID
 
 		public override void DrawGUI(object sender)
 		{
+			if (this.core == null)
+			{
+				return;
+			}
+
 			VOID_Styles.labelHud.normal.textColor = textColors [ColorIndex];
 
 			GUI.skin = this.core.Skin;
