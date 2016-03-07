@@ -73,8 +73,8 @@ namespace VOID
 		public abstract event VOIDEventHandler onApplicationQuit;
 		public abstract event VOIDEventHandler onSkinChanged;
 		public abstract event VOIDEventHandler onUpdate;
-		public virtual event VOIDEventHandler onPostRender;
 		public virtual event VOIDEventHandler onPreRender;
+		public virtual event VOIDEventHandler onPostRender;
 
 		public virtual bool MethodInPostRenderQueue(VOIDEventHandler method)
 		{
@@ -82,21 +82,45 @@ namespace VOID
 			{
 				ToadicusTools.Logging.PostDebugMessage(this, "Looking for method {0} in onGui", method);
 
-				foreach (var invoker in this.onPostRender.GetInvocationList())
+				foreach (Delegate invoker in this.onPostRender.GetInvocationList())
 				{
 					ToadicusTools.Logging.PostDebugMessage(this, "Checking invoker {0}", invoker);
 
 					if (invoker == method)
 					{
+						ToadicusTools.Logging.PostDebugMessage(this, "Found match.");
 						return true;
 					}
 				}
 			}
+			#if DEBUG
+			else
+			{
+				ToadicusTools.Logging.PostDebugMessage(this, "this.onPostRender == null");
+			}
+			#endif
+
 
 			return false;
 		}
 
-		public abstract void OnGUI();
+		public void OnGUI()
+		{
+			if (Event.current.type == EventType.Repaint || Event.current.isMouse)
+			{
+				if (this.onPreRender != null)
+				{
+					ToadicusTools.Logging.PostDebugMessage(this, "In OnGUI; doing 'pre draw' stuff");
+					this.onPreRender(this);
+				}
+			}
+
+			if (this.onPostRender != null)
+			{
+				ToadicusTools.Logging.PostDebugMessage(this, "In OnGUI; doing 'post draw' stuff");
+				this.onPostRender(this);
+			}
+		}
 
 		public abstract void SaveConfig();
 

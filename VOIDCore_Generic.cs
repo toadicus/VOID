@@ -320,8 +320,6 @@ namespace VOID
 		public override event VOIDEventHandler onApplicationQuit;
 		public override event VOIDEventHandler onSkinChanged;
 		public override event VOIDEventHandler onUpdate;
-		public override event VOIDEventHandler onPostRender;
-		public override event VOIDEventHandler onPreRender;
 
 		/*
 		 * Methods
@@ -525,24 +523,6 @@ namespace VOID
 				{
 					((IVOID_BehaviorModule)module).FixedUpdate();
 				}
-			}
-		}
-
-		public override void OnGUI()
-		{
-			if (Event.current.type == EventType.Repaint || Event.current.isMouse)
-			{
-				if (this.onPreRender != null)
-				{
-					Logging.PostDebugMessage(this, "In OnGUI; doing 'pre draw' stuff");
-					this.onPreRender(this);
-				}
-			}
-
-			if (this.onPostRender != null)
-			{
-				Logging.PostDebugMessage(this, "In OnGUI; doing 'post draw' stuff");
-				this.onPostRender(this);
 			}
 		}
 

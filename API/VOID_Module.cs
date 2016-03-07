@@ -88,6 +88,22 @@ namespace VOID
 
 					return callback.GetInvocationList().Contains((Callback)this.DrawGUI);
 				}*/
+
+				using (var log = ToadicusTools.DebugTools.PooledDebugLogger.New(this))
+				{
+					log.AppendFormat("this.core: {0}\n", this.core != null ? this.core.ToString() : "null");
+					if (this.core != null)
+					{
+						log.AppendFormat("this.core.MethodInPostRenderQueue(this.DrawGUI): {0}\n",
+							this.core.MethodInPostRenderQueue(this.DrawGUI));
+					}
+
+					log.AppendFormat("this.GUIRunning: {0}\n",
+						this.core != null && this.core.MethodInPostRenderQueue(this.DrawGUI));
+
+					log.Print(false);
+				}
+
 				return this.core != null && this.core.MethodInPostRenderQueue(this.DrawGUI);
 			}
 		}
@@ -513,6 +529,11 @@ namespace VOID
 
 		public override void DrawGUI(object sender)
 		{
+			if (this.core == null)
+			{
+				return;
+			}
+
 			GUI.skin = this.core.Skin;
 
 			Rect _Pos = this.WindowPos;
