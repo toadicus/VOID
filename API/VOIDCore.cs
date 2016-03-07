@@ -73,16 +73,16 @@ namespace VOID
 		public abstract event VOIDEventHandler onApplicationQuit;
 		public abstract event VOIDEventHandler onSkinChanged;
 		public abstract event VOIDEventHandler onUpdate;
-		public virtual event VOIDEventHandler onGui;
 		public virtual event VOIDEventHandler onPostRender;
+		public virtual event VOIDEventHandler onPreRender;
 
 		public virtual bool MethodInPostRenderQueue(VOIDEventHandler method)
 		{
-			if (this.onGui != null)
+			if (this.onPostRender != null)
 			{
 				ToadicusTools.Logging.PostDebugMessage(this, "Looking for method {0} in onGui", method);
 
-				foreach (var invoker in this.onGui.GetInvocationList())
+				foreach (var invoker in this.onPostRender.GetInvocationList())
 				{
 					ToadicusTools.Logging.PostDebugMessage(this, "Checking invoker {0}", invoker);
 
@@ -97,7 +97,6 @@ namespace VOID
 		}
 
 		public abstract void OnGUI();
-		public abstract void OnPostRender();
 
 		public abstract void SaveConfig();
 

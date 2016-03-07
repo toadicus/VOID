@@ -320,8 +320,8 @@ namespace VOID
 		public override event VOIDEventHandler onApplicationQuit;
 		public override event VOIDEventHandler onSkinChanged;
 		public override event VOIDEventHandler onUpdate;
-		public override event VOIDEventHandler onGui;
 		public override event VOIDEventHandler onPostRender;
+		public override event VOIDEventHandler onPreRender;
 
 		/*
 		 * Methods
@@ -530,18 +530,18 @@ namespace VOID
 
 		public override void OnGUI()
 		{
-			Logging.PostDebugMessage(this, "In OnGUI");
-			if (this.onGui != null)
+			if (Event.current.type == EventType.Repaint || Event.current.isMouse)
 			{
-				this.onGui(this);
+				if (this.onPreRender != null)
+				{
+					Logging.PostDebugMessage(this, "In OnGUI; doing 'pre draw' stuff");
+					this.onPreRender(this);
+				}
 			}
-		}
 
-		public override void OnPostRender()
-		{
-			Logging.PostDebugMessage(this, "In OnPostRender");
 			if (this.onPostRender != null)
 			{
+				Logging.PostDebugMessage(this, "In OnGUI; doing 'post draw' stuff");
 				this.onPostRender(this);
 			}
 		}
@@ -578,7 +578,7 @@ namespace VOID
 			{
 				// RenderingManager.AddToPostDrawQueue(3, this.DrawGUI);
 				Logging.PostDebugMessage(this, "Adding DrawGUI to onGui");
-				this.onGui += this.DrawGUI;
+				this.onPostRender += this.DrawGUI;
 			}
 		}
 

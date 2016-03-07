@@ -107,16 +107,6 @@ namespace VOID
 			this.Core.OnGUI();
 		}
 
-		public virtual void OnPostRender()
-		{
-			if (this.Core == null)
-			{
-				return;
-			}
-
-			this.Core.OnPostRender();
-		}
-
 		public virtual void OnDestroy()
 		{
 			if (this.Core == null)

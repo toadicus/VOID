@@ -234,7 +234,7 @@ namespace VOID
 
 			ToadicusTools.Logging.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
 			// RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
-			this.core.onGui += this.DrawGUI;
+			this.core.onPostRender += this.DrawGUI;
 		}
 
 		public virtual void StopGUI()
@@ -244,7 +244,7 @@ namespace VOID
 				return;
 			}
 			ToadicusTools.Logging.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
-			this.core.onGui -= this.DrawGUI;
+			this.core.onPostRender -= this.DrawGUI;
 		}
 
 		public abstract void DrawGUI(object sender);
