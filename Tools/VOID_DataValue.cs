@@ -109,8 +109,26 @@ namespace VOID
 			return (T)this.cache;
 		}
 
-		public virtual string ValueUnitString() {
-			return this.Value.ToString() + this.Units;
+		public virtual string ValueUnitString()
+		{
+			if (this.Value == null || this.Units == null)
+			{
+				using (PooledStringBuilder sb = PooledStringBuilder.Get())
+				{
+					if (this.Value == null)
+					{
+						sb.AppendFormat("{0}: Value is null during ValueUnitString\n", this.Label);
+					}
+					if (this.Units == null)
+					{
+						sb.AppendFormat("{0}: Units is null during ValueUnitString\n", this.Label);
+					}
+
+					ToadicusTools.Logging.PostErrorMessage(sb.ToString());
+				}
+			}
+
+			return string.Format("{0}{1}", this.Value == null ? "NULL" : this.Value.ToString(), this.Units);
 		}
 
 		public virtual void DoGUIHorizontal()
