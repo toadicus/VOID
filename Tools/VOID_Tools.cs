@@ -704,8 +704,8 @@ namespace VOID
 
 		public static double mrenigma03_calcphase(Vessel vessel, CelestialBody target)   //calculates phase angle between the current body and target body
 		{
-			Vector3d vecthis = new Vector3d();
-			Vector3d vectarget = new Vector3d();
+			Vector3 vecthis = new Vector3();
+			Vector3 vectarget = new Vector3();
 			vectarget = target.orbit.getRelativePositionAtUT(Planetarium.GetUniversalTime());
 
 			if ((vessel.mainBody.name == "Sun") || (vessel.mainBody.referenceBody.referenceBody.name == "Sun"))
@@ -717,15 +717,15 @@ namespace VOID
 				vecthis = vessel.mainBody.orbit.getRelativePositionAtUT(Planetarium.GetUniversalTime());
 			}
 
-			vecthis = Vector3d.Project(new Vector3d(vecthis.x, 0, vecthis.z), vecthis);
-			vectarget = Vector3d.Project(new Vector3d(vectarget.x, 0, vectarget.z), vectarget);
+			vecthis = Vector3.Project(new Vector3(vecthis.x, 0, vecthis.z), vecthis);
+			vectarget = Vector3.Project(new Vector3(vectarget.x, 0, vectarget.z), vectarget);
 
-			Vector3d prograde = new Vector3d();
-			prograde = Quaternion.AngleAxis(90, Vector3d.forward) * vecthis;
+			Vector3 prograde = new Vector3();
+			prograde = Quaternion.AngleAxis(90, Vector3.forward) * vecthis;
 
-			double phase = Vector3d.Angle(vecthis, vectarget);
+			double phase = Vector3.Angle(vecthis, vectarget);
 
-			if (Vector3d.Angle(prograde, vectarget) > 90)
+			if (Vector3.Angle(prograde, vectarget) > 90)
 				phase = 360 - phase;
 
 			return (phase + 360) % 360;

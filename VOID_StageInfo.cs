@@ -116,9 +116,9 @@ namespace VOID
 			);
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
-			base.DrawGUI();
+			base.DrawGUI(sender);
 
 			if (this.showBodyList)
 			{

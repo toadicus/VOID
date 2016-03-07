@@ -29,6 +29,7 @@
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -72,8 +73,31 @@ namespace VOID
 		public abstract event VOIDEventHandler onApplicationQuit;
 		public abstract event VOIDEventHandler onSkinChanged;
 		public abstract event VOIDEventHandler onUpdate;
+		public virtual event VOIDEventHandler onGui;
+		public virtual event VOIDEventHandler onPostRender;
 
-		public virtual void OnGUI() {}
+		public virtual bool MethodInPostRenderQueue(VOIDEventHandler method)
+		{
+			if (this.onGui != null)
+			{
+				ToadicusTools.Logging.PostDebugMessage(this, "Looking for method {0} in onGui", method);
+
+				foreach (var invoker in this.onGui.GetInvocationList())
+				{
+					ToadicusTools.Logging.PostDebugMessage(this, "Checking invoker {0}", invoker);
+
+					if (invoker == method)
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		public abstract void OnGUI();
+		public abstract void OnPostRender();
 
 		public abstract void SaveConfig();
 

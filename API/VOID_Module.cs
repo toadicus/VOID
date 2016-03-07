@@ -70,7 +70,7 @@ namespace VOID
 		{
 			get
 			{
-				if (
+				/*if (
 					RenderingManager.fetch == null ||
 					RenderingManager.fetch.postDrawQueue == null ||
 					RenderingManager.fetch.postDrawQueue.Length < 4
@@ -87,7 +87,8 @@ namespace VOID
 					}
 
 					return callback.GetInvocationList().Contains((Callback)this.DrawGUI);
-				}
+				}*/
+				return this.core != null && this.core.MethodInPostRenderQueue(this.DrawGUI);
 			}
 		}
 
@@ -232,7 +233,8 @@ namespace VOID
 			}
 
 			ToadicusTools.Logging.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
-			RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
+			// RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
+			this.core.onGui += this.DrawGUI;
 		}
 
 		public virtual void StopGUI()
@@ -242,10 +244,10 @@ namespace VOID
 				return;
 			}
 			ToadicusTools.Logging.PostDebugMessage (string.Format("Removing {0} from the draw queue.", this.GetType().Name));
-			RenderingManager.RemoveFromPostDrawQueue (3, this.DrawGUI);
+			this.core.onGui -= this.DrawGUI;
 		}
 
-		public abstract void DrawGUI();
+		public abstract void DrawGUI(object sender);
 
 		public virtual void DrawConfigurables() {}
 
@@ -509,7 +511,7 @@ namespace VOID
 			GUI.DragWindow();
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			GUI.skin = this.core.Skin;
 

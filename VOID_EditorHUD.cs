@@ -110,7 +110,7 @@ namespace VOID
 			this.ehudWindow = new HUDWindow(
 				"editorHUD",
 				this.ehudWindowFunc,
-				new Rect(EditorPanels.Instance.partsPanelWidth + 10f, 125f, 300f, 64f)
+				new Rect(/*EditorPanels.Instance.partsPanelWidth + */10f, 125f, 300f, 64f)
 			);
 			this.Windows.Add(this.ehudWindow);
 
@@ -196,27 +196,27 @@ namespace VOID
 			}
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			float hudLeft;
 
 			if (EditorLogic.fetch.editorScreen == EditorScreen.Parts)
 			{
-				hudLeft = EditorPanels.Instance.partsPanelWidth + 10f;
-				hudLeft += EditorPartList.Instance.transformTopLeft.position.x -
-					EditorPartList.Instance.transformTopLeft.parent.parent.position.x -
+				hudLeft = /*EditorPanels.Instance.partsPanelWidth + */10f;
+				hudLeft += /*EditorPartList.Instance.transformTopLeft.position.x -*/
+					/*EditorPartList.Instance.transformTopLeft.parent.parent.position.x -*/
 					72f;
 			}
 			else if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
 			{
-				hudLeft = EditorPanels.Instance.actionsPanelWidth + 10f;
+				hudLeft = /*EditorPanels.Instance.actionsPanelWidth +*/ 10f;
 			}
 			else
 			{
 				return;
 			}
 
-			Logging.PostDebugMessage(this,
+			/*Logging.PostDebugMessage(this,
 				"EditorPartList topLeft.parent.parent.position: {0}\n" +
 				"EditorPartList topLeft.parent.position: {1}\n" +
 				"EditorPartList topLeft.position: {2}\n" +
@@ -225,9 +225,9 @@ namespace VOID
 				EditorPartList.Instance.transformTopLeft.parent.position,
 				EditorPartList.Instance.transformTopLeft.position,
 				this.snapToLeft, this.ehudWindow.WindowPos.xMin, hudLeft
-			);
+			);*/
 
-			base.DrawGUI();
+			base.DrawGUI(this);
 
 			Rect hudPos = this.ehudWindow.WindowPos;
 

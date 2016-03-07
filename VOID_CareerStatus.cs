@@ -136,14 +136,14 @@ namespace VOID
 			}
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			if (Event.current.type != EventType.Layout && !this.currenciesInitialized)
 			{
 				this.initCurrencies();
 			}
 
-			base.DrawGUI();
+			base.DrawGUI(sender);
 		}
 
 		public override void ModuleWindow(int id)

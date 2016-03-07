@@ -335,9 +335,9 @@ namespace VOID
 		public VOID_StrValue(string Label, Func<string> ValueFunc) : base(Label, ValueFunc, "") {}
 	}
 
-	public class VOID_Vector3dValue : VOID_DataValue<Vector3d>
+	public class VOID_Vector3Value : VOID_DataValue<Vector3>
 	{
-		public VOID_Vector3dValue(string Label, Func<Vector3d> ValueFunc, string Units)
+		public VOID_Vector3Value(string Label, Func<Vector3> ValueFunc, string Units)
 			: base(Label, ValueFunc, Units)
 		{}
 

@@ -91,7 +91,7 @@ namespace VOID
 			this.Windows = new List<HUDWindow>();
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			VOID_Styles.labelHud.normal.textColor = textColors [ColorIndex];
 

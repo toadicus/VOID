@@ -30,6 +30,7 @@ using KerbalEngineer.Editor;
 using KerbalEngineer.Helpers;
 using KerbalEngineer.VesselSimulator;
 using KSP;
+using KSP.UI.Screens;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -319,11 +320,13 @@ namespace VOID
 		public override event VOIDEventHandler onApplicationQuit;
 		public override event VOIDEventHandler onSkinChanged;
 		public override event VOIDEventHandler onUpdate;
+		public override event VOIDEventHandler onGui;
+		public override event VOIDEventHandler onPostRender;
 
 		/*
 		 * Methods
 		 * */
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			this.windowID = this.windowBaseID;
 
@@ -362,7 +365,7 @@ namespace VOID
 
 			if (this.Active)
 			{
-				base.DrawGUI();
+				base.DrawGUI(sender);
 			}
 		}
 
@@ -525,6 +528,24 @@ namespace VOID
 			}
 		}
 
+		public override void OnGUI()
+		{
+			Logging.PostDebugMessage(this, "In OnGUI");
+			if (this.onGui != null)
+			{
+				this.onGui(this);
+			}
+		}
+
+		public override void OnPostRender()
+		{
+			Logging.PostDebugMessage(this, "In OnPostRender");
+			if (this.onPostRender != null)
+			{
+				this.onPostRender(this);
+			}
+		}
+
 		public void OnDestroy()
 		{
 			IVOID_Module module;
@@ -555,7 +576,9 @@ namespace VOID
 		{
 			if (!this.GUIRunning)
 			{
-				RenderingManager.AddToPostDrawQueue(3, this.DrawGUI);
+				// RenderingManager.AddToPostDrawQueue(3, this.DrawGUI);
+				Logging.PostDebugMessage(this, "Adding DrawGUI to onGui");
+				this.onGui += this.DrawGUI;
 			}
 		}
 

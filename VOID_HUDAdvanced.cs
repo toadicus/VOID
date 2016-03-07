@@ -80,7 +80,7 @@ namespace VOID
 			this.leftHUD = new HUDWindow("leftHUD",
 				this.leftHUDWindow,
 				new Rect(
-					Screen.width * .5f - (float)GameSettings.UI_SIZE * .25f - 300f,
+					Screen.width * .5f - (float)GameSettings.UI_SCALE * .25f - 300f,
 					Screen.height - 200f,
 					300f, 90f)
 			);
@@ -90,7 +90,7 @@ namespace VOID
 				"rightHUD",
 				this.rightHUDWindow,
 				new Rect(
-					Screen.width * .5f + (float)GameSettings.UI_SIZE * .25f,
+					Screen.width * .5f + (float)GameSettings.UI_SCALE * .25f,
 					Screen.height - 200f,
 					300f, 90f)
 			);
@@ -227,7 +227,7 @@ namespace VOID
 			}
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			if (this.primaryHUD == null)
 			{
@@ -252,7 +252,7 @@ namespace VOID
 				this.Windows.Add(this.rightHUD);
 			}
 
-			base.DrawGUI();
+			base.DrawGUI(sender);
 		}
 
 		public override void DrawConfigurables()

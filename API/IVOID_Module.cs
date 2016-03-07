@@ -38,7 +38,7 @@ namespace VOID
 		bool InValidScene { get; }
 		bool InValidGame { get; }
 
-		void DrawGUI();
+		void DrawGUI(object sender);
 		void StartGUI();
 		void StopGUI();
 

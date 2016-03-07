@@ -185,7 +185,7 @@ namespace VOID
 					{
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						GUILayout.Label("Relative inclination:");
-						GUILayout.Label(Vector3d.Angle(Vessel.orbit.GetOrbitNormal(), v.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
+						GUILayout.Label(Vector3.Angle(Vessel.orbit.GetOrbitNormal(), v.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
 						GUILayout.EndHorizontal();
 					}
 					//if (debugging) Debug.Log("[CHATR] v -> v relative incl OK");
@@ -297,7 +297,7 @@ namespace VOID
 				{
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Relative inclination:");
-					GUILayout.Label(Vector3d.Angle(Vessel.orbit.GetOrbitNormal(), cb.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
+					GUILayout.Label(Vector3.Angle(Vessel.orbit.GetOrbitNormal(), cb.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 					//if (debugging) Debug.Log("[VOID] cb Relative inclination OK");
 				}

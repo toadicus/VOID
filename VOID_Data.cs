@@ -486,20 +486,20 @@ namespace VOID
 				""
 			);
 
-		public static readonly VOID_Vector3dValue vesselThrustOffset =
-			new VOID_Vector3dValue(
+		public static readonly VOID_Vector3Value vesselThrustOffset =
+			new VOID_Vector3Value(
 				"Thrust Offset",
 				delegate()
 				{
 					if (Core.Vessel == null)
 					{
-						return Vector3d.zero;
+						return Vector3.zero;
 					}
 
 					IList<PartModule> engineModules = Core.Vessel.getModulesOfType<PartModule>();
 
-					Vector3d thrustPos = Vector3d.zero;
-					Vector3d thrustDir = Vector3d.zero;
+					Vector3 thrustPos = Vector3.zero;
+					Vector3 thrustDir = Vector3.zero;
 					float thrust = 0;
 
 					PartModule engine;
@@ -562,7 +562,7 @@ namespace VOID
 					thrustPos = vesselTransform.InverseTransformPoint(thrustPos);
 					thrustDir = vesselTransform.InverseTransformDirection(thrustDir);
 
-					Vector3d thrustOffset = VectorTools.PointDistanceToLine(
+					Vector3 thrustOffset = VectorTools.PointDistanceToLine(
 						                        thrustPos, thrustDir.normalized, Core.Vessel.findLocalCenterOfMass());
 
 					Logging.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
