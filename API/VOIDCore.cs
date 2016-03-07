@@ -76,11 +76,39 @@ namespace VOID
 		public virtual event VOIDEventHandler onPreRender;
 		public virtual event VOIDEventHandler onPostRender;
 
+		public virtual bool MethodInPreRenderQueue(VOIDEventHandler method)
+		{
+			if (this.onPreRender != null)
+			{
+				ToadicusTools.Logging.PostDebugMessage(this, "Looking in onPreRender for method {0} in onGui", method);
+
+				foreach (Delegate invoker in this.onPreRender.GetInvocationList())
+				{
+					ToadicusTools.Logging.PostDebugMessage(this, "Checking invoker {0}", invoker);
+
+					if (invoker == method)
+					{
+						ToadicusTools.Logging.PostDebugMessage(this, "Found match.");
+						return true;
+					}
+				}
+			}
+			#if DEBUG
+			else
+			{
+			ToadicusTools.Logging.PostDebugMessage(this, "this.onPreRender == null");
+			}
+			#endif
+
+
+			return false;
+		}
+
 		public virtual bool MethodInPostRenderQueue(VOIDEventHandler method)
 		{
 			if (this.onPostRender != null)
 			{
-				ToadicusTools.Logging.PostDebugMessage(this, "Looking for method {0} in onGui", method);
+				ToadicusTools.Logging.PostDebugMessage(this, "Looking in onPostRender for method {0} in onGui", method);
 
 				foreach (Delegate invoker in this.onPostRender.GetInvocationList())
 				{
