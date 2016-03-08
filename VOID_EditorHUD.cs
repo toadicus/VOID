@@ -28,6 +28,7 @@
 
 using KerbalEngineer.VesselSimulator;
 using KSP;
+using KSP.UI.Screens;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -110,7 +111,7 @@ namespace VOID
 			this.ehudWindow = new HUDWindow(
 				"editorHUD",
 				this.ehudWindowFunc,
-				new Rect(/*EditorPanels.Instance.partsPanelWidth + */10f, 125f, 300f, 64f)
+				new Rect(10f, 125f, 300f, 64f)
 			);
 			this.Windows.Add(this.ehudWindow);
 
@@ -200,32 +201,18 @@ namespace VOID
 		{
 			float hudLeft;
 
-			if (EditorLogic.fetch.editorScreen == EditorScreen.Parts)
+			switch (EditorLogic.fetch.editorScreen)
 			{
-				hudLeft = /*EditorPanels.Instance.partsPanelWidth + */10f;
-				hudLeft += /*EditorPartList.Instance.transformTopLeft.position.x -*/
-					/*EditorPartList.Instance.transformTopLeft.parent.parent.position.x -*/
-					72f;
+				case EditorScreen.Parts:
+					hudLeft = 16f + EditorPanels.Instance.partsEditor.panelTransform.rect.width +
+						EditorPanels.Instance.partcategorizerModes.transform.localPosition.x;
+					break;
+				case EditorScreen.Actions:
+					hudLeft = EditorPanels.Instance.actions.transform.localPosition.x + 464f;
+					break;
+				default:
+					return;
 			}
-			else if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
-			{
-				hudLeft = /*EditorPanels.Instance.actionsPanelWidth +*/ 10f;
-			}
-			else
-			{
-				return;
-			}
-
-			/*Logging.PostDebugMessage(this,
-				"EditorPartList topLeft.parent.parent.position: {0}\n" +
-				"EditorPartList topLeft.parent.position: {1}\n" +
-				"EditorPartList topLeft.position: {2}\n" +
-				"snapToEdge: {3} (pos.Xmin: {4}; hudLeft: {5})",
-				EditorPartList.Instance.transformTopLeft.parent.parent.position,
-				EditorPartList.Instance.transformTopLeft.parent.position,
-				EditorPartList.Instance.transformTopLeft.position,
-				this.snapToLeft, this.ehudWindow.WindowPos.xMin, hudLeft
-			);*/
 
 			base.DrawGUI(this);
 
