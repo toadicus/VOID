@@ -556,7 +556,6 @@ namespace VOID
 		{
 			if (!this.GUIRunning)
 			{
-				// RenderingManager.AddToPostDrawQueue(3, this.DrawGUI);
 				Logging.PostDebugMessage(this, "Adding DrawGUI to onGui");
 				this.onPostRender += this.DrawGUI;
 			}

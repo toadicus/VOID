@@ -70,25 +70,6 @@ namespace VOID
 		{
 			get
 			{
-				/*if (
-					RenderingManager.fetch == null ||
-					RenderingManager.fetch.postDrawQueue == null ||
-					RenderingManager.fetch.postDrawQueue.Length < 4
-				)
-				{
-					return false;
-				}
-				else
-				{
-					Delegate callback = RenderingManager.fetch.postDrawQueue[3];
-					if (callback == null)
-					{
-						return false;
-					}
-
-					return callback.GetInvocationList().Contains((Callback)this.DrawGUI);
-				}*/
-
 				using (var log = ToadicusTools.DebugTools.PooledDebugLogger.New(this))
 				{
 					log.AppendFormat("this.core: {0}\n", this.core != null ? this.core.ToString() : "null");
@@ -249,7 +230,6 @@ namespace VOID
 			}
 
 			ToadicusTools.Logging.PostDebugMessage (string.Format("Adding {0} to the draw queue.", this.GetType().Name));
-			// RenderingManager.AddToPostDrawQueue (3, this.DrawGUI);
 			this.core.onPostRender += this.DrawGUI;
 		}
 
