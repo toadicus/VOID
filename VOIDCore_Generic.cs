@@ -432,32 +432,59 @@ namespace VOID
 				}
 			}
 
-			if (this.useToolbarManager)
+			if (ToolbarManager.ToolbarAvailable && this.useToolbarManager)
 			{
+				if (this.ToolbarButton == null)
+				{
+					this.ToolbarButton = ToolbarManager.Instance.add(this.VoidName, "coreToggle");
+					this.ToolbarButton.Text = this.VoidName;
+					this.SetIconTexture(this.powerState | this.activeState);
+
+					this.ToolbarButton.Visible = true;
+
+					this.ToolbarButton.OnClick += 
+						(e) =>
+						{
+							this.ToggleMainWindow();
+						};
+
+					Logging.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
+				}
+
 				if (this.AppLauncherButton != null)
 				{
 					ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
 					this.AppLauncherButton = null;
 				}
-
-				if (this.ToolbarButton == null)
-				{
-					this.InitializeToolbarButton();
-				}
 			}
 			else
 			{
+				if (this.AppLauncherButton == null)
+				{
+					if (ApplicationLauncher.Instance != null)
+					{
+						this.AppLauncherButton = ApplicationLauncher.Instance.AddModApplication(
+							this.ToggleMainWindow, this.ToggleMainWindow,
+							this.appIconVisibleScenes,
+							this.VOIDIconTexture
+						);
+
+						Logging.PostDebugMessage(
+							this,
+							"AppLauncherButton initialized in {0}",
+							Enum.GetName(
+								typeof(GameScenes),
+								HighLogic.LoadedScene
+							)
+						);
+					}
+				}
+
 				if (this.ToolbarButton != null)
 				{
 					this.ToolbarButton.Destroy();
 					this.ToolbarButton = null;
 				}
-
-				if (this.AppLauncherButton == null)
-				{
-					this.InitializeAppLauncherButton();
-				}
-
 			}
 
 			this.saveTimer += Time.deltaTime;
@@ -1011,51 +1038,6 @@ namespace VOID
 				SimManager.OnReady += this.GetSimManagerResults;
 
 				this.simManagerLoaded = true;
-			}
-		}
-
-		protected void InitializeToolbarButton()
-		{
-			// Do nothing if (the Toolbar is not available.
-			if (!ToolbarManager.ToolbarAvailable)
-			{
-				Logging.PostDebugMessage(this, "Refusing to make a ToolbarButton: ToolbarAvailable = false");
-				return;
-			}
-
-			this.ToolbarButton = ToolbarManager.Instance.add(this.VoidName, "coreToggle");
-			this.ToolbarButton.Text = this.VoidName;
-			this.SetIconTexture(this.powerState | this.activeState);
-
-			this.ToolbarButton.Visible = true;
-
-			this.ToolbarButton.OnClick += 
-				(e) =>
-			{
-				this.ToggleMainWindow();
-			};
-
-			Logging.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
-		}
-
-		protected void InitializeAppLauncherButton()
-		{
-			if (ApplicationLauncher.Ready)
-			{
-				this.AppLauncherButton = ApplicationLauncher.Instance.AddModApplication(
-					this.ToggleMainWindow, this.ToggleMainWindow,
-					this.appIconVisibleScenes,
-					this.VOIDIconTexture
-				);
-
-				Logging.PostDebugMessage(
-					this,
-					"AppLauncherButton initialized in {0}",
-					Enum.GetName(
-						typeof(GameScenes),
-						HighLogic.LoadedScene
-					)
-				);
 			}
 		}
 
