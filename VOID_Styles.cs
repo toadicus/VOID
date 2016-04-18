@@ -33,12 +33,6 @@ namespace VOID
 {
 	public static class VOID_Styles
 	{
-		public static bool Ready
-		{
-			get;
-			private set;
-		}
-
 		public static GUIStyle labelDefault
 		{
 			get;
@@ -115,16 +109,11 @@ namespace VOID
 
 			labelGreen = new GUIStyle(GUI.skin.label);
 			labelGreen.normal.textColor = Color.green;
-
-			Ready = true;
 		}
 
 		static VOID_Styles()
 		{
 			OnSkinChanged();
-
-			Ready = false;
 		}
 	}
 }
-
