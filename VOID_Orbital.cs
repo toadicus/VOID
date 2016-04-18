@@ -113,7 +113,7 @@ namespace VOID
             }
 
             GUILayout.EndVertical();
-            
+
 			base.ModuleWindow(id);
 		}
 
@@ -132,4 +132,3 @@ namespace VOID
 		}
 	}
 }
-
