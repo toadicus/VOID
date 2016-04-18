@@ -502,55 +502,66 @@ namespace VOID
 					Vector3 thrustDir = Vector3.zero;
 					float thrust = 0;
 
-					PartModule engine;
-					for (int idx = 0; idx < engineModules.Count; idx++)
+					Part part;
+					for (int partIdx = 0; partIdx < Core.Vessel.parts.Count; partIdx++)
 					{
-						engine = engineModules[idx];
-						float moduleThrust = 0;
+						part = Core.Vessel.parts[partIdx];
 
-						switch (engine.moduleName)
-						{
-							case "ModuleEngines":
-							case "ModuleEnginesFX":
-								break;
-							default:
-								continue;
-						}
-
-						if (!engine.isEnabled)
+						if (part == null || part.Modules == null)
 						{
 							continue;
 						}
 
-						CenterOfThrustQuery cotQuery = new CenterOfThrustQuery();
-
-						if (engine is ModuleEngines)
+						PartModule module;
+						for (int idx = 0; idx < part.Modules.Count; idx++)
 						{
-							ModuleEngines engineModule = engine as ModuleEngines;
+							module = part.Modules[idx];
 
-							moduleThrust = engineModule.finalThrust;
+							float moduleThrust = 0;
 
-							engineModule.OnCenterOfThrustQuery(cotQuery);
+							switch (module.moduleName)
+							{
+								case "ModuleEngines":
+								case "ModuleEnginesFX":
+									break;
+								default:
+									continue;
+							}
+
+							if (!module.isEnabled)
+							{
+								continue;
+							}
+
+							CenterOfThrustQuery cotQuery = new CenterOfThrustQuery();
+
+							if (module is ModuleEngines)
+							{
+								ModuleEngines engineModule = module as ModuleEngines;
+
+								moduleThrust = engineModule.finalThrust;
+
+								engineModule.OnCenterOfThrustQuery(cotQuery);
+							}
+							else // engine is ModuleEnginesFX
+							{
+								ModuleEnginesFX engineFXModule = module as ModuleEnginesFX;
+
+								moduleThrust = engineFXModule.finalThrust;
+
+								engineFXModule.OnCenterOfThrustQuery(cotQuery);
+							}
+
+							if (moduleThrust != 0d)
+							{
+								cotQuery.thrust = moduleThrust;
+							}
+
+							thrustPos += cotQuery.pos * cotQuery.thrust;
+							thrustDir += cotQuery.dir * cotQuery.thrust;
+							thrust += cotQuery.thrust;
 						}
-						else // engine is ModuleEnginesFX
-						{
-							ModuleEnginesFX engineFXModule = engine as ModuleEnginesFX;
-
-							moduleThrust = engineFXModule.finalThrust;
-
-							engineFXModule.OnCenterOfThrustQuery(cotQuery);
-						}
-
-						if (moduleThrust != 0d)
-						{
-							cotQuery.thrust = moduleThrust;
-						}
-
-						thrustPos += cotQuery.pos * cotQuery.thrust;
-						thrustDir += cotQuery.dir * cotQuery.thrust;
-						thrust += cotQuery.thrust;
 					}
-
 					if (thrust != 0)
 					{
 						thrustPos /= thrust;

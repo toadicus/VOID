@@ -281,11 +281,11 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
-			this.showColumnSelection = GUILayout.Toggle(
+			/*this.showColumnSelection = GUILayout.Toggle(
 				this.showColumnSelection,
 				"Select StageInfo Columns",
 				GUI.skin.button
-			);
+			);*/
 		}
 
 		private void BodyPickerWindow(int _)

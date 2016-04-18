@@ -201,17 +201,29 @@ namespace VOID
 		{
 			float hudLeft;
 
-			switch (EditorLogic.fetch.editorScreen)
+			try
 			{
-				case EditorScreen.Parts:
-					hudLeft = 16f + EditorPanels.Instance.partsEditor.panelTransform.rect.width +
-						EditorPanels.Instance.partcategorizerModes.transform.localPosition.x;
-					break;
-				case EditorScreen.Actions:
-					hudLeft = EditorPanels.Instance.actions.transform.localPosition.x + 464f;
-					break;
-				default:
-					return;
+				switch (EditorLogic.fetch.editorScreen)
+				{
+					case EditorScreen.Parts:
+						hudLeft = 16f + EditorPanels.Instance.partsEditor.panelTransform.rect.width +
+							EditorPanels.Instance.partcategorizerModes.transform.localPosition.x;
+						break;
+					case EditorScreen.Actions:
+						hudLeft = EditorPanels.Instance.actions.transform.localPosition.x + 464f;
+						break;
+					default:
+						return;
+				}
+			}
+			catch (NullReferenceException)
+			{
+				Logging.PostErrorMessage(
+					"[{0}]: Something was null when fetching panel geometry; skipping frame.",
+					this.GetType().FullName
+				);
+
+				return;
 			}
 
 			base.DrawGUI(this);

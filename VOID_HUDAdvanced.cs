@@ -80,7 +80,7 @@ namespace VOID
 			this.leftHUD = new HUDWindow("leftHUD",
 				this.leftHUDWindow,
 				new Rect(
-					Screen.width * .5f - (float)GameSettings.UI_SCALE * .25f - 300f,
+					Screen.width * .5f - 300f - 220f * GameSettings.UI_SCALE,
 					Screen.height - 200f,
 					300f, 90f)
 			);
@@ -90,7 +90,7 @@ namespace VOID
 				"rightHUD",
 				this.rightHUDWindow,
 				new Rect(
-					Screen.width * .5f + (float)GameSettings.UI_SCALE * .25f,
+					Screen.width * .5f + 180f * GameSettings.UI_SCALE,
 					Screen.height - 200f,
 					300f, 90f)
 			);
@@ -257,8 +257,6 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
-			base.DrawConfigurables();
-
 			if (GUILayout.Button(string.Intern("Reset Advanced HUD Positions"), GUILayout.ExpandWidth(false)))
 			{
 				HUDWindow window;
