@@ -496,8 +496,6 @@ namespace VOID
 						return Vector3.zero;
 					}
 
-					IList<PartModule> engineModules = Core.Vessel.getModulesOfType<PartModule>();
-
 					Vector3 thrustPos = Vector3.zero;
 					Vector3 thrustDir = Vector3.zero;
 					float thrust = 0;

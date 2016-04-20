@@ -32,8 +32,6 @@ namespace VOID
 		private bool showBodyList;
 		private Rect bodyListPos;
 
-		private bool showColumnSelection;
-
 		private CelestialBody _selectedBody;
 		[AVOID_SaveValue("bodyIdx")]
 		private VOID_SaveValue<int> bodyIdx;
@@ -66,7 +64,6 @@ namespace VOID
 
 			this.stylesApplied = false;
 			this.showBodyList = false;
-			this.showColumnSelection = false;
 
 			this.bodyListPos = new Rect();
 
@@ -281,11 +278,7 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
-			/*this.showColumnSelection = GUILayout.Toggle(
-				this.showColumnSelection,
-				"Select StageInfo Columns",
-				GUI.skin.button
-			);*/
+			
 		}
 
 		private void BodyPickerWindow(int _)
