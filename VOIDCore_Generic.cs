@@ -321,6 +321,11 @@ namespace VOID
 		public override event VOIDEventHandler onSkinChanged;
 		public override event VOIDEventHandler onUpdate;
 
+		public override event VOIDEventHandler onPreForEach;
+		public override event VOIDForEachPartHandler onForEachPart;
+		public override event VOIDForEachPartModuleHandler onForEachModule;
+		public override event VOIDEventHandler onPostForEach;
+
 		/*
 		 * Methods
 		 * */
@@ -331,6 +336,8 @@ namespace VOID
 			if (!this.modulesLoaded)
 			{
 				this.LoadModulesOfType<IVOID_Module>();
+
+				FireOnModulesLoaded(this);
 			}
 
 			if (!this.skinsLoaded)
@@ -385,9 +392,61 @@ namespace VOID
 			{
 				Logging.PostDebugMessage(this, "Updating SimManager.");
 				this.UpdateSimManager();
+
+				VOIDForEachPartArgs partArgs;
+				VOIDForEachPartModuleArgs moduleArgs;
+
+				Part part;
+				PartModule partModule;
+
+				bool doForEachPart = this.onForEachPart != null;
+				bool doForEachModule = this.onForEachModule != null;
+
+				if (
+					(doForEachPart || doForEachModule) &&
+					(this.Vessel != null) &&
+					(this.Vessel.parts != null) &&
+					this.timeToUpdate
+				)
+				{
+					if (this.onPreForEach != null)
+					{
+						this.onPreForEach(this);
+					}
+
+					for (int pIdx = 0; pIdx < this.Vessel.parts.Count; pIdx++)
+					{
+						part = this.Vessel.parts[pIdx];
+						partArgs = new VOIDForEachPartArgs(part);
+
+						if (doForEachPart)
+						{
+							this.onForEachPart(this, partArgs);
+						}
+
+						if (doForEachModule && part.Modules != null)
+						{
+							for (int mIdx = 0; mIdx < part.Modules.Count; mIdx++)
+							{
+								partModule = part.Modules[mIdx];
+								moduleArgs = new VOIDForEachPartModuleArgs(partModule);
+
+								if (doForEachModule)
+								{
+									this.onForEachModule(this, moduleArgs);
+								}
+							}
+						}
+					}
+
+					if (this.onPostForEach!= null)
+					{
+						this.onPostForEach(this);
+					}
+				}
 			}
 
-			if (!this.GUIRunning)
+			if (!this.GUIRunning && !this.gameUIHidden)
 			{
 				this.StartGUI();
 			}
@@ -487,6 +546,11 @@ namespace VOID
 				}
 			}
 
+			if (this.onUpdate != null)
+			{
+				this.onUpdate(this);
+			}
+
 			this.saveTimer += Time.deltaTime;
 
 			if (this.modulesLoaded && this.saveTimer > 2f)
@@ -506,11 +570,6 @@ namespace VOID
 			}
 
 			this.UpdateTimer += Time.deltaTime;
-
-			if (this.onUpdate != null)
-			{
-				this.onUpdate(this);
-			}
 		}
 
 		public virtual void FixedUpdate()
@@ -565,6 +624,8 @@ namespace VOID
 					((IVOID_BehaviorModule)module).OnDestroy();
 				}
 			}
+
+			FireOnModulesDestroyed(this);
 
 			this.Dispose();
 		}

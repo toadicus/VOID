@@ -40,6 +40,25 @@ namespace VOID
 		public const double Constant_G = 6.674e-11;
 		public const int CONFIG_VERSION = 2;
 
+		public static event VOIDEventHandler onModulesLoaded;
+		public static event VOIDEventHandler onModulesDestroyed;
+
+		protected static void FireOnModulesLoaded(object sender)
+		{
+			if (onModulesLoaded != null)
+			{
+				onModulesLoaded(sender);
+			}
+		}
+
+		protected static void FireOnModulesDestroyed(object sender)
+		{
+			if (onModulesDestroyed != null)
+			{
+				onModulesDestroyed(sender);
+			}
+		}
+
 		public abstract int ConfigVersion { get; }
 		public virtual bool configNeedsUpdate { get; set; }
 
@@ -73,6 +92,12 @@ namespace VOID
 		public abstract event VOIDEventHandler onApplicationQuit;
 		public abstract event VOIDEventHandler onSkinChanged;
 		public abstract event VOIDEventHandler onUpdate;
+
+		public abstract event VOIDEventHandler onPreForEach;
+		public abstract event VOIDForEachPartHandler onForEachPart;
+		public abstract event VOIDForEachPartModuleHandler onForEachModule;
+		public abstract event VOIDEventHandler onPostForEach;
+
 		public virtual event VOIDEventHandler onPreRender;
 		public virtual event VOIDEventHandler onPostRender;
 
@@ -155,9 +180,31 @@ namespace VOID
 		public override void Save(KSP.IO.PluginConfiguration config, string sceneKey)
 		{
 			base.Save(config, sceneKey);
+
 		}
 	}
 
 	public delegate void VOIDEventHandler(object sender);
+	public delegate void VOIDForEachPartHandler(object sender, VOIDForEachPartArgs args);
+	public delegate void VOIDForEachPartModuleHandler(object sender, VOIDForEachPartModuleArgs args);
+
+	public abstract class VOIDForEachEventArgs<T> : EventArgs where T : class
+	{
+		public T Data;
+
+		public VOIDForEachEventArgs(T data)
+		{
+			this.Data = data;
+		}
+	}
+
+	public class VOIDForEachPartArgs : VOIDForEachEventArgs<Part>
+	{
+		public VOIDForEachPartArgs(Part data) : base(data) {}
+	}
+	public class VOIDForEachPartModuleArgs : VOIDForEachEventArgs<PartModule>
+	{
+		public VOIDForEachPartModuleArgs(PartModule data) : base(data) {}
+	}
 }
 
