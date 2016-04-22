@@ -1239,6 +1239,20 @@ namespace VOID
 			this.VOIDSettingsPath = string.Format("{0}/VOIDConfig.xml", this.SaveGamePath);
 
 			this.FactoryReset = false;
+
+			GameEvents.onHideUI.Add(() =>
+				{
+					this.gameUIHidden = true;
+					this.StopGUI();
+				}
+			);
+
+			GameEvents.onShowUI.Add(() =>
+				{
+					this.gameUIHidden = false;
+					this.StartGUI();
+				}
+			);
 		}
 
 		public override void Dispose()

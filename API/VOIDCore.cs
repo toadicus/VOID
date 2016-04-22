@@ -71,6 +71,8 @@ namespace VOID
 		public abstract bool configDirty { get; set; }
 		public abstract bool powerAvailable	{ get; protected set; }
 
+		public virtual bool gameUIHidden { get; protected set; }
+
 		public abstract IList<IVOID_Module> Modules { get; }
 
 		public abstract float UpdateTimer { get; protected set; }
@@ -159,6 +161,11 @@ namespace VOID
 
 		public void OnGUI()
 		{
+			if (this.gameUIHidden)
+			{
+				return;
+			}
+
 			if (Event.current.type == EventType.Repaint || Event.current.isMouse)
 			{
 				if (this.onPreRender != null)
