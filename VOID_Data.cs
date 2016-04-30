@@ -643,23 +643,20 @@ namespace VOID
 			}
 		}
 
-		private static void intakeAirPostForEach(object sender)
-		{
-			if (airFlowCurrent == 0 && airFlowRequired == 0)
-			{
-				intakeAirString = "N/A";
-			}
-			else
-			{
-				intakeAirString = string.Format("{0:F3} / {1:F3}", airFlowCurrent, airFlowRequired);
-			}
-		}
-
 		public static readonly VOID_StrValue intakeAirStatus =
 			new VOID_StrValue(
 				"Intake Air (Curr / Req)",
 				delegate()
 				{
+					if (airFlowCurrent == 0 && airFlowRequired == 0)
+					{
+						intakeAirString = "N/A";
+					}
+					else
+					{
+						intakeAirString = string.Format("{0:F3} / {1:F3}", airFlowCurrent, airFlowRequired);
+					}
+
 					return intakeAirString;
 				}
 			);
@@ -1368,7 +1365,6 @@ namespace VOID
 
 				flightCore.onPreForEach += intakeAirPreForEach;
 				flightCore.onForEachModule += intakeAirForEachModule;
-				flightCore.onPostForEach += intakeAirPostForEach;
 
 				flightCore.onPreForEach += crewCountPreForEach;
 				flightCore.onForEachPart += crewCountPerPart;
@@ -1386,7 +1382,6 @@ namespace VOID
 
 				flightCore.onPreForEach -= intakeAirPreForEach;
 				flightCore.onForEachModule -= intakeAirForEachModule;
-				flightCore.onPostForEach -= intakeAirPostForEach;
 
 				flightCore.onPreForEach -= crewCountPreForEach;
 				flightCore.onForEachPart -= crewCountPerPart;
