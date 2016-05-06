@@ -163,7 +163,7 @@ namespace VOID
 		            if (GUILayout.Button("Set Target", GUILayout.ExpandWidth(false)))
 		            {
 		                FlightGlobals.fetch.SetVesselTarget(body);
-						Tools.PostDebugMessage("[VOID] KSP Target set to CelestialBody " + body.bodyName);
+						Logging.PostDebugMessage("[VOID] KSP Target set to CelestialBody " + body.bodyName);
 		            }
 		        }
 		        else if ((CelestialBody)FlightGlobals.fetch.VesselTarget == body)
@@ -171,7 +171,7 @@ namespace VOID
 		            if (GUILayout.Button("Unset Target", GUILayout.ExpandWidth(false)))
 		            {
 		                FlightGlobals.fetch.SetVesselTarget(null);
-		                Tools.PostDebugMessage("[VOID] KSP Target set to null");
+		                Logging.PostDebugMessage("[VOID] KSP Target set to null");
 		            }
 		        }
 		    }
@@ -181,7 +181,7 @@ namespace VOID
 		        if (GUILayout.Button("Set Target", GUILayout.ExpandWidth(false)))
 		        {
 		            FlightGlobals.fetch.SetVesselTarget(body);
-		            Tools.PostDebugMessage("[VOID] KSP Target set to CelestialBody " + body.bodyName);
+		            Logging.PostDebugMessage("[VOID] KSP Target set to CelestialBody " + body.bodyName);
 		        }
 		    }
 		}

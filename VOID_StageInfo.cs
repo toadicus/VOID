@@ -7,7 +7,7 @@ using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
-using ToadicusTools;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 
 namespace VOID
@@ -31,8 +31,6 @@ namespace VOID
 
 		private bool showBodyList;
 		private Rect bodyListPos;
-
-		private bool showColumnSelection;
 
 		private CelestialBody _selectedBody;
 		[AVOID_SaveValue("bodyIdx")]
@@ -66,7 +64,6 @@ namespace VOID
 
 			this.stylesApplied = false;
 			this.showBodyList = false;
-			this.showColumnSelection = false;
 
 			this.bodyListPos = new Rect();
 
@@ -116,9 +113,9 @@ namespace VOID
 			);
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
-			base.DrawGUI();
+			base.DrawGUI(sender);
 
 			if (this.showBodyList)
 			{
@@ -259,7 +256,7 @@ namespace VOID
 			{
 				GUILayout.BeginHorizontal();
 
-				this.useSeaLevel.value = GUITools.Toggle(this.useSeaLevel, this.seaLevelToggle, false);
+				this.useSeaLevel.value = Layout.Toggle(this.useSeaLevel, this.seaLevelToggle, false);
 
 				GUILayout.EndHorizontal();
 			}
@@ -281,11 +278,7 @@ namespace VOID
 
 		public override void DrawConfigurables()
 		{
-			this.showColumnSelection = GUILayout.Toggle(
-				this.showColumnSelection,
-				"Select StageInfo Columns",
-				GUI.skin.button
-			);
+			
 		}
 
 		private void BodyPickerWindow(int _)

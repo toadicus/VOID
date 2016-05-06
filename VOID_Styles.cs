@@ -37,12 +37,6 @@ namespace VOID
 {
 	public static class VOID_Styles
 	{
-		public static bool Ready
-		{
-			get;
-			private set;
-		}
-
 		public static GUIStyle labelDefault
 		{
 			get;
@@ -152,8 +146,6 @@ namespace VOID
 			{
 				SetCurrentTooltip();
 			}
-
-			Ready = true;
 		}
 
 		static VOID_Styles()
@@ -161,8 +153,6 @@ namespace VOID
 			tooltipCache = new Dictionary<GUISkin, GUIStyle>();
 
 			OnSkinChanged();
-
-			Ready = false;
 		}
 
 		private static Dictionary<GUISkin, GUIStyle> tooltipCache;
@@ -221,4 +211,3 @@ namespace VOID
 		}
 	}
 }
-

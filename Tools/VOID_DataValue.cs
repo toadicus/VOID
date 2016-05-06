@@ -26,8 +26,11 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// TODO: Remove ToadicusTools. prefixes after refactor is done.
+
 using System;
-using ToadicusTools;
+using ToadicusTools.MuMechTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -106,8 +109,26 @@ namespace VOID
 			return (T)this.cache;
 		}
 
-		public virtual string ValueUnitString() {
-			return this.Value.ToString() + this.Units;
+		public virtual string ValueUnitString()
+		{
+			if (this.Value == null || this.Units == null)
+			{
+				using (PooledStringBuilder sb = PooledStringBuilder.Get())
+				{
+					if (this.Value == null)
+					{
+						sb.AppendFormat("{0}: Value is null during ValueUnitString\n", this.Label);
+					}
+					if (this.Units == null)
+					{
+						sb.AppendFormat("{0}: Units is null during ValueUnitString\n", this.Label);
+					}
+
+					ToadicusTools.Logging.PostErrorMessage(sb.ToString());
+				}
+			}
+
+			return string.Format("{0}{1}", this.Value == null ? "NULL" : this.Value.ToString(), this.Units);
 		}
 
 		public virtual void DoGUIHorizontal()
@@ -143,7 +164,7 @@ namespace VOID
 	public abstract class VOID_NumValue<T> : VOID_DataValue<T>, IFormattable
 		where T : IFormattable, IConvertible, IComparable
 	{
-		public static IFormatProvider formatProvider = Tools.SIFormatter;
+		public static IFormatProvider formatProvider = SIFormatProvider.SIFormatter;
 
 		public static implicit operator Double(VOID_NumValue<T> v)
 		{
@@ -209,7 +230,7 @@ namespace VOID
 		{
 			return string.Format (
 				"{0}{1}",
-				Tools.MuMech_ToSI (this, digits, MinMagnitude, MaxMagnitude),
+				MuMechTools.MuMech_ToSI (this, digits, MinMagnitude, MaxMagnitude),
 				this.Units
 			);
 		}
@@ -225,7 +246,7 @@ namespace VOID
 
 		public virtual string ValueUnitString(int digits, int MinMagnitude, int MaxMagnitude)
 		{
-			return Tools.MuMech_ToSI(this, digits, MinMagnitude, MaxMagnitude) + this.Units;
+			return MuMechTools.MuMech_ToSI(this, digits, MinMagnitude, MaxMagnitude) + this.Units;
 		}
 
 		public virtual void DoGUIHorizontal(string format)
@@ -273,7 +294,7 @@ namespace VOID
 				Rect lastRect = GUILayoutUtility.GetLastRect();
 				if (lastRect.Contains(Event.current.mousePosition))
 				{
-					Tools.PostDebugMessage(string.Format("{0}: Changing digits from {1}",
+					ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Changing digits from {1}",
 						this.GetType().Name,
 						digits
 					));
@@ -292,7 +313,7 @@ namespace VOID
 						digits += 9;
 					}
 
-					Tools.PostDebugMessage(string.Format("{0}: Changed digits to {1}.",
+					ToadicusTools.Logging.PostDebugMessage(string.Format("{0}: Changed digits to {1}.",
 						this.GetType().Name,
 						digits
 					));
@@ -323,9 +344,9 @@ namespace VOID
 		public VOID_StrValue(string Label, Func<string> ValueFunc) : base(Label, ValueFunc, "") {}
 	}
 
-	public class VOID_Vector3dValue : VOID_DataValue<Vector3d>
+	public class VOID_Vector3Value : VOID_DataValue<Vector3>
 	{
-		public VOID_Vector3dValue(string Label, Func<Vector3d> ValueFunc, string Units)
+		public VOID_Vector3Value(string Label, Func<Vector3> ValueFunc, string Units)
 			: base(Label, ValueFunc, Units)
 		{}
 

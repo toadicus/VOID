@@ -28,10 +28,12 @@
 
 using KerbalEngineer.VesselSimulator;
 using KSP;
+using KSP.UI.Screens;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using ToadicusTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -109,125 +111,122 @@ namespace VOID
 			this.ehudWindow = new HUDWindow(
 				"editorHUD",
 				this.ehudWindowFunc,
-				new Rect(EditorPanels.Instance.partsPanelWidth + 10f, 125f, 300f, 64f)
+				new Rect(10f, 125f, 300f, 64f)
 			);
 			this.Windows.Add(this.ehudWindow);
 
-			Tools.PostDebugMessage (this.GetType().Name + ": Constructed.");
+			Logging.PostDebugMessage (this.GetType().Name + ": Constructed.");
 		}
 
 		public void ehudWindowFunc(int id)
 		{
-			StringBuilder hudString = Tools.GetStringBuilder();
-
-			if (this.core.LastStage == null)
+			using (PooledStringBuilder hudString = PooledStringBuilder.Get())
 			{
-				return;
-			}
+				if (this.core.LastStage == null)
+				{
+					return;
+				}
 
-			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
+				VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
-			hudString.Append("Total Mass: ");
-			hudString.Append(this.core.LastStage.totalMass.ToString("F3"));
-			hudString.Append('t');
+				hudString.Append("Total Mass: ");
+				hudString.Append(this.core.LastStage.totalMass.ToString("F3"));
+				hudString.Append('t');
 
-			hudString.Append(' ');
+				hudString.Append(' ');
 
-			hudString.Append("Part Count: ");
-			hudString.Append(EditorLogic.SortedShipList.Count);
+				hudString.Append("Part Count: ");
+				hudString.Append(EditorLogic.SortedShipList.Count);
 
-			hudString.Append('\n');
-
-			hudString.Append("Total Delta-V: ");
-			hudString.Append(Tools.MuMech_ToSI(this.core.LastStage.totalDeltaV));
-			hudString.Append("m/s");
-
-			hudString.Append('\n');
-
-			hudString.Append("Bottom Stage Delta-V");
-			hudString.Append(Tools.MuMech_ToSI(this.core.LastStage.deltaV));
-			hudString.Append("m/s");
-
-			hudString.Append('\n');
-
-			hudString.Append("Bottom Stage T/W Ratio: ");
-			hudString.Append(this.core.LastStage.thrustToWeight.ToString("F3"));
-
-			Tools.PostDebugMessage(this,
-				"CoMmarker.gameObject.activeInHierarchy: {0};" +
-				"CoTmarker.gameObject.activeInHierarchy: {1}",
-				this.CoMmarker.gameObject.activeInHierarchy,
-				this.CoTmarker.gameObject.activeInHierarchy
-			);
-
-			if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
-			{
-				Tools.PostDebugMessage(this, "CoM and CoT markers are active, doing thrust offset.");
 				hudString.Append('\n');
 
-				hudString.Append("Thrust Offset: ");
-				hudString.Append(
-					Vector3.Cross(
-						this.CoTmarker.dirMarkerObject.transform.forward,
-						this.CoMmarker.posMarkerObject.transform.position - this.CoTmarker.posMarkerObject.transform.position
-					).ToString("F3"));
-			}
-			#if DEBUG
+				hudString.Append("Total Delta-V: ");
+				hudString.Append(SIFormatProvider.ToSI(this.core.LastStage.totalDeltaV));
+				hudString.Append("m/s");
+
+				hudString.Append('\n');
+
+				hudString.Append("Bottom Stage Delta-V: ");
+				hudString.Append(SIFormatProvider.ToSI(this.core.LastStage.deltaV));
+				hudString.Append("m/s");
+
+				hudString.Append('\n');
+
+				hudString.Append("Bottom Stage T/W Ratio: ");
+				hudString.Append(this.core.LastStage.thrustToWeight.ToString("F3"));
+
+				Logging.PostDebugMessage(this,
+					"CoMmarker.gameObject.activeInHierarchy: {0};" +
+					"CoTmarker.gameObject.activeInHierarchy: {1}",
+					this.CoMmarker.gameObject.activeInHierarchy,
+					this.CoTmarker.gameObject.activeInHierarchy
+				);
+
+				if (this.CoMmarker.gameObject.activeInHierarchy && this.CoTmarker.gameObject.activeInHierarchy)
+				{
+					Logging.PostDebugMessage(this, "CoM and CoT markers are active, doing thrust offset.");
+					hudString.Append('\n');
+
+					hudString.Append("Thrust Offset: ");
+					hudString.Append(
+						Vector3.Cross(
+							this.CoTmarker.dirMarkerObject.transform.forward,
+							this.CoMmarker.posMarkerObject.transform.position - this.CoTmarker.posMarkerObject.transform.position
+						).ToString("F3"));
+				}
+				#if DEBUG
 			else
 			{
-				Tools.PostDebugMessage(this, "CoM and CoT markers are not active, thrust offset skipped.");
+				Logging.PostDebugMessage(this, "CoM and CoT markers are not active, thrust offset skipped.");
 			}
-			#endif
+				#endif
 
-			GUILayout.Label(
-				hudString.ToString(),
-				VOID_Styles.labelHud,
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
-			);
+				GUILayout.Label(
+					hudString.ToString(),
+					VOID_Styles.labelHud,
+					GUILayout.ExpandWidth(true),
+					GUILayout.ExpandHeight(true)
+				);
 
-			if (!this.positionsLocked)
-			{
-				GUI.DragWindow();
+				if (!this.positionsLocked)
+				{
+					GUI.DragWindow();
+				}
+
+				GUI.BringWindowToBack(id);
 			}
-
-			GUI.BringWindowToBack(id);
-
-			Tools.PutStringBuilder(hudString);
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			float hudLeft;
 
-			if (EditorLogic.fetch.editorScreen == EditorScreen.Parts)
+			try
 			{
-				hudLeft = EditorPanels.Instance.partsPanelWidth + 10f;
-				hudLeft += EditorPartList.Instance.transformTopLeft.position.x -
-					EditorPartList.Instance.transformTopLeft.parent.parent.position.x -
-					72f;
+				switch (EditorLogic.fetch.editorScreen)
+				{
+					case EditorScreen.Parts:
+						hudLeft = 16f + EditorPanels.Instance.partsEditor.panelTransform.rect.width +
+							EditorPanels.Instance.partcategorizerModes.transform.localPosition.x;
+						break;
+					case EditorScreen.Actions:
+						hudLeft = EditorPanels.Instance.actions.transform.localPosition.x + 464f;
+						break;
+					default:
+						return;
+				}
 			}
-			else if (EditorLogic.fetch.editorScreen == EditorScreen.Actions)
+			catch (NullReferenceException)
 			{
-				hudLeft = EditorPanels.Instance.actionsPanelWidth + 10f;
-			}
-			else
-			{
+				Logging.PostErrorMessage(
+					"[{0}]: Something was null when fetching panel geometry; skipping frame.",
+					this.GetType().FullName
+				);
+
 				return;
 			}
 
-			Tools.PostDebugMessage(this,
-				"EditorPartList topLeft.parent.parent.position: {0}\n" +
-				"EditorPartList topLeft.parent.position: {1}\n" +
-				"EditorPartList topLeft.position: {2}\n" +
-				"snapToEdge: {3} (pos.Xmin: {4}; hudLeft: {5})",
-				EditorPartList.Instance.transformTopLeft.parent.parent.position,
-				EditorPartList.Instance.transformTopLeft.parent.position,
-				EditorPartList.Instance.transformTopLeft.position,
-				this.snapToLeft, this.ehudWindow.WindowPos.xMin, hudLeft
-			);
-
-			base.DrawGUI();
+			base.DrawGUI(this);
 
 			Rect hudPos = this.ehudWindow.WindowPos;
 

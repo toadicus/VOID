@@ -31,7 +31,7 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ToadicusTools;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 
 namespace VOID
@@ -91,8 +91,13 @@ namespace VOID
 			this.Windows = new List<HUDWindow>();
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
+			if (this.core == null)
+			{
+				return;
+			}
+
 			VOID_Styles.labelHud.normal.textColor = textColors [ColorIndex];
 
 			GUI.skin = this.core.Skin;
@@ -139,14 +144,13 @@ namespace VOID
 				}
 			}
 
-			this.positionsLocked.value = GUITools.Toggle(this.positionsLocked, "Lock HUD Positions");
+			this.positionsLocked.value = Layout.Toggle(this.positionsLocked, "Lock HUD Positions");
 		}
 
-		public override void LoadConfig()
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.LoadConfig();
+			base.LoadConfig(config);
 
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_HUDModule>();
 			config.load();
 
 			HUDWindow window;

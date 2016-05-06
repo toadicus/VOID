@@ -30,10 +30,15 @@ using KerbalEngineer.Editor;
 using KerbalEngineer.Helpers;
 using KerbalEngineer.VesselSimulator;
 using KSP;
+using KSP.UI.Screens;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using ToadicusTools;
+using ToadicusTools.DebugTools;
+using ToadicusTools.Extensions;
+using ToadicusTools.GUIUtils;
+using ToadicusTools.Wrappers;
 using UnityEngine;
 using VOID_ScriptedPanels;
 
@@ -147,13 +152,6 @@ namespace VOID
 				}
 
 				base.Active = value;
-			}
-		}
-		public override IList<CelestialBody> AllBodies
-		{
-			get
-			{
-				return FlightGlobals.Bodies.AsReadOnly();
 			}
 		}
 
@@ -324,16 +322,23 @@ namespace VOID
 		public override event VOIDEventHandler onSkinChanged;
 		public override event VOIDEventHandler onUpdate;
 
+		public override event VOIDEventHandler onPreForEach;
+		public override event VOIDForEachPartHandler onForEachPart;
+		public override event VOIDForEachPartModuleHandler onForEachModule;
+		public override event VOIDEventHandler onPostForEach;
+
 		/*
 		 * Methods
 		 * */
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			this.windowID = this.windowBaseID;
 
 			if (!this.modulesLoaded)
 			{
 				this.LoadModulesOfType<IVOID_Module>();
+
+				FireOnModulesLoaded(this);
 			}
 
 			if (!this.skinsLoaded)
@@ -347,7 +352,7 @@ namespace VOID
 			{
 				this.LoadGUIStyles();
 
-				Tools.PostDebugMessage(
+				Logging.PostDebugMessage(
 					this,
 					"ToolbarAvailable: {0}, UseToobarManager: {1}",
 					ToolbarManager.ToolbarAvailable,
@@ -366,7 +371,7 @@ namespace VOID
 
 			if (this.Active)
 			{
-				base.DrawGUI();
+				base.DrawGUI(sender);
 			}
 		}
 
@@ -386,11 +391,63 @@ namespace VOID
 				)
 			)
 			{
-				Tools.PostDebugMessage(this, "Updating SimManager.");
+				Logging.PostDebugMessage(this, "Updating SimManager.");
 				this.UpdateSimManager();
+
+				VOIDForEachPartArgs partArgs;
+				VOIDForEachPartModuleArgs moduleArgs;
+
+				Part part;
+				PartModule partModule;
+
+				bool doForEachPart = this.onForEachPart != null;
+				bool doForEachModule = this.onForEachModule != null;
+
+				if (
+					(doForEachPart || doForEachModule) &&
+					(this.Vessel != null) &&
+					(this.Vessel.parts != null) &&
+					this.timeToUpdate
+				)
+				{
+					if (this.onPreForEach != null)
+					{
+						this.onPreForEach(this);
+					}
+
+					for (int pIdx = 0; pIdx < this.Vessel.parts.Count; pIdx++)
+					{
+						part = this.Vessel.parts[pIdx];
+						partArgs = new VOIDForEachPartArgs(part);
+
+						if (doForEachPart)
+						{
+							this.onForEachPart(this, partArgs);
+						}
+
+						if (doForEachModule && part.Modules != null)
+						{
+							for (int mIdx = 0; mIdx < part.Modules.Count; mIdx++)
+							{
+								partModule = part.Modules[mIdx];
+								moduleArgs = new VOIDForEachPartModuleArgs(partModule);
+
+								if (doForEachModule)
+								{
+									this.onForEachModule(this, moduleArgs);
+								}
+							}
+						}
+					}
+
+					if (this.onPostForEach!= null)
+					{
+						this.onPostForEach(this);
+					}
+				}
 			}
 
-			if (!this.GUIRunning)
+			if (!this.GUIRunning && !this.gameUIHidden)
 			{
 				this.StartGUI();
 			}
@@ -440,42 +497,74 @@ namespace VOID
 				}
 			}
 
-			if (this.useToolbarManager)
+			if (ToolbarManager.ToolbarAvailable && this.useToolbarManager)
 			{
+				if (this.ToolbarButton == null)
+				{
+					this.ToolbarButton = ToolbarManager.Instance.add(this.VoidName, "coreToggle");
+					this.ToolbarButton.Text = this.VoidName;
+					this.SetIconTexture(this.powerState | this.activeState);
+
+					this.ToolbarButton.Visible = true;
+
+					this.ToolbarButton.OnClick += 
+						(e) =>
+						{
+							this.ToggleMainWindow();
+						};
+
+					Logging.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
+				}
+
 				if (this.AppLauncherButton != null)
 				{
 					ApplicationLauncher.Instance.RemoveModApplication(this.AppLauncherButton);
 					this.AppLauncherButton = null;
 				}
-
-				if (this.ToolbarButton == null)
-				{
-					this.InitializeToolbarButton();
-				}
 			}
 			else
 			{
+				if (this.AppLauncherButton == null)
+				{
+					if (ApplicationLauncher.Instance != null)
+					{
+						this.AppLauncherButton = ApplicationLauncher.Instance.AddModApplication(
+							this.ToggleMainWindow, this.ToggleMainWindow,
+							this.appIconVisibleScenes,
+							this.VOIDIconTexture
+						);
+
+						Logging.PostDebugMessage(
+							this,
+							"AppLauncherButton initialized in {0}",
+							Enum.GetName(
+								typeof(GameScenes),
+								HighLogic.LoadedScene
+							)
+						);
+					}
+				}
+
 				if (this.ToolbarButton != null)
 				{
 					this.ToolbarButton.Destroy();
 					this.ToolbarButton = null;
 				}
+			}
 
-				if (this.AppLauncherButton == null)
-				{
-					this.InitializeAppLauncherButton();
-				}
-
+			if (this.onUpdate != null)
+			{
+				this.onUpdate(this);
 			}
 
 			this.saveTimer += Time.deltaTime;
 
-			if (this.saveTimer > 2f)
+			if (this.modulesLoaded && this.saveTimer > 2f)
 			{
 				if (this.configDirty)
 				{
 
-					Tools.PostDebugMessage(string.Format(
+					Logging.PostDebugMessage(string.Format(
 							"{0}: Time to save, checking if configDirty: {1}",
 							this.GetType().Name,
 							this.configDirty
@@ -487,11 +576,6 @@ namespace VOID
 			}
 
 			this.UpdateTimer += Time.deltaTime;
-
-			if (this.onUpdate != null)
-			{
-				this.onUpdate(this);
-			}
 		}
 
 		public virtual void FixedUpdate()
@@ -547,6 +631,8 @@ namespace VOID
 				}
 			}
 
+			FireOnModulesDestroyed(this);
+
 			this.Dispose();
 		}
 
@@ -564,7 +650,8 @@ namespace VOID
 		{
 			if (!this.GUIRunning)
 			{
-				RenderingManager.AddToPostDrawQueue(3, this.DrawGUI);
+				Logging.PostDebugMessage(this, "Adding DrawGUI to onGui");
+				this.onPostRender += this.DrawGUI;
 			}
 		}
 
@@ -613,7 +700,7 @@ namespace VOID
 							continue;
 						}
 
-						module.Active = GUITools.Toggle(module.Active, module.Name);
+						module.Active = Layout.Toggle(module.Active, module.Name);
 					}
 
 					foreach (VOID_ScriptedPanel panel in VOID_ScriptedManager.Instance.ValidPanels)
@@ -627,7 +714,7 @@ namespace VOID
 				GUILayout.Label("-- POWER LOST --", VOID_Styles.labelRed);
 			}
 
-			VOID_ConfigWindow.Instance.Active = GUITools.Toggle(
+			VOID_ConfigWindow.Instance.Active = Layout.Toggle(
 				VOID_ConfigWindow.Instance.Active,
 				"Configuration"
 			);
@@ -641,20 +728,20 @@ namespace VOID
 		{
 			GUIContent _content;
 
-			this.useToolbarManager.value = GUITools.Toggle(this.useToolbarManager, "Use Blizzy's Toolbar If Available");
+			this.useToolbarManager.value = Layout.Toggle(this.useToolbarManager, "Use Blizzy's Toolbar If Available");
 
-			this.vesselSimActive.value = GUITools.Toggle(this.vesselSimActive.value,
+			this.vesselSimActive.value = Layout.Toggle(this.vesselSimActive.value,
 				"Enable Engineering Calculations");
 
 			bool useEarthTime = (this.TimeScale & VOID_TimeScale.KERBIN_TIME) == 0u;
 			bool useSiderealTime = (this.TimeScale & VOID_TimeScale.SOLAR_DAY) == 0u;
 			bool useRoundedScale = (this.TimeScale & VOID_TimeScale.ROUNDED_SCALE) != 0u;
 
-			useEarthTime = GUITools.Toggle(useEarthTime, "Use Earth Time (changes KSP option)");
+			useEarthTime = Layout.Toggle(useEarthTime, "Use Earth Time (changes KSP option)");
 
 			GameSettings.KERBIN_TIME = !useEarthTime;
 
-			useSiderealTime = GUITools.Toggle(
+			useSiderealTime = Layout.Toggle(
 				useSiderealTime,
 				string.Format(
 					"Time Scale: {0}",
@@ -662,7 +749,7 @@ namespace VOID
 				)
 			);
 
-			useRoundedScale = GUITools.Toggle(
+			useRoundedScale = Layout.Toggle(
 				useRoundedScale,
 				string.Format(
 					"Time Scale: {0}",
@@ -708,7 +795,7 @@ namespace VOID
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.skinIdx--;
-				Tools.PostDebugMessage(string.Format(
+				Logging.PostDebugMessage(string.Format(
 					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this.skinName,
@@ -725,7 +812,7 @@ namespace VOID
 			if (GUILayout.Button(_content, GUILayout.ExpandWidth(true)))
 			{
 				this.skinIdx++;
-				Tools.PostDebugMessage(string.Format(
+				Logging.PostDebugMessage(string.Format(
 					"{0}: new this.skinIdx = {1} :: skin_list.Count = {2}",
 					this.GetType().Name,
 					this.skinName,
@@ -771,7 +858,7 @@ namespace VOID
 				module.DrawConfigurables();
 			}
 
-			this.FactoryReset = GUITools.Toggle(this.FactoryReset, "Factory Reset");
+			this.FactoryReset = Layout.Toggle(this.FactoryReset, "Factory Reset");
 		}
 
 		protected void UpdateSimManager()
@@ -792,7 +879,7 @@ namespace VOID
 
 			SimManager.TryStartSimulation();
 
-			Tools.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
+			Logging.PostDebugMessage(this, "Started Engineer simulation with Atmosphere={0} atm and Gravity={1} m/s²",
 				SimManager.Atmosphere,
 				SimManager.Gravity
 			);
@@ -800,7 +887,7 @@ namespace VOID
 
 		protected void GetSimManagerResults()
 		{
-			Tools.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
+			Logging.PostDebugMessage(this, "VesselSimulator results ready, setting Stages.");
 
 			this.Stages = SimManager.Stages;
 
@@ -812,53 +899,56 @@ namespace VOID
 
 		protected void LoadModulesOfType<U>()
 		{
-			Tools.DebugLogger sb = Tools.DebugLogger.New(this);
-			sb.AppendLine("Loading modules...");
-
-			AssemblyLoader.LoadedAssembly assy;
-			for (int aIdx = 0; aIdx < AssemblyLoader.loadedAssemblies.Count; aIdx++)
+			using (PooledDebugLogger sb = PooledDebugLogger.New(this))
 			{
-				assy = AssemblyLoader.loadedAssemblies[aIdx];
+				sb.AppendLine("Loading modules...");
 
-				Type[] loadedTypes = assy.assembly.GetExportedTypes();
-				Type loadedType;
-				for (int tIdx = 0; tIdx < loadedTypes.Length; tIdx++)
+				AssemblyLoader.LoadedAssembly assy;
+				for (int aIdx = 0; aIdx < AssemblyLoader.loadedAssemblies.Count; aIdx++)
 				{
-					loadedType = loadedTypes[tIdx];
+					assy = AssemblyLoader.loadedAssemblies[aIdx];
 
-					if (
-						loadedType.IsInterface ||
-						loadedType.IsAbstract ||
-						!typeof(U).IsAssignableFrom(loadedType) ||
-						typeof(VOIDCore).IsAssignableFrom(loadedType)
-					)
+					Type[] loadedTypes = assy.assembly.GetExportedTypes();
+					Type loadedType;
+					for (int tIdx = 0; tIdx < loadedTypes.Length; tIdx++)
 					{
-						continue;
-					}
+						loadedType = loadedTypes[tIdx];
 
-					sb.AppendFormat("Checking IVOID_Module type {0}...", loadedType.Name);
+						if (
+							loadedType.IsInterface ||
+							loadedType.IsAbstract ||
+							!typeof(U).IsAssignableFrom(loadedType) ||
+							typeof(VOIDCore).IsAssignableFrom(loadedType))
+						{
+							continue;
+						}
 
-					try
-					{
-						this.LoadModule(loadedType);
-						sb.AppendLine("Success.");
-					}
-					catch (Exception ex)
-					{
-						sb.AppendFormat("Failed, caught {0}\n", ex.GetType().Name);
+						sb.AppendFormat("Checking IVOID_Module type {0}...", loadedType.Name);
 
-						#if DEBUG
+						try
+						{
+							this.LoadModule(loadedType);
+							sb.AppendLine("Success.");
+						}
+						catch (Exception ex)
+						{
+							sb.AppendFormat("Failed, caught {0}\n", ex.GetType().Name);
+
+							#if DEBUG
 						Debug.LogException(ex);
-						#endif
+							#endif
+						}
 					}
 				}
+
+				this.LoadConfig();
+
+				this.modulesLoaded = true;
+
+				sb.AppendFormat("Loaded {0} modules.\n", this.Modules.Count);
+
+				sb.Print();
 			}
-
-			this.modulesLoaded = true;
-
-			sb.AppendFormat("Loaded {0} modules.\n", this.Modules.Count);
-
-			sb.Print();
 		}
 
 		protected void LoadModule(Type T)
@@ -869,7 +959,7 @@ namespace VOID
 			{
 				if (this.modules[mIdx].Name == T.Name)
 				{
-					Tools.PostErrorMessage("{0}: refusing to load {1}: already loaded", this.GetType().Name, T.Name);
+					Logging.PostErrorMessage("{0}: refusing to load {1}: already loaded", this.GetType().Name, T.Name);
 					return;
 				}
 			}
@@ -900,10 +990,9 @@ namespace VOID
 
 			if (module.InValidGame && module.InValidScene)
 			{
-				module.LoadConfig();
 				this.modules.Add(module);
 
-				Tools.PostDebugMessage(string.Format(
+				Logging.PostDebugMessage(string.Format(
 						"{0}: loaded module {1}.",
 						this.GetType().Name,
 						T.Name
@@ -936,7 +1025,7 @@ namespace VOID
 				}
 			}
 
-			Tools.PostDebugMessage(string.Format(
+			Logging.PostDebugMessage(string.Format(
 				"{0}: loaded {1} GUISkins.",
 				this.GetType().Name,
 				this.validSkins.Count
@@ -967,7 +1056,7 @@ namespace VOID
 				this.skinIdx = defaultIdx;
 			}
 
-			Tools.PostDebugMessage(string.Format(
+			Logging.PostDebugMessage(string.Format(
 				"{0}: _skinIdx = {1}.",
 				this.GetType().Name,
 				this.skinName.ToString()
@@ -1024,51 +1113,6 @@ namespace VOID
 			}
 		}
 
-		protected void InitializeToolbarButton()
-		{
-			// Do nothing if (the Toolbar is not available.
-			if (!ToolbarManager.ToolbarAvailable)
-			{
-				Tools.PostDebugMessage(this, "Refusing to make a ToolbarButton: ToolbarAvailable = false");
-				return;
-			}
-
-			this.ToolbarButton = ToolbarManager.Instance.add(this.VoidName, "coreToggle");
-			this.ToolbarButton.Text = this.VoidName;
-			this.SetIconTexture(this.powerState | this.activeState);
-
-			this.ToolbarButton.Visible = true;
-
-			this.ToolbarButton.OnClick += 
-				(e) =>
-			{
-				this.ToggleMainWindow();
-			};
-
-			Tools.PostDebugMessage(string.Format("{0}: Toolbar Button initialized.", this.GetType().Name));
-		}
-
-		protected void InitializeAppLauncherButton()
-		{
-			if (ApplicationLauncher.Ready)
-			{
-				this.AppLauncherButton = ApplicationLauncher.Instance.AddModApplication(
-					this.ToggleMainWindow, this.ToggleMainWindow,
-					this.appIconVisibleScenes,
-					this.VOIDIconTexture
-				);
-
-				Tools.PostDebugMessage(
-					this,
-					"AppLauncherButton initialized in {0}",
-					Enum.GetName(
-						typeof(GameScenes),
-						HighLogic.LoadedScene
-					)
-				);
-			}
-		}
-
 		protected void ToggleMainWindow()
 		{
 			this.Active = !this.Active;
@@ -1115,16 +1159,34 @@ namespace VOID
 			}
 		}
 
-		public override void LoadConfig()
+		public void LoadConfig()
 		{
-			base.LoadConfig();
+
+			if (!System.IO.File.Exists(this.VOIDSettingsPath) && KSP.IO.File.Exists<VOID_Module>("config.xml"))
+			{
+				Logging.PostLogMessage(
+					"VOID: No per-save config file but old file detected; copying from old file."
+				);
+
+				System.IO.File.Copy(
+					KSP.IO.IOUtils.GetFilePathFor(typeof(VOID_Module), "config.xml"),
+					this.VOIDSettingsPath
+				);
+			}
+
+			this.LoadConfig(new PluginConfiguration(this.VOIDSettingsPath));
+		}
+
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
+		{
+			base.LoadConfig(config);
 
 			IVOID_Module module;
 			for (int idx = 0; idx < this.modules.Count; idx++)
 			{
 				module = this.modules[idx];
 
-				module.LoadConfig();
+				module.LoadConfig(config);
 			}
 
 			this.TimeScale |= GameSettings.KERBIN_TIME ? VOID_TimeScale.KERBIN_TIME : 0u;
@@ -1135,9 +1197,10 @@ namespace VOID
 			if (this.configNeedsUpdate && this is VOIDCore_Flight)
 			{
 				KSP.IO.File.Delete<T>("config.xml");
+				System.IO.File.Delete(this.VOIDSettingsPath);
 			}
 
-			var config = KSP.IO.PluginConfiguration.CreateForType<T>();
+			KSP.IO.PluginConfiguration config = new PluginConfiguration(this.VOIDSettingsPath);
 
 			config.load();
 
@@ -1183,11 +1246,24 @@ namespace VOID
 
 			this.useToolbarManager = (VOID_SaveValue<bool>)ToolbarManager.ToolbarAvailable;
 
-			this.LoadConfig();
-
-			this.configVersion = (VOID_SaveValue<int>)VOIDCore.CONFIG_VERSION;
+			this.SaveGamePath = string.Format("{0}saves/{1}", IOTools.KSPRootPath, HighLogic.SaveFolder);
+			this.VOIDSettingsPath = string.Format("{0}/VOIDConfig.xml", this.SaveGamePath);
 
 			this.FactoryReset = false;
+
+			GameEvents.onHideUI.Add(() =>
+				{
+					this.gameUIHidden = true;
+					this.StopGUI();
+				}
+			);
+
+			GameEvents.onShowUI.Add(() =>
+				{
+					this.gameUIHidden = false;
+					this.StartGUI();
+				}
+			);
 		}
 
 		public override void Dispose()

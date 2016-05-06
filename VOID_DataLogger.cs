@@ -32,6 +32,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ToadicusTools;
+using ToadicusTools.DebugTools;
+using ToadicusTools.GUIUtils;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -103,14 +106,11 @@ namespace VOID
 			{
 				if (this._fileName == null || this._fileName == string.Empty)
 				{
-					this._fileName = KSP.IO.IOUtils.GetFilePathFor(
-						typeof(VOIDCore),
-						string.Format(
-							"{0}_{1}",
-							this.Vessel.vesselName,
-							"data.csv"
-						),
-						null
+					this._fileName = string.Format(
+						"{0}/{1}_{2}",
+						this.core.SaveGamePath,
+						this.Vessel.vesselName,
+						"data.csv"
 					);
 				}
 
@@ -124,44 +124,46 @@ namespace VOID
 			{
 				if (this._outputFile == null)
 				{
-					Tools.DebugLogger logger = Tools.DebugLogger.New(this);
-					logger.AppendFormat("Initializing output file '{0}' with mode ", this.fileName);
-
-					if (File.Exists(this.fileName))
+					using (PooledDebugLogger logger = PooledDebugLogger.New(this))
 					{
-						logger.Append("append");
-						this._outputFile = new FileStream(
-							this.fileName,
-							FileMode.Append,
-							FileAccess.Write,
-							FileShare.Read,
-							512,
-							true
-						);
+						logger.AppendFormat("Initializing output file '{0}' with mode ", this.fileName);
+
+						if (File.Exists(this.fileName))
+						{
+							logger.Append("append");
+							this._outputFile = new FileStream(
+								this.fileName,
+								FileMode.Append,
+								FileAccess.Write,
+								FileShare.Read,
+								512,
+								true
+							);
+						}
+						else
+						{
+							logger.Append("create");
+							this._outputFile = new FileStream(
+								this.fileName,
+								FileMode.Create,
+								FileAccess.Write,
+								FileShare.Read,
+								512,
+								true
+							);
+
+							byte[] byteOrderMark = utf8Encoding.GetPreamble();
+
+							logger.Append(" and writing preamble");
+							this._outputFile.Write(byteOrderMark, 0, byteOrderMark.Length);
+						}
+
+						logger.Append('.');
+
+						logger.AppendFormat("  File is {0}opened asynchronously.", this._outputFile.IsAsync ? "" : "not ");
+
+						logger.Print();
 					}
-					else
-					{
-						logger.Append("create");
-						this._outputFile = new FileStream(
-							this.fileName,
-							FileMode.Create,
-							FileAccess.Write,
-							FileShare.Read,
-							512,
-							true
-						);
-
-						byte[] byteOrderMark = utf8Encoding.GetPreamble();
-
-						logger.Append(" and writing preamble");
-						this._outputFile.Write(byteOrderMark, 0, byteOrderMark.Length);
-					}
-
-					logger.Append('.');
-
-					logger.AppendFormat("  File is {0}opened asynchronously.", this._outputFile.IsAsync ? "" : "not ");
-
-					logger.Print();
 				}
 
 				return this._outputFile;
@@ -216,23 +218,24 @@ namespace VOID
 
 		public void OnDestroy()
 		{
-			Tools.DebugLogger logger = Tools.DebugLogger.New(this);
+			using (PooledDebugLogger logger = PooledDebugLogger.New(this))
+			{
+				logger.Append("Destroying...");
 
-			logger.Append("Destroying...");
+				this.CloseFileIfOpen();
 
-			this.CloseFileIfOpen();
-
-			logger.Append(" Done.");
-			logger.Print(false);
+				logger.Append(" Done.");
+				logger.Print(false);
+			}
 		}
 
 		#endregion
 
 		#region VOID_Module Overrides
 
-		public override void LoadConfig()
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.LoadConfig();
+			base.LoadConfig(config);
 
 			this.logIntervalStr = this.logInterval.value.ToString("#.0##");
 		}
@@ -258,14 +261,14 @@ namespace VOID
 				activeLabelStyle = VOID_Styles.labelGreen;
 			}
 
-			this.loggingActive = GUITools.Toggle(
+			this.loggingActive = Layout.Toggle(
 				loggingActive,
 				string.Format("Data logging: {0}", activeLabelText),
 				null,
 				activeLabelStyle
 			);
 
-			this.waitForLaunch.value = GUITools.Toggle(
+			this.waitForLaunch.value = Layout.Toggle(
 				this.waitForLaunch,
 				"Wait for launch"
 			);
@@ -305,111 +308,125 @@ namespace VOID
 			//called if logging is on and interval has passed
 			//writes one line to the csvList
 
-			StringBuilder line = Tools.GetStringBuilder();
-
-			if (firstWrite)
+			using (PooledStringBuilder line = PooledStringBuilder.Get())
 			{
-				firstWrite = false;
-				line.Append(
-					"\"Kerbin Universal Time (s)\"," +
-					"\"Mission Elapsed Time (s)\t\"," +
-					"\"Altitude ASL (m)\"," +
-					"\"Altitude above terrain (m)\"," +
-					"\"Surface Latitude (°)\"," +
-					"\"Surface Longitude (°)\"," +
-					"\"Apoapsis Altitude (m)\"," +
-					"\"Periapsis Altitude (m)\"," +
-					"\"Orbital Velocity (m/s)\"," +
-					"\"Surface Velocity (m/s)\"," +
-					"\"Vertical Speed (m/s)\"," +
-					"\"Horizontal Speed (m/s)\"," +
-					"\"Gee Force (gees)\"," +
-					"\"Temperature (°C)\"," +
-					"\"Gravity (m/s²)\"," +
-					"\"Atmosphere Density (g/m³)\"," +
-					"\"Downrange Distance  (m)\"," +
-					"\n"
-				);
+				if (firstWrite)
+				{
+					firstWrite = false;
+					line.Append(
+						"\"Kerbin Universal Time (s)\"," +
+						"\"Mission Elapsed Time (s)\t\"," +
+						"\"Altitude ASL (m)\"," +
+						"\"Altitude above terrain (m)\"," +
+						"\"Surface Latitude (°)\"," +
+						"\"Surface Longitude (°)\"," +
+						"\"Apoapsis Altitude (m)\"," +
+						"\"Periapsis Altitude (m)\"," +
+						"\"Orbital Inclination (°)\"," +
+						"\"Orbital Velocity (m/s)\"," +
+						"\"Surface Velocity (m/s)\"," +
+						"\"Vertical Speed (m/s)\"," +
+						"\"Horizontal Speed (m/s)\"," +
+						"\"Current Thrust (kN)\"," +
+						"\"Gee Force (gees)\"," +
+						"\"Temperature (°C)\"," +
+						"\"Gravity (m/s²)\"," +
+						"\"Atmosphere Density (g/m³)\"," +
+						"\"Downrange Distance  (m)\"," +
+						"\"Main Throttle\"," +
+						"\n"
+					);
+				}
+
+				// Universal time
+				line.Append(Planetarium.GetUniversalTime().ToString("F2"));
+				line.Append(',');
+
+				//Mission time
+				line.Append(Vessel.missionTime.ToString("F3"));
+				line.Append(',');
+
+				//Altitude ASL
+				line.Append(VOID_Data.orbitAltitude.Value.ToString("G9"));
+				line.Append(',');
+
+				//Altitude (true)
+				line.Append(VOID_Data.trueAltitude.Value.ToString("G9"));
+				line.Append(',');
+
+				// Surface Latitude
+				line.Append('"');
+				line.Append(VOID_Data.surfLatitude.Value.ToString("F3"));
+				line.Append('"');
+				line.Append(',');
+
+				// Surface Longitude
+				line.Append('"');
+				line.Append(VOID_Data.surfLongitude.Value.ToString("F3"));
+				line.Append('"');
+				line.Append(',');
+
+				// Apoapsis Altitude
+				line.Append(VOID_Data.orbitApoAlt.Value.ToString("G9"));
+				line.Append(',');
+
+				// Periapsis Altitude
+				line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G9"));
+				line.Append(',');
+
+				// Orbital Inclination
+				line.Append(VOID_Data.orbitInclination.Value.ToString("F2"));
+				line.Append(',');
+
+				//Orbital velocity
+				line.Append(VOID_Data.orbitVelocity.Value.ToString("G9"));
+				line.Append(',');
+
+				//surface velocity
+				line.Append(VOID_Data.surfVelocity.Value.ToString("G9"));
+				line.Append(',');
+
+				//vertical speed
+				line.Append(VOID_Data.vertVelocity.Value.ToString("G9"));
+				line.Append(',');
+
+				//horizontal speed
+				line.Append(VOID_Data.horzVelocity.Value.ToString("G9"));
+				line.Append(',');
+
+				// Current Thrust
+				line.Append(VOID_Data.currThrust.Value.ToString("G9"));
+				line.Append(',');
+
+				//gee force
+				line.Append(VOID_Data.geeForce.Value.ToString("G9"));
+				line.Append(',');
+
+				//temperature
+				line.Append(VOID_Data.temperature.Value.ToString("F3"));
+				line.Append(',');
+
+				//gravity
+				line.Append(VOID_Data.gravityAccel.Value.ToString("G9"));
+				line.Append(',');
+
+				//atm density
+				line.Append(VOID_Data.atmDensity.Value.ToString("G9"));
+				line.Append(',');
+
+				// Downrange Distance
+				line.Append((VOID_Data.downrangeDistance.Value.ToString("G9")));
+				line.Append(',');
+
+				// Main Throttle
+				line.Append(VOID_Data.mainThrottle.Value.ToString("P2"));
+
+				line.Append('\n');
+
+				csvBytes.AddRange(this.utf8Encoding.GetBytes(line.ToString()));
+
+				this.csvCollectTimer = 0f;
 			}
-
-			// Universal time
-			line.Append(Planetarium.GetUniversalTime().ToString("F2"));
-			line.Append(',');
-
-			//Mission time
-			line.Append(Vessel.missionTime.ToString("F3"));
-			line.Append(',');
-
-			//Altitude ASL
-			line.Append(VOID_Data.orbitAltitude.Value.ToString("F3"));
-			line.Append(',');
-
-			//Altitude (true)
-			line.Append(VOID_Data.trueAltitude.Value.ToString("F3"));
-			line.Append(',');
-
-			// Surface Latitude
-			line.Append('"');
-			line.Append(VOID_Data.surfLatitude.Value);
-			line.Append('"');
-			line.Append(',');
-
-			// Surface Longitude
-			line.Append('"');
-			line.Append(VOID_Data.surfLongitude.Value);
-			line.Append('"');
-			line.Append(',');
-
-			// Apoapsis Altitude
-			line.Append(VOID_Data.orbitApoAlt.Value.ToString("G3"));
-			line.Append(',');
-
-			// Periapsis Altitude
-			line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G3"));
-			line.Append(',');
-
-			//Orbital velocity
-			line.Append(VOID_Data.orbitVelocity.Value.ToString("F3"));
-			line.Append(',');
-
-			//surface velocity
-			line.Append(VOID_Data.surfVelocity.Value.ToString("F3"));
-			line.Append(',');
-
-			//vertical speed
-			line.Append(VOID_Data.vertVelocity.Value.ToString("F3"));
-			line.Append(',');
-
-			//horizontal speed
-			line.Append(VOID_Data.horzVelocity.Value.ToString("F3"));
-			line.Append(',');
-
-			//gee force
-			line.Append(VOID_Data.geeForce.Value.ToString("F3"));
-			line.Append(',');
-
-			//temperature
-			line.Append(VOID_Data.temperature.Value.ToString("F2"));
-			line.Append(',');
-
-			//gravity
-			line.Append(VOID_Data.gravityAccel.Value.ToString("F3"));
-			line.Append(',');
-
-			//atm density
-			line.Append(VOID_Data.atmDensity.Value.ToString("G3"));
-			line.Append(',');
-
-			// Downrange Distance
-			line.Append((VOID_Data.downrangeDistance.Value.ToString("G3")));
-
-			line.Append('\n');
-
-			csvBytes.AddRange(this.utf8Encoding.GetBytes(line.ToString()));
-
-			this.csvCollectTimer = 0f;
-
-			Tools.PutStringBuilder(line);
 		}
 
 		#endregion
@@ -418,7 +435,7 @@ namespace VOID
 
 		protected void AsyncWriteCallback(IAsyncResult result)
 		{
-			Tools.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
+			Logging.PostDebugMessage(this, "Got async callback, IsCompleted = {0}", result.IsCompleted);
 
 			this.outputFile.EndWrite(result);
 			this.outstandingWrites--;
@@ -441,31 +458,32 @@ namespace VOID
 
 		private void CloseFileIfOpen()
 		{
-			Tools.DebugLogger logger = Tools.DebugLogger.New(this);
-
-			logger.AppendFormat("Cleaning up file...");
-
-			if (this.csvBytes != null && this.csvBytes.Count > 0)
+			using (PooledDebugLogger logger = PooledDebugLogger.New(this))
 			{
-				logger.Append(" Writing remaining data...");
-				this.AsyncWriteData();
-			}
+				logger.AppendFormat("Cleaning up file {0}...", this.fileName);
 
-			logger.Append(" Waiting for writes to finish.");
-			while (this.outstandingWrites > 0)
-			{
-				logger.Append('.');
-				System.Threading.Thread.Sleep(10);
-			}
+				if (this.csvBytes != null && this.csvBytes.Count > 0)
+				{
+					logger.Append(" Writing remaining data...");
+					this.AsyncWriteData();
+				}
 
-			if (this._outputFile != null)
-			{
-				this._outputFile.Close();
-				this._outputFile = null;
-				logger.Append(" File closed.");
-			}
+				logger.Append(" Waiting for writes to finish.");
+				while (this.outstandingWrites > 0)
+				{
+					logger.Append('.');
+					System.Threading.Thread.Sleep(10);
+				}
 
-			logger.Print(false);
+				if (this._outputFile != null)
+				{
+					this._outputFile.Close();
+					this._outputFile = null;
+					logger.Append(" File closed.");
+				}
+
+				logger.Print(false);
+			}
 		}
 
 		#endregion

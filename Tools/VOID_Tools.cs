@@ -335,21 +335,16 @@ namespace VOID
 					{
 						func(id);
 					}
-					#if DEBUG
+					#if !DEBUG
 					catch (ArgumentException)
-					#else
-					catch (ArgumentException)
-					#endif
 					{
 						Debug.LogWarning(
-							string.Format("[{0}]: ArgumentException caught during window call.  This is not a bug.",
+							string.Format("[{0}]: ArgumentException caught during window call." +
+								"  This may not be a bug when occuring during scene changes.",
 								func.Target.GetType().Name
 							));
-
-						/*#if DEBUG
-						Debug.LogException(ex);
-						#endif*/
 					}
+					#endif
 					catch (Exception ex)
 					{
 						Debug.LogError(
@@ -709,8 +704,8 @@ namespace VOID
 
 		public static double mrenigma03_calcphase(Vessel vessel, CelestialBody target)   //calculates phase angle between the current body and target body
 		{
-			Vector3d vecthis = new Vector3d();
-			Vector3d vectarget = new Vector3d();
+			Vector3 vecthis = new Vector3();
+			Vector3 vectarget = new Vector3();
 			vectarget = target.orbit.getRelativePositionAtUT(Planetarium.GetUniversalTime());
 
 			if ((vessel.mainBody.name == "Sun") || (vessel.mainBody.referenceBody.referenceBody.name == "Sun"))
@@ -722,15 +717,15 @@ namespace VOID
 				vecthis = vessel.mainBody.orbit.getRelativePositionAtUT(Planetarium.GetUniversalTime());
 			}
 
-			vecthis = Vector3d.Project(new Vector3d(vecthis.x, 0, vecthis.z), vecthis);
-			vectarget = Vector3d.Project(new Vector3d(vectarget.x, 0, vectarget.z), vectarget);
+			vecthis = Vector3.Project(new Vector3(vecthis.x, 0, vecthis.z), vecthis);
+			vectarget = Vector3.Project(new Vector3(vectarget.x, 0, vectarget.z), vectarget);
 
-			Vector3d prograde = new Vector3d();
-			prograde = Quaternion.AngleAxis(90, Vector3d.forward) * vecthis;
+			Vector3 prograde = new Vector3();
+			prograde = Quaternion.AngleAxis(90, Vector3.forward) * vecthis;
 
-			double phase = Vector3d.Angle(vecthis, vectarget);
+			double phase = Vector3.Angle(vecthis, vectarget);
 
-			if (Vector3d.Angle(prograde, vectarget) > 90)
+			if (Vector3.Angle(prograde, vectarget) > 90)
 				phase = 360 - phase;
 
 			return (phase + 360) % 360;
@@ -1022,75 +1017,75 @@ namespace VOID
 	{
 		public int Compare(CelestialBody bodyA, CelestialBody bodyB)
 		{
-			Tools.PostDebugMessage(this, "got bodyA: {0} & bodyB: {1}", bodyA, bodyB);
+			Logging.PostDebugMessage(this, "got bodyA: {0} & bodyB: {1}", bodyA, bodyB);
 
 			if (bodyA == null && bodyB == null)
 			{
-				Tools.PostDebugMessage(this, "both bodies are null, returning 0");
+				Logging.PostDebugMessage(this, "both bodies are null, returning 0");
 				return 0;
 			}
 			if (bodyA == null)
 			{
-				Tools.PostDebugMessage(this, "bodyA is null, returning -1");
+				Logging.PostDebugMessage(this, "bodyA is null, returning -1");
 				return -1;
 			}
 			if (bodyB == null)
 			{
-				Tools.PostDebugMessage(this, "bodyB is null, returning 1");
+				Logging.PostDebugMessage(this, "bodyB is null, returning 1");
 				return 1;
 			}
 
-			Tools.PostDebugMessage(this, "bodies are not null, carrying on");
+			Logging.PostDebugMessage(this, "bodies are not null, carrying on");
 
 			if (object.ReferenceEquals(bodyA, bodyB))
 			{
-				Tools.PostDebugMessage(this, "bodies are equal, returning 0");
+				Logging.PostDebugMessage(this, "bodies are equal, returning 0");
 				return 0;
 			}
 
-			Tools.PostDebugMessage(this, "bodies are not equal, carrying on");
+			Logging.PostDebugMessage(this, "bodies are not equal, carrying on");
 
 			if (bodyA.orbitDriver == null)
 			{
-				Tools.PostDebugMessage(this, "bodyA.orbit is null (bodyA is the sun, returning 1");
+				Logging.PostDebugMessage(this, "bodyA.orbit is null (bodyA is the sun, returning 1");
 				return 1;
 			}
 			if (bodyB.orbitDriver == null)
 			{
-				Tools.PostDebugMessage(this, "bodyB.orbit is null (bodyB is the sun, returning -1");
+				Logging.PostDebugMessage(this, "bodyB.orbit is null (bodyB is the sun, returning -1");
 				return -1;
 			}
 
-			Tools.PostDebugMessage(this, "orbits are not null, carrying on");
+			Logging.PostDebugMessage(this, "orbits are not null, carrying on");
 
 			if (bodyA.orbit.referenceBody == bodyB.orbit.referenceBody)
 			{
-				Tools.PostDebugMessage(this, "bodies share a parent, comparing SMAs");
+				Logging.PostDebugMessage(this, "bodies share a parent, comparing SMAs");
 				return -bodyA.orbit.semiMajorAxis.CompareTo(bodyB.orbit.semiMajorAxis);
 			}
 
-			Tools.PostDebugMessage(this, "orbits do not share a parent, carrying on");
+			Logging.PostDebugMessage(this, "orbits do not share a parent, carrying on");
 
 			if (bodyA.hasAncestor(bodyB))
 			{
-				Tools.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning -1");
+				Logging.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning -1");
 				return -1;
 			}
 			if (bodyB.hasAncestor(bodyA))
 			{
-				Tools.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning 1");
+				Logging.PostDebugMessage(this, "bodyA is a moon or sub-moon of bodyB, returning 1");
 				return 1;
 			}
 
-			Tools.PostDebugMessage(this, "bodies do not have an obvious relationship, searching for one");
+			Logging.PostDebugMessage(this, "bodies do not have an obvious relationship, searching for one");
 
 			if (VOID_Tools.NearestRelatedParents(ref bodyA, ref bodyB))
 			{
-				Tools.PostDebugMessage(this, "good relation {0} and {1}, comparing", bodyA.bodyName, bodyB.bodyName);
+				Logging.PostDebugMessage(this, "good relation {0} and {1}, comparing", bodyA.bodyName, bodyB.bodyName);
 				return this.Compare(bodyA, bodyB);
 			}
 
-			Tools.PostDebugMessage(this, "bad relation {0} and {1}, giving up", bodyA.bodyName, bodyB.bodyName);
+			Logging.PostDebugMessage(this, "bad relation {0} and {1}, giving up", bodyA.bodyName, bodyB.bodyName);
 
 			return 0;
 		}

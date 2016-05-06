@@ -32,6 +32,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ToadicusTools;
+using ToadicusTools.GUIUtils;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -78,7 +80,7 @@ namespace VOID
 			this.leftHUD = new HUDWindow("leftHUD",
 				this.leftHUDWindow,
 				new Rect(
-					Screen.width * .5f - (float)GameSettings.UI_SIZE * .25f - 300f,
+					Screen.width * .5f - 300f - 220f * GameSettings.UI_SCALE,
 					Screen.height - 200f,
 					300f, 90f)
 			);
@@ -88,7 +90,7 @@ namespace VOID
 				"rightHUD",
 				this.rightHUDWindow,
 				new Rect(
-					Screen.width * .5f + (float)GameSettings.UI_SIZE * .25f,
+					Screen.width * .5f + 180f * GameSettings.UI_SCALE,
 					Screen.height - 200f,
 					300f, 90f)
 			);
@@ -96,142 +98,136 @@ namespace VOID
 
 			this.positionsLocked.value = true;
 
-			Tools.PostDebugMessage (this, "Constructed.");
+			Logging.PostDebugMessage (this, "Constructed.");
 		}
 
 		protected void leftHUDWindow(int id)
 		{
-			StringBuilder leftHUD;
-
-			leftHUD = Tools.GetStringBuilder();
-
-			VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
-
-			if (this.core.powerAvailable)
+			using (PooledStringBuilder leftHUD = PooledStringBuilder.Get())
 			{
-				leftHUD.AppendFormat(
-					string.Intern("Mass: {0}\n"),
-					VOID_Data.totalMass.ToSIString(2)
-				);
+				VOID_Styles.labelHud.alignment = TextAnchor.UpperRight;
 
-				if (VOID_Data.vesselCrewCapacity > 0)
+				if (this.core.powerAvailable)
 				{
 					leftHUD.AppendFormat(
-						string.Intern("Crew: {0} / {1}\n"),
-						VOID_Data.vesselCrewCount.Value,
-						VOID_Data.vesselCrewCapacity.Value
+						string.Intern("Mass: {0}\n"),
+						VOID_Data.totalMass.ToSIString(2)
 					);
-				}
 
-				leftHUD.AppendFormat(
-					string.Intern("Acc: {0} T:W: {1}\n"),
-					VOID_Data.vesselAccel.ToSIString(2),
-					VOID_Data.currThrustWeight.Value.ToString("f2")
-				);
+					if (VOID_Data.vesselCrewCapacity > 0)
+					{
+						leftHUD.AppendFormat(
+							string.Intern("Crew: {0} / {1}\n"),
+							VOID_Data.vesselCrewCount.Value,
+							VOID_Data.vesselCrewCapacity.Value
+						);
+					}
 
-				leftHUD.AppendFormat(
-					string.Intern("Ang Vel: {0}\n"),
-					VOID_Data.vesselAngularVelocity.ToSIString(2)
-				);
-
-				if (VOID_Data.stageNominalThrust != 0d)
-				{
 					leftHUD.AppendFormat(
-						string.Intern("Thrust Offset: {0}\n"),
-						VOID_Data.vesselThrustOffset.Value.ToString("F1")
+						string.Intern("Acc: {0} T:W: {1}\n"),
+						VOID_Data.vesselAccel.ToSIString(2),
+						VOID_Data.currThrustWeight.Value.ToString("f2")
 					);
+
+					leftHUD.AppendFormat(
+						string.Intern("Ang Vel: {0}\n"),
+						VOID_Data.vesselAngularVelocity.ToSIString(2)
+					);
+
+					if (VOID_Data.stageNominalThrust != 0d)
+					{
+						leftHUD.AppendFormat(
+							string.Intern("Thrust Offset: {0}\n"),
+							VOID_Data.vesselThrustOffset.Value.ToString("F1")
+						);
+					}
 				}
+				else
+				{
+					VOID_Styles.labelHud.normal.textColor = Color.red;
+					leftHUD.Append(string.Intern("-- POWER LOST --"));
+				}
+
+				GUILayout.Label(
+					leftHUD.ToString(),
+					VOID_Styles.labelHud,
+					GUILayout.ExpandWidth(true),
+					GUILayout.ExpandHeight(true)
+				);
+
+				if (!this.positionsLocked)
+				{
+					GUI.DragWindow();
+				}
+
+				GUI.BringWindowToBack(id);
 			}
-			else
-			{
-				VOID_Styles.labelHud.normal.textColor = Color.red;
-				leftHUD.Append(string.Intern("-- POWER LOST --"));
-			}
-
-			GUILayout.Label(
-				leftHUD.ToString(),
-				VOID_Styles.labelHud,
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
-			);
-
-			if (!this.positionsLocked)
-			{
-				GUI.DragWindow();
-			}
-
-			GUI.BringWindowToBack(id);
-
-			Tools.PutStringBuilder(leftHUD);
 		}
 
 		protected void rightHUDWindow(int id)
 		{
-			StringBuilder rightHUD;
-
-			rightHUD = Tools.GetStringBuilder();
-
-			VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
-
-			if (this.core.powerAvailable)
+			using (PooledStringBuilder rightHUD = PooledStringBuilder.Get())
 			{
-				rightHUD.AppendFormat(
-					"Burn Δv (Rem/Tot): {0} / {1}\n",
-					VOID_Data.currManeuverDVRemaining.ValueUnitString("f2"),
-					VOID_Data.currManeuverDeltaV.ValueUnitString("f2")
-				);
+				VOID_Styles.labelHud.alignment = TextAnchor.UpperLeft;
 
-				if (VOID_Data.upcomingManeuverNodes > 1)
+				if (this.core.powerAvailable)
 				{
-					rightHUD.AppendFormat("Next Burn Δv: {0}\n",
-						VOID_Data.nextManeuverDeltaV.ValueUnitString("f2")
-					);
-				}
-
-				rightHUD.AppendFormat("Burn Time (Rem/Total): {0} / {1}\n",
-					VOID_Tools.FormatInterval(VOID_Data.currentNodeBurnRemaining.Value),
-					VOID_Tools.FormatInterval(VOID_Data.currentNodeBurnDuration.Value)
-				);
-
-				if (VOID_Data.burnTimeDoneAtNode.Value != string.Empty)
-				{
-					rightHUD.AppendFormat("{0} (done @ node)\n",
-						VOID_Data.burnTimeDoneAtNode.Value
+					rightHUD.AppendFormat(
+						"Burn Δv (Rem/Tot): {0} / {1}\n",
+						VOID_Data.currManeuverDVRemaining.ValueUnitString("f2"),
+						VOID_Data.currManeuverDeltaV.ValueUnitString("f2")
 					);
 
-					rightHUD.AppendFormat("{0} (½ done @ node)",
-						VOID_Data.burnTimeHalfDoneAtNode.Value
+					if (VOID_Data.upcomingManeuverNodes > 1)
+					{
+						rightHUD.AppendFormat("Next Burn Δv: {0}\n",
+							VOID_Data.nextManeuverDeltaV.ValueUnitString("f2")
+						);
+					}
+
+					rightHUD.AppendFormat("Burn Time (Rem/Total): {0} / {1}\n",
+						VOID_Tools.FormatInterval(VOID_Data.currentNodeBurnRemaining.Value),
+						VOID_Tools.FormatInterval(VOID_Data.currentNodeBurnDuration.Value)
 					);
+
+					if (VOID_Data.burnTimeDoneAtNode.Value != string.Empty)
+					{
+						rightHUD.AppendFormat("{0} (done @ node)\n",
+							VOID_Data.burnTimeDoneAtNode.Value
+						);
+
+						rightHUD.AppendFormat("{0} (½ done @ node)",
+							VOID_Data.burnTimeHalfDoneAtNode.Value
+						);
+					}
+					else
+					{
+						rightHUD.Append("Node is past");
+					}
 				}
 				else
 				{
-					rightHUD.Append("Node is past");
+					VOID_Styles.labelHud.normal.textColor = Color.red;
+					rightHUD.Append(string.Intern("-- POWER LOST --"));
 				}
+
+				GUILayout.Label(
+					rightHUD.ToString(),
+					VOID_Styles.labelHud,
+					GUILayout.ExpandWidth(true),
+					GUILayout.ExpandHeight(true)
+				);
+
+				if (!this.positionsLocked)
+				{
+					GUI.DragWindow();
+				}
+
+				GUI.BringWindowToBack(id);
 			}
-			else
-			{
-				VOID_Styles.labelHud.normal.textColor = Color.red;
-				rightHUD.Append(string.Intern("-- POWER LOST --"));
-			}
-
-			GUILayout.Label(
-				rightHUD.ToString(),
-				VOID_Styles.labelHud,
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
-			);
-
-			if (!this.positionsLocked)
-			{
-				GUI.DragWindow();
-			}
-
-			GUI.BringWindowToBack(id);
-
-			Tools.PutStringBuilder(rightHUD);
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			if (this.primaryHUD == null)
 			{
@@ -256,13 +252,11 @@ namespace VOID
 				this.Windows.Add(this.rightHUD);
 			}
 
-			base.DrawGUI();
+			base.DrawGUI(sender);
 		}
 
 		public override void DrawConfigurables()
 		{
-			base.DrawConfigurables();
-
 			if (GUILayout.Button(string.Intern("Reset Advanced HUD Positions"), GUILayout.ExpandWidth(false)))
 			{
 				HUDWindow window;
@@ -274,7 +268,7 @@ namespace VOID
 				}
 			}
 
-			this.positionsLocked.value = GUITools.Toggle(this.positionsLocked, string.Intern("Lock Advanced HUD Positions"));
+			this.positionsLocked.value = Layout.Toggle(this.positionsLocked, string.Intern("Lock Advanced HUD Positions"));
 		}
 	}
 }

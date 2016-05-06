@@ -29,7 +29,7 @@
 using KSP;
 using System;
 using System.Collections.Generic;
-using ToadicusTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -73,6 +73,12 @@ namespace VOID
 		{
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
+			if (this.core.SortedBodyList.Count < 1)
+			{
+				GUILayout.Label("Non-positive number of CelestialBodies here, bailing out.");
+				GUILayout.EndHorizontal();
+			}
+
 			GUILayout.BeginVertical(GUILayout.Width(150));
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label("", GUILayout.ExpandWidth(true));
@@ -82,8 +88,28 @@ namespace VOID
 
 			GUILayout.BeginVertical(GUILayout.Width(150));
 
-			selectedBody1 = this.core.AllBodies[selectedBodyIdx1];
-			selectedBody2 = this.core.AllBodies[selectedBodyIdx2];
+			if (selectedBodyIdx1 >= this.core.SortedBodyList.Count)
+			{
+				selectedBodyIdx1.value %= this.core.SortedBodyList.Count;
+			}
+
+			if (selectedBodyIdx1 < 0)
+			{
+				selectedBodyIdx1.value += this.core.SortedBodyList.Count;
+			}
+
+			if (selectedBodyIdx2 >= this.core.SortedBodyList.Count)
+			{
+				selectedBodyIdx2.value %= this.core.SortedBodyList.Count;
+			}
+
+			if (selectedBodyIdx2 < 0)
+			{
+				selectedBodyIdx2.value += this.core.SortedBodyList.Count;
+			}
+
+			selectedBody1 = this.core.SortedBodyList[selectedBodyIdx1];
+			selectedBody2 = this.core.SortedBodyList[selectedBodyIdx2];
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			if (GUILayout.Button("<", GUILayout.ExpandWidth(false)))
@@ -91,14 +117,14 @@ namespace VOID
 				selectedBodyIdx1.value--;
 				if (selectedBodyIdx1 < 0)
 				{
-					selectedBodyIdx1.value = this.core.AllBodies.Count - 1;
+					selectedBodyIdx1.value = this.core.SortedBodyList.Count - 1;
 				}
 			}
-			GUILayout.Label(this.core.AllBodies[selectedBodyIdx1].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.SortedBodyList[selectedBodyIdx1].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx1.value++;
-				if (selectedBodyIdx1 > this.core.AllBodies.Count - 1)
+				if (selectedBodyIdx1 > this.core.SortedBodyList.Count - 1)
 				{
 					selectedBodyIdx1.value = 0;
 				}
@@ -113,14 +139,14 @@ namespace VOID
 				selectedBodyIdx2.value--;
 				if (selectedBodyIdx2 < 0)
 				{
-					selectedBodyIdx2.value = this.core.AllBodies.Count - 1;
+					selectedBodyIdx2.value = this.core.SortedBodyList.Count - 1;
 				}
 			}
-			GUILayout.Label(this.core.AllBodies[selectedBodyIdx2].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
+			GUILayout.Label(this.core.SortedBodyList[selectedBodyIdx2].bodyName, VOID_Styles.labelCenterBold, GUILayout.ExpandWidth(true));
 			if (GUILayout.Button(">", GUILayout.ExpandWidth(false)))
 			{
 				selectedBodyIdx2.value++;
-				if (selectedBodyIdx2 > this.core.AllBodies.Count - 1)
+				if (selectedBodyIdx2 > this.core.SortedBodyList.Count - 1)
 				{
 					selectedBodyIdx2.value = 0;
 				}
@@ -373,8 +399,8 @@ namespace VOID
 
 			GUILayout.Label(p.ToString("##,#") + "kg/m³", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
-			if (body.bodyName == "Sun") GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
-			else GUILayout.Label(Tools.MuMech_ToSI(body.sphereOfInfluence), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+			if (body.bodyName == "Sun") GUILayout.Label(SIFormatProvider.ToSI(body.sphereOfInfluence, 3), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+			else GUILayout.Label(SIFormatProvider.ToSI(body.sphereOfInfluence, 3), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			GUILayout.Label(body.orbitingBodies.Count.ToString(), VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
@@ -393,11 +419,11 @@ namespace VOID
 
 			double g_ASL = (VOIDCore.Constant_G * body.Mass) / (body.Radius * body.Radius);
 
-			GUILayout.Label(Tools.MuMech_ToSI(g_ASL) + "m/s²", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
+			GUILayout.Label(SIFormatProvider.ToSI(g_ASL, 3) + "m/s²", VOID_Styles.labelRight, GUILayout.ExpandWidth(true));
 
 			if (body.atmosphere)
 			{
-				GUILayout.Label("≈ " + Tools.MuMech_ToSI(body.atmosphereDepth) + "m",
+				GUILayout.Label("≈ " + SIFormatProvider.ToSI(body.atmosphereDepth, 3) + "m",
 					VOID_Styles.labelRight,
 					GUILayout.ExpandWidth(true));
 

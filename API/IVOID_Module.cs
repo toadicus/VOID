@@ -38,13 +38,14 @@ namespace VOID
 		bool InValidScene { get; }
 		bool InValidGame { get; }
 
-		void DrawGUI();
+		void DrawGUI(object sender);
 		void StartGUI();
 		void StopGUI();
 
 		void DrawConfigurables();
 
-		void LoadConfig();
+		// void LoadConfig();
+		void LoadConfig(KSP.IO.PluginConfiguration config);
 
 		void Save(KSP.IO.PluginConfiguration config, string sceneKey);
 	}

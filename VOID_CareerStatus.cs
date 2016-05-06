@@ -30,6 +30,7 @@ using KSP;
 using System;
 using System.Text;
 using ToadicusTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -42,11 +43,11 @@ namespace VOID
 		{
 			if (delta > 0)
 			{
-				return string.Format("<color='lime'>{0}↑</color>", delta.ToString(numberFormat, Tools.SIFormatter));
+				return string.Format("<color='lime'>{0}↑</color>", delta.ToString(numberFormat, SIFormatProvider.SIFormatter));
 			}
 			else if (delta < 0)
 			{
-				return string.Format("<color='red'>{0}↓</color>", delta.ToString(numberFormat, Tools.SIFormatter));
+				return string.Format("<color='red'>{0}↓</color>", delta.ToString(numberFormat, SIFormatProvider.SIFormatter));
 			}
 			else
 			{
@@ -116,7 +117,7 @@ namespace VOID
 		{
 			get
 			{
-				Tools.PostDebugMessage(
+				Logging.PostDebugMessage(
 					this,
 					"Checking init state:" +
 					"\n\tcurrentFunds={0}" +
@@ -135,14 +136,14 @@ namespace VOID
 			}
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
 			if (Event.current.type != EventType.Layout && !this.currenciesInitialized)
 			{
 				this.initCurrencies();
 			}
 
-			base.DrawGUI();
+			base.DrawGUI(sender);
 		}
 
 		public override void ModuleWindow(int id)
@@ -201,7 +202,7 @@ namespace VOID
 
 		private void initCurrencies()
 		{
-			Tools.PostDebugMessage(
+			Logging.PostDebugMessage(
 				this,
 				"Initializing currencies." +
 				"\n\tFunding.Instance={0}" +

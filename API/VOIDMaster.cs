@@ -43,7 +43,7 @@
 using System;
 using UnityEngine;
 using KerbalEngineer.VesselSimulator;
-using ToadicusTools;
+using ToadicusTools.Extensions;
 
 namespace VOID
 {
@@ -80,6 +80,8 @@ namespace VOID
 				this.LogDebug("Factory reset is true; deleting config and disposing!");
 
 				KSP.IO.File.Delete<T>("config.xml");
+				System.IO.File.Delete(this.Core.VOIDSettingsPath);
+
 				this.Core.Dispose();
 				this.Core = null;
 			}

@@ -30,6 +30,8 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using ToadicusTools;
+using ToadicusTools.GUIUtils;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
@@ -96,7 +98,7 @@ namespace VOID
 				if (GUILayout.Button("Unset Target", GUILayout.ExpandWidth(false)))
 				{
 					FlightGlobals.fetch.SetVesselTarget(null);
-					Tools.PostDebugMessage("VOID_Rendezvous: KSP Target set to null");
+					Logging.PostDebugMessage("VOID_Rendezvous: KSP Target set to null");
 				}
 
 			}
@@ -123,7 +125,7 @@ namespace VOID
 						if (GUILayout.Button("Set Target", GUILayout.ExpandWidth(false)))
 						{
 							FlightGlobals.fetch.SetVesselTarget(rendezvessel);
-							Tools.PostDebugMessage("[VOID] KSP Target set to " + rendezvessel.vesselName);
+							Logging.PostDebugMessage("[VOID] KSP Target set to " + rendezvessel.vesselName);
 						}
 					}
 				}
@@ -135,7 +137,7 @@ namespace VOID
 				}
 			}
 
-			untoggleRegisterInfo.value = GUITools.Toggle(untoggleRegisterInfo, "Hide Vessel Register Info");
+			untoggleRegisterInfo.value = Layout.Toggle(untoggleRegisterInfo, "Hide Vessel Register Info");
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.Label(" ", GUILayout.ExpandWidth(true));
@@ -166,12 +168,12 @@ namespace VOID
 					//display orbital info for orbiting/flying/suborbital/escaping vessels only
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Ap/Pe:");
-					GUILayout.Label(Tools.MuMech_ToSI(v.orbit.ApA) + "m / " + Tools.MuMech_ToSI(v.orbit.PeA) + "m", GUILayout.ExpandWidth(false));
+					GUILayout.Label(SIFormatProvider.ToSI(v.orbit.ApA, 3) + "m / " + SIFormatProvider.ToSI(v.orbit.PeA, 3) + "m", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Altitude:");
-					GUILayout.Label(Tools.MuMech_ToSI(v.orbit.altitude) + "m", GUILayout.ExpandWidth(false));
+					GUILayout.Label(SIFormatProvider.ToSI(v.orbit.altitude, 3) + "m", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -183,24 +185,24 @@ namespace VOID
 					{
 						GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 						GUILayout.Label("Relative inclination:");
-						GUILayout.Label(Vector3d.Angle(Vessel.orbit.GetOrbitNormal(), v.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
+						GUILayout.Label(Vector3.Angle(Vessel.orbit.GetOrbitNormal(), v.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
 						GUILayout.EndHorizontal();
 					}
 					//if (debugging) Debug.Log("[CHATR] v -> v relative incl OK");
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Velocity:");
-					GUILayout.Label(Tools.MuMech_ToSI(v.orbit.vel.magnitude) + "m/s", GUILayout.ExpandWidth(false));
+					GUILayout.Label(SIFormatProvider.ToSI(v.orbit.vel.magnitude, 3) + "m/s", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Relative velocity:");
-					GUILayout.Label(Tools.MuMech_ToSI(v.orbit.vel.magnitude - Vessel.orbit.vel.magnitude) + "m/s", GUILayout.ExpandWidth(false));
+					GUILayout.Label(SIFormatProvider.ToSI(v.orbit.vel.magnitude - Vessel.orbit.vel.magnitude, 3) + "m/s", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Distance:");
-					GUILayout.Label(Tools.MuMech_ToSI((Vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude) + "m", GUILayout.ExpandWidth(false));
+					GUILayout.Label(SIFormatProvider.ToSI((Vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude, 3) + "m", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 
 					// Toadicus edit: added local sidereal longitude.
@@ -209,7 +211,7 @@ namespace VOID
 					GUILayout.Label(LSL.ToString("F3") + "°", VOID_Styles.labelRight);
 					GUILayout.EndHorizontal();
 
-					toggleExtendedOrbital.value = GUITools.Toggle(toggleExtendedOrbital, "Extended info");
+					toggleExtendedOrbital.value = Layout.Toggle(toggleExtendedOrbital, "Extended info");
 
 					if (toggleExtendedOrbital)
 					{
@@ -270,7 +272,7 @@ namespace VOID
 
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Distance:");
-					GUILayout.Label(Tools.MuMech_ToSI((Vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude) + "m", GUILayout.ExpandWidth(false));
+					GUILayout.Label(SIFormatProvider.ToSI((Vessel.findWorldCenterOfMass() - v.findWorldCenterOfMass()).magnitude, 3) + "m", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 				}
 			}
@@ -281,7 +283,7 @@ namespace VOID
 
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 				GUILayout.Label("Ap/Pe:");
-				GUILayout.Label(Tools.MuMech_ToSI(cb.orbit.ApA) + "m / " + Tools.MuMech_ToSI(cb.orbit.PeA) + "m", GUILayout.ExpandWidth(false));
+				GUILayout.Label(SIFormatProvider.ToSI(cb.orbit.ApA, 3) + "m / " + SIFormatProvider.ToSI(cb.orbit.PeA, 3) + "m", GUILayout.ExpandWidth(false));
 				GUILayout.EndHorizontal();
 				//if (debugging) Debug.Log("[VOID] Ap/Pe OK");
 
@@ -295,14 +297,14 @@ namespace VOID
 				{
 					GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 					GUILayout.Label("Relative inclination:");
-					GUILayout.Label(Vector3d.Angle(Vessel.orbit.GetOrbitNormal(), cb.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
+					GUILayout.Label(Vector3.Angle(Vessel.orbit.GetOrbitNormal(), cb.orbit.GetOrbitNormal()).ToString("F3") + "°", GUILayout.ExpandWidth(false));
 					GUILayout.EndHorizontal();
 					//if (debugging) Debug.Log("[VOID] cb Relative inclination OK");
 				}
 
 				GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 				GUILayout.Label("Distance:");
-				GUILayout.Label(Tools.MuMech_ToSI((Vessel.mainBody.position - cb.position).magnitude) + "m", GUILayout.ExpandWidth(false));
+				GUILayout.Label(SIFormatProvider.ToSI((Vessel.mainBody.position - cb.position).magnitude, 3) + "m", GUILayout.ExpandWidth(false));
 				GUILayout.EndHorizontal();
 
 				//if (debugging) Debug.Log("[VOID] Distance OK");

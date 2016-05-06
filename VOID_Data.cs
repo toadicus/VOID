@@ -31,6 +31,8 @@ using KSP;
 using System;
 using System.Collections.Generic;
 using ToadicusTools;
+using ToadicusTools.Extensions;
+using ToadicusTools.MuMechTools;
 using UnityEngine;
 
 namespace VOID
@@ -230,8 +232,8 @@ namespace VOID
 		public static readonly VOID_FloatValue mainThrottle =
 			new VOID_FloatValue(
 				"Throttle",
-				new Func<float>(() => Core.Vessel.ctrlState.mainThrottle * 100f),
-				"%"
+				new Func<float>(() => Core.Vessel.ctrlState.mainThrottle),
+				""
 			);
 
 		#endregion
@@ -351,8 +353,19 @@ namespace VOID
 					);
 				}
 			);
+		
+		public static readonly VOID_DoubleValue currThrust =
+			new VOID_DoubleValue(
+				"Current Thrust",
+				delegate()
+				{
+					if (Core.Stages == null || Core.LastStage == null)
+						return double.NaN;
 
-		// TODO: Convert currThrust and maxThrust to available VOID_DataValue objects.
+					return Core.LastStage.actualThrust;
+				},
+				"kN"
+			);
 		public static readonly VOID_StrValue currmaxThrust =
 			new VOID_StrValue(
 				"Thrust (curr/max)",
@@ -472,92 +485,95 @@ namespace VOID
 				""
 			);
 
-		public static readonly VOID_Vector3dValue vesselThrustOffset =
-			new VOID_Vector3dValue(
+		private static Vector3 thrustPos;
+		private static Vector3 thrustDir;
+		private static float thrust;
+
+		private static void thrustOffsetPreForEach(object sender)
+		{
+			thrustPos = Vector3.zero;
+			thrustDir = Vector3.zero;
+			thrust = 0;
+		}
+
+		private static void thrustOffSetPerModule(object sender, VOIDForEachPartModuleArgs args)
+		{
+			PartModule module = args.Data;
+
+			float moduleThrust = 0;
+
+			switch (module.moduleName)
+			{
+				case "ModuleEngines":
+				case "ModuleEnginesFX":
+					break;
+				default:
+					return;
+			}
+
+			if (!module.isEnabled)
+			{
+				return;
+			}
+
+			CenterOfThrustQuery cotQuery = new CenterOfThrustQuery();
+
+			if (module is ModuleEngines)
+			{
+				ModuleEngines engineModule = module as ModuleEngines;
+
+				moduleThrust = engineModule.finalThrust;
+
+				engineModule.OnCenterOfThrustQuery(cotQuery);
+			}
+			else // engine is ModuleEnginesFX
+			{
+				ModuleEnginesFX engineFXModule = module as ModuleEnginesFX;
+
+				moduleThrust = engineFXModule.finalThrust;
+
+				engineFXModule.OnCenterOfThrustQuery(cotQuery);
+			}
+
+			if (moduleThrust != 0d)
+			{
+				cotQuery.thrust = moduleThrust;
+			}
+
+			thrustPos += cotQuery.pos * cotQuery.thrust;
+			thrustDir += cotQuery.dir * cotQuery.thrust;
+			thrust += cotQuery.thrust;
+		}
+
+		public static readonly VOID_Vector3Value vesselThrustOffset =
+			new VOID_Vector3Value(
 				"Thrust Offset",
 				delegate()
 				{
-					if (Core.Vessel == null)
-					{
-						return Vector3d.zero;
-					}
-
-					IList<PartModule> engineModules = Core.Vessel.getModulesOfType<PartModule>();
-
-					Vector3d thrustPos = Vector3d.zero;
-					Vector3d thrustDir = Vector3d.zero;
-					float thrust = 0;
-
-					PartModule engine;
-					for (int idx = 0; idx < engineModules.Count; idx++)
-					{
-						engine = engineModules[idx];
-						float moduleThrust = 0;
-
-						switch (engine.moduleName)
-						{
-							case "ModuleEngines":
-							case "ModuleEnginesFX":
-								break;
-							default:
-								continue;
-						}
-
-						if (!engine.isEnabled)
-						{
-							continue;
-						}
-
-						CenterOfThrustQuery cotQuery = new CenterOfThrustQuery();
-
-						if (engine is ModuleEngines)
-						{
-							ModuleEngines engineModule = engine as ModuleEngines;
-
-							moduleThrust = engineModule.finalThrust;
-
-							engineModule.OnCenterOfThrustQuery(cotQuery);
-						}
-						else // engine is ModuleEnginesFX
-						{
-							ModuleEnginesFX engineFXModule = engine as ModuleEnginesFX;
-
-							moduleThrust = engineFXModule.finalThrust;
-
-							engineFXModule.OnCenterOfThrustQuery(cotQuery);
-						}
-
-						if (moduleThrust != 0d)
-						{
-							cotQuery.thrust = moduleThrust;
-						}
-
-						thrustPos += cotQuery.pos * cotQuery.thrust;
-						thrustDir += cotQuery.dir * cotQuery.thrust;
-						thrust += cotQuery.thrust;
-					}
+					Vector3 pos = thrustPos;
+					Vector3 dir = thrustDir;
 
 					if (thrust != 0)
 					{
-						thrustPos /= thrust;
-						thrustDir /= thrust;
+						pos /= thrust;
+						dir /= thrust;
 					}
 
 					Transform vesselTransform = Core.Vessel.transform;
 
-					thrustPos = vesselTransform.InverseTransformPoint(thrustPos);
-					thrustDir = vesselTransform.InverseTransformDirection(thrustDir);
+					pos = vesselTransform.InverseTransformPoint(pos);
+					dir = vesselTransform.InverseTransformDirection(dir);
 
-					Vector3d thrustOffset = VectorTools.PointDistanceToLine(
-						                        thrustPos, thrustDir.normalized, Core.Vessel.findLocalCenterOfMass());
+					Vector3 thrustOffset = VectorTools.PointDistanceToLine(
+						pos, dir.normalized, Core.Vessel.findLocalCenterOfMass());
 
-					Tools.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
+					Logging.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
 					"\tthrustPos: {0}\n" +
 					"\tthrustDir: {1}\n" +
 					"\tthrustOffset: {2}\n" +
 					"\tvessel.CoM: {3}",
-						thrustPos,
-						thrustDir.normalized,
+						pos,
+						dir.normalized,
 						thrustOffset,
 						Core.Vessel.findWorldCenterOfMass()
 					);
@@ -571,70 +587,76 @@ namespace VOID
 
 		#region Air Breathing
 
+		private static double airFlowCurrent;
+		private static double airFlowRequired;
+		private static string intakeAirString;
+
+		private static void intakeAirPreForEach(object sender)
+		{
+			airFlowCurrent = 0d;
+			airFlowRequired = 0d;
+			intakeAirString = string.Empty;
+		}
+
+		private static void intakeAirForEachModule(object sender, VOIDForEachPartModuleArgs args)
+		{
+			PartModule module = args.Data;
+			List<Propellant> propellantList = null;
+
+			if (!module.part.enabled)
+			{
+				return;
+			}
+
+			if (module is ModuleEngines)
+			{
+				propellantList = ((ModuleEngines)module).propellants;
+			}
+			else if (module is ModuleEnginesFX)
+			{
+				propellantList = ((ModuleEnginesFX)module).propellants;
+			}
+			else if (module is ModuleResourceIntake)
+			{
+				ModuleResourceIntake intakeModule = (ModuleResourceIntake)module;
+
+				if (intakeModule.resourceName == "IntakeAir")
+				{
+					airFlowCurrent += intakeModule.airFlow;
+				}
+			}
+
+			if (propellantList != null)
+			{
+				Propellant propellant;
+				for (int propIdx = 0; propIdx < propellantList.Count; propIdx++)
+				{
+					propellant = propellantList[propIdx];
+
+					if (propellant.name == "IntakeAir")
+					{
+						airFlowRequired += propellant.currentRequirement / TimeWarp.fixedDeltaTime;
+						break;
+					}
+				}
+			}
+		}
+
 		public static readonly VOID_StrValue intakeAirStatus =
 			new VOID_StrValue(
 				"Intake Air (Curr / Req)",
 				delegate()
 				{
-					double currentAmount;
-					double currentRequirement;
-
-					currentAmount = 0d;
-					currentRequirement = 0d;
-
-					Part part;
-					for (int idx = 0; idx < Core.Vessel.Parts.Count; idx++)
+					if (airFlowCurrent == 0 && airFlowRequired == 0)
 					{
-						part = Core.Vessel.Parts[idx];
-
-						if (part.enabled)
-						{
-							ModuleEngines engineModule;
-							ModuleEnginesFX enginesFXModule;
-							List<Propellant> propellantList = null;
-
-							if (part.tryGetFirstModuleOfType<ModuleEngines>(out engineModule))
-							{
-								propellantList = engineModule.propellants;
-							}
-							else if (part.tryGetFirstModuleOfType<ModuleEnginesFX>(out enginesFXModule))
-							{
-								propellantList = enginesFXModule.propellants;
-							}
-
-							if (propellantList != null)
-							{
-								Propellant propellant;
-								for (int propIdx = 0; propIdx < propellantList.Count; propIdx++)
-								{
-									propellant = propellantList[propIdx];
-
-									if (propellant.name == "IntakeAir")
-									{
-										currentRequirement += propellant.currentRequirement / TimeWarp.fixedDeltaTime;
-										break;
-									}
-								}
-							}
-						}
-
-						ModuleResourceIntake intakeModule;
-
-						if (part.enabled && part.tryGetFirstModuleOfType<ModuleResourceIntake>(out intakeModule))
-						{
-							if (intakeModule.resourceName == "IntakeAir")
-							{
-								currentAmount += intakeModule.airFlow;
-							}
-						}
+						intakeAirString = "N/A";
+					}
+					else
+					{
+						intakeAirString = string.Format("{0:F3} / {1:F3}", airFlowCurrent, airFlowRequired);
 					}
 
-					if (currentAmount == 0 && currentRequirement == 0)
-					{
-						return "N/A";
-					}
-
-					return string.Format("{0:F3} / {1:F3}", currentAmount, currentRequirement);
+					return intakeAirString;
 				}
 			);
 
@@ -642,19 +664,29 @@ namespace VOID
 
 		#region Crew
 
+		private static int crewCount;
+		private static int crewCapacity;
+
+		private static void crewCountPreForEach(object sender)
+		{
+			crewCount = 0;
+			crewCapacity = 0;
+		}
+
+		private static void crewCountPerPart(object sender, VOIDForEachPartArgs args)
+		{
+			Part part = args.Data;
+
+			crewCount += part.protoModuleCrew.Count;
+			crewCapacity += part.CrewCapacity;
+		}
+
 		public static readonly VOID_IntValue vesselCrewCount =
 			new VOID_IntValue(
 				"Crew Onboard",
 				delegate()
 				{
-					if (Core.Vessel != null)
-					{
-						return Core.Vessel.GetCrewCount();
-					}
-					else
-					{
-						return 0;
-					}
+					return crewCount;
 				},
 				""
 			);
@@ -664,14 +696,7 @@ namespace VOID
 				"Crew Capacity",
 				delegate()
 				{
-					if (Core.Vessel != null)
-					{
-						return Core.Vessel.GetCrewCapacity();
-					}
-					else
-					{
-						return 0;
-					}
+					return crewCapacity;
 				},
 				""
 			);
@@ -806,7 +831,10 @@ namespace VOID
 		public static readonly VOID_DoubleValue horzVelocity =
 			new VOID_DoubleValue(
 				"Horizontal speed",
-				new Func<double>(() => Core.Vessel.horizontalSrfSpeed),
+				delegate
+				{
+					return Core.Vessel.horizontalSrfSpeed;
+				},
 				"m/s"
 			);
 
@@ -1154,7 +1182,7 @@ namespace VOID
 		public static readonly VOID_DoubleValue trueAnomaly = 
 			new VOID_DoubleValue(
 				"True Anomaly",
-				new Func<double>(() => Core.Vessel.orbit.trueAnomaly),
+				new Func<double>(() => Core.Vessel.orbit.trueAnomaly * 180d / Math.PI),
 				"°"
 			);
 
@@ -1288,7 +1316,7 @@ namespace VOID
 
 		private static double burnTime(double deltaV, double initialMass, double massFlow, double thrust)
 		{
-			Tools.PostDebugMessage(typeof(VOID_Data), "calculating burnTime from:\n" +
+			Logging.PostDebugMessage(typeof(VOID_Data), "calculating burnTime from:\n" +
 			"\tdeltaV: {0}\n" +
 			"\tinitialMass: {1}\n" +
 			"\tmassFlow: {2}\n" +
@@ -1339,6 +1367,46 @@ namespace VOID
 			}
 
 			return burntime;
+		}
+
+		private static void onFlightModulesLoaded(object sender)
+		{
+			if (sender is VOIDCore_Flight)
+			{
+				VOIDCore_Flight flightCore = sender as VOIDCore_Flight;
+
+				flightCore.onPreForEach += thrustOffsetPreForEach;
+				flightCore.onForEachModule += thrustOffSetPerModule;
+
+				flightCore.onPreForEach += intakeAirPreForEach;
+				flightCore.onForEachModule += intakeAirForEachModule;
+
+				flightCore.onPreForEach += crewCountPreForEach;
+				flightCore.onForEachPart += crewCountPerPart;
+			}
+		}
+
+		private static void onFlightModulesDestroyed(object sender)
+		{
+			if (sender is VOIDCore_Flight)
+			{
+				VOIDCore_Flight flightCore = sender as VOIDCore_Flight;
+
+				flightCore.onPreForEach -= thrustOffsetPreForEach;
+				flightCore.onForEachModule -= thrustOffSetPerModule;
+
+				flightCore.onPreForEach -= intakeAirPreForEach;
+				flightCore.onForEachModule -= intakeAirForEachModule;
+
+				flightCore.onPreForEach -= crewCountPreForEach;
+				flightCore.onForEachPart -= crewCountPerPart;
+			}
+		}
+
+		static VOID_Data()
+		{
+			VOIDCore_Flight.onModulesLoaded += onFlightModulesLoaded;
+			VOIDCore_Flight.onModulesDestroyed += onFlightModulesDestroyed;
 		}
 	}
 }

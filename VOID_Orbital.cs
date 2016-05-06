@@ -29,6 +29,7 @@
 using KSP;
 using System;
 using ToadicusTools;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 
 namespace VOID
@@ -83,7 +84,7 @@ namespace VOID
 			this.precisionValues [idx]= (ushort)VOID_Data.gravityAccel.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
-			this.toggleExtended.value = GUITools.Toggle(this.toggleExtended, "Extended info");
+			this.toggleExtended.value = Layout.Toggle(this.toggleExtended, "Extended info");
 
 			if (this.toggleExtended)
             {
@@ -112,13 +113,13 @@ namespace VOID
             }
 
             GUILayout.EndVertical();
-            
+
 			base.ModuleWindow(id);
 		}
 
-		public override void LoadConfig ()
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.LoadConfig ();
+			base.LoadConfig(config);
 
 			this.precisionValues = new IntCollection (4, this._precisionValues);
 		}
@@ -131,4 +132,3 @@ namespace VOID
 		}
 	}
 }
-

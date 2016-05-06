@@ -43,7 +43,7 @@
 using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
-using ToadicusTools;
+using ToadicusTools.Extensions;
 using UnityEngine;
 
 namespace VOID
@@ -53,10 +53,10 @@ namespace VOID
 	{
 		public override void Awake()
 		{
-			Tools.PostDebugMessage ("VOIDEditorMaster: Waking up.");
+			this.LogDebug("VOIDEditorMaster: Waking up.");
 			this.Core = VOIDCore_Editor.Instance;
 			this.Core.ResetGUI ();
-			Tools.PostDebugMessage ("VOIDEditorMaster: Awake.");
+			this.LogDebug("VOIDEditorMaster: Awake.");
 		}
 	}
 }
