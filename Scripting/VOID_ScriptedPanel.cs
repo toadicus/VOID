@@ -33,6 +33,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using UnityEngine;
 using ToadicusTools;
+using ToadicusTools.Extensions;
+using ToadicusTools.GUIUtils;
+using ToadicusTools.Text;
 using VOID;
 
 namespace VOID_ScriptedPanels
@@ -119,6 +122,8 @@ namespace VOID_ScriptedPanels
 
 				panels.Clear();
 
+				PluginConfiguration voidConfig = new PluginConfiguration(VOID_Data.Core.VOIDSettingsPath);
+
 				for (int fIdx = 0; fIdx < voidScriptFiles.Count; fIdx++)
 				{
 					file = voidScriptFiles[fIdx];
@@ -131,7 +136,7 @@ namespace VOID_ScriptedPanels
 
 						if (panelConfig.config.name == PANEL_KEY)
 						{
-							panel = new VOID_ScriptedPanel(panelConfig.config);
+							panel = new VOID_ScriptedPanel(panelConfig.config, voidConfig);
 
 							panel.SourceFileUrl = file.url;
 
@@ -203,13 +208,13 @@ namespace VOID_ScriptedPanels
 			this.runtimeErrors = new Dictionary<ushort, VOIDScriptRuntimeException>();
 		}
 
-		public VOID_ScriptedPanel(ConfigNode node) : this()
+		public VOID_ScriptedPanel(ConfigNode node, PluginConfiguration voidConfig) : this()
 		{
 			this.Load(node);
 
 			this.saveKeyName = string.Format("{0}_{1}", this.saveKeyName, (this.Name + this.SourceFileUrl).ToMD5Hash());
 
-			this.LoadConfig();
+			this.LoadConfig(voidConfig);
 
 			if (this.Active)
 			{
@@ -272,7 +277,7 @@ namespace VOID_ScriptedPanels
 					}
 					catch
 					{
-						Tools.PostErrorMessage(
+						Logging.PostErrorMessage(
 							"{0}: Failed parsing {1}: '{2}' not a valid {3}.",
 							this.Name,
 							SCENES_KEY,
@@ -306,7 +311,7 @@ namespace VOID_ScriptedPanels
 					}
 					catch
 					{
-						Tools.PostErrorMessage(
+						Logging.PostErrorMessage(
 							"{0}: Failed parsing {1}: '{2}' not a valid {3}.",
 							this.Name,
 							SCENES_KEY,
@@ -402,11 +407,10 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
-		public override void LoadConfig()
+		public override void LoadConfig(KSP.IO.PluginConfiguration config)
 		{
-			base.LoadConfig();
+			base.LoadConfig(config);
 
-			var config = KSP.IO.PluginConfiguration.CreateForType<VOID_Module> ();
 			config.load();
 
 			VOID_PanelLineGroup group;
@@ -443,9 +447,9 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
-			base.DrawGUI();
+			base.DrawGUI(sender);
 
 			if (!string.IsNullOrEmpty(this.tooltipContents))
 			{
@@ -508,7 +512,7 @@ namespace VOID_ScriptedPanels
 			{
 				group = this.lineGroups[gIdx];
 
-				group.IsShown = GUITools.Toggle(group.IsShown, group.Name);
+				group.IsShown = Layout.Toggle(group.IsShown, group.Name);
 
 				if (group.IsShown)
 				{
@@ -1043,7 +1047,7 @@ namespace VOID_ScriptedPanels
 
 				scriptExpression = parser.Parse();
 
-				Tools.PostDebugMessage(this, "Parsed expression '{0}' from '{1}'.", scriptExpression, script);
+				Logging.PostDebugMessage(this, "Parsed expression '{0}' from '{1}'.", scriptExpression, script);
 
 				return scriptExpression.Compile();
 			}
@@ -1067,7 +1071,7 @@ namespace VOID_ScriptedPanels
 			}
 			catch (Exception ex)
 			{
-				Tools.PostErrorMessage(
+				Logging.PostErrorMessage(
 					"Compiler error processing VOIDScript line '{0}'.  Please report!\n{1}: {2}\n{3}",
 					script, ex.GetType().Name, ex.Message, ex.StackTrace);
 				return this.getSyntaxErrorContent("Compiler Error", ex.GetType().Name + ": " + ex.Message, cell);

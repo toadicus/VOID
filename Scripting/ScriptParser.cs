@@ -65,7 +65,7 @@ namespace VOID_ScriptedPanels
 		{
 			this.scanner = new ScriptScanner(input);
 			this.Tokens = new List<Token>();
-			this.formatter = Expression.Constant(Tools.SIFormatter);
+			this.formatter = Expression.Constant(ToadicusTools.Text.SIFormatProvider.SIFormatter);
 		}
 
 		public LambdaExpression Parse()

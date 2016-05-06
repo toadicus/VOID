@@ -705,7 +705,7 @@ namespace VOID
 
 					foreach (VOID_ScriptedPanel panel in VOID_ScriptedManager.Instance.ValidPanels)
 					{
-						panel.Active = GUITools.Toggle(panel.Active, panel.Name);
+						panel.Active = Layout.Toggle(panel.Active, panel.Name);
 					}
 				}
 			}

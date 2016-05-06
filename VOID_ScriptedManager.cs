@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using ToadicusTools;
+using ToadicusTools.GUIUtils;
 using UnityEngine;
 using VOID_ScriptedPanels;
 
@@ -62,9 +63,9 @@ namespace VOID
 			}
 		}
 
-		public override void DrawGUI()
+		public override void DrawGUI(object sender)
 		{
-			base.DrawGUI();
+			base.DrawGUI(sender);
 
 			/*foreach (var panel in this.ValidPanels)
 			{
@@ -92,7 +93,7 @@ namespace VOID
 
 			foreach (var panel in this.ValidPanels)
 			{
-				panel.Active = GUITools.Toggle(panel.Active, panel.Name);
+				panel.Active = Layout.Toggle(panel.Active, panel.Name);
 			}
 
 			if (GUILayout.Button("Reload Panel Configs"))
