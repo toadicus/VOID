@@ -414,17 +414,35 @@ namespace VOID_ScriptedPanels
 			config.load();
 
 			VOID_PanelLineGroup group;
+			VOID_PanelLine line;
 
+			string groupKeyPrefix;
 			string groupIsShownKey;
 
-			for (int idx = 0; idx < this.lineGroups.Count; idx++)
+			for (int lIdx = 0; lIdx < this.PanelLines.Count; lIdx++)
 			{
-				group = this.lineGroups[idx];
+				line = this.PanelLines[lIdx];
+
+				line.LoadConfig(config, this.saveKeyName);
+			}
+
+			for (int gIdx = 0; gIdx < this.lineGroups.Count; gIdx++)
+			{
+				group = this.lineGroups[gIdx];
+
+				groupKeyPrefix = string.Format("{0}_{1}", this.saveKeyName, group.Name);
 
 				groupIsShownKey = string.Format("{0}_{1}{2}",
 					this.saveKeyName, group.Name, VOID_PanelLineGroup.ISSHOWN_KEY);
-
+				
 				group.IsShown = config.GetValue(groupIsShownKey, group.IsShown);
+
+				for (int lIdx = 0; lIdx < this.PanelLines.Count; lIdx++)
+				{
+					line = this.PanelLines[lIdx];
+
+					line.LoadConfig(config, groupKeyPrefix);
+				}
 			}
 		}
 
@@ -433,17 +451,35 @@ namespace VOID_ScriptedPanels
 			base.Save(config, sceneKey);
 
 			VOID_PanelLineGroup group;
+			VOID_PanelLine line;
 
+			string groupKeyPrefix;
 			string groupIsShownKey;
 
-			for (int idx = 0; idx < this.lineGroups.Count; idx++)
+			for (int lIdx = 0; lIdx < this.PanelLines.Count; lIdx++)
 			{
-				group = this.lineGroups[idx];
+				line = this.PanelLines[lIdx];
+
+				line.Save(config, this.saveKeyName);
+			}
+
+			for (int gIdx = 0; gIdx < this.lineGroups.Count; gIdx++)
+			{
+				group = this.lineGroups[gIdx];
+
+				groupKeyPrefix = string.Format("{0}_{1}", this.saveKeyName, group.Name);
 
 				groupIsShownKey = string.Format("{0}_{1}{2}",
 					this.saveKeyName, group.Name, VOID_PanelLineGroup.ISSHOWN_KEY);
 
 				config.SetValue(groupIsShownKey, group.IsShown);
+
+				for (int lIdx = 0; lIdx < this.PanelLines.Count; lIdx++)
+				{
+					line = this.PanelLines[lIdx];
+
+					line.Save(config, groupKeyPrefix);
+				}
 			}
 		}
 
@@ -627,9 +663,16 @@ namespace VOID_ScriptedPanels
 
 					try
 					{
-						labelObj = line.LabelFunction.DynamicInvoke();
+						if (line.LabelIsVarPrecision)
+						{
+							labelObj = line.LabelFunction.DynamicInvoke(line.LabelVarPrecisionDigits);
+						}
+						else
+						{
+							labelObj = line.LabelFunction.DynamicInvoke();
+						}
 					}
-					catch (System.Reflection.TargetInvocationException tx)
+					catch (ApplicationException tx)
 					{
 						var ix = tx.InnerException;
 
@@ -661,6 +704,20 @@ namespace VOID_ScriptedPanels
 					{
 						GUILayout.Label(labelObj.ToString());
 					}
+
+					if (line.LabelIsVarPrecision)
+					{
+						Rect lastRect = GUILayoutUtility.GetLastRect();
+
+						int oldDigits = line.LabelVarPrecisionDigits;
+
+						line.LabelVarPrecisionDigits = DoPrecisionClickOnRect(lastRect, line.LabelVarPrecisionDigits);
+
+						if (line.LabelVarPrecisionDigits != oldDigits)
+						{
+							VOID_Data.Core.configDirty = true;
+						}
+					}
 				}
 
 				if (line.LabelFunction != null && line.ValueFunction != null)
@@ -674,9 +731,16 @@ namespace VOID_ScriptedPanels
 
 					try
 					{
-						valueObj = line.ValueFunction.DynamicInvoke();
+						if (line.ValueIsVarPrecision)
+						{
+							valueObj = line.ValueFunction.DynamicInvoke(line.ValueVarPrecisionDigits);
+						}
+						else
+						{
+							valueObj = line.ValueFunction.DynamicInvoke();
+						}
 					}
-					catch (System.Reflection.TargetInvocationException tx)
+					catch (ApplicationException tx)
 					{
 						var ix = tx.InnerException;
 
@@ -703,6 +767,20 @@ namespace VOID_ScriptedPanels
 					{
 						GUILayout.Label(valueObj.ToString());
 					}
+
+					if (line.ValueIsVarPrecision)
+					{
+						Rect lastRect = GUILayoutUtility.GetLastRect();
+
+						int oldDigits = line.ValueVarPrecisionDigits;
+
+						line.ValueVarPrecisionDigits = DoPrecisionClickOnRect(lastRect, line.ValueVarPrecisionDigits);
+
+						if (line.ValueVarPrecisionDigits != oldDigits)
+						{
+							VOID_Data.Core.configDirty = true;
+						}
+					}
 				}
 
 				GUILayout.EndHorizontal();
@@ -712,6 +790,31 @@ namespace VOID_ScriptedPanels
 					_errorIndices.Add(idx);
 				}
 			}
+		}
+
+		public static int DoPrecisionClickOnRect(Rect lastRect, int digits)
+		{
+			if (Event.current.type == EventType.mouseUp)
+			{
+				if (lastRect.Contains(Event.current.mousePosition))
+				{
+					if (Event.current.button == 0)
+					{
+						digits = (digits + 3) % 9;
+					}
+					else if (Event.current.button == 1)
+					{
+						digits = (digits - 3) % 9;
+					}
+
+					if (digits < 0)
+					{
+						digits += 9;
+					}
+				}
+			}
+
+			return digits;
 		}
 
 		public static void DoErrorReport(
@@ -910,11 +1013,19 @@ namespace VOID_ScriptedPanels
 		public const string LABEL_KEY = "Label";
 		public const string VALUE_KEY = "Value";
 		public const string LINENO_KEY = "LineNumber";
+		public const string LABEL_DIGITS_KEY = "LabelDigits";
+		public const string VALUE_DIGITS_KEY = "ValueDigits";
 
 		private string labelScript;
 		private string valueScript;
 
 		public ushort LineNumber;
+
+		public bool LabelIsVarPrecision;
+		public bool ValueIsVarPrecision;
+
+		public int LabelVarPrecisionDigits;
+		public int ValueVarPrecisionDigits;
 
 		public Delegate LabelFunction
 		{
@@ -973,6 +1084,8 @@ namespace VOID_ScriptedPanels
 			this.LineNumber = ushort.MaxValue;
 			this.labelScript = string.Empty;
 			this.valueScript = string.Empty;
+			this.LabelIsVarPrecision = false;
+			this.ValueIsVarPrecision = false;
 		}
 
 		public VOID_PanelLine(ConfigNode node) : this()
@@ -984,6 +1097,8 @@ namespace VOID_ScriptedPanels
 		{
 			string labelScript;
 			string valueScript;
+			int labelDigits;
+			int valueDigits;
 
 			if (node.TryGetValue(LABEL_KEY, out labelScript))
 			{
@@ -993,6 +1108,16 @@ namespace VOID_ScriptedPanels
 			if (node.TryGetValue(VALUE_KEY, out valueScript))
 			{
 				this.ValueScript = valueScript;
+			}
+
+			if (node.TryGetValue(LABEL_DIGITS_KEY, out labelDigits))
+			{
+				this.LabelVarPrecisionDigits = labelDigits;
+			}
+
+			if (node.TryGetValue(VALUE_DIGITS_KEY, out valueDigits))
+			{
+				this.ValueVarPrecisionDigits = valueDigits;
 			}
 
 			string lineNo;
@@ -1035,6 +1160,69 @@ namespace VOID_ScriptedPanels
 			{
 				node.AddValue(LINENO_KEY, this.LineNumber.ToString());
 			}
+
+			node.SafeSetValue(LABEL_DIGITS_KEY, this.LabelVarPrecisionDigits.ToString());
+			node.SafeSetValue(VALUE_DIGITS_KEY, this.ValueVarPrecisionDigits.ToString());
+		}
+
+		public void LoadConfig(KSP.IO.PluginConfiguration config, string keyPrefix)
+		{
+			VOID_PanelLine line = this;
+
+			string lineLabelPrecisionKey;
+			string lineValuePrecisionKey;
+
+			if (line.LabelIsVarPrecision)
+			{
+				lineLabelPrecisionKey = string.Format(
+					"{0}_Line{1}_LabelDigits",
+					keyPrefix,
+					line.LineNumber
+				);
+
+				line.LabelVarPrecisionDigits = config.GetValue(lineLabelPrecisionKey, line.LabelVarPrecisionDigits);
+			}
+
+			if (line.ValueIsVarPrecision)
+			{
+				lineValuePrecisionKey = string.Format(
+					"{0}_Line{1}_ValueDigits",
+					keyPrefix,
+					line.LineNumber
+				);
+
+				line.ValueVarPrecisionDigits = config.GetValue(lineValuePrecisionKey, line.ValueVarPrecisionDigits);
+			}
+		}
+
+		public void Save(KSP.IO.PluginConfiguration config, string keyPrefix)
+		{
+			VOID_PanelLine line = this;
+
+			string lineLabelPrecisionKey;
+			string lineValuePrecisionKey;
+
+			if (line.LabelIsVarPrecision)
+			{
+				lineLabelPrecisionKey = string.Format(
+					"{0}_Line{1}_LabelDigits",
+					keyPrefix,
+					line.LineNumber
+				);
+
+				config.SetValue(lineLabelPrecisionKey, line.LabelVarPrecisionDigits);
+			}
+
+			if (line.ValueIsVarPrecision)
+			{
+				lineValuePrecisionKey = string.Format(
+					"{0}_Line{1}_ValueDigits",
+					keyPrefix,
+					line.LineNumber
+				);
+
+				config.SetValue(lineValuePrecisionKey, line.ValueVarPrecisionDigits);
+			}
 		}
 
 		private Delegate parseFunctionScript(string script, ParsingCell cell)
@@ -1046,6 +1234,34 @@ namespace VOID_ScriptedPanels
 				ScriptParser parser = new ScriptParser(script);
 
 				scriptExpression = parser.Parse();
+
+				if ((scriptExpression.Parameters?.Count ?? 0) > 0)
+				{
+					if (scriptExpression.Parameters[0].Type == typeof(int))
+					{
+						object defaultValue = parser.ParameterSignatures[0].DefaultValue;
+						int defaultParam = 0;
+
+						if (defaultValue != null && defaultValue is int)
+						{
+							defaultParam = (int)defaultValue;
+						}
+
+						switch (cell)
+						{
+							case ParsingCell.Label:
+								this.LabelIsVarPrecision = true;
+								this.LabelVarPrecisionDigits = defaultParam;
+								break;
+							case ParsingCell.Value:
+								this.ValueIsVarPrecision = true;
+								this.ValueVarPrecisionDigits = defaultParam;
+								break;
+							default:
+								throw new NotImplementedException();
+						}
+					}
+				}
 
 				Logging.PostDebugMessage(this, "Parsed expression '{0}' from '{1}'.", scriptExpression, script);
 

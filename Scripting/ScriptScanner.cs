@@ -227,11 +227,58 @@ namespace VOID_ScriptedPanels
 						{
 							case tokenStopChar:
 								state = StateType.InEval;
+								// TODO: Should probably be checking to make sure the string is not zero-length.
 								return new Token(Token.TokenType.FormatString, currentToken.ToString());
+							case tokenFormatParameterChar:
+								state = StateType.InFormatParam;
+								break;
 							default:
 								currentToken.Append(c);
 								pointer++;
 								break;
+						}
+						break;
+					case StateType.InFormatParam:
+						switch (c)
+						{
+							case tokenStopChar:
+								state = StateType.InEval;
+
+								if (currentToken.Length > 0)
+								{
+									int defaultParameter;
+
+									if (Int32.TryParse(currentToken.ToString(), out defaultParameter))
+									{
+										return new Token(Token.TokenType.FormatParameter, defaultParameter);
+									}
+								}
+
+								return new Token(Token.TokenType.FormatParameter, currentToken.ToString());
+							case tokenFormatParameterChar:
+								pointer++;
+								break;
+							case '0':
+							case '1':
+							case '2':
+							case '3':
+							case '4':
+							case '5':
+							case '6':
+							case '7':
+							case '8':
+							case '9':
+								currentToken.Append(c);
+								pointer++;
+								break;
+							default:
+								throw new VOIDScriptSyntaxException(string.Format(
+										"Unexpected character '{0}' in format parameter at position '{1}':\n\t" +
+										"Expected '{2}' or end of evaluation block.",
+										c,
+										pointer,
+										tokenFormatParameterChar
+									));
 						}
 						break;
 					default:
@@ -266,6 +313,7 @@ namespace VOID_ScriptedPanels
 		private const char tokenDataChar = '$';
 		private const char tokenValueChar = '#';
 		private const char tokenFormatChar = ':';
+		private const char tokenFormatParameterChar = '%';
 
 		internal enum StateType
 		{
@@ -275,7 +323,8 @@ namespace VOID_ScriptedPanels
 			InValueVar,
 			InNumValue,
 			AfterDataVar,
-			InFormatString
+			InFormatString,
+			InFormatParam
 		}
 	}
 }

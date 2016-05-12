@@ -136,12 +136,12 @@ namespace VOID
 
 		private void refreshValidPanels(GameScenes data)
 		{
-			this.core.onUpdate += onUpdateHandler;
+			if (this.core != null) this.core.onUpdate += onUpdateHandler;
 		}
 
 		private void refreshValidPanels(ConfigNode data)
 		{
-			this.core.onUpdate += onUpdateHandler;
+			if (this.core != null) this.core.onUpdate += onUpdateHandler;
 		}
 
 		public VOID_ScriptedManager() : base()

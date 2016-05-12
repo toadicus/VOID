@@ -129,7 +129,18 @@ namespace VOID
 			};
 		protected bool skinsLoaded = false;
 
-		public override bool configDirty { get; set; }
+		private bool _configDirty;
+		public override bool configDirty
+		{ 
+			get
+			{
+				return _configDirty;
+			}
+			set
+			{
+				_configDirty = value;
+			}
+		}
 
 		protected IButton ToolbarButton;
 		protected ApplicationLauncherButton AppLauncherButton;
@@ -1270,7 +1281,7 @@ namespace VOID
 		{
 			this.StopGUI();
 
-			this.onSkinChanged(this);
+			if (this.onSkinChanged != null) this.onSkinChanged(this);
 
 			if (this.AppLauncherButton != null)
 			{

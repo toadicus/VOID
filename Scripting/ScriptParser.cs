@@ -43,6 +43,10 @@ namespace VOID_ScriptedPanels
 		private List<Token> Tokens;
 
 		private Expression formatter;
+		private MethodInfo toSIMethod;
+
+		private List<ParameterExpression> lambdaParameters;
+		private List<ParameterSig> parameterSignatures;
 
 		private Token CurrentToken
 		{
@@ -61,11 +65,28 @@ namespace VOID_ScriptedPanels
 			}
 		}
 
+		public IList<ParameterSig> ParameterSignatures
+		{
+			get;
+			private set;
+		}
+
 		public ScriptParser(string input)
 		{
 			this.scanner = new ScriptScanner(input);
 			this.Tokens = new List<Token>();
+			this.lambdaParameters = new List<ParameterExpression>();
 			this.formatter = Expression.Constant(ToadicusTools.Text.SIFormatProvider.SIFormatter);
+			this.toSIMethod = typeof(ToadicusTools.Text.SIFormatProvider).GetMethod(
+				"ToSI",
+				new Type[]
+				{
+					typeof(double),
+					typeof(int)
+				}
+			);
+			this.parameterSignatures = new List<ParameterSig>();
+			this.ParameterSignatures = this.parameterSignatures.AsReadOnly();
 		}
 
 		public LambdaExpression Parse()
@@ -79,7 +100,7 @@ namespace VOID_ScriptedPanels
 		{
 			Expression expr = ParseString();
 
-			return Expression.Lambda(expr);
+			return Expression.Lambda(expr, this.lambdaParameters.ToArray());
 		}
 
 		private Expression ParseString()
@@ -120,39 +141,62 @@ namespace VOID_ScriptedPanels
 		private Expression ParseFormat()
 		{
 			Expression left = this.ParseAdditive();
+			Expression right;
 
 			if (this.CurrentToken.Type == Token.TokenType.FormatOperator)
 			{
 				this.CurrentToken = this.scanner.GetNextToken();
 
-				if (this.CurrentToken.Type != Token.TokenType.FormatString)
+				switch (this.CurrentToken.Type)
 				{
-					throw new VOIDScriptParserException(string.Format(
-						"Found unexpected {0} '{1}' after FormatOperator.  FormatString must follow FormatOperator.",
-						Enum.GetName(typeof(Token.TokenType), this.CurrentToken.Type),
-						this.CurrentToken.Value
-					));
+					case Token.TokenType.FormatString:
+						right = Expression.Constant(string.Concat("{0:", this.CurrentToken.Value, "}"));
+
+						left = Expression.Convert(left, typeof(object));
+
+						left = Expression.NewArrayInit(typeof(object), left);
+
+						var formatMethod = typeof(string).GetMethod("Format", new Type[]
+							{
+								typeof(IFormatProvider),
+								typeof(string),
+								typeof(object[])
+							});
+
+						left = Expression.Call(
+							null,
+							formatMethod,
+							formatter,
+							right,
+							left
+						);
+
+						break;
+					case Token.TokenType.FormatParameter:
+						ParameterSig param = new ParameterSig();
+						param.Name = "digits";
+						param.Type = typeof(int);
+						if (this.CurrentToken.Value is int)
+						{
+							param.DefaultValue = this.CurrentToken.Value;
+						}
+
+						right = Expression.Parameter(param.Type, param.Name);
+						this.lambdaParameters.Add((ParameterExpression)right);
+						this.parameterSignatures.Add(param);
+
+						left = Expression.Convert(left, typeof(double));
+
+						left = Expression.Call(null, this.toSIMethod, left, right);
+
+						break;
+					default:
+						throw new VOIDScriptParserException(string.Format(
+								"Found unexpected {0} '{1}' after FormatOperator.  Format string or '%' must follow FormatOperator.",
+								Enum.GetName(typeof(Token.TokenType), this.CurrentToken.Type),
+								this.CurrentToken.Value
+							));
 				}
-
-				Expression right = Expression.Constant(string.Concat("{0:", this.CurrentToken.Value, "}"));
-
-				left = Expression.Convert(left, typeof(object));
-
-				left = Expression.NewArrayInit(typeof(object), left);
-
-				var formatMethod = typeof(string).GetMethod("Format", new Type[] {
-					typeof(IFormatProvider),
-					typeof(string),
-					typeof(object[])
-				});
-
-				left = Expression.Call(
-					null,
-					formatMethod,
-					formatter,
-					right,
-					left
-				);
 
 				this.CurrentToken = this.scanner.GetNextToken();
 			}
@@ -295,6 +339,13 @@ namespace VOID_ScriptedPanels
 						this.Tokens.Count
 					));
 			}
+		}
+
+		public struct ParameterSig
+		{
+			public string Name;
+			public Type Type;
+			public object DefaultValue;
 		}
 	}
 }

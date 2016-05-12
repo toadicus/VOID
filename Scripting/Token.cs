@@ -49,7 +49,8 @@ namespace VOID_ScriptedPanels
 			MultOperator,
 			NumValue,
 			FormatOperator,
-			FormatString
+			FormatString,
+			FormatParameter
 		}
 
 		private Token() {}
