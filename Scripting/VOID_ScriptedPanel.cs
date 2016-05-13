@@ -694,11 +694,23 @@ namespace VOID_ScriptedPanels
 
 					if (labelObj is string)
 					{
-						GUILayout.Label((string)labelObj);
+						string labelString = (string)labelObj;
+						if (line.LabelIsVarPrecision || line.ValueIsVarPrecision)
+						{
+							labelString += "ⁱ";
+						}
+
+						GUILayout.Label(labelString);
 					}
 					else if (labelObj is GUIContent)
 					{
-						GUILayout.Label((GUIContent)labelObj);
+						GUIContent labelContent = (GUIContent)labelObj;
+						if (line.LabelIsVarPrecision || line.ValueIsVarPrecision)
+						{
+							labelContent.text += "ⁱ";
+						}
+
+						GUILayout.Label(labelContent);
 					}
 					else
 					{
