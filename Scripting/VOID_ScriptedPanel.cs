@@ -46,7 +46,7 @@ namespace VOID_ScriptedPanels
 	{
 		public const string PANEL_KEY = "VOID_PANEL";
 		public const string LINE_KEY = "PANEL_LINE";
-		public const string EXTENDED_KEY = "EXTENDED_INFO";
+		public const string LINE_GROUP_KEY = "LINE_GROUP";
 		public const string TITLE_KEY = "Title";
 		public const string SUBTITLE_KEY = "Subtitle";
 		public const string POSITION_KEY = "WindowPos";
@@ -356,9 +356,9 @@ namespace VOID_ScriptedPanels
 				}
 			}
 
-			if (node.HasNode(EXTENDED_KEY))
+			if (node.HasNode(LINE_GROUP_KEY))
 			{
-				ConfigNode[] groupNodes = node.GetNodes(EXTENDED_KEY);
+				ConfigNode[] groupNodes = node.GetNodes(LINE_GROUP_KEY);
 				ConfigNode groupNode;
 				VOID_PanelLineGroup group;
 
@@ -401,7 +401,7 @@ namespace VOID_ScriptedPanels
 			{
 				group = this.lineGroups[gIdx];
 
-				sNode = node.AddNode(EXTENDED_KEY);
+				sNode = node.AddNode(LINE_GROUP_KEY);
 
 				group.Save(sNode);
 			}
