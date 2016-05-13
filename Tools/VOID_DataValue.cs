@@ -93,8 +93,6 @@ namespace VOID
 			this.Units = Units;
 			this.ValueFunc = ValueFunc;
 			this.lastUpdate = 0;
-
-			VOID_Data.DataValues[this.GetHashCode()] = this;
 		}
 
 		public void Refresh()

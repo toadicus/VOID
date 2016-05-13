@@ -30,23 +30,92 @@ using KerbalEngineer.VesselSimulator;
 using KSP;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using ToadicusTools;
 using ToadicusTools.Extensions;
 using ToadicusTools.MuMechTools;
+using ToadicusTools.Text;
 using UnityEngine;
 
 namespace VOID
 {
 	public static class VOID_Data
 	{
-		private static Dictionary<int, IVOID_DataValue> dataValues = new Dictionary<int, IVOID_DataValue>();
+		private static Dictionary<string, MemberInfo> dataMembers = new Dictionary<string, MemberInfo>();
 
-		public static Dictionary<int, IVOID_DataValue> DataValues
+		public static void RegisterDataMember(MemberInfo member, object host = null)
 		{
-			get
+			if (member == null)
 			{
-				return dataValues;
+				throw new ArgumentNullException("'member' argument may not be null");
 			}
+
+			if (dataMembers.ContainsKey(member.Name))
+			{
+				throw new ArgumentException("'member' argument has duplicate name '{0}'");
+			}
+
+			if (member is PropertyInfo)
+			{
+				PropertyInfo property = (member as PropertyInfo);
+				if (property.GetIndexParameters().Length > 0)
+				{
+					throw new ArgumentException("'member' argument may not be an indexer property");
+				}
+
+				if (!(property.GetGetMethod()?.IsStatic ?? false))
+				{
+					throw new ArgumentException("'member' argument must be static.");
+				}
+
+				dataMembers[member.Name] = member;
+			}
+			else if (member is FieldInfo)
+			{
+				if (!(member as FieldInfo).IsStatic)
+				{
+					throw new ArgumentException("'member' argument must be static.");
+				}
+
+				dataMembers[member.Name] = member;
+			}
+			else
+			{
+				throw new ArgumentException("VOID_Data: Data Values may only be registered from fields or properties.");
+			}
+		}
+
+		public static void RegisterAllMembersForType(Type type)
+		{
+			var members = type.GetMembers(BindingFlags.Public | BindingFlags.Static);
+
+			for (int fIdx = 0; fIdx < members.Length; fIdx++)
+			{
+				var member = members[fIdx];
+
+				if (
+					member is FieldInfo ||
+					(
+						member is PropertyInfo &&
+						(member as PropertyInfo).GetIndexParameters().Length == 0
+					)
+				)
+				{
+					RegisterDataMember(member);
+				}
+			}
+		}
+
+		public static MemberInfo GetDataMember(string name)
+		{
+			MemberInfo member;
+
+			if (dataMembers.TryGetValue(name, out member))
+			{
+				return member;
+			}
+
+			throw new KeyNotFoundException(string.Format("VOID_Data has no registered data value named '{0}'.", name));
 		}
 
 		#region Constants
@@ -1407,6 +1476,8 @@ namespace VOID
 		{
 			VOIDCore_Flight.onModulesLoaded += onFlightModulesLoaded;
 			VOIDCore_Flight.onModulesDestroyed += onFlightModulesDestroyed;
+
+			RegisterAllMembersForType(typeof(VOID_Data));
 		}
 	}
 }

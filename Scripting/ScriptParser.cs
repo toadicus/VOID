@@ -278,52 +278,39 @@ namespace VOID_ScriptedPanels
 				case Token.TokenType.DataVar:
 				case Token.TokenType.ValueVar:
 					string varName = (string)this.CurrentToken.Value;
-					MemberInfo[] members = typeof(VOID_Data).GetMember(varName);
-					MemberInfo member = null;
 
-					if (members.Length > 0)
-					{
-						member = members[0];
-					}
-
-					if (
-						member == null ||
-						(!(member is System.Reflection.FieldInfo) && !(member is System.Reflection.PropertyInfo)))
-					{
-						// TODO: Implement access through VOID_Data.DataValue.
-						throw new Exception(string.Format(
-								"VOID_Data does not contain a field or property named '{0}'",
-								this.CurrentToken.Value
-							));
-					}
-
+					MemberInfo member = VOID_Data.GetDataMember(varName);
 					MemberExpression data;
 
-					if (member is System.Reflection.FieldInfo)
+					Type memberType;
+
+					Logging.PostLogMessage("Making member access for varName = {0}\n" +
+						"\t{1}", varName, member);
+					
+					if (member is FieldInfo)
 					{
 						FieldInfo field = member as FieldInfo;
-
+						memberType = field.FieldType;
 						data = Expression.Field(null, field);
-
-						var fieldType = field.FieldType;
-
-						if (typeof(IVOID_DataValue).IsAssignableFrom(fieldType))
-						{
-							data = Expression.Property(Expression.Convert(data, typeof(IVOID_DataValue)), "Value");
-						}
+					}
+					else if (member is PropertyInfo)
+					{
+						PropertyInfo property = member as PropertyInfo;
+						memberType = property.PropertyType;
+						data = Expression.Property(null, property);
 					}
 					else
 					{
-						PropertyInfo property = member as PropertyInfo;
+						throw new VOIDScriptParserException(string.Format(
+								"Invalid member type ({0}) for member '{1}'.",
+								member.GetType().FullName,
+								varName
+							));
+					}
 
-						data = Expression.Property(null, property);
-
-						var propType = property.PropertyType;
-
-						if (typeof(IVOID_DataValue).IsAssignableFrom(propType))
-						{
-							data = Expression.Property(Expression.Convert(data, typeof(IVOID_DataValue)), "Value");
-						}
+					if (typeof(IVOID_DataValue).IsAssignableFrom(memberType))
+					{
+						data = Expression.Property(Expression.Convert(data, typeof(IVOID_DataValue)), "Value");
 					}
 
 					return data;
