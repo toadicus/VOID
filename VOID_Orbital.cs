@@ -74,7 +74,7 @@ namespace VOID
 
 			VOID_Data.timeToApo.DoGUIHorizontal();
 
-			this.precisionValues [idx]= (ushort)VOID_Data.oribtPeriAlt.DoGUIHorizontal (this.precisionValues [idx]);
+			this.precisionValues [idx]= (ushort)VOID_Data.orbitPeriAlt.DoGUIHorizontal (this.precisionValues [idx]);
 			idx++;
 
 			VOID_Data.timeToPeri.DoGUIHorizontal();

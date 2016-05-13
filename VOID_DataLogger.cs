@@ -371,7 +371,7 @@ namespace VOID
 				line.Append(',');
 
 				// Periapsis Altitude
-				line.Append(VOID_Data.oribtPeriAlt.Value.ToString("G9"));
+				line.Append(VOID_Data.orbitPeriAlt.Value.ToString("G9"));
 				line.Append(',');
 
 				// Orbital Inclination

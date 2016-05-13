@@ -1182,7 +1182,7 @@ namespace VOID
 				"m"
 			);
 
-		public static readonly VOID_DoubleValue oribtPeriAlt =
+		public static readonly VOID_DoubleValue orbitPeriAlt =
 			new VOID_DoubleValue(
 				VOID_Localization.void_periapsis,
 				new Func<double>(() => Core.Vessel.orbit.PeA),

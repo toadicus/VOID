@@ -88,7 +88,7 @@ namespace VOID
 						VOID_Data.timeToApo.ValueUnitString()
 					);
 					leftHUD.AppendFormat("\nPe: {0} ETA {1}",
-						VOID_Data.oribtPeriAlt.ToSIString(),
+						VOID_Data.orbitPeriAlt.ToSIString(),
 						VOID_Data.timeToPeri.ValueUnitString()
 					);
 					leftHUD.AppendFormat("\nTot Δv: {0} Stg Δv: {1}",
