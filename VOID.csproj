@@ -74,9 +74,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="VOID_HUD.cs" />
-    <Compile Include="VOID_Orbital.cs" />
-    <Compile Include="VOID_SurfAtmo.cs" />
-    <Compile Include="VOID_VesselInfo.cs" />
     <Compile Include="VOID_Transfer.cs" />
     <Compile Include="VOID_CBInfoBrowser.cs" />
     <Compile Include="VOID_Rendezvous.cs" />
@@ -164,7 +161,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GameData\VOID\Textures\ATM_VOID.cfg" />
-    <None Include="GameData\VOID\TestPanels.cfg" />
+    <None Include="GameData\VOID\VOID_SurfAtmo.cfg" />
+    <None Include="GameData\VOID\VOID_Orbital.cfg" />
+    <None Include="GameData\VOID\VOID_VesselInfo.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="API\" />
