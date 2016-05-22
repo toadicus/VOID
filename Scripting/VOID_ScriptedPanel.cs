@@ -53,6 +53,8 @@ namespace VOID_ScriptedPanels
 		public const string SCENES_KEY = "ValidScenes";
 		public const string MODES_KEY = "ValidModes";
 		public const string WIDTH_KEY = "Width";
+		public const string WINDOW_STYLE_KEY = "WindowStyle";
+		public const string TEXT_STYLE_KEY = "TextStyle";
 
 		private static readonly List<UrlDir.UrlFile> voidScriptFiles;
 		private static readonly List<VOID_ScriptedPanel> panels;
@@ -151,6 +153,8 @@ namespace VOID_ScriptedPanels
 
 		private string tooltipContents;
 
+		private GUIStyle textStyle;
+
 		private VOID_PanelLine subTitle;
 		private List<VOID_PanelLine> panelLines;
 
@@ -245,6 +249,34 @@ namespace VOID_ScriptedPanels
 				if (float.TryParse(widthString, out width))
 				{
 					this.defWidth = width;
+				}
+			}
+
+			string styleString;
+
+			if (node.TryGetValue(WINDOW_STYLE_KEY, out styleString))
+			{
+				GUIStyle windowStyle;
+
+				if (VOID_Styles.TryGetStyle(styleString, out windowStyle))
+				{
+					this.windowStyle = windowStyle;
+				}
+			}
+
+			string textStyleString;
+
+			if (node.TryGetValue(TEXT_STYLE_KEY, out textStyleString))
+			{
+				GUIStyle textStyle;
+
+				if (VOID_Styles.TryGetStyle(textStyleString, out textStyle))
+				{
+					this.textStyle = textStyle;
+				}
+				else
+				{
+					this.textStyle = null;
 				}
 			}
 
@@ -539,7 +571,7 @@ namespace VOID_ScriptedPanels
 				}
 			}
 
-			VOID_PanelLineGroup.DoLineLoop(this.PanelLines, this.runtimeErrors, this.errorIndices);
+			VOID_PanelLineGroup.DoLineLoop(this.PanelLines, this.runtimeErrors, this.errorIndices, this.textStyle);
 
 			mayHaveErrorPane |= this.errorIndices.Count > 0;
 
@@ -552,7 +584,7 @@ namespace VOID_ScriptedPanels
 
 				if (group.IsShown)
 				{
-					VOID_PanelLineGroup.DoLineLoop(group.PanelLines, group.runtimeErrors, group.errorIndices);
+					VOID_PanelLineGroup.DoLineLoop(group.PanelLines, group.runtimeErrors, group.errorIndices, this.textStyle);
 
 					mayHaveErrorPane |= group.errorIndices.Count > 0;
 				}
@@ -635,7 +667,8 @@ namespace VOID_ScriptedPanels
 		public static void DoLineLoop(
 			IList<VOID_PanelLine> lines,
 			Dictionary<ushort, VOIDScriptRuntimeException> _runtimeErrors,
-			List<int> _errorIndices
+			List<int> _errorIndices,
+			GUIStyle labelStyle = null
 		)
 		{
 			_runtimeErrors.Clear();
@@ -700,7 +733,14 @@ namespace VOID_ScriptedPanels
 							labelString += "ⁱ";
 						}
 
-						GUILayout.Label(labelString);
+						if (labelStyle != null)
+						{
+							GUILayout.Label(labelString, labelStyle);
+						}
+						else
+						{
+							GUILayout.Label(labelString);
+						}
 					}
 					else if (labelObj is GUIContent)
 					{
@@ -710,11 +750,25 @@ namespace VOID_ScriptedPanels
 							labelContent.text += "ⁱ";
 						}
 
-						GUILayout.Label(labelContent);
+						if (labelStyle != null)
+						{
+							GUILayout.Label(labelContent, labelStyle);
+						}
+						else
+						{
+							GUILayout.Label(labelContent);
+						}
 					}
 					else
 					{
-						GUILayout.Label(labelObj.ToString());
+						if (labelStyle != null)
+						{
+							GUILayout.Label(labelObj.ToString());
+						}
+						else
+						{
+							GUILayout.Label(labelObj.ToString());
+						}
 					}
 
 					if (line.LabelIsVarPrecision)
@@ -769,15 +823,36 @@ namespace VOID_ScriptedPanels
 
 					if (valueObj is string)
 					{
-						GUILayout.Label((string)valueObj);
+						if (labelStyle != null)
+						{
+							GUILayout.Label((string)valueObj, labelStyle);
+						}
+						else
+						{
+							GUILayout.Label((string)valueObj);
+						}
 					}
 					else if (valueObj is GUIContent)
 					{
-						GUILayout.Label((GUIContent)valueObj);
+						if (labelStyle != null)
+						{
+							GUILayout.Label((GUIContent)valueObj, labelStyle);
+						}
+						else
+						{
+							GUILayout.Label((GUIContent)valueObj);
+						}
 					}
 					else
 					{
-						GUILayout.Label(valueObj.ToString());
+						if (labelStyle != null)
+						{
+							GUILayout.Label(valueObj.ToString(), labelStyle);
+						}
+						else
+						{
+							GUILayout.Label(valueObj.ToString());
+						}
 					}
 
 					if (line.ValueIsVarPrecision)

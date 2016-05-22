@@ -37,6 +37,34 @@ namespace VOID
 {
 	public static class VOID_Styles
 	{
+		private static Dictionary<string, GUIStyle> styles;
+		public static GUIStyle GetStyle(string name)
+		{
+			GUIStyle style;
+
+			if (styles.TryGetValue(name, out style))
+			{
+				return style;
+			}
+			return null;
+		}
+
+		public static bool HasStyle(string name)
+		{
+			return styles.ContainsKey(name);
+		}
+
+		public static bool TryGetStyle(string name, out GUIStyle style)
+		{
+			return styles.TryGetValue(name, out style);
+		}
+
+		public static GUIStyle none
+		{
+			get;
+			private set;
+		}
+
 		public static GUIStyle labelDefault
 		{
 			get;
@@ -115,6 +143,8 @@ namespace VOID
 				defKSPSkin = HighLogic.Skin;
 			}
 
+			none = GUIStyle.none;
+
 			labelDefault = new GUIStyle(GUI.skin.label);
 
 			labelLink = new GUIStyle(GUI.skin.label);
@@ -142,6 +172,26 @@ namespace VOID
 			labelGreen = new GUIStyle(GUI.skin.label);
 			labelGreen.normal.textColor = Color.green;
 
+			styles.Clear();
+
+			var properties = typeof(VOID_Styles).GetProperties(
+				System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+
+			for (int pIdx = 0; pIdx < properties.Length; pIdx++)
+			{
+				var property = properties[pIdx];
+
+				if (typeof(GUIStyle).IsAssignableFrom(property.PropertyType))
+				{
+					GUIStyle style = property.GetValue(null, null) as GUIStyle;
+
+					if (style != null)
+					{
+						styles[property.Name] = style;
+					}
+				}
+			}
+
 			if (VOID_Data.CoreInitialized)
 			{
 				SetCurrentTooltip();
@@ -151,6 +201,7 @@ namespace VOID
 		static VOID_Styles()
 		{
 			tooltipCache = new Dictionary<GUISkin, GUIStyle>();
+			styles = new Dictionary<string, GUIStyle>();
 
 			OnSkinChanged();
 		}

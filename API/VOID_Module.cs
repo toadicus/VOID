@@ -467,6 +467,7 @@ namespace VOID
 		protected Rect WindowPos;
 		protected float defWidth;
 		protected float defHeight;
+		protected GUIStyle windowStyle;
 
 		protected bool decorateWindow;
 
@@ -478,6 +479,7 @@ namespace VOID
 			this.defHeight = 50f;
 
 			this.decorateWindow = true;
+			this.windowStyle = null;
 
 			this.inputLockName = string.Concat(this.Name, "_edlock");
 
@@ -531,14 +533,29 @@ namespace VOID
 
 			Rect _Pos = this.WindowPos;
 
-			_Pos = GUILayout.Window(
-				this.core.WindowID,
-				_Pos,
-				VOID_Tools.GetWindowHandler(this.ModuleWindow),
-				this.Name,
-				GUILayout.Width(this.defWidth),
-				GUILayout.Height(this.defHeight)
-			);
+			if (this.windowStyle != null)
+			{
+				_Pos = GUILayout.Window(
+					this.core.WindowID,
+					_Pos,
+					VOID_Tools.GetWindowHandler(this.ModuleWindow),
+					this.Name,
+					GUILayout.Width(this.defWidth),
+					GUILayout.Height(this.defHeight)
+				);
+			}
+			else
+			{
+				_Pos = GUILayout.Window(
+					this.core.WindowID,
+					_Pos,
+					VOID_Tools.GetWindowHandler(this.ModuleWindow),
+					this.Name,
+					this.windowStyle,
+					GUILayout.Width(this.defWidth),
+					GUILayout.Height(this.defHeight)
+				);
+			}
 
 			bool cursorInWindow = _Pos.Contains(Mouse.screenPos);
 
