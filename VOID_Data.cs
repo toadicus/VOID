@@ -566,7 +566,7 @@ namespace VOID
 					dir = vesselTransform.InverseTransformDirection(dir);
 
 					Vector3 thrustOffset = VectorTools.PointDistanceToLine(
-						pos, dir.normalized, Core.Vessel.findLocalCenterOfMass());
+						pos, dir.normalized, Core.Vessel.CoM);
 
 					Logging.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
 					"\tthrustPos: {0}\n" +
@@ -576,7 +576,7 @@ namespace VOID
 						pos,
 						dir.normalized,
 						thrustOffset,
-						Core.Vessel.findWorldCenterOfMass()
+						Core.Vessel.CoM
 					);
 
 					return thrustOffset;
@@ -1146,7 +1146,7 @@ namespace VOID
 				delegate()
 				{
 					double orbitRadius = Core.Vessel.mainBody.Radius +
-					                     Core.Vessel.mainBody.GetAltitude(Core.Vessel.findWorldCenterOfMass());
+					                     Core.Vessel.mainBody.GetAltitude(Core.Vessel.CoM);
 					return (VOIDCore.Constant_G * Core.Vessel.mainBody.Mass) /
 					(orbitRadius * orbitRadius);
 				},

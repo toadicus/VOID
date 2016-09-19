@@ -104,7 +104,7 @@ namespace VOID
 		protected bool vesselTypesLoaded = false;
 		protected bool simManagerLoaded = false;
 
-		protected string defaultSkin = "KSP window 2";
+		protected string defaultSkin = "KSPSkin";
 
 		[AVOID_SaveValue("defaultSkin")]
 		protected VOID_SaveValue<string> skinName;
@@ -195,25 +195,6 @@ namespace VOID
 			get
 			{
 				return this.modules.AsReadOnly();
-			}
-		}
-
-		public override GUISkin Skin
-		{
-			get
-			{
-				if (this.skinsLoaded)
-				{
-					try
-					{
-						return this.validSkins[this.skinName];
-					}
-					catch
-					{
-					}
-				}
-
-				return AssetBase.GetGUISkin(this.defaultSkin);
 			}
 		}
 
@@ -344,8 +325,10 @@ namespace VOID
 			{
 				this.LoadSkins();
 			}
-
-			GUI.skin = this.Skin;
+			else
+			{
+				GUI.skin = this.Skin;
+			}
 
 			if (!this.GUIStylesLoaded)
 			{
@@ -775,6 +758,7 @@ namespace VOID
 
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
+			int oldSkinIdx = this.skinIdx;
 			GUILayout.Label("Skin:", GUILayout.ExpandWidth(false));
 
 			_content = new GUIContent();
@@ -813,6 +797,11 @@ namespace VOID
 			if (this.skinIdx < 0)
 			{
 				this.skinIdx += this.skinNames.Count;
+			}
+
+			if (this.skinIdx != oldSkinIdx)
+			{
+				this.Skin = this.validSkins [this.skinNames [this.skinIdx]];
 			}
 
 			if (this.skinName != skinNames[this.skinIdx])
@@ -1009,12 +998,13 @@ namespace VOID
 
 				if (!this.forbiddenSkins.Contains(skin.name))
 				{
+					Logging.PostLogMessage ("[{0}]: Found skin: {1}", this.GetType().Name, skin.name);
 					this.validSkins[skin.name] = skin;
 					this.skinNames.Add(skin.name);
 				}
 			}
 
-			Logging.PostDebugMessage(string.Format(
+			Logging.PostLogMessage(string.Format(
 				"{0}: loaded {1} GUISkins.",
 				this.GetType().Name,
 				this.validSkins.Count
@@ -1045,7 +1035,9 @@ namespace VOID
 				this.skinIdx = defaultIdx;
 			}
 
-			Logging.PostDebugMessage(string.Format(
+			this.Skin = this.validSkins [this.skinNames [this.skinIdx]];
+
+			Logging.PostLogMessage(string.Format(
 				"{0}: _skinIdx = {1}.",
 				this.GetType().Name,
 				this.skinName.ToString()
