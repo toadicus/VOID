@@ -113,7 +113,7 @@ namespace VOID
 				{
 					ToadicusTools.Logging.PostDebugMessage(this, "Checking invoker {0}", invoker);
 
-					if (invoker == method)
+					if (System.Object.Equals(invoker, method))
 					{
 						ToadicusTools.Logging.PostDebugMessage(this, "Found match.");
 						return true;
@@ -141,7 +141,7 @@ namespace VOID
 				{
 					ToadicusTools.Logging.PostDebugMessage(this, "Checking invoker {0}", invoker);
 
-					if (invoker == method)
+					if (System.Object.Equals(invoker, method))
 					{
 						ToadicusTools.Logging.PostDebugMessage(this, "Found match.");
 						return true;
