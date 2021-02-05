@@ -123,7 +123,7 @@ namespace VOID
 			#if DEBUG
 			else
 			{
-			ToadicusTools.Logging.PostDebugMessage(this, "this.onPreRender == null");
+				ToadicusTools.Logging.PostDebugMessage(this, "this.onPreRender == null");
 			}
 			#endif
 

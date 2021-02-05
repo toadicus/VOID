@@ -422,7 +422,7 @@ namespace VOID
 					);
 				}
 			);
-		
+
 		public static readonly VOID_DoubleValue currThrust =
 			new VOID_DoubleValue(
 				"Current Thrust",
@@ -634,7 +634,7 @@ namespace VOID
 					dir = vesselTransform.InverseTransformDirection(dir);
 
 					Vector3 thrustOffset = VectorTools.PointDistanceToLine(
-						pos, dir.normalized, Core.Vessel.findLocalCenterOfMass());
+						pos, dir.normalized, Core.Vessel.CoMD);
 
 					Logging.PostDebugMessage(typeof(VOID_Data), "vesselThrustOffset:\n" +
 					"\tthrustPos: {0}\n" +
@@ -644,7 +644,7 @@ namespace VOID
 						pos,
 						dir.normalized,
 						thrustOffset,
-						Core.Vessel.findWorldCenterOfMass()
+						Core.Vessel.CoMD
 					);
 
 					return thrustOffset;
@@ -1214,7 +1214,7 @@ namespace VOID
 				delegate()
 				{
 					double orbitRadius = Core.Vessel.mainBody.Radius +
-					                     Core.Vessel.mainBody.GetAltitude(Core.Vessel.findWorldCenterOfMass());
+					                     Core.Vessel.mainBody.GetAltitude(Core.Vessel.CoMD);
 					return (VOIDCore.Constant_G * Core.Vessel.mainBody.Mass) /
 					(orbitRadius * orbitRadius);
 				},
@@ -1248,7 +1248,7 @@ namespace VOID
 				"°"
 			);
 
-		public static readonly VOID_DoubleValue trueAnomaly = 
+		public static readonly VOID_DoubleValue trueAnomaly =
 			new VOID_DoubleValue(
 				"True Anomaly",
 				new Func<double>(() => Core.Vessel.orbit.trueAnomaly * 180d / Math.PI),

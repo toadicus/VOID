@@ -89,7 +89,7 @@ namespace VOID
 		protected VOID_SaveValue<string> resourceName = (VOID_SaveValue<string>)"ElectricCharge";
 
 		[AVOID_SaveValue("resourceRate")]
-		protected VOID_SaveValue<float> resourceRate = (VOID_SaveValue<float>)0.2f;
+		protected VOID_SaveValue<double> resourceRate = (VOID_SaveValue<double>)0.2f;
 
 		[AVOID_SaveValue("updatePeriod")]
 		protected VOID_SaveValue<double> updatePeriod = (VOID_SaveValue<double>)(1001f / 15000f);
@@ -131,7 +131,7 @@ namespace VOID
 
 		private bool _configDirty;
 		public override bool configDirty
-		{ 
+		{
 			get
 			{
 				return _configDirty;
@@ -328,7 +328,7 @@ namespace VOID
 		/*
 		 * Events
 		 * */
-		// public 
+		// public
 		public override event VOIDEventHandler onApplicationQuit;
 		public override event VOIDEventHandler onSkinChanged;
 		public override event VOIDEventHandler onUpdate;
@@ -369,7 +369,7 @@ namespace VOID
 					ToolbarManager.ToolbarAvailable,
 					this.useToolbarManager);
 			}
-				
+
 			if (
 				this.iconState != (this.powerState | this.activeState) ||
 				(this.VOIDIconTexture == null && this.AppLauncherButton != null)
@@ -518,7 +518,7 @@ namespace VOID
 
 					this.ToolbarButton.Visible = true;
 
-					this.ToolbarButton.OnClick += 
+					this.ToolbarButton.OnClick +=
 						(e) =>
 						{
 							this.ToggleMainWindow();
@@ -597,7 +597,7 @@ namespace VOID
 			    this.Vessel.vesselType != VesselType.EVA &&
 			    TimeWarp.deltaTime != 0)
 			{
-				float powerReceived = this.Vessel.rootPart.RequestResource(
+				double powerReceived = this.Vessel.rootPart.RequestResource(
 					this.resourceName,
 					this.resourceRate * TimeWarp.fixedDeltaTime
 				);

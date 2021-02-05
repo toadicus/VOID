@@ -55,7 +55,7 @@ namespace VOID
 		protected Func<T> ValueFunc;
 		protected float lastUpdate;
 
-		/* 
+		/*
 		 * Properties
 		 * */
 		public string Label { get; protected set; }
@@ -237,7 +237,7 @@ namespace VOID
 		{
 			return this.Value.ToString(format, formatProvider) + this.Units;
 		}
-		
+
 		public virtual string ValueUnitString(int digits) {
 			return string.Format("{0}{1}", SIFormatProvider.ToSI(this, digits), Units);
 		}
@@ -287,7 +287,7 @@ namespace VOID
 
 			GUILayout.EndHorizontal();
 
-			if (Event.current.type == EventType.mouseUp)
+			if (Event.current.type == EventType.MouseUp)
 			{
 				Rect lastRect = GUILayoutUtility.GetLastRect();
 				if (lastRect.Contains(Event.current.mousePosition))

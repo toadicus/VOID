@@ -466,7 +466,7 @@ namespace VOID_ScriptedPanels
 
 				groupIsShownKey = string.Format("{0}_{1}{2}",
 					this.saveKeyName, group.Name, VOID_PanelLineGroup.ISSHOWN_KEY);
-				
+
 				group.IsShown = config.GetValue(groupIsShownKey, group.IsShown);
 
 				for (int lIdx = 0; lIdx < this.PanelLines.Count; lIdx++)
@@ -641,7 +641,7 @@ namespace VOID_ScriptedPanels
 
 				GUI.Button(errorButtonRect, this.showErrorPane ? "←" : "→", buttonStyle);
 
-				if (Event.current.type == EventType.repaint && Input.GetMouseButtonUp(0))
+				if (Event.current.type == EventType.Repaint && Input.GetMouseButtonUp(0))
 				{
 					if (errorButtonRect.Contains(Event.current.mousePosition))
 					{
@@ -881,7 +881,7 @@ namespace VOID_ScriptedPanels
 
 		public static int DoPrecisionClickOnRect(Rect lastRect, int digits)
 		{
-			if (Event.current.type == EventType.mouseUp)
+			if (Event.current.type == EventType.MouseUp)
 			{
 				if (lastRect.Contains(Event.current.mousePosition))
 				{
